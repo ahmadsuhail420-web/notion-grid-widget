@@ -25,7 +25,6 @@ body {
   width: 90%;
   max-width: 900px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-
   display: flex;
   flex-direction: column;
   height: auto;
@@ -83,7 +82,7 @@ body {
   opacity: 1;
 }
 
-/* Scrollable grid */
+/* Scrollable grid wrapper */
 .grid-wrapper {
   flex: 1;
   overflow-y: auto;
@@ -100,7 +99,7 @@ body {
 }
 
 .card {
-  aspect-ratio: 4 / 5; /* Instagram post ratio */
+  aspect-ratio: 4 / 5;
   background: #eee;
   border-radius: 6px;
   position: relative;
@@ -135,7 +134,7 @@ body {
   margin-top: 14px;
 }
 
-/* Smooth scrollbar */
+/* Scrollbar styling */
 .grid-wrapper::-webkit-scrollbar {
   width: 6px;
 }
@@ -225,14 +224,18 @@ async function loadPosts() {
 function renderGrid() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
+
   const filtered = ALL_POSTS.filter(p => p.type?.includes(FILTER));
 
-  for (let i = 0; i < filtered.length; i++) {
+  // always render at least 60 cards
+  const totalCards = Math.max(filtered.length, 60);
+
+  for (let i = 0; i < totalCards; i++) {
     const post = filtered[i];
     const card = document.createElement("div");
     card.className = "card";
 
-    if (post) {
+    if (post && (post.attachment || post.video)) {
       if (post.attachment) {
         const img = document.createElement("img");
         img.src = post.attachment;
@@ -242,11 +245,6 @@ function renderGrid() {
         video.src = post.video;
         video.controls = true;
         card.appendChild(video);
-      } else {
-        const no = document.createElement("div");
-        no.className = "noContent";
-        no.innerText = "NO CONTENT";
-        card.appendChild(no);
       }
     } else {
       const no = document.createElement("div");
