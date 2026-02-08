@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notion Grid Widget</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #fff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 8px;
+    }
+
+    .card img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    fetch("/api/get-posts")
+      .then(res => res.json())
+      .then(data => {
+        const grid = document.getElementById("grid");
+
+        data.forEach(page => {
+          const cover =
+            page.cover?.file?.url ||
+            page.cover?.external?.url ||
+            page.properties.Attachment?.files?.[0]?.file?.url;
+
+          if (!cover) return;
+
+          const div = document.createElement("div");
+          div.className = "card";
+
+          div.innerHTML = `
+            <img src="${cover}" />
+          `;
+
+          grid.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>
