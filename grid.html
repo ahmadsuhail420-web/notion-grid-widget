@@ -5,218 +5,242 @@
 <title>Grid Planner</title>
 
 <style>
-body{
-font-family:sans-serif;
-background:#fafafa;
-margin:0;
-padding:20px;
+body {
+  font-family: 'Inter', sans-serif;
+  background: #fafafa;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:15px;
+/* HEADER */
+.header {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.tabs{
-display:flex;
-gap:18px;
-margin-bottom:15px;
+.header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
 
-.tabs img{
-width:28px;
-cursor:pointer;
-opacity:0.9;
+.header button {
+  padding: 8px 16px;
+  border: none;
+  background: black;
+  color: white;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.header button:hover {
+  background: #333;
 }
 
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0 10px;
+}
+
+.tabs img {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.tabs img:hover {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+/* GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
-  width: 100%;         /* full width of parent */
-  max-width: 360px;    /* optional: typical mobile Instagram width */
-  margin: 0 auto;      /* center it horizontally */
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 40px;
   padding: 10px;
-  border: 1px solid #ddd;
-  max-height: 80vh;
+  box-sizing: border-box;
   overflow-y: auto;
 }
 
-.card{
-aspect-ratio:4/5;
-background:#eee;
-position:relative;
-display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
+.card {
+  aspect-ratio: 1 / 1; /* perfect squares */
+  background: #eee;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 6px;
+  transition: transform 0.15s ease;
 }
 
-.card img,.card video{
-width:100%;
-height:100%;
-object-fit:cover;
+.card:hover {
+  transform: scale(1.02);
 }
 
-.badge{
-position:absolute;
-top:6px;
-right:6px;
-width:22px;
+.card img, .card video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.noContent{
-font-size:14px;
-color:#777;
+.badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
 }
 
-button{
-padding:8px 16px;
-border:none;
-background:black;
-color:white;
-cursor:pointer;
+.noContent {
+  font-size: 14px;
+  color: #777;
 }
 
+@media (max-width: 600px) {
+  .tabs img { width: 30px; height: 30px; }
+  .grid { gap: 6px; max-width: 100%; }
+  .header h2 { font-size: 1.2rem; }
+}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-<h2>Grid Planner</h2>
-<button onclick="loadPosts()">Refresh</button>
+  <h2>Grid Planner</h2>
+  <button onclick="loadPosts()">Refresh</button>
 </div>
 
 <div class="tabs">
-
-<img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
-<img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
-<img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
-<img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
-
+  <img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
+  <img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
+  <img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
+  <img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
 </div>
 
 <div id="grid" class="grid"></div>
 
 <script>
+let ALL_POSTS = [];
+let FILTER = "Post";
 
-let ALL_POSTS=[];
-let FILTER="Post";
-
-function updateTabIcons(){
-
-document.getElementById("tab-post").src =
-FILTER==="Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
-
-document.getElementById("tab-reel").src =
-FILTER==="Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
-
-document.getElementById("tab-story").src =
-FILTER==="Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
-
-document.getElementById("tab-tiktok").src =
-FILTER==="Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
-
+function updateTabIcons() {
+  document.getElementById("tab-post").src =
+    FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
+  document.getElementById("tab-reel").src =
+    FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
+  document.getElementById("tab-story").src =
+    FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
+  document.getElementById("tab-tiktok").src =
+    FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
 }
 
-function setFilter(type){
-FILTER=type;
-updateTabIcons();
-renderGrid();
+function setFilter(type) {
+  FILTER = type;
+  updateTabIcons();
+  renderGrid();
 }
 
-async function loadPosts(){
+async function loadPosts() {
+  const res = await fetch("/api/get-posts");
+  ALL_POSTS = await res.json();
 
-const res=await fetch("/api/get-posts");
-ALL_POSTS=await res.json();
+  ALL_POSTS.sort((a, b) => {
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
+  });
 
-ALL_POSTS.sort((a,b)=>{
-if(a.pinned && !b.pinned) return -1;
-if(!a.pinned && b.pinned) return 1;
-return new Date(b.publishDate||0)-new Date(a.publishDate||0);
-});
-
-updateTabIcons();
-renderGrid();
+  updateTabIcons();
+  renderGrid();
 }
 
-function renderGrid(){
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const filtered = ALL_POSTS.filter(p => p.type?.includes(FILTER));
 
-const grid=document.getElementById("grid");
-grid.innerHTML="";
+  for (let i = 0; i < 60; i++) {
+    const post = filtered[i];
+    const card = document.createElement("div");
+    card.className = "card";
 
-const filtered=ALL_POSTS.filter(p=>p.type?.includes(FILTER));
+    if (post) {
+      if (post.attachment) {
+        const img = document.createElement("img");
+        img.src = post.attachment;
+        card.appendChild(img);
+      } else if (post.video) {
+        const video = document.createElement("video");
+        video.src = post.video;
+        video.controls = true;
+        card.appendChild(video);
+      } else {
+        const no = document.createElement("div");
+        no.className = "noContent";
+        no.innerText = "NO CONTENT";
+        card.appendChild(no);
+      }
 
-for(let i=0;i<60;i++){
+      if (post.pinned) {
+        const pin = document.createElement("img");
+        pin.src = "/icons/pin.png";
+        pin.className = "badge";
+        card.appendChild(pin);
+      }
 
-const post=filtered[i];
+      if (Array.isArray(post.attachment) && post.attachment.length > 1) {
+        const multi = document.createElement("img");
+        multi.src = "/icons/multi.png";
+        multi.className = "badge";
+        multi.style.right = "30px";
+        card.appendChild(multi);
+      }
 
-const card=document.createElement("div");
-card.className="card";
+      if (post.video) {
+        const reel = document.createElement("img");
+        reel.src = "/icons/reel-badge.png";
+        reel.className = "badge";
+        reel.style.right = "54px";
+        card.appendChild(reel);
+      }
 
-if(post){
+    } else {
+      const no = document.createElement("div");
+      no.className = "noContent";
+      no.innerText = "NO CONTENT";
+      card.appendChild(no);
+    }
 
-if(post.attachment){
-const img=document.createElement("img");
-img.src=post.attachment;
-card.appendChild(img);
-}
-else if(post.video){
-const video=document.createElement("video");
-video.src=post.video;
-video.controls=true;
-card.appendChild(video);
-}
-else{
-const no=document.createElement("div");
-no.className="noContent";
-no.innerText="NO CONTENT";
-card.appendChild(no);
-}
-
-if(post.pinned){
-const pin=document.createElement("img");
-pin.src="/icons/pin.png";
-pin.className="badge";
-card.appendChild(pin);
-}
-
-if(Array.isArray(post.attachment) && post.attachment.length>1){
-const multi=document.createElement("img");
-multi.src="/icons/multi.png";
-multi.className="badge";
-multi.style.right="30px";
-card.appendChild(multi);
-}
-
-if(post.video){
-const reel=document.createElement("img");
-reel.src="/icons/reel-badge.png";
-reel.className="badge";
-reel.style.right="54px";
-card.appendChild(reel);
-}
-
-}else{
-
-const no=document.createElement("div");
-no.className="noContent";
-no.innerText="NO CONTENT";
-card.appendChild(no);
-
-}
-
-grid.appendChild(card);
-
-}
-
+    grid.appendChild(card);
+  }
 }
 
 loadPosts();
-
 </script>
 
 </body>
