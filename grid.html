@@ -76,18 +76,17 @@ body {
 /* GRID */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, 1fr); /* exactly 3 cards per row */
   gap: 10px;
   width: 100%;
   max-width: 900px;
   margin: 0 auto 40px;
   padding: 10px;
   box-sizing: border-box;
-  overflow-y: auto;
 }
 
 .card {
-  aspect-ratio: 4 / 5; 
+  aspect-ratio: 4 / 5;
   background: #eee;
   position: relative;
   display: flex;
