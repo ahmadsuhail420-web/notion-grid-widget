@@ -32,53 +32,56 @@ body {
   overflow: hidden;
 }
 
-/* Header */
+/* HEADER */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 20px; /* more space below header */
 }
 
 .header h2 {
-  font-size: 1.3rem;
-  font-weight: 600;
+  font-size: 1.8rem;    /* larger title */
+  font-weight: 700;
   margin: 0;
+  letter-spacing: 0.5px;
 }
 
 .header button {
-  padding: 8px 18px;
+  padding: 10px 22px;
   border: none;
   background: black;
   color: white;
-  font-size: 0.9rem;
-  border-radius: 6px;
+  font-size: 1rem;       /* larger text */
+  font-weight: 500;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s ease;
 }
 .header button:hover {
   background: #333;
+  transform: scale(1.05);
 }
 
-/* Tabs */
+/* TABS */
 .tabs {
   display: flex;
   justify-content: center;
-  gap: 26px;
-  margin: 18px 0 12px;
+  gap: 36px;              /* more spacing between icons */
+  margin: 24px 0 16px;
   border-bottom: 1px solid #ddd;
-  padding-bottom: 8px;
+  padding-bottom: 12px;
 }
 
 .tabs img {
-  width: 28px;
-  height: 28px;
+  width: 38px;            /* larger icons */
+  height: 38px;
   cursor: pointer;
-  opacity: 0.85;
+  opacity: 0.9;
   transition: transform 0.2s, opacity 0.2s;
 }
 .tabs img:hover {
-  transform: scale(1.15);
+  transform: scale(1.2);
   opacity: 1;
 }
 
