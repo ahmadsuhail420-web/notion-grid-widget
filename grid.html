@@ -1,154 +1,211 @@
 <!DOCTYPE html>
 <html>
+<head>
+<title>Grid Planner</title>
 <script src="https://unpkg.com/lucide@latest"></script>
-  <title>Grid Planner</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, sans-serif;
-      background: #f6f5f2;
-    }
+<style>
+body{
+ margin:0;
+ font-family:-apple-system;
+ background:#f6f5f2;
+}
 
-    .app {
-      max-width: 420px;
-      margin: auto;
-      padding: 12px;
-      border-radius: 20px;
-    }
+.app{
+ max-width:420px;
+ margin:auto;
+ padding:12px;
+}
 
-    /* TOP BAR */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+/* TOP */
+.topbar{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:14px;
+}
 
-    .refresh-btn {
-      background: black;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+.refresh-btn{
+ background:black;
+ color:white;
+ border:none;
+ padding:8px 14px;
+ border-radius:10px;
+}
 
-    .title {
-      font-weight: 600;
-      font-size: 18px;
-    }
+.title{
+ font-weight:600;
+ font-size:18px;
+}
 
-    /* TABS */
-    .tabs {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 12px;
-    }
+/* TABS */
+.tabs{
+ display:flex;
+ justify-content:space-around;
+ margin-bottom:14px;
+}
 
-    .tab {
-      cursor: pointer;
-      opacity: 0.5;
-      font-size: 14px;
-    }
+.tab{
+ opacity:.5;
+ cursor:pointer;
+ padding:6px;
+}
 
-    .tab.active {
-      opacity: 1;
-      border-bottom: 2px solid black;
-      padding-bottom: 4px;
-    }
+.tab.active{
+ opacity:1;
+ border-bottom:2px solid black;
+}
 
-    /* GRID */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-    }
+/* GRID */
+.grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:6px;
+}
 
-    .card img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-  </style>
+.card{
+ position:relative;
+}
+
+.card img{
+ width:100%;
+ aspect-ratio:1/1;
+ object-fit:cover;
+ border-radius:12px;
+}
+
+/* ICON STACK */
+.iconStack{
+ position:absolute;
+ top:6px;
+ right:6px;
+ display:flex;
+ flex-direction:column;
+ gap:4px;
+ background:rgba(0,0,0,.6);
+ padding:4px;
+ border-radius:8px;
+}
+
+.iconStack svg{
+ width:16px;
+ height:16px;
+ color:white;
+}
+
+/* MODAL */
+.modal{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.9);
+ display:none;
+ justify-content:center;
+ align-items:center;
+ flex-direction:column;
+ padding:20px;
+}
+
+.modal img, .modal iframe{
+ max-width:90%;
+ max-height:70vh;
+ border-radius:12px;
+}
+
+.modalBottom{
+ color:white;
+ margin-top:12px;
+ text-align:center;
+}
+
+/* SWIPE HINT */
+.swipeHint{
+ color:white;
+ opacity:.6;
+ font-size:12px;
+ margin-top:6px;
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <div class="topbar">
-    <button class="refresh-btn" onclick="loadData()">Refresh</button>
-    <div class="title">Grid Planner</div>
-  </div>
+<div class="topbar">
+<button class="refresh-btn" onclick="loadData()">Refresh</button>
+<div class="title">Grid Planner</div>
+</div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('Post', this)">Posts</div>
-    <div class="tab" onclick="switchTab('Reel', this)">Reels</div>
-    <div class="tab" onclick="switchTab('Story', this)">Story</div>
-    <div class="tab" onclick="switchTab('TikTok', this)">TikTok</div>
-  </div>
+<div class="tabs">
+<div class="tab active" onclick="switchTab('Post',this)"><i data-lucide="grid-3x3"></i></div>
+<div class="tab" onclick="switchTab('Reels',this)"><i data-lucide="clapperboard"></i></div>
+<div class="tab" onclick="switchTab('Story',this)"><i data-lucide="clock"></i></div>
+<div class="tab" onclick="switchTab('Tiktok',this)"><i data-lucide="music"></i></div>
+</div>
 
-  <div class="grid" id="grid"></div>
+<div class="grid" id="grid"></div>
 
+</div>
+
+<div class="modal" id="modal">
+<div id="modalContent"></div>
+<div class="modalBottom" id="modalText"></div>
+<div class="swipeHint" id="swipeHint"></div>
 </div>
 
 <script>
 
-let currentType = "Post";
+let currentType="Post";
+let globalData=[];
+let swipeIndex=0;
+let swipeFiles=[];
 
-function switchTab(type, el) {
-  currentType = type;
-
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  el.classList.add("active");
-
-  loadData();
+function switchTab(type,el){
+ currentType=type;
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ el.classList.add("active");
+ renderGrid();
+ lucide.createIcons();
 }
 
-async function loadData() {
-
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "Loading...";
-
-  const res = await fetch("/api/get-posts");
-  const data = await res.json();
-
-  grid.innerHTML = "";
-
-  data.forEach(page => {
-
-    /* FILTER BY TYPE (Post / Reel / Story / TikTok) */
-    const type =
-      page.properties.Type?.select?.name || "Post";
-
-    if (type !== currentType) return;
-
-    /* GET ATTACHMENT IMAGE */
-    const file =
-      page.properties.Attachment?.files?.[0];
-
-    const img =
-      file?.file?.url ||
-      file?.external?.url;
-
-    if (!img) return;
-
-    const div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `<img src="${img}" />`;
-
-    grid.appendChild(div);
-
-  });
-
+async function loadData(){
+ const res=await fetch("/api/get-posts");
+ globalData=await res.json();
+ renderGrid();
 }
 
-loadData();
+function renderGrid(){
 
-</script>
+ const grid=document.getElementById("grid");
+ grid.innerHTML="";
 
-</body>
-</html>
+ let filtered=globalData.filter(page=>{
+   const types=page.properties["Type"]?.multi_select?.map(t=>t.name)||[];
+   return types.includes(currentType);
+ });
+
+ filtered.sort((a,b)=>{
+   const pinA=a.properties.Pin?.checkbox?1:0;
+   const pinB=b.properties.Pin?.checkbox?1:0;
+   return pinB-pinA;
+ });
+
+ filtered.forEach(page=>{
+
+   const files=page.properties.Attachment?.files||[];
+   if(!files.length && !page.properties["Media/Video"]?.url) return;
+
+   const img=files[0]?.file?.url || files[0]?.external?.url || "";
+
+   const isPinned=page.properties.Pin?.checkbox;
+   const hasMulti=files.length>1;
+   const hasVideo=page.properties["Media/Video"]?.url;
+
+   const name=page.properties.Name?.title?.[0]?.plain_text || "";
+   const date=page.properties["Publish Date"]?.date?.start || "";
+
+   const div=document.createElement("div");
+   div.className="card";
+
+   let icons="";
+   if(isPinned) ic
