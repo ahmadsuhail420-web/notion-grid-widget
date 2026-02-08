@@ -35,6 +35,7 @@ opacity:0.9;
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:10px;
+border:1px solid #ddd;
 padding:10px;
 max-height:80vh;
 overflow-y:auto;
@@ -42,8 +43,8 @@ overflow-y:auto;
 
 .card{
 aspect-ratio:4/5;
-background:#f1f1f1;
-border-radius:10px;
+background:#eee;
+position:relative;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -141,55 +142,32 @@ renderGrid();
 
 function renderGrid(){
 
-const grid = document.getElementById("grid");
+const grid=document.getElementById("grid");
 grid.innerHTML="";
 
-const filtered = ALL_POSTS.filter(p =>
- p.type?.toLowerCase().includes(FILTER.toLowerCase())
-);
+const filtered=ALL_POSTS.filter(p=>p.type?.includes(FILTER));
 
-const totalSlots = Math.max(filtered.length, 9);
+for(let i=0;i<60;i++){
 
-for(let i=0;i<totalSlots;i++){
+const post=filtered[i];
 
-const post = filtered[i];
-const card = document.createElement("div");
+const card=document.createElement("div");
 card.className="card";
 
 if(post){
 
 if(post.attachment){
-
 const img=document.createElement("img");
-img.src = Array.isArray(post.attachment)
- ? post.attachment[0]
- : post.attachment;
-
+img.src=post.attachment;
 card.appendChild(img);
-
 }
 else if(post.video){
-
 const video=document.createElement("video");
 video.src=post.video;
 video.controls=true;
 card.appendChild(video);
-
 }
 else{
-showEmpty(card);
-}
-
-}else{
-showEmpty(card);
-}
-
-grid.appendChild(card);
-}
-
-}
-
-function showEmpty(card){
 const no=document.createElement("div");
 no.className="noContent";
 no.innerText="NO CONTENT";
