@@ -1,122 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Notion Grid Planner</title>
+<meta charset="UTF-8">
+<title>Grid Planner</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body{
+font-family:sans-serif;
+background:#fafafa;
+margin:0;
+padding:20px;
+}
 
-    h1 {
-      margin-bottom: 20px;
-    }
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
 
-    #refreshBtn {
-      padding: 10px 20px;
-      border: none;
-      background: #5865f2;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
+.tabs{
+display:flex;
+gap:18px;
+margin-bottom:15px;
+}
 
-    #grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
+.tabs img{
+width:28px;
+cursor:pointer;
+opacity:0.9;
+}
 
-    .card {
-      position: relative;
-      background: #1a1a1a;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    }
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+border:1px solid #ddd;
+padding:10px;
+max-height:80vh;
+overflow-y:auto;
+}
 
-    .card img,
-    .card video {
-      width: 100%;
-      display: block;
-    }
+.card{
+aspect-ratio:4/5;
+background:#eee;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+}
 
-    .pin {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(0,0,0,0.6);
-      padding: 5px 8px;
-      border-radius: 8px;
-      font-size: 18px;
-    }
-  </style>
+.card img,.card video{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.badge{
+position:absolute;
+top:6px;
+right:6px;
+width:22px;
+}
+
+.noContent{
+font-size:14px;
+color:#777;
+}
+
+button{
+padding:8px 16px;
+border:none;
+background:black;
+color:white;
+cursor:pointer;
+}
+
+</style>
 </head>
 
 <body>
 
-<h1>Grid Planner</h1>
+<div class="header">
+<h2>Grid Planner</h2>
+<button onclick="loadPosts()">Refresh</button>
+</div>
 
-<button id="refreshBtn">Refresh</button>
+<div class="tabs">
 
-<div id="grid"></div>
+<img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
+<img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
+<img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
+<img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
+
+</div>
+
+<div id="grid" class="grid"></div>
 
 <script>
-async function loadPosts() {
-  try {
 
-    const res = await fetch("/api/get-posts");
-    const posts = await res.json();
+let ALL_POSTS=[];
+let FILTER="Post";
 
-    console.log("Posts:", posts);
+function updateTabIcons(){
 
-    const grid = document.getElementById("grid");
-    grid.innerHTML = "";
+document.getElementById("tab-post").src =
+FILTER==="Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
 
-    posts.forEach(post => {
+document.getElementById("tab-reel").src =
+FILTER==="Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
 
-      if (!post.attachment && !post.video) return;
+document.getElementById("tab-story").src =
+FILTER==="Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
 
-      const card = document.createElement("div");
-      card.className = "card";
+document.getElementById("tab-tiktok").src =
+FILTER==="Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
 
-      if (post.attachment) {
-        const img = document.createElement("img");
-        img.src = post.attachment;
-        card.appendChild(img);
-      }
-
-      if (post.video) {
-        const video = document.createElement("video");
-        video.src = post.video;
-        video.controls = true;
-        card.appendChild(video);
-      }
-
-      if (post.pinned) {
-        const pin = document.createElement("div");
-        pin.className = "pin";
-        pin.innerText = "📌";
-        card.appendChild(pin);
-      }
-
-      grid.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error("Load error:", err);
-  }
 }
 
-document.getElementById("refreshBtn").addEventListener("click", loadPosts);
+function setFilter(type){
+FILTER=type;
+updateTabIcons();
+renderGrid();
+}
+
+async function loadPosts(){
+
+const res=await fetch("/api/get-posts");
+ALL_POSTS=await res.json();
+
+ALL_POSTS.sort((a,b)=>{
+if(a.pinned && !b.pinned) return -1;
+if(!a.pinned && b.pinned) return 1;
+return new Date(b.publishDate||0)-new Date(a.publishDate||0);
+});
+
+updateTabIcons();
+renderGrid();
+}
+
+function renderGrid(){
+
+const grid=document.getElementById("grid");
+grid.innerHTML="";
+
+const filtered=ALL_POSTS.filter(p=>p.type?.includes(FILTER));
+
+for(let i=0;i<60;i++){
+
+const post=filtered[i];
+
+const card=document.createElement("div");
+card.className="card";
+
+if(post){
+
+if(post.attachment){
+const img=document.createElement("img");
+img.src=post.attachment;
+card.appendChild(img);
+}
+else if(post.video){
+const video=document.createElement("video");
+video.src=post.video;
+video.controls=true;
+card.appendChild(video);
+}
+else{
+const no=document.createElement("div");
+no.className="noContent";
+no.innerText="NO CONTENT";
+card.appendChild(no);
+}
+
+if(post.pinned){
+const pin=document.createElement("img");
+pin.src="/icons/pin.png";
+pin.className="badge";
+card.appendChild(pin);
+}
+
+if(Array.isArray(post.attachment) && post.attachment.length>1){
+const multi=document.createElement("img");
+multi.src="/icons/multi.png";
+multi.className="badge";
+multi.style.right="30px";
+card.appendChild(multi);
+}
+
+if(post.video){
+const reel=document.createElement("img");
+reel.src="/icons/reel-badge.png";
+reel.className="badge";
+reel.style.right="54px";
+card.appendChild(reel);
+}
+
+}else{
+
+const no=document.createElement("div");
+no.className="noContent";
+no.innerText="NO CONTENT";
+card.appendChild(no);
+
+}
+
+grid.appendChild(card);
+
+}
+
+}
 
 loadPosts();
+
 </script>
 
 </body>
