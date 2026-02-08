@@ -1,24 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Notion Grid Widget</title>
+  <title>Grid Planner</title>
+
   <style>
     body {
       margin: 0;
-      font-family: sans-serif;
-      background: #fff;
+      font-family: -apple-system, sans-serif;
+      background: #f6f5f2;
     }
 
+    .app {
+      max-width: 420px;
+      margin: auto;
+      padding: 12px;
+      border-radius: 20px;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .refresh-btn {
+      background: black;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .title {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      cursor: pointer;
+      opacity: 0.5;
+      font-size: 14px;
+    }
+
+    .tab.active {
+      opacity: 1;
+      border-bottom: 2px solid black;
+      padding-bottom: 4px;
+    }
+
+    /* GRID */
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      padding: 8px;
+      gap: 6px;
     }
 
     .card img {
       width: 100%;
-      aspect-ratio: 1/1;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 12px;
     }
@@ -26,32 +75,80 @@
 </head>
 
 <body>
+
+<div class="app">
+
+  <div class="topbar">
+    <button class="refresh-btn" onclick="loadData()">Refresh</button>
+    <div class="title">Grid Planner</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('Post', this)">Posts</div>
+    <div class="tab" onclick="switchTab('Reel', this)">Reels</div>
+    <div class="tab" onclick="switchTab('Story', this)">Story</div>
+    <div class="tab" onclick="switchTab('TikTok', this)">TikTok</div>
+  </div>
+
   <div class="grid" id="grid"></div>
 
-  <script>
-    fetch("/api/get-posts")
-      .then(res => res.json())
-      .then(data => {
-        const grid = document.getElementById("grid");
+</div>
 
-        data.forEach(page => {
-          const cover =
-            page.cover?.file?.url ||
-            page.cover?.external?.url ||
-            page.properties.Attachment?.files?.[0]?.file?.url;
+<script>
 
-          if (!cover) return;
+let currentType = "Post";
 
-          const div = document.createElement("div");
-          div.className = "card";
+function switchTab(type, el) {
+  currentType = type;
 
-          div.innerHTML = `
-            <img src="${cover}" />
-          `;
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
 
-          grid.appendChild(div);
-        });
-      });
-  </script>
+  loadData();
+}
+
+async function loadData() {
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "Loading...";
+
+  const res = await fetch("/api/get-posts");
+  const data = await res.json();
+
+  grid.innerHTML = "";
+
+  data.forEach(page => {
+
+    /* FILTER BY TYPE (Post / Reel / Story / TikTok) */
+    const type =
+      page.properties.Type?.select?.name || "Post";
+
+    if (type !== currentType) return;
+
+    /* GET ATTACHMENT IMAGE */
+    const file =
+      page.properties.Attachment?.files?.[0];
+
+    const img =
+      file?.file?.url ||
+      file?.external?.url;
+
+    if (!img) return;
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `<img src="${img}" />`;
+
+    grid.appendChild(div);
+
+  });
+
+}
+
+loadData();
+
+</script>
+
 </body>
 </html>
