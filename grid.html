@@ -1,246 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Grid Planner</title>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="UTF-8" />
+  <title>Notion Grid Planner</title>
 
-<style>
-body{
-  margin:0;
-  font-family:-apple-system;
-  background:#f6f5f2;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
 
-.app{
-  max-width:420px;
-  margin:auto;
-  padding:12px;
-}
+    h1 {
+      margin-bottom: 20px;
+    }
 
-/* TOP */
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:14px;
-}
+    #refreshBtn {
+      padding: 10px 20px;
+      border: none;
+      background: #5865f2;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
 
-.refresh-btn{
-  background:black;
-  color:white;
-  border:none;
-  padding:8px 14px;
-  border-radius:10px;
-}
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
 
-.title{
-  font-weight:600;
-  font-size:18px;
-}
+    .card {
+      position: relative;
+      background: #1a1a1a;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
 
-/* TABS */
-.tabs{
-  display:flex;
-  justify-content:space-around;
-  margin-bottom:14px;
-}
+    .card img,
+    .card video {
+      width: 100%;
+      display: block;
+    }
 
-.tab{
-  opacity:.5;
-  cursor:pointer;
-  padding:6px;
-}
-
-.tab.active{
-  opacity:1;
-  border-bottom:2px solid black;
-}
-
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-}
-
-.card{
-  position:relative;
-}
-
-.card img{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  border-radius:12px;
-}
-
-/* ICON STACK */
-.iconStack{
-  position:absolute;
-  top:6px;
-  right:6px;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  background:rgba(0,0,0,.6);
-  padding:4px;
-  border-radius:8px;
-}
-
-.iconStack svg{
-  width:16px;
-  height:16px;
-  color:white;
-}
-
-/* MODAL */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  padding:20px;
-}
-
-.modal img, .modal iframe{
-  max-width:90%;
-  max-height:70vh;
-  border-radius:12px;
-}
-
-.modalBottom{
-  color:white;
-  margin-top:12px;
-  text-align:center;
-}
-</style>
+    .pin {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.6);
+      padding: 5px 8px;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="app">
+<h1>Grid Planner</h1>
 
-<div class="topbar">
-<button class="refresh-btn" onclick="loadData()">Refresh</button>
-<div class="title">Grid Planner</div>
-</div>
+<button id="refreshBtn">Refresh</button>
 
-<div class="tabs">
-<div class="tab active" onclick="switchTab('Post',this)"><i data-lucide="grid-3x3"></i></div>
-<div class="tab" onclick="switchTab('Reels',this)"><i data-lucide="clapperboard"></i></div>
-<div class="tab" onclick="switchTab('Story',this)"><i data-lucide="clock"></i></div>
-<div class="tab" onclick="switchTab('Tiktok',this)"><i data-lucide="music"></i></div>
-</div>
-
-<div class="grid" id="grid"></div>
-
-</div>
-
-<div class="modal" id="modal" onclick="closeModal()">
-<div id="modalContent"></div>
-<div class="modalBottom" id="modalText"></div>
-</div>
+<div id="grid"></div>
 
 <script>
+async function loadPosts() {
+  try {
 
-let currentType="Post";
-let globalData=[];
+    const res = await fetch("/api/get-posts");
+    const posts = await res.json();
 
-function switchTab(type,el){
- currentType=type;
- document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
- el.classList.add("active");
- renderGrid();
- lucide.createIcons();
+    console.log("Posts:", posts);
+
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    posts.forEach(post => {
+
+      if (!post.attachment && !post.video) return;
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      if (post.attachment) {
+        const img = document.createElement("img");
+        img.src = post.attachment;
+        card.appendChild(img);
+      }
+
+      if (post.video) {
+        const video = document.createElement("video");
+        video.src = post.video;
+        video.controls = true;
+        card.appendChild(video);
+      }
+
+      if (post.pinned) {
+        const pin = document.createElement("div");
+        pin.className = "pin";
+        pin.innerText = "📌";
+        card.appendChild(pin);
+      }
+
+      grid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("Load error:", err);
+  }
 }
 
-async function loadData(){
- const res=await fetch("/api/get-posts");
- globalData=await res.json();
- renderGrid();
-}
+document.getElementById("refreshBtn").addEventListener("click", loadPosts);
 
-function renderGrid(){
-
- const grid=document.getElementById("grid");
- grid.innerHTML="";
-
- let filtered=globalData.filter(page=>{
-   const types=page.properties["Type"]?.multi_select?.map(t=>t.name)||[];
-   return types.includes(currentType);
- });
-
- /* PIN SORT */
- filtered.sort((a,b)=>{
-   const pinA=a.properties.Pin?.checkbox?1:0;
-   const pinB=b.properties.Pin?.checkbox?1:0;
-   return pinB-pinA;
- });
-
- filtered.forEach(page=>{
-
-   const files=page.properties.Attachment?.files||[];
-   if(!files.length)return;
-
-   const img=files[0]?.file?.url || files[0]?.external?.url;
-
-   const isPinned=page.properties.Pin?.checkbox;
-   const hasMulti=files.length>1;
-   const hasVideo=page.properties["Media/Video"]?.url;
-
-   const name=page.properties.Name?.title?.[0]?.plain_text || "";
-   const date=page.properties["Publish Date"]?.date?.start || "";
-
-   const div=document.createElement("div");
-   div.className="card";
-
-   let icons="";
-
-   if(isPinned) icons+=`<i data-lucide="pin"></i>`;
-   if(hasMulti) icons+=`<i data-lucide="copy"></i>`;
-   if(hasVideo) icons+=`<i data-lucide="play"></i>`;
-
-   div.innerHTML=`
-   <img src="${img}" />
-   <div class="iconStack">${icons}</div>
-   `;
-
-   div.onclick=()=>openModal(files,hasVideo,name,date,page.properties["Media/Video"]?.url);
-
-   grid.appendChild(div);
-
- });
-
- lucide.createIcons();
-}
-
-function openModal(files,hasVideo,name,date,videoUrl){
-
- const modal=document.getElementById("modal");
- const content=document.getElementById("modalContent");
- const text=document.getElementById("modalText");
-
- if(hasVideo && videoUrl){
-   content.innerHTML=`<iframe src="${videoUrl}" frameborder="0" allowfullscreen></iframe>`;
- }else{
-   const img=files[0]?.file?.url || files[0]?.external?.url;
-   content.innerHTML=`<img src="${img}" />`;
- }
-
- text.innerHTML=`${name}<br>${date}`;
- modal.style.display="flex";
-}
-
-function closeModal(){
- document.getElementById("modal").style.display="none";
-}
-
-loadData();
-lucide.createIcons();
-
+loadPosts();
 </script>
 
 </body>
