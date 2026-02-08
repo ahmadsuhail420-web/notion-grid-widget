@@ -16,7 +16,7 @@ body {
   min-height: 100vh;
 }
 
-/* Outer container (the rounded rectangle) */
+/* Rounded container */
 .container {
   background: #fefefe;
   border: 1px solid #ddd;
@@ -25,9 +25,15 @@ body {
   width: 90%;
   max-width: 900px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  max-height: 90vh;
+  overflow: hidden;
 }
 
-/* HEADER */
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -55,7 +61,7 @@ body {
   background: #333;
 }
 
-/* TABS */
+/* Tabs */
 .tabs {
   display: flex;
   justify-content: center;
@@ -77,10 +83,17 @@ body {
   opacity: 1;
 }
 
-/* GRID */
+/* Scrollable grid */
+.grid-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Grid */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* exactly 3 per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   width: 100%;
   margin-top: 16px;
@@ -115,12 +128,23 @@ body {
   color: #777;
 }
 
-/* Optional footer caption */
 .footer {
   text-align: center;
   font-size: 14px;
   color: #555;
   margin-top: 14px;
+}
+
+/* Smooth scrollbar */
+.grid-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.grid-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.grid-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
 }
 
 @media (max-width: 700px) {
@@ -155,7 +179,9 @@ body {
     <img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
   </div>
 
-  <div id="grid" class="grid"></div>
+  <div class="grid-wrapper">
+    <div id="grid" class="grid"></div>
+  </div>
 
   <div class="footer">Something Organized</div>
 
@@ -201,7 +227,7 @@ function renderGrid() {
   grid.innerHTML = "";
   const filtered = ALL_POSTS.filter(p => p.type?.includes(FILTER));
 
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < filtered.length; i++) {
     const post = filtered[i];
     const card = document.createElement("div");
     card.className = "card";
@@ -221,29 +247,6 @@ function renderGrid() {
         no.className = "noContent";
         no.innerText = "NO CONTENT";
         card.appendChild(no);
-      }
-
-      if (post.pinned) {
-        const pin = document.createElement("img");
-        pin.src = "/icons/pin.png";
-        pin.className = "badge";
-        card.appendChild(pin);
-      }
-
-      if (Array.isArray(post.attachment) && post.attachment.length > 1) {
-        const multi = document.createElement("img");
-        multi.src = "/icons/multi.png";
-        multi.className = "badge";
-        multi.style.right = "30px";
-        card.appendChild(multi);
-      }
-
-      if (post.video) {
-        const reel = document.createElement("img");
-        reel.src = "/icons/reel-badge.png";
-        reel.className = "badge";
-        reel.style.right = "54px";
-        card.appendChild(reel);
       }
     } else {
       const no = document.createElement("div");
