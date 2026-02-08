@@ -1,128 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Grid Planner</title>
-<script src="https://unpkg.com/lucide@latest"></script>
+  <title>Grid Planner</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 body{
- margin:0;
- font-family:-apple-system;
- background:#f6f5f2;
+  margin:0;
+  font-family:-apple-system;
+  background:#f6f5f2;
 }
 
 .app{
- max-width:420px;
- margin:auto;
- padding:12px;
+  max-width:420px;
+  margin:auto;
+  padding:12px;
 }
 
 /* TOP */
 .topbar{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
 }
 
 .refresh-btn{
- background:black;
- color:white;
- border:none;
- padding:8px 14px;
- border-radius:10px;
+  background:black;
+  color:white;
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
 }
 
 .title{
- font-weight:600;
- font-size:18px;
+  font-weight:600;
+  font-size:18px;
 }
 
 /* TABS */
 .tabs{
- display:flex;
- justify-content:space-around;
- margin-bottom:14px;
+  display:flex;
+  justify-content:space-around;
+  margin-bottom:14px;
 }
 
 .tab{
- opacity:.5;
- cursor:pointer;
- padding:6px;
+  opacity:.5;
+  cursor:pointer;
+  padding:6px;
 }
 
 .tab.active{
- opacity:1;
- border-bottom:2px solid black;
+  opacity:1;
+  border-bottom:2px solid black;
 }
 
 /* GRID */
 .grid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:6px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
 }
 
 .card{
- position:relative;
+  position:relative;
 }
 
 .card img{
- width:100%;
- aspect-ratio:1/1;
- object-fit:cover;
- border-radius:12px;
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:12px;
 }
 
 /* ICON STACK */
 .iconStack{
- position:absolute;
- top:6px;
- right:6px;
- display:flex;
- flex-direction:column;
- gap:4px;
- background:rgba(0,0,0,.6);
- padding:4px;
- border-radius:8px;
+  position:absolute;
+  top:6px;
+  right:6px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  background:rgba(0,0,0,.6);
+  padding:4px;
+  border-radius:8px;
 }
 
 .iconStack svg{
- width:16px;
- height:16px;
- color:white;
+  width:16px;
+  height:16px;
+  color:white;
 }
 
 /* MODAL */
 .modal{
- position:fixed;
- inset:0;
- background:rgba(0,0,0,.9);
- display:none;
- justify-content:center;
- align-items:center;
- flex-direction:column;
- padding:20px;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  padding:20px;
 }
 
 .modal img, .modal iframe{
- max-width:90%;
- max-height:70vh;
- border-radius:12px;
+  max-width:90%;
+  max-height:70vh;
+  border-radius:12px;
 }
 
 .modalBottom{
- color:white;
- margin-top:12px;
- text-align:center;
-}
-
-/* SWIPE HINT */
-.swipeHint{
- color:white;
- opacity:.6;
- font-size:12px;
- margin-top:6px;
+  color:white;
+  margin-top:12px;
+  text-align:center;
 }
 </style>
 </head>
@@ -147,18 +139,15 @@ body{
 
 </div>
 
-<div class="modal" id="modal">
+<div class="modal" id="modal" onclick="closeModal()">
 <div id="modalContent"></div>
 <div class="modalBottom" id="modalText"></div>
-<div class="swipeHint" id="swipeHint"></div>
 </div>
 
 <script>
 
 let currentType="Post";
 let globalData=[];
-let swipeIndex=0;
-let swipeFiles=[];
 
 function switchTab(type,el){
  currentType=type;
@@ -184,6 +173,7 @@ function renderGrid(){
    return types.includes(currentType);
  });
 
+ /* PIN SORT */
  filtered.sort((a,b)=>{
    const pinA=a.properties.Pin?.checkbox?1:0;
    const pinB=b.properties.Pin?.checkbox?1:0;
@@ -193,9 +183,9 @@ function renderGrid(){
  filtered.forEach(page=>{
 
    const files=page.properties.Attachment?.files||[];
-   if(!files.length && !page.properties["Media/Video"]?.url) return;
+   if(!files.length)return;
 
-   const img=files[0]?.file?.url || files[0]?.external?.url || "";
+   const img=files[0]?.file?.url || files[0]?.external?.url;
 
    const isPinned=page.properties.Pin?.checkbox;
    const hasMulti=files.length>1;
@@ -208,4 +198,50 @@ function renderGrid(){
    div.className="card";
 
    let icons="";
-   if(isPinned) ic
+
+   if(isPinned) icons+=`<i data-lucide="pin"></i>`;
+   if(hasMulti) icons+=`<i data-lucide="copy"></i>`;
+   if(hasVideo) icons+=`<i data-lucide="play"></i>`;
+
+   div.innerHTML=`
+   <img src="${img}" />
+   <div class="iconStack">${icons}</div>
+   `;
+
+   div.onclick=()=>openModal(files,hasVideo,name,date,page.properties["Media/Video"]?.url);
+
+   grid.appendChild(div);
+
+ });
+
+ lucide.createIcons();
+}
+
+function openModal(files,hasVideo,name,date,videoUrl){
+
+ const modal=document.getElementById("modal");
+ const content=document.getElementById("modalContent");
+ const text=document.getElementById("modalText");
+
+ if(hasVideo && videoUrl){
+   content.innerHTML=`<iframe src="${videoUrl}" frameborder="0" allowfullscreen></iframe>`;
+ }else{
+   const img=files[0]?.file?.url || files[0]?.external?.url;
+   content.innerHTML=`<img src="${img}" />`;
+ }
+
+ text.innerHTML=`${name}<br>${date}`;
+ modal.style.display="flex";
+}
+
+function closeModal(){
+ document.getElementById("modal").style.display="none";
+}
+
+loadData();
+lucide.createIcons();
+
+</script>
+
+</body>
+</html>
