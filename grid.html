@@ -31,14 +31,17 @@ cursor:pointer;
 opacity:0.9;
 }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-border:1px solid #ddd;
-padding:10px;
-max-height:50vh;
-overflow-y:auto;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  gap: 10px;
+  width: 100%;         /* full width of parent */
+  max-width: 360px;    /* optional: typical mobile Instagram width */
+  margin: 0 auto;      /* center it horizontally */
+  padding: 10px;
+  border: 1px solid #ddd;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .card{
