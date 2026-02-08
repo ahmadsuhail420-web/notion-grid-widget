@@ -1,0 +1,7 @@
+{
+  "name": "notion-grid-widget",
+  "version": "1.0.0",
+  "dependencies": {
+    "@notionhq/client": "^2.2.14"
+  }
+}
