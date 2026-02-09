@@ -49,19 +49,21 @@ body {
 .tabs {
   display:flex;
   justify-content:center;
-  gap:35px;
+  gap:30px;
   padding:14px 0;
+  border-bottom:1px solid #e5e5e5;
 }
 
 .tabs img {
-  opacity:.6;
-  transition: opacity .2s ease, transform .2s ease;
+  width:28px;
+  height:28px;
+  cursor:pointer;
+  opacity:.7;
 }
 
 .tabs img.active {
   opacity:1;
 }
-
 /* GRID SCROLL AREA */
 .gridWrap {
   flex:1;
