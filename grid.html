@@ -50,47 +50,20 @@ body {
 .tabs {
   display:flex;
   justify-content:center;
-  gap:34px;
-  margin:18px 0 12px;
+  gap:30px;
+  padding:14px 0;
   border-bottom:1px solid #e5e5e5;
-  padding-bottom:10px;
-  position:relative;
 }
 
 .tabs img {
   width:28px;
   height:28px;
   cursor:pointer;
-  opacity:.6;
-  transition: all .25s ease;
-  position:relative;
-  padding-bottom:10px;
+  opacity:.7;
 }
 
-/* Hover animation */
-.tabs img:hover {
-  opacity:.9;
-}
-
-/* Active icon */
 .tabs img.active {
   opacity:1;
-  border-bottom: 3px solid black;
-  box-shadow: 0 0 12px rgba(0,0,0,0.4);
-}
-
-/* Glow underline */
-.tabs img.active::after {
-  content:"";
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:-11px;
-  width:26px;
-  height:3px;
-  border-radius:3px;
-  background:black;
-  box-shadow:0 0 8px rgba(0,0,0,.25);
 }
 
 /* GRID SCROLL AREA */
@@ -177,47 +150,24 @@ let ALL_POSTS = [];
 let FILTER = "Post";
 
 /* TAB ICON SWITCH */
-function updateTabIcons() {
+function updateTabs(){
+  document.getElementById("tab-post").src =
+    FILTER==="Post"?"/icons/post-dark.png":"/icons/post-light.png";
 
-  const post = document.getElementById("tab-post");
-  const reel = document.getElementById("tab-reel");
-  const story = document.getElementById("tab-story");
-  const tiktok = document.getElementById("tab-tiktok");
+  document.getElementById("tab-reel").src =
+    FILTER==="Reels"?"/icons/reel-dark.png":"/icons/reel-light.png";
 
-  // Reset classes
-  post.classList.remove("active");
-  reel.classList.remove("active");
-  story.classList.remove("active");
-  tiktok.classList.remove("active");
+  document.getElementById("tab-story").src =
+    FILTER==="Story"?"/icons/story-dark.png":"/icons/story-light.png";
 
-  // Switch icons + active state
-  if (FILTER === "Post") {
-    post.src = "/icons/post-dark.png";
-    post.classList.add("active");
-  } else {
-    post.src = "/icons/post-light.png";
-  }
+  document.getElementById("tab-tiktok").src =
+    FILTER==="Tiktok"?"/icons/tiktok-dark.png":"/icons/tiktok-light.png";
+}
 
-  if (FILTER === "Reels") {
-    reel.src = "/icons/reel-dark.png";
-    reel.classList.add("active");
-  } else {
-    reel.src = "/icons/reel-light.png";
-  }
-
-  if (FILTER === "Story") {
-    story.src = "/icons/story-dark.png";
-    story.classList.add("active");
-  } else {
-    story.src = "/icons/story-light.png";
-  }
-
-  if (FILTER === "Tiktok") {
-    tiktok.src = "/icons/tiktok-dark.png";
-    tiktok.classList.add("active");
-  } else {
-    tiktok.src = "/icons/tiktok-light.png";
-  }
+function setFilter(type){
+  FILTER = type;
+  updateTabs();
+  renderGrid();
 }
 
 /* FETCH DATA */
