@@ -132,3 +132,254 @@ body{
 .card img,.card video{
   width:100%;
   height:100%;
+  object-fit:cover;
+}
+
+/* BADGES */
+.badge{
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:18px;
+}
+
+.multiBadge{
+  position:absolute;
+  top:6px;
+  right:28px;
+  width:18px;
+}
+
+.noContent{
+  font-size:12px;
+  color:#777;
+}
+
+/* PREVIEW MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+}
+
+.modal.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.modalBox{
+  width:320px;
+  background:black;
+  border-radius:16px;
+  overflow:hidden;
+  color:white;
+}
+
+.modalBox img,.modalBox video{
+  width:100%;
+  aspect-ratio:4/5;
+  object-fit:cover;
+}
+
+.modalInfo{
+  padding:12px;
+  font-size:14px;
+  opacity:.9;
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  padding:10px;
+  font-size:13px;
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<button class="refreshBtn" onclick="loadPosts()">
+Refresh
+<div class="spinner" id="spinner"></div>
+</button>
+<div style="font-weight:700;">Grid Planner</div>
+</div>
+
+<div class="tabs" id="tabs">
+<img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post',0)">
+<img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels',1)">
+<img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story',2)">
+<img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok',3)">
+<div class="tabGlow" id="tabGlow"></div>
+</div>
+
+<div class="gridWrap">
+<div id="grid" class="grid"></div>
+</div>
+
+<div class="footer">Something Organized</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="closeModal()">
+<div class="modalBox" onclick="event.stopPropagation()">
+<div id="modalMedia"></div>
+<div class="modalInfo" id="modalInfo"></div>
+</div>
+</div>
+
+<script>
+let ALL_POSTS=[];
+let FILTER="Post";
+
+/* TAB UI */
+function setFilter(type,index){
+FILTER=type;
+updateTabs();
+moveGlow(index);
+renderGrid();
+}
+
+function updateTabs(){
+tab("tab-post","Post");
+tab("tab-reel","Reels");
+tab("tab-story","Story");
+tab("tab-tiktok","Tiktok");
+}
+
+function tab(id,type){
+document.getElementById(id).src=
+FILTER===type?`/icons/${type.toLowerCase()}-dark.png`:`/icons/${type.toLowerCase()}-light.png`;
+}
+
+function moveGlow(index){
+const glow=document.getElementById("tabGlow");
+glow.style.left=(index*58+22)+"px";
+}
+
+/* FETCH */
+async function loadPosts(){
+document.getElementById("spinner").style.display="block";
+
+const res=await fetch("/api/get-posts");
+ALL_POSTS=await res.json();
+
+ALL_POSTS.sort((a,b)=>{
+if(a.pinned&&!b.pinned)return -1;
+if(!a.pinned&&b.pinned)return 1;
+return new Date(b.publishDate||0)-new Date(a.publishDate||0);
+});
+
+renderGrid();
+updateTabs();
+
+document.getElementById("spinner").style.display="none";
+}
+
+/* GRID */
+function renderGrid(){
+const grid=document.getElementById("grid");
+grid.innerHTML="";
+
+const filtered=ALL_POSTS.filter(p=>p.type?.includes(FILTER));
+const total=Math.max(filtered.length,60);
+
+for(let i=0;i<total;i++){
+const post=filtered[i];
+const card=document.createElement("div");
+card.className="card";
+
+if(post){
+card.onclick=()=>openModal(post);
+}
+
+if(post&&(post.attachment||post.video)){
+
+if(post.attachment){
+const img=document.createElement("img");
+img.src=post.attachment;
+card.appendChild(img);
+}
+
+if(post.video){
+const vid=document.createElement("video");
+vid.src=post.video;
+card.appendChild(vid);
+}
+
+/* PIN BADGE */
+if(post.pinned){
+const pin=document.createElement("img");
+pin.src="/icons/pin.png";
+pin.className="badge";
+card.appendChild(pin);
+}
+
+/* MULTI BADGE */
+if(post.multi){
+const multi=document.createElement("img");
+multi.src="/icons/multi.png";
+multi.className="multiBadge";
+card.appendChild(multi);
+}
+
+}else{
+const no=document.createElement("div");
+no.className="noContent";
+no.innerText="NO CONTENT";
+card.appendChild(no);
+}
+
+grid.appendChild(card);
+}
+}
+
+/* MODAL */
+function openModal(post){
+const modal=document.getElementById("modal");
+const media=document.getElementById("modalMedia");
+const info=document.getElementById("modalInfo");
+
+media.innerHTML="";
+info.innerHTML=`${post.name||"Untitled"}<br>${post.publishDate||""}`;
+
+if(post.attachment){
+const img=document.createElement("img");
+img.src=post.attachment;
+media.appendChild(img);
+}
+if(post.video){
+const vid=document.createElement("video");
+vid.src=post.video;
+vid.controls=true;
+media.appendChild(vid);
+}
+
+modal.classList.add("show");
+}
+
+function closeModal(){
+document.getElementById("modal").classList.remove("show");
+}
+
+/* AUTO HEIGHT (Notion Friendly) */
+setInterval(()=>{
+document.body.style.height=document.body.scrollHeight+"px";
+},500);
+
+loadPosts();
+</script>
+
+</body>
+</html>
