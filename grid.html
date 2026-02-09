@@ -147,15 +147,19 @@ display:block;
 }
 
 /* BADGES */
-.badge {
+.card .badge {
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 1px;
-  height: 1px;
+  width: 14px;
+  height: 14px;
   object-fit: contain;
+  z-index: 5;
+  pointer-events: none;
   opacity: 0.9;
-  pointer-events: none; /* avoids blocking clicks */
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  padding: 2px;
 }
 
 /* NO CONTENT */
