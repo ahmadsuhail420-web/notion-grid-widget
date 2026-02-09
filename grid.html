@@ -33,7 +33,6 @@ body {
   justify-content:space-between;
   align-items:center;
   padding:16px 18px;
-  border-bottom:1px solid #e5e5e5;
 }
 
 .refreshBtn {
@@ -50,16 +49,18 @@ body {
 .tabs {
   display:flex;
   justify-content:center;
-  gap:30px;
+  gap:40px;
   padding:14px 0;
-  border-bottom:1px solid #e5e5e5;
 }
 
 .tabs img {
-  width:28px;
-  height:28px;
-  cursor:pointer;
-  opacity:1;
+  opacity:.6;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.tabs img:hover {
+  opacity:.9;
+  transform: scale(1.08);
 }
 
 .tabs img.active {
