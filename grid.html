@@ -33,6 +33,7 @@ body {
   justify-content:space-between;
   align-items:center;
   padding:16px 18px;
+  border-bottom:1px solid #e5e5e5;
 }
 
 .refreshBtn {
@@ -68,14 +69,14 @@ body {
 
 /* Hover animation */
 .tabs img:hover {
-  opacity:.1;
-  transform:translateY(-2px) scale(1.05);
+  opacity:.9;
 }
 
 /* Active icon */
 .tabs img.active {
   opacity:1;
-  transform:translateY(-2px) scale(1.08);
+  border-bottom: 3px solid black;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
 }
 
 /* Glow underline */
@@ -91,7 +92,6 @@ body {
   background:black;
   box-shadow:0 0 8px rgba(0,0,0,.25);
 }
-
 
 /* GRID SCROLL AREA */
 .gridWrap {
@@ -110,7 +110,7 @@ body {
 .card {
   aspect-ratio:4/5;
   background:#eee;
-  border-radius:2px;
+  border-radius:8px;
   overflow:hidden;
   position:relative;
   display:flex;
@@ -158,18 +158,11 @@ body {
   </div>
 
   <div class="tabs">
-  <img id="tab-post" src="/icons/post-dark.png"
-       onclick="animateClick(this); setFilter('Post')">
-
-  <img id="tab-reel" src="/icons/reel-light.png"
-       onclick="animateClick(this); setFilter('Reels')">
-
-  <img id="tab-story" src="/icons/story-light.png"
-       onclick="animateClick(this); setFilter('Story')">
-
-  <img id="tab-tiktok" src="/icons/tiktok-light.png"
-       onclick="animateClick(this); setFilter('Tiktok')">
-</div>
+    <img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
+    <img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
+    <img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
+    <img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
+  </div>
 
   <div class="gridWrap">
     <div id="grid" class="grid"></div>
@@ -183,34 +176,48 @@ body {
 let ALL_POSTS = [];
 let FILTER = "Post";
 
-function animateClick(el){
-  el.style.transform = "scale(.9)";
-  setTimeout(()=> el.style.transform = "", 120);
-}
-
-function updateTabIcons() {
-  ...
-}
-
 /* TAB ICON SWITCH */
-function updateTabs(){
-  document.getElementById("tab-post").src =
-    FILTER==="Post"?"/icons/post-dark.png":"/icons/post-light.png";
+function updateTabIcons() {
 
-  document.getElementById("tab-reel").src =
-    FILTER==="Reels"?"/icons/reel-dark.png":"/icons/reel-light.png";
+  const post = document.getElementById("tab-post");
+  const reel = document.getElementById("tab-reel");
+  const story = document.getElementById("tab-story");
+  const tiktok = document.getElementById("tab-tiktok");
 
-  document.getElementById("tab-story").src =
-    FILTER==="Story"?"/icons/story-dark.png":"/icons/story-light.png";
+  // Reset classes
+  post.classList.remove("active");
+  reel.classList.remove("active");
+  story.classList.remove("active");
+  tiktok.classList.remove("active");
 
-  document.getElementById("tab-tiktok").src =
-    FILTER==="Tiktok"?"/icons/tiktok-dark.png":"/icons/tiktok-light.png";
-}
+  // Switch icons + active state
+  if (FILTER === "Post") {
+    post.src = "/icons/post-dark.png";
+    post.classList.add("active");
+  } else {
+    post.src = "/icons/post-light.png";
+  }
 
-function setFilter(type){
-  FILTER = type;
-  updateTabs();
-  renderGrid();
+  if (FILTER === "Reels") {
+    reel.src = "/icons/reel-dark.png";
+    reel.classList.add("active");
+  } else {
+    reel.src = "/icons/reel-light.png";
+  }
+
+  if (FILTER === "Story") {
+    story.src = "/icons/story-dark.png";
+    story.classList.add("active");
+  } else {
+    story.src = "/icons/story-light.png";
+  }
+
+  if (FILTER === "Tiktok") {
+    tiktok.src = "/icons/tiktok-dark.png";
+    tiktok.classList.add("active");
+  } else {
+    tiktok.src = "/icons/tiktok-light.png";
+  }
 }
 
 /* FETCH DATA */
