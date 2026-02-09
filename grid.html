@@ -68,7 +68,7 @@ body {
 
 /* Hover animation */
 .tabs img:hover {
-  opacity:.9;
+  opacity:.1;
   transform:translateY(-2px) scale(1.05);
 }
 
@@ -158,11 +158,18 @@ body {
   </div>
 
   <div class="tabs">
-    <img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
-    <img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
-    <img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
-    <img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
-  </div>
+  <img id="tab-post" src="/icons/post-dark.png"
+       onclick="animateClick(this); setFilter('Post')">
+
+  <img id="tab-reel" src="/icons/reel-light.png"
+       onclick="animateClick(this); setFilter('Reels')">
+
+  <img id="tab-story" src="/icons/story-light.png"
+       onclick="animateClick(this); setFilter('Story')">
+
+  <img id="tab-tiktok" src="/icons/tiktok-light.png"
+       onclick="animateClick(this); setFilter('Tiktok')">
+</div>
 
   <div class="gridWrap">
     <div id="grid" class="grid"></div>
@@ -175,6 +182,15 @@ body {
 <script>
 let ALL_POSTS = [];
 let FILTER = "Post";
+
+function animateClick(el){
+  el.style.transform = "scale(.9)";
+  setTimeout(()=> el.style.transform = "", 120);
+}
+
+function updateTabIcons() {
+  ...
+}
 
 /* TAB ICON SWITCH */
 function updateTabs(){
