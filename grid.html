@@ -5,19 +5,19 @@
 <title>Grid Planner</title>
 
 <style>
-body {
-  font-family: Inter, sans-serif;
+body{
+  font-family:Inter,sans-serif;
   background:#f3f3f3;
   margin:0;
-  padding:30px 0;
+  padding:20px 0;
   display:flex;
   justify-content:center;
 }
 
-/* MAIN BOX (SCREENSHOT STYLE) */
-.container {
-  width: 420px;
-  height: 720px;
+/* CONTAINER */
+.container{
+  width:420px;
+  height:720px;
   background:#f8f8f8;
   border-radius:24px;
   border:1px solid #ddd;
@@ -28,14 +28,15 @@ body {
 }
 
 /* HEADER */
-.header {
+.header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:16px 18px;
+  padding:16px;
+  border-bottom:1px solid #e5e5e5;
 }
 
-.refreshBtn {
+.refreshBtn{
   background:black;
   color:white;
   border:none;
@@ -43,193 +44,91 @@ body {
   border-radius:10px;
   font-weight:600;
   cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+/* LOADING SPINNER */
+.spinner{
+  width:14px;
+  height:14px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top:2px solid white;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  display:none;
+}
+
+@keyframes spin{
+  from{transform:rotate(0)}
+  to{transform:rotate(360deg)}
 }
 
 /* TABS */
-.tabs {
+.tabs{
   display:flex;
   justify-content:center;
   gap:30px;
   padding:14px 0;
   border-bottom:1px solid #e5e5e5;
+  position:relative;
 }
 
-.tabs img {
+.tabs img{
   width:28px;
   height:28px;
   cursor:pointer;
-  opacity:.7;
+  opacity:.6;
+  transition:all .25s ease;
 }
 
-.tabs img.active {
+.tabs img.active{
   opacity:1;
+  transform:scale(1.1);
 }
-/* GRID SCROLL AREA */
-.gridWrap {
+
+/* GLOW UNDERLINE */
+.tabGlow{
+  position:absolute;
+  bottom:0;
+  height:3px;
+  width:40px;
+  background:black;
+  border-radius:6px;
+  transition:all .3s ease;
+}
+
+/* GRID */
+.gridWrap{
   flex:1;
   overflow-y:auto;
 }
 
-/* GRID */
-.grid {
+.grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:6px;
   padding:8px;
 }
 
-.card {
+.card{
   aspect-ratio:4/5;
   background:#eee;
-  border-radius:8px;
+  border-radius:10px;
   overflow:hidden;
   position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
+  cursor:pointer;
+  transition:transform .2s ease;
 }
 
-.card img,
-.card video {
+.card:hover{
+  transform:scale(1.02);
+}
+
+.card img,.card video{
   width:100%;
   height:100%;
-  object-fit:cover;
-}
-
-.noContent {
-  font-size:12px;
-  color:#777;
-}
-
-/* BADGE ICON */
-.badge {
-  position:absolute;
-  top:6px;
-  right:6px;
-  width:18px;
-}
-
-/* FOOTER */
-.footer {
-  text-align:center;
-  padding:10px;
-  font-size:13px;
-  color:#666;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-  <div class="header">
-    <button class="refreshBtn" onclick="loadPosts()">Refresh</button>
-    <div style="font-weight:700;">Grid Planner</div>
-  </div>
-
-  <div class="tabs">
-    <img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
-    <img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
-    <img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
-    <img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
-  </div>
-
-  <div class="gridWrap">
-    <div id="grid" class="grid"></div>
-  </div>
-
-  <div class="footer">Something Organized</div>
-
-</div>
-
-<script>
-let ALL_POSTS = [];
-let FILTER = "Post";
-
-/* TAB ICON SWITCH */
-function updateTabs(){
-  document.getElementById("tab-post").src =
-    FILTER==="Post"?"/icons/post-dark.png":"/icons/post-light.png";
-
-  document.getElementById("tab-reel").src =
-    FILTER==="Reels"?"/icons/reel-dark.png":"/icons/reel-light.png";
-
-  document.getElementById("tab-story").src =
-    FILTER==="Story"?"/icons/story-dark.png":"/icons/story-light.png";
-
-  document.getElementById("tab-tiktok").src =
-    FILTER==="Tiktok"?"/icons/tiktok-dark.png":"/icons/tiktok-light.png";
-}
-
-function setFilter(type){
-  FILTER = type;
-  updateTabs();
-  renderGrid();
-}
-
-/* FETCH DATA */
-async function loadPosts(){
-  const res = await fetch("/api/get-posts");
-  ALL_POSTS = await res.json();
-
-  /* SORT PINNED + DATE */
-  ALL_POSTS.sort((a,b)=>{
-    if(a.pinned && !b.pinned) return -1;
-    if(!a.pinned && b.pinned) return 1;
-    return new Date(b.publishDate||0)-new Date(a.publishDate||0);
-  });
-
-  updateTabs();
-  renderGrid();
-}
-
-/* GRID RENDER */
-function renderGrid(){
-  const grid = document.getElementById("grid");
-  grid.innerHTML="";
-
-  const filtered = ALL_POSTS.filter(p=>p.type?.includes(FILTER));
-
-  const total = Math.max(filtered.length, 60);
-
-  for(let i=0;i<total;i++){
-
-    const post = filtered[i];
-    const card = document.createElement("div");
-    card.className="card";
-
-    if(post && (post.attachment || post.video)){
-
-      if(post.attachment){
-        const img = document.createElement("img");
-        img.crossOrigin="anonymous";
-        img.src = post.attachment;
-        card.appendChild(img);
-      }
-
-      else if(post.video){
-        const vid = document.createElement("video");
-        vid.src = post.video;
-        vid.controls=true;
-        card.appendChild(vid);
-      }
-
-    } else {
-
-      const no = document.createElement("div");
-      no.className="noContent";
-      no.innerText="NO CONTENT";
-      card.appendChild(no);
-
-    }
-
-    grid.appendChild(card);
-  }
-}
-
-loadPosts();
-</script>
-
-</body>
-</html>
