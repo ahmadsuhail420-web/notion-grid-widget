@@ -5,35 +5,37 @@
 <title>Grid Planner</title>
 
 <style>
+
+/* ===== BODY ===== */
 body{
-font-family:Inter,sans-serif;
+font-family:Inter, sans-serif;
 background:#f3f3f3;
 margin:0;
-padding:30px 0;
+padding:20px 0;
 display:flex;
 justify-content:center;
 }
 
-/* CONTAINER */
+/* ===== MAIN CONTAINER ===== */
 .container{
 width:420px;
 height:720px;
-background:#f8f8f8;
+background:#fafafa;
 border-radius:24px;
 border:1px solid #ddd;
-box-shadow:0 6px 30px rgba(0,0,0,.08);
+box-shadow:0 8px 30px rgba(0,0,0,.08);
 display:flex;
 flex-direction:column;
 overflow:hidden;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:16px 18px;
-border-bottom:1px solid #e5e5e5;
+padding:16px;
+border-bottom:1px solid #eee;
 }
 
 .refreshBtn{
@@ -46,42 +48,61 @@ font-weight:600;
 cursor:pointer;
 }
 
-/* TABS */
-.tabs{
-display:flex;
-justify-content:center;
-gap:30px;
-padding:14px 0 20px;
-border-bottom:1px solid #e5e5e5;
-position:relative;
+.spinner{
+display:none;
+width:16px;
+height:16px;
+border:2px solid #fff;
+border-top:2px solid transparent;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin-left:8px;
 }
 
-.tabs img{
-width:28px;
-height:28px;
+@keyframes spin{
+to{ transform:rotate(360deg); }
+}
+
+/* ===== TABS ===== */
+.tabs{
+display:flex;
+border-bottom:1px solid #eee;
+padding:12px 0 6px;
+}
+
+.tabItem{
+flex:1;
+text-align:center;
 cursor:pointer;
-opacity:.6;
+}
+
+.tabItem img{
+width:26px;
+opacity:.55;
 transition:.25s;
 }
 
-.tabs img.active{
+.tabItem.active img{
 opacity:1;
-transform:scale(1.1);
+transform:scale(1.08);
 }
 
-/* GLOW UNDERLINE */
-.underline{
-position:absolute;
-bottom:6px;
+/* UNDERLINE PER TAB */
+.tabUnderline{
 height:3px;
-width:40px;
+width:26px;
 background:black;
 border-radius:3px;
-transition:.3s;
-left:0;
+margin:6px auto 0;
+opacity:0;
+transition:.25s;
 }
 
-/* GRID */
+.tabItem.active .tabUnderline{
+opacity:1;
+}
+
+/* ===== GRID ===== */
 .gridWrap{
 flex:1;
 overflow-y:auto;
@@ -90,67 +111,50 @@ overflow-y:auto;
 .grid{
 display:grid;
 grid-template-columns:repeat(3,1fr);
-gap:6px;
-padding:8px;
 }
 
 .card{
 aspect-ratio:4/5;
 background:#eee;
-border-radius:8px;
-overflow:hidden;
 position:relative;
 display:flex;
 align-items:center;
 justify-content:center;
-cursor:pointer;
+border-right:1px solid #f0f0f0;
+border-bottom:1px solid #f0f0f0;
+overflow:hidden;
 }
 
-.card img,
-.card video{
+.card img,.card video{
 width:100%;
 height:100%;
 object-fit:cover;
-position:relative;
-z-index:1;
 }
 
+/* ===== BADGES ===== */
+.badge{
+position:absolute;
+right:6px;
+width:18px;
+}
+
+.pinBadge{ top:6px; }
+.multiBadge{ top:28px; }
+
+/* ===== NO CONTENT ===== */
 .noContent{
-font-size:12px;
+font-size:11px;
 color:#777;
 }
 
-/* BADGES */
-.badge{
-position:absolute;
-top:6px;
-right:6px;
-width:16px;
-height:16px;
-z-index:10;
-}
-
-.multiBadge{
-position:absolute;
-top:6px;
-right:26px;
-width:16px;
-height:16px;
-z-index:10;
-}
-
-/* LOADER */
-.loader{
-text-align:center;
-padding:20px;
-font-weight:600;
-}
-
-/* PREVIEW MODAL */
+/* ===== MODAL PREVIEW ===== */
 .modal{
 position:fixed;
-inset:0;
-background:rgba(0,0,0,.85);
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.7);
 display:none;
 align-items:center;
 justify-content:center;
@@ -159,31 +163,34 @@ z-index:999;
 
 .modalContent{
 position:relative;
-max-width:90%;
-max-height:90%;
+max-width:420px;
+width:90%;
 }
 
-.modalContent img,
-.modalContent video{
-max-width:100%;
-max-height:80vh;
+.modalContent img,.modalContent video{
+width:100%;
 border-radius:12px;
 }
 
 .modalInfo{
+position:absolute;
+bottom:0;
+left:0;
+right:0;
+padding:16px;
+background:linear-gradient(transparent,rgba(0,0,0,.8));
 color:white;
-margin-top:8px;
-text-align:center;
+font-size:14px;
 }
 
-.close{
-position:absolute;
-top:-40px;
-right:0;
-color:white;
-font-size:28px;
-cursor:pointer;
+/* ===== FOOTER ===== */
+.footer{
+text-align:center;
+padding:10px;
+font-size:13px;
+color:#666;
 }
+
 </style>
 </head>
 
@@ -191,80 +198,100 @@ cursor:pointer;
 
 <div class="container">
 
+<!-- HEADER -->
 <div class="header">
+<div style="display:flex;align-items:center;">
 <button class="refreshBtn" onclick="loadPosts()">Refresh</button>
+<div class="spinner" id="spinner"></div>
+</div>
 <div style="font-weight:700;">Grid Planner</div>
 </div>
 
-<div class="tabs" id="tabs">
-<img id="tab-post" onclick="setFilter('Post',0)">
-<img id="tab-reel" onclick="setFilter('Reels',1)">
-<img id="tab-story" onclick="setFilter('Story',2)">
-<img id="tab-tiktok" onclick="setFilter('Tiktok',3)">
-<div class="underline" id="underline"></div>
+<!-- TABS -->
+<div class="tabs">
+
+<div class="tabItem active" onclick="setFilter('Post',this)">
+<img src="/icons/post-dark.png">
+<div class="tabUnderline"></div>
 </div>
 
+<div class="tabItem" onclick="setFilter('Reels',this)">
+<img src="/icons/reel-light.png">
+<div class="tabUnderline"></div>
+</div>
+
+<div class="tabItem" onclick="setFilter('Story',this)">
+<img src="/icons/story-light.png">
+<div class="tabUnderline"></div>
+</div>
+
+<div class="tabItem" onclick="setFilter('Tiktok',this)">
+<img src="/icons/tiktok-light.png">
+<div class="tabUnderline"></div>
+</div>
+
+</div>
+
+<!-- GRID -->
 <div class="gridWrap">
 <div id="grid" class="grid"></div>
 </div>
 
+<div class="footer">Something Organized</div>
+
 </div>
 
-<!-- PREVIEW -->
-<div class="modal" id="modal">
-<div class="modalContent">
-<div class="close" onclick="closeModal()">✕</div>
-<div id="modalMedia"></div>
-<div class="modalInfo" id="modalInfo"></div>
-</div>
+<!-- MODAL -->
+<div id="modal" class="modal" onclick="closeModal()">
+<div class="modalContent" id="modalContent"></div>
 </div>
 
 <script>
+
+/* ===== STATE ===== */
 let ALL_POSTS=[];
 let FILTER="Post";
 
-/* ICON SYNC */
-function updateTabs(){
+/* ===== TAB SWITCH ===== */
+function setFilter(type,el){
 
-tabIcon("tab-post",FILTER==="Post","post");
-tabIcon("tab-reel",FILTER==="Reels","reel");
-tabIcon("tab-story",FILTER==="Story","story");
-tabIcon("tab-tiktok",FILTER==="Tiktok","tiktok");
-
-document.querySelectorAll(".tabs img").forEach(i=>i.classList.remove("active"));
-
-if(FILTER==="Post") tabActive(0);
-if(FILTER==="Reels") tabActive(1);
-if(FILTER==="Story") tabActive(2);
-if(FILTER==="Tiktok") tabActive(3);
-
-}
-
-function tabIcon(id,active,name){
-document.getElementById(id).src=
-`/icons/${name}-${active?"dark":"light"}.png`;
-}
-
-function tabActive(index){
-const tabs=document.querySelectorAll(".tabs img");
-tabs[index].classList.add("active");
-
-const underline=document.getElementById("underline");
-underline.style.left=tabs[index].offsetLeft+"px";
-}
-
-/* FILTER */
-function setFilter(type,index){
 FILTER=type;
-updateTabs();
+
+document.querySelectorAll(".tabItem")
+.forEach(t=>t.classList.remove("active"));
+
+el.classList.add("active");
+
+updateIcons();
 renderGrid();
 }
 
-/* FETCH */
+/* ===== ICON SWITCH ===== */
+function updateIcons(){
+
+document.querySelectorAll(".tabItem").forEach(tab=>{
+const img=tab.querySelector("img");
+
+if(tab.classList.contains("active")){
+if(img.src.includes("post")) img.src="/icons/post-dark.png";
+if(img.src.includes("reel")) img.src="/icons/reel-dark.png";
+if(img.src.includes("story")) img.src="/icons/story-dark.png";
+if(img.src.includes("tiktok")) img.src="/icons/tiktok-dark.png";
+}else{
+if(img.src.includes("post")) img.src="/icons/post-light.png";
+if(img.src.includes("reel")) img.src="/icons/reel-light.png";
+if(img.src.includes("story")) img.src="/icons/story-light.png";
+if(img.src.includes("tiktok")) img.src="/icons/tiktok-light.png";
+}
+
+});
+
+}
+
+/* ===== FETCH ===== */
 async function loadPosts(){
 
-document.getElementById("grid").innerHTML=
-'<div class="loader">Loading...</div>';
+document.getElementById("spinner").style.display="block";
 
 const res=await fetch("/api/get-posts");
 ALL_POSTS=await res.json();
@@ -275,11 +302,12 @@ if(!a.pinned&&b.pinned) return 1;
 return new Date(b.publishDate||0)-new Date(a.publishDate||0);
 });
 
-updateTabs();
 renderGrid();
+
+document.getElementById("spinner").style.display="none";
 }
 
-/* GRID */
+/* ===== GRID RENDER ===== */
 function renderGrid(){
 
 const grid=document.getElementById("grid");
@@ -310,17 +338,19 @@ vid.controls=true;
 card.appendChild(vid);
 }
 
+/* PIN BADGE */
 if(post.pinned){
 const pin=document.createElement("img");
 pin.src="/icons/pin.png";
-pin.className="badge";
+pin.className="badge pinBadge";
 card.appendChild(pin);
 }
 
-if(post.attachment&&post.attachment.length>1){
+/* MULTI BADGE */
+if(post.attachment && Array.isArray(post.attachment)){
 const multi=document.createElement("img");
 multi.src="/icons/multi.png";
-multi.className="multiBadge";
+multi.className="badge multiBadge";
 card.appendChild(multi);
 }
 
@@ -340,22 +370,23 @@ grid.appendChild(card);
 
 }
 
-/* MODAL */
+/* ===== MODAL ===== */
 function openModal(post){
 
 const modal=document.getElementById("modal");
-const media=document.getElementById("modalMedia");
-const info=document.getElementById("modalInfo");
+const content=document.getElementById("modalContent");
 
-media.innerHTML="";
+content.innerHTML="";
 
 if(post.attachment){
-media.innerHTML=`<img src="${post.attachment}">`;
-}else if(post.video){
-media.innerHTML=`<video src="${post.video}" controls autoplay></video>`;
+content.innerHTML=`
+<img src="${post.attachment}">
+<div class="modalInfo">
+<div>${post.name||""}</div>
+<div>${post.publishDate||""}</div>
+</div>
+`;
 }
-
-info.innerHTML=`${post.name||""}<br>${post.publishDate||""}`;
 
 modal.style.display="flex";
 }
@@ -364,7 +395,9 @@ function closeModal(){
 document.getElementById("modal").style.display="none";
 }
 
+/* ===== INIT ===== */
 loadPosts();
+
 </script>
 
 </body>
