@@ -337,13 +337,31 @@ card.appendChild(vid);
 }
 
 /* PIN BADGE */
-if(post.pinned){
-const pin=document.createElement("img");
-pin.src="/icons/pin.png";
-pin.className="badge";
-card.appendChild(pin);
-}
+// BADGE / ICON
+if(post && (post.attachment || post.video)) {
+    const mediaCount = [];
+    if(post.attachment) mediaCount.push(...(Array.isArray(post.attachment) ? post.attachment : [post.attachment]));
+    if(post.video) mediaCount.push(...(Array.isArray(post.video) ? Array.isArray(post.video) ? post.video : [post.video] : []));
 
+    // Decide which badge to show
+    if(post.pinned){
+        // Always show pin if pinned, even if multiple media
+        const pin = document.createElement("img");
+        pin.src="/icons/pin.png";
+        pin.className="badge";
+        pin.style.top="6px";
+        pin.style.right="6px";
+        card.appendChild(pin);
+    } else if(mediaCount.length > 1){
+        // Multiple media, not pinned → show multi icon
+        const multiIcon = document.createElement("img");
+        multiIcon.src="/icons/multi.png";
+        multiIcon.className="badge";
+        multiIcon.style.top="6px";
+        multiIcon.style.right="6px";
+        card.appendChild(multiIcon);
+    }
+}
 }else{
 const no=document.createElement("div");
 no.className="noContent";
