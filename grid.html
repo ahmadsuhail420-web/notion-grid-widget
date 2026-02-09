@@ -308,71 +308,74 @@ if(icon) icon.classList.remove("spin");
 }
 
 /* RENDER GRID */
-/* RENDER GRID */
 function renderGrid() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
   const filtered = ALL_POSTS.filter(p => p.type?.includes(FILTER));
-  const total = Math.max(filtered.length, 60); // keep grid consistent even if few posts
+  const total = Math.max(filtered.length, 60); // ensures grid always has minimum space
 
   for (let i = 0; i < total; i++) {
     const post = filtered[i];
     const card = document.createElement("div");
     card.className = "card";
 
-    if (post && (post.attachment || post.video)) {
-      // --- APPEND MEDIA ---
-      if (post.attachment) {
-        if (Array.isArray(post.attachment)) {
-          post.attachment.forEach(src => {
-            const img = document.createElement("img");
-            img.src = src;
-            card.appendChild(img);
-          });
-        } else {
-          const img = document.createElement("img");
-          img.src = post.attachment;
-          card.appendChild(img);
-        }
-      }
+    // --- Collect media ---
+    const mediaItems = [];
 
-      if (post.video) {
-        if (Array.isArray(post.video)) {
-          post.video.forEach(src => {
-            const vid = document.createElement("video");
-            vid.src = src;
-            vid.autoplay = false;
-            vid.loop = true;
-            vid.muted = true;
-            vid.controls = false;
-            card.appendChild(vid);
-          });
-        } else {
+    // Images (Notion property: Attachment)
+    if (post?.Attachment) {
+      if (Array.isArray(post.Attachment)) {
+        mediaItems.push(...post.Attachment);
+      } else {
+        mediaItems.push(post.Attachment);
+      }
+    }
+
+    // Videos (Notion property: Media or Video)
+    const videos = post?.Media || post?.Video;
+    if (videos) {
+      if (Array.isArray(videos)) {
+        mediaItems.push(...videos);
+      } else {
+        mediaItems.push(videos);
+      }
+    }
+
+    // --- Render media ---
+    if (mediaItems.length > 0) {
+      mediaItems.forEach(src => {
+        if (src.endsWith(".mp4") || src.includes(".mp4")) {
           const vid = document.createElement("video");
-          vid.src = post.video;
+          vid.src = src;
           vid.autoplay = false;
           vid.loop = true;
           vid.muted = true;
           vid.controls = false;
+          vid.style.width = "100%";
+          vid.style.height = "100%";
+          vid.style.objectFit = "cover";
           card.appendChild(vid);
+        } else {
+          const img = document.createElement("img");
+          img.src = src;
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "cover";
+          card.appendChild(img);
         }
-      }
+      });
 
-      // --- BADGE LOGIC ---
-      const mediaCount = [];
-      if (post.attachment) mediaCount.push(...(Array.isArray(post.attachment) ? post.attachment : [post.attachment]));
-      if (post.video) mediaCount.push(...(Array.isArray(post.video) ? post.video : [post.video]));
-
+      // --- Badge logic ---
       if (post.pinned) {
-        // Always show pin if post is pinned, even if multiple media
+        // Always show pin if post is pinned
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
         pin.className = "badge";
         pin.style.top = "6px";
         pin.style.right = "6px";
         card.appendChild(pin);
-      } else if (mediaCount.length > 1) {
+      } else if (mediaItems.length > 1) {
         // Multiple media, not pinned → show multi icon
         const multiIcon = document.createElement("img");
         multiIcon.src = "/icons/multi.png";
@@ -383,7 +386,7 @@ function renderGrid() {
       }
 
     } else {
-      // --- NO CONTENT ---
+      // --- No media ---
       const no = document.createElement("div");
       no.className = "noContent";
       no.innerText = "NO CONTENT";
