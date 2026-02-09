@@ -33,7 +33,6 @@ body {
   justify-content:space-between;
   align-items:center;
   padding:16px 18px;
-  border-bottom:1px solid #e5e5e5;
 }
 
 .refreshBtn {
@@ -50,21 +49,49 @@ body {
 .tabs {
   display:flex;
   justify-content:center;
-  gap:30px;
-  padding:14px 0;
+  gap:34px;
+  margin:18px 0 12px;
   border-bottom:1px solid #e5e5e5;
+  padding-bottom:10px;
+  position:relative;
 }
 
 .tabs img {
   width:28px;
   height:28px;
   cursor:pointer;
-  opacity:.7;
+  opacity:.6;
+  transition: all .25s ease;
+  position:relative;
+  padding-bottom:10px;
 }
 
+/* Hover animation */
+.tabs img:hover {
+  opacity:.9;
+  transform:translateY(-2px) scale(1.05);
+}
+
+/* Active icon */
 .tabs img.active {
   opacity:1;
+  transform:translateY(-2px) scale(1.08);
 }
+
+/* Glow underline */
+.tabs img.active::after {
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:-11px;
+  width:26px;
+  height:3px;
+  border-radius:3px;
+  background:black;
+  box-shadow:0 0 8px rgba(0,0,0,.25);
+}
+
 
 /* GRID SCROLL AREA */
 .gridWrap {
@@ -83,7 +110,7 @@ body {
 .card {
   aspect-ratio:4/5;
   background:#eee;
-  border-radius:8px;
+  border-radius:2px;
   overflow:hidden;
   position:relative;
   display:flex;
