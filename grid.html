@@ -1,246 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<title>Content Grid</title>
+<meta charset="UTF-8">
+<title>Grid Planner</title>
 
 <style>
 body {
-  margin: 0;
-  background: #f5f5f7;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  padding: 30px;
+  font-family: Inter, sans-serif;
+  background:#f3f3f3;
+  margin:0;
+  padding:30px 0;
+  display:flex;
+  justify-content:center;
 }
 
-/* OUTER CONTAINER */
+/* MAIN BOX (SCREENSHOT STYLE) */
 .container {
-  background: #fefefe;
-  border: 1px solid #ddd;
-  border-radius: 22px;
-  padding: 20px;
   width: 420px;
   height: 720px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* MAXIMIZED MODE */
-.widget.maximized {
-  width: 95vw;
-  height: 92vh;
+  background:#f8f8f8;
+  border-radius:24px;
+  border:1px solid #ddd;
+  box-shadow:0 6px 30px rgba(0,0,0,.08);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
 }
 
 /* HEADER */
 .header {
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 18px;
+  border-bottom:1px solid #e5e5e5;
 }
 
-  .header h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-}
-  
-.refresh-btn {
-  border: none;
-  background: black;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
+.refreshBtn {
+  background:black;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
 }
 
 /* TABS */
 .tabs {
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 10px;
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  padding:14px 0;
+  border-bottom:1px solid #e5e5e5;
 }
 
-.tab {
-  cursor: pointer;
-  opacity: 0.5;
-  transition: 0.25s;
+.tabs img {
+  width:28px;
+  height:28px;
+  cursor:pointer;
+  opacity:.7;
 }
 
-.tab.active {
-  opacity: 1;
+.tabs img.active {
+  opacity:1;
 }
 
-.tab img {
-  width: 26px;
-  height: 26px;
+/* GRID SCROLL AREA */
+.gridWrap {
+  flex:1;
+  overflow-y:auto;
 }
 
 /* GRID */
-.grid-wrapper {
-  height: calc(100% - 150px);
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
 .grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  margin-top: 10px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  padding:8px;
 }
 
-/* CARD */
 .card {
-  aspect-ratio: 4 / 5;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #eee;
-}
-
-/* IMAGE / VIDEO */
-.card img,
-.card video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* NO CONTENT */
-.no-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  color: #aaa;
-  height: 100%;
-}
-
-/* MAX BUTTON */
-.max-btn {
-  border: none;
-  background: #eee;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-</style>
-</head>
-
-<body>
-
-<div class="widget" id="widget">
-
-<div class="header">
-  <button onclick="loadPosts()">Refresh</button>
-  <h2>Grid Planner</h2>
-</div>
-
-  <div class="tabs">
-    <div class="tab active" data-type="Post">
-      <img src="icons/post-dark.png">
-    </div>
-    <div class="tab" data-type="Reel">
-      <img src="icons/reel-light.png">
-    </div>
-    <div class="tab" data-type="Story">
-      <img src="icons/story-light.png">
-    </div>
-    <div class="tab" data-type="Tiktok">
-      <img src="icons/tiktok-light.png">
-    </div>
-  </div>
-
-  <div class="grid-wrapper">
-    <div class="grid" id="grid"></div>
-  </div>
-
-</div>
-
-<script>
-const API = "/api/get-posts";
-let currentType = "Post";
-
-/* MAXIMIZE */
-function toggleMax(){
-  document.getElementById("widget").classList.toggle("maximized");
-}
-
-/* LOAD POSTS */
-async function loadPosts(){
-  try{
-    const res = await fetch(API);
-    const data = await res.json();
-
-    // newest first
-    data.sort((a,b)=>{
-      return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
-    });
-
-    render(data);
-
-  }catch(e){
-    console.error(e);
-  }
-}
-
-/* RENDER GRID */
-function render(posts){
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-
-  const filtered = posts.filter(p => !currentType || p.type === currentType);
-
-  filtered.forEach(p=>{
-    const card = document.createElement("div");
-    card.className = "card";
-
-    if(p.attachment){
-      if(p.attachment.includes(".mp4")){
-        card.innerHTML = `<video src="${p.attachment}" muted autoplay loop></video>`;
-      } else {
-        card.innerHTML = `<img src="${p.attachment}"/>`;
-      }
-    } else if(p.video){
-      card.innerHTML = `<video src="${p.video}" muted autoplay loop></video>`;
-    } else {
-      card.innerHTML = `<div class="no-content">NO CONTENT</div>`;
-    }
-
-    grid.appendChild(card);
-  });
-}
-
-/* TAB SWITCH */
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click", ()=>{
-
-    document.querySelectorAll(".tab").forEach(t=>{
-      t.classList.remove("active");
-
-      const img = t.querySelector("img");
-      img.src = img.src.replace("dark","light");
-    });
-
-    tab.classList.add("active");
-
-    const img = tab.querySelector("img");
-    img.src = img.src.replace("light","dark");
-
-    currentType = tab.dataset.type;
-    loadPosts();
-  });
-});
-
-/* INITIAL LOAD */
-loadPosts();
-</script>
-
-</body>
-</html>
+  aspect-
