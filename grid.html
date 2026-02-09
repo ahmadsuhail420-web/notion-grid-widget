@@ -51,17 +51,18 @@ gap:8px;
 }
 
 .refreshIcon{
-width:16px;
-height:16px;
+display:inline-block;
+margin-right:6px;
+transition:transform .3s;
 }
 
-.spin{
+.refreshIcon.spin{
 animation:spin 1s linear infinite;
 }
 
 @keyframes spin{
-from{ transform:rotate(0deg); }
-to{ transform:rotate(360deg); }
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
 }
 
 .title{
@@ -199,7 +200,10 @@ animation:spin 1s linear infinite;
 <div class="container">
 
 <div class="header">
-<button class="refreshBtn" onclick="loadPosts(true)">
+<button class="refreshBtn" onclick="loadPosts(this)">
+<span class="refreshIcon">⟳</span>
+<span>Refresh</span>
+</button>
 <svg class="refreshIcon" viewBox="0 0 24 24" fill="white">
 <path d="M12 6V3L8 7l4 4V8c2.8 0 5 2.2 5 5a5 5 0 11-9.9-1H5a7 7 0 1014 1c0-3.9-3.1-7-7-7z"/>
 </svg>
@@ -272,22 +276,36 @@ renderGrid();
 }
 
 /* FETCH POSTS */
-async function loadPosts(showLoader=false){
+async function loadPosts(btn){
 
-const grid=document.getElementById("grid");
+const icon = btn?.querySelector(".refreshIcon");
 
-if(showLoader){
-grid.innerHTML=`<div class="loader"><div class="loaderCircle"></div></div>`;
-}
+/* START BUTTON SPIN ONLY */
+if(icon) icon.classList.add("spin");
 
 try{
-const res=await fetch("/api/get-posts");
-ALL_POSTS=await res.json();
-}catch(e){
-ALL_POSTS=[];
-}
+
+const res = await fetch("/api/get-posts");
+const data = await res.json();
+
+/* SORT PINNED → NEWEST */
+data.sort((a,b)=>{
+if(a.pinned && !b.pinned) return -1;
+if(!a.pinned && b.pinned) return 1;
+return new Date(b.publishDate||0) - new Date(a.publishDate||0);
+});
+
+ALL_POSTS = data;
 
 renderGrid();
+
+}catch(e){
+console.log("Refresh failed");
+}
+
+/* STOP SPIN */
+if(icon) icon.classList.remove("spin");
+
 }
 
 /* RENDER GRID */
