@@ -324,20 +324,24 @@ function renderGrid() {
 
     // --- Attachment (Files & Media) ---
     if (post?.Attachment) {
-      const attachments = Array.isArray(post.Attachment) ? post.Attachment : [post.Attachment];
-      attachments.forEach(file => {
-        if (file?.url) mediaItems.push({ src: file.url, type: "image" }); // assume files are images
-      });
-    }
+  const attachments = Array.isArray(post.Attachment) ? post.Attachment : [post.Attachment];
+  attachments.forEach(file => {
+    let url = null;
+    if (file.type === "file" && file.file?.url) url = file.file.url;
+    else if (file.type === "external" && file.external?.url) url = file.external.url;
+
+    if (url) mediaItems.push({ src: url, type: "image" }); // treat all attachments as images
+  });
+}
 
     // --- Media / Video (URL) ---
     if (post?.Media || post?.Video) {
-      const videos = post.Media || post.Video;
-      const videoArray = Array.isArray(videos) ? videos : [videos];
-      videoArray.forEach(url => {
-        if (url) mediaItems.push({ src: url, type: "video" });
-      });
-    }
+  const videos = post.Media || post.Video;
+  const videoArray = Array.isArray(videos) ? videos : [videos];
+  videoArray.forEach(url => {
+    if (url) mediaItems.push({ src: url, type: "video" });
+  });
+}
 
     // --- Render media ---
     if (mediaItems.length > 0) {
