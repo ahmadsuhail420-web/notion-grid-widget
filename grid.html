@@ -40,26 +40,33 @@ border-bottom:1px solid #eee;
 
 .refreshBtn{
 background:black;
-color:white;
 border:none;
-padding:8px 16px;
+padding:10px;
 border-radius:10px;
-font-weight:600;
 cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
-.spinner{
-display:none;
-width:16px;
-height:16px;
-border:2px solid #fff;
-border-top:2px solid transparent;
-border-radius:50%;
-animation:spin 1s linear infinite;
-margin-left:8px;
+.refreshBtn:active{
+transform:scale(.92);
 }
 
-@keyframes spin{
+
+/* ICON SIZE */
+.refreshBtn img{
+width:18px;
+height:18px;
+}
+
+/* ROTATION ANIMATION */
+.spin{
+animation:spinAnim 1s linear infinite;
+}
+
+@keyframes spinAnim{
+from{ transform:rotate(0deg); }
 to{ transform:rotate(360deg); }
 }
 
@@ -201,7 +208,9 @@ color:#666;
 <!-- HEADER -->
 <div class="header">
 <div style="display:flex;align-items:center;">
-<button class="refreshBtn" onclick="loadPosts()">Refresh</button>
+<button class="refreshBtn" onclick="loadPosts()">
+  <img id="refreshIcon" src="/icons/refresh.png">
+</button>
 <div class="spinner" id="spinner"></div>
 </div>
 <div style="font-weight:700;">Grid Planner</div>
@@ -291,10 +300,15 @@ if(img.src.includes("tiktok")) img.src="/icons/tiktok-light.png";
 /* ===== FETCH ===== */
 async function loadPosts(){
 
-document.getElementById("spinner").style.display="block";
+const icon = document.getElementById("refreshIcon");
 
-const res=await fetch("/api/get-posts");
-ALL_POSTS=await res.json();
+/* START ROTATION */
+icon.classList.add("spin");
+
+try{
+
+const res = await fetch("/api/get-posts");
+ALL_POSTS = await res.json();
 
 ALL_POSTS.sort((a,b)=>{
 if(a.pinned&&!b.pinned) return -1;
@@ -304,7 +318,13 @@ return new Date(b.publishDate||0)-new Date(a.publishDate||0);
 
 renderGrid();
 
-document.getElementById("spinner").style.display="none";
+}catch(e){
+console.error(e);
+}
+
+/* STOP ROTATION */
+icon.classList.remove("spin");
+
 }
 
 /* ===== GRID RENDER ===== */
