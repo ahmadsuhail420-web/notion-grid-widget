@@ -1,305 +1,241 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Grid Planner</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Content Grid</title>
 
 <style>
 body {
-  font-family: 'Inter', sans-serif;
-  background: #fafafa;
   margin: 0;
-  padding: 40px 0;
+  background: #f5f5f7;
+  font-family: Arial, sans-serif;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
+  padding: 30px;
 }
 
-/* Rounded container */
-.container {
-  background: #fefefe;
-  border: 1px solid #ddd;
-  border-radius: 16px;
-  padding: 24px;
-  width: 90%;
-  max-width: 900px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+/* OUTER CONTAINER */
+.widget {
+  width: 420px;
+  height: 780px;
+  background: white;
+  border-radius: 26px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
-  height: auto;
-  max-height: 65vh;
   overflow: hidden;
+  transition: all 0.35s ease;
 }
 
-/* Card container */
-.card {
-  position: relative;   /* needed for absolute positioning of popup */
-  width: 250px;
-  height: 150px;
-  background: #f5f5f5;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-5px); /* optional hover effect */
-}
-
-/* Popup inside card */
-.card .popup {
-  position: absolute;
-  bottom: 0;               /* start at bottom of card */
-  left: 50%;               /* center horizontally */
-  transform: translateX(-50%) translateY(100%); /* hide below card initially */
-  background: #333;
-  color: #fff;
-  padding: 10px 15px;
-  border-radius: 6px 6px 0 0;
-  white-space: nowrap;     /* keep text in one line */
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s, transform 0.2s;
-  z-index: 10;
-}
-
-/* Show popup on hover */
-.card:hover .popup {
-  transform: translateX(-50%) translateY(0); /* move up to bottom edge of card */
-  opacity: 1;
-  pointer-events: auto;
+/* MAXIMIZED MODE */
+.widget.maximized {
+  width: 95vw;
+  height: 92vh;
 }
 
 /* HEADER */
 .header {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px; /* more space below header */
 }
 
-.header h2 {
-  font-size: 1.8rem;    /* larger title */
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: 0.5px;
-}
-
-.header button {
-  padding: 10px 22px;
+.refresh-btn {
   border: none;
   background: black;
   color: white;
-  font-size: 1rem;       /* larger text */
-  font-weight: 500;
-  border-radius: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s ease;
-}
-.header button:hover {
-  background: #333;
-  transform: scale(1.05);
 }
 
 /* TABS */
 .tabs {
   display: flex;
-  justify-content: center;
-  gap: 36px;              /* more spacing between icons */
-  margin: 24px 0 16px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 12px;
+  justify-content: space-around;
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
 }
 
-.tabs img {
-  width: 50px;            /* larger icons */
-  height: 50px;
+.tab {
   cursor: pointer;
-  opacity: 0.9;
-  transition: transform 0.2s, opacity 0.2s;
+  opacity: 0.5;
+  transition: 0.25s;
 }
-.tabs img:hover {
-  transform: scale(1.2);
+
+.tab.active {
   opacity: 1;
 }
 
-/* Scrollable grid wrapper */
+.tab img {
+  width: 26px;
+  height: 26px;
+}
+
+/* GRID */
 .grid-wrapper {
   flex: 1;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: 14px;
 }
 
-/* Grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  width: 100%;
-  margin-top: 16px;
+  gap: 12px;
 }
 
+/* CARD */
 .card {
+  width: 100%;
   aspect-ratio: 4 / 5;
-  background: #eee;
-  border-radius: 6px;
-  position: relative;
+  border-radius: 16px;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #fafafa;
+  border: 1px solid #eee;
+  position: relative;
 }
 
-.card img, .card video {
+/* IMAGE / VIDEO */
+.card img,
+.card video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.badge {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 22px;
+/* NO CONTENT */
+.no-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #aaa;
+  height: 100%;
 }
 
-.noContent {
-  font-size: 14px;
-  color: #777;
-}
-
-.footer {
-  text-align: center;
-  font-size: 14px;
-  color: #555;
-  margin-top: 14px;
-}
-
-/* Scrollbar styling */
-.grid-wrapper::-webkit-scrollbar {
-  width: 6px;
-}
-.grid-wrapper::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
-}
-.grid-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
-}
-
-@media (max-width: 700px) {
-  .container {
-    width: 95%;
-    padding: 16px;
-  }
-  .tabs img {
-    width: 26px;
-    height: 26px;
-  }
-  .grid {
-    gap: 6px;
-  }
+/* MAX BUTTON */
+.max-btn {
+  border: none;
+  background: #eee;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="widget" id="widget">
 
   <div class="header">
-    <button onclick="loadPosts()">Refresh</button>
-    <h2>Grid Planner</h2>
+    <button class="refresh-btn" onclick="loadPosts()">Refresh</button>
+    <button class="max-btn" onclick="toggleMax()">⛶</button>
   </div>
 
   <div class="tabs">
-    <img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
-    <img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
-    <img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
-    <img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
+    <div class="tab active" data-type="Post">
+      <img src="icons/postdark.png">
+    </div>
+    <div class="tab" data-type="Reel">
+      <img src="icons/reellight.png">
+    </div>
+    <div class="tab" data-type="Story">
+      <img src="icons/storylight.png">
+    </div>
+    <div class="tab" data-type="Tiktok">
+      <img src="icons/tiktoklight.png">
+    </div>
   </div>
 
   <div class="grid-wrapper">
-    <div id="grid" class="grid"></div>
+    <div class="grid" id="grid"></div>
   </div>
-
-  <div class="footer">Something Organized</div>
 
 </div>
 
 <script>
-let ALL_POSTS = [];
-let FILTER = "Post";
+const API = "/api/get-posts";
+let currentType = "Post";
 
-function updateTabIcons() {
-  document.getElementById("tab-post").src =
-    FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
-  document.getElementById("tab-reel").src =
-    FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
-  document.getElementById("tab-story").src =
-    FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
-  document.getElementById("tab-tiktok").src =
-    FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
+/* MAXIMIZE */
+function toggleMax(){
+  document.getElementById("widget").classList.toggle("maximized");
 }
 
-function setFilter(type) {
-  FILTER = type;
-  updateTabIcons();
-  renderGrid();
-}
+/* LOAD POSTS */
+async function loadPosts(){
+  try{
+    const res = await fetch(API);
+    const data = await res.json();
 
-async function loadPosts() {
-  const res = await fetch("/api/get-posts");
-  ALL_POSTS = await res.json();
+    // newest first
+    data.sort((a,b)=>{
+      return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
+    });
 
-  ALL_POSTS.sort((a, b) => {
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
-  });
+    render(data);
 
-  updateTabIcons();
-  renderGrid();
-}
-
-function renderGrid() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-
-  const filtered = ALL_POSTS.filter(p => p.type?.includes(FILTER));
-
-  // always render at least 60 cards
-  const totalCards = Math.max(filtered.length, 60);
-
-  for (let i = 0; i < totalCards; i++) {
-    const post = filtered[i];
-    const card = document.createElement("div");
-    card.className = "card";
-
-    if (post && (post.attachment || post.video)) {
-      if (post.attachment) {
-        const img = document.createElement("img");
-        img.src = post.attachment;
-        card.appendChild(img);
-      } else if (post.video) {
-        const video = document.createElement("video");
-        video.src = post.video;
-        video.controls = true;
-        card.appendChild(video);
-      }
-    } else {
-      const no = document.createElement("div");
-      no.className = "noContent";
-      no.innerText = "NO CONTENT";
-      card.appendChild(no);
-    }
-
-    grid.appendChild(card);
+  }catch(e){
+    console.error(e);
   }
 }
 
+/* RENDER GRID */
+function render(posts){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  const filtered = posts.filter(p => !currentType || p.type === currentType);
+
+  filtered.forEach(p=>{
+    const card = document.createElement("div");
+    card.className = "card";
+
+    if(p.attachment){
+      if(p.attachment.includes(".mp4")){
+        card.innerHTML = `<video src="${p.attachment}" muted autoplay loop></video>`;
+      } else {
+        card.innerHTML = `<img src="${p.attachment}"/>`;
+      }
+    } else if(p.video){
+      card.innerHTML = `<video src="${p.video}" muted autoplay loop></video>`;
+    } else {
+      card.innerHTML = `<div class="no-content">NO CONTENT</div>`;
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+/* TAB SWITCH */
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+
+    document.querySelectorAll(".tab").forEach(t=>{
+      t.classList.remove("active");
+
+      const img = t.querySelector("img");
+      img.src = img.src.replace("dark","light");
+    });
+
+    tab.classList.add("active");
+
+    const img = tab.querySelector("img");
+    img.src = img.src.replace("light","dark");
+
+    currentType = tab.dataset.type;
+    loadPosts();
+  });
+});
+
+/* INITIAL LOAD */
 loadPosts();
 </script>
 
