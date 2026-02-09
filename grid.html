@@ -112,6 +112,42 @@ transition:.25s;
 .tabItem.active .tabUnderline{
 opacity:1;
 }
+.tabs img {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+
+  opacity: .55; /* inactive tabs */
+  transition: transform .25s ease;
+}
+
+.tabs img.active {
+  opacity: 1; /* active tab stays full */
+}
+.tabs img:hover {
+  transform: scale(1.12);
+}
+
+.tabs img.active {
+  transform: scale(1.15);
+}
+.tabs {
+  position: relative;
+}
+
+.tabUnderline {
+  position: absolute;
+  bottom: -1px;
+  height: 3px;
+  width: 28px;
+  background: black;
+  border-radius: 3px;
+
+  left: 0;
+  transform: translateX(0);
+
+  transition: transform .35s cubic-bezier(.22,.61,.36,1);
+}
 
 /* GRID WRAP */
 .gridWrap{
@@ -214,22 +250,22 @@ Refresh
 
 <div class="tabItem active" onclick="setFilter('Post', this)">
 <img src="/icons/post-dark.png" id="icon-post">
-<div class="tabUnderline"></div>
+<div class="tabUnderline" id="tabUnderline"></div>
 </div>
 
 <div class="tabItem" onclick="setFilter('Reels', this)">
 <img src="/icons/reel-light.png" id="icon-reel">
-<div class="tabUnderline"></div>
+<div class="tabUnderline" id="tabUnderline"></div>
 </div>
 
 <div class="tabItem" onclick="setFilter('Story', this)">
 <img src="/icons/story-light.png" id="icon-story">
-<div class="tabUnderline"></div>
+<div class="tabUnderline" id="tabUnderline"></div>
 </div>
 
 <div class="tabItem" onclick="setFilter('Tiktok', this)">
 <img src="/icons/tiktok-light.png" id="icon-tiktok">
-<div class="tabUnderline"></div>
+<div class="tabUnderline" id="tabUnderline"></div>
 </div>
 
 </div>
@@ -248,8 +284,17 @@ let FILTER="Post";
 
 /* TAB SWITCH */
 function setFilter(type, el){
+  FILTER = type;
 
-FILTER=type;
+  document.querySelectorAll(".tabs img")
+    .forEach(i => i.classList.remove("active"));
+
+  el.classList.add("active");
+
+  moveUnderline(el);
+  updateTabs();
+  renderGrid();
+}
 
 /* ACTIVE TAB */
 document.querySelectorAll(".tabItem").forEach(t=>t.classList.remove("active"));
@@ -331,6 +376,16 @@ if(post.video){
 const vid=document.createElement("video");
 vid.src=post.video;
 card.appendChild(vid);
+}
+function moveUnderline(tabElement){
+  const underline = document.getElementById("tabUnderline");
+  const tabRect = tabElement.getBoundingClientRect();
+  const parentRect = tabElement.parentElement.getBoundingClientRect();
+
+  const offset = tabRect.left - parentRect.left +
+                 (tabRect.width / 2) - 14;
+
+  underline.style.transform = `translateX(${offset}px)`;
 }
 
 /* PIN BADGE */
