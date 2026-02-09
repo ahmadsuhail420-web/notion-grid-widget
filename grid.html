@@ -6,204 +6,183 @@
 
 <style>
 body{
-  font-family:Inter,sans-serif;
-  background:#f3f3f3;
-  margin:0;
-  height: 100vh;
-  padding:20px 0;
-  display:flex;
-  justify-content:center;
-  align-items: center;
+font-family:Inter,sans-serif;
+background:#f3f3f3;
+margin:0;
+padding:30px 0;
+display:flex;
+justify-content:center;
 }
 
 /* CONTAINER */
-.container {
-  background: #fefefe;
-  border: 1px solid #ddd;
-  border-radius: 16px;
-  padding: 24px;
-  width: 90%;
-  max-width: 900px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  display: flex;
-  flex-direction: column;
-  height: 100vh;          /* exactly fill the screen height */
-  box-sizing: border-box; /* include padding in height */
-  overflow: hidden;       /* prevent outside scroll */
+.container{
+width:420px;
+height:720px;
+background:#f8f8f8;
+border-radius:24px;
+border:1px solid #ddd;
+box-shadow:0 6px 30px rgba(0,0,0,.08);
+display:flex;
+flex-direction:column;
+overflow:hidden;
 }
 
 /* HEADER */
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px;
-  border-bottom:1px solid #e5e5e5;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:16px 18px;
+border-bottom:1px solid #e5e5e5;
 }
 
 .refreshBtn{
-  background:black;
-  color:white;
-  border:none;
-  padding:8px 16px;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-/* LOADING SPINNER */
-.spinner{
-  width:14px;
-  height:14px;
-  border:2px solid rgba(255,255,255,.3);
-  border-top:2px solid white;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-  display:none;
-}
-
-@keyframes spin{
-  from{transform:rotate(0)}
-  to{transform:rotate(360deg)}
+background:black;
+color:white;
+border:none;
+padding:8px 16px;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
 }
 
 /* TABS */
 .tabs{
-  display:flex;
-  justify-content:center;
-  gap:30px;
-  padding:14px 0;
-  border-bottom:1px solid #e5e5e5;
-  position:relative;
+display:flex;
+justify-content:center;
+gap:30px;
+padding:14px 0 20px;
+border-bottom:1px solid #e5e5e5;
+position:relative;
 }
 
 .tabs img{
-  width:28px;
-  height:28px;
-  cursor:pointer;
-  opacity:.6;
-  transition:all .25s ease;
+width:28px;
+height:28px;
+cursor:pointer;
+opacity:.6;
+transition:.25s;
 }
 
 .tabs img.active{
-  opacity:1;
-  transform:scale(1.1);
+opacity:1;
+transform:scale(1.1);
 }
 
 /* GLOW UNDERLINE */
-.tabGlow{
-  position:absolute;
-  bottom:0;
-  height:3px;
-  width:40px;
-  background:black;
-  border-radius:6px;
-  transition:all .3s ease;
+.underline{
+position:absolute;
+bottom:6px;
+height:3px;
+width:40px;
+background:black;
+border-radius:3px;
+transition:.3s;
+left:0;
 }
 
 /* GRID */
 .gridWrap{
-  flex:1;
-  overflow-y:auto;
+flex:1;
+overflow-y:auto;
 }
 
 .grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-  padding:8px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:6px;
+padding:8px;
 }
 
 .card{
-  aspect-ratio:4/5;
-  background:#eee;
-  border-radius:10px;
-  overflow:hidden;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition:transform .2s ease;
+aspect-ratio:4/5;
+background:#eee;
+border-radius:8px;
+overflow:hidden;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
 }
 
-.card:hover{
-  transform:scale(1.02);
+.card img,
+.card video{
+width:100%;
+height:100%;
+object-fit:cover;
+position:relative;
+z-index:1;
 }
 
-.card img,.card video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.noContent{
+font-size:12px;
+color:#777;
 }
 
 /* BADGES */
 .badge{
-  position:absolute;
-  top:6px;
-  right:6px;
-  width:18px;
+position:absolute;
+top:6px;
+right:6px;
+width:16px;
+height:16px;
+z-index:10;
 }
 
 .multiBadge{
-  position:absolute;
-  top:6px;
-  right:28px;
-  width:18px;
+position:absolute;
+top:6px;
+right:26px;
+width:16px;
+height:16px;
+z-index:10;
 }
 
-.noContent{
-  font-size:12px;
-  color:#777;
+/* LOADER */
+.loader{
+text-align:center;
+padding:20px;
+font-weight:600;
 }
 
 /* PREVIEW MODAL */
 .modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  opacity:0;
-  pointer-events:none;
-  transition:.3s;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.85);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999;
 }
 
-.modal.show{
-  opacity:1;
-  pointer-events:auto;
+.modalContent{
+position:relative;
+max-width:90%;
+max-height:90%;
 }
 
-.modalBox{
-  width:320px;
-  background:black;
-  border-radius:16px;
-  overflow:hidden;
-  color:white;
-}
-
-.modalBox img,.modalBox video{
-  width:100%;
-  aspect-ratio:4/5;
-  object-fit:cover;
+.modalContent img,
+.modalContent video{
+max-width:100%;
+max-height:80vh;
+border-radius:12px;
 }
 
 .modalInfo{
-  padding:12px;
-  font-size:14px;
-  opacity:.9;
+color:white;
+margin-top:8px;
+text-align:center;
 }
 
-/* FOOTER */
-.footer{
-  text-align:center;
-  padding:10px;
-  font-size:13px;
-  color:#666;
+.close{
+position:absolute;
+top:-40px;
+right:0;
+color:white;
+font-size:28px;
+cursor:pointer;
 }
 </style>
 </head>
@@ -213,32 +192,28 @@ body{
 <div class="container">
 
 <div class="header">
-<button class="refreshBtn" onclick="loadPosts()">
-Refresh
-<div class="spinner" id="spinner"></div>
-</button>
+<button class="refreshBtn" onclick="loadPosts()">Refresh</button>
 <div style="font-weight:700;">Grid Planner</div>
 </div>
 
 <div class="tabs" id="tabs">
-<img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post',0)">
-<img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels',1)">
-<img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story',2)">
-<img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok',3)">
-<div class="tabGlow" id="tabGlow"></div>
+<img id="tab-post" onclick="setFilter('Post',0)">
+<img id="tab-reel" onclick="setFilter('Reels',1)">
+<img id="tab-story" onclick="setFilter('Story',2)">
+<img id="tab-tiktok" onclick="setFilter('Tiktok',3)">
+<div class="underline" id="underline"></div>
 </div>
 
 <div class="gridWrap">
 <div id="grid" class="grid"></div>
 </div>
 
-<div class="footer">Something Organized</div>
-
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modal" onclick="closeModal()">
-<div class="modalBox" onclick="event.stopPropagation()">
+<!-- PREVIEW -->
+<div class="modal" id="modal">
+<div class="modalContent">
+<div class="close" onclick="closeModal()">✕</div>
 <div id="modalMedia"></div>
 <div class="modalInfo" id="modalInfo"></div>
 </div>
@@ -248,66 +223,77 @@ Refresh
 let ALL_POSTS=[];
 let FILTER="Post";
 
-/* TAB UI */
+/* ICON SYNC */
+function updateTabs(){
+
+tabIcon("tab-post",FILTER==="Post","post");
+tabIcon("tab-reel",FILTER==="Reels","reel");
+tabIcon("tab-story",FILTER==="Story","story");
+tabIcon("tab-tiktok",FILTER==="Tiktok","tiktok");
+
+document.querySelectorAll(".tabs img").forEach(i=>i.classList.remove("active"));
+
+if(FILTER==="Post") tabActive(0);
+if(FILTER==="Reels") tabActive(1);
+if(FILTER==="Story") tabActive(2);
+if(FILTER==="Tiktok") tabActive(3);
+
+}
+
+function tabIcon(id,active,name){
+document.getElementById(id).src=
+`/icons/${name}-${active?"dark":"light"}.png`;
+}
+
+function tabActive(index){
+const tabs=document.querySelectorAll(".tabs img");
+tabs[index].classList.add("active");
+
+const underline=document.getElementById("underline");
+underline.style.left=tabs[index].offsetLeft+"px";
+}
+
+/* FILTER */
 function setFilter(type,index){
 FILTER=type;
 updateTabs();
-moveGlow(index);
 renderGrid();
-}
-
-function updateTabs(){
-tab("tab-post","Post");
-tab("tab-reel","Reels");
-tab("tab-story","Story");
-tab("tab-tiktok","Tiktok");
-}
-
-function tab(id,type){
-document.getElementById(id).src=
-FILTER===type?`/icons/${type.toLowerCase()}-dark.png`:`/icons/${type.toLowerCase()}-light.png`;
-}
-
-function moveGlow(index){
-const glow=document.getElementById("tabGlow");
-glow.style.left=(index*58+22)+"px";
 }
 
 /* FETCH */
 async function loadPosts(){
-document.getElementById("spinner").style.display="block";
+
+document.getElementById("grid").innerHTML=
+'<div class="loader">Loading...</div>';
 
 const res=await fetch("/api/get-posts");
 ALL_POSTS=await res.json();
 
 ALL_POSTS.sort((a,b)=>{
-if(a.pinned&&!b.pinned)return -1;
-if(!a.pinned&&b.pinned)return 1;
+if(a.pinned&&!b.pinned) return -1;
+if(!a.pinned&&b.pinned) return 1;
 return new Date(b.publishDate||0)-new Date(a.publishDate||0);
 });
 
-renderGrid();
 updateTabs();
-
-document.getElementById("spinner").style.display="none";
+renderGrid();
 }
 
 /* GRID */
 function renderGrid(){
+
 const grid=document.getElementById("grid");
 grid.innerHTML="";
 
 const filtered=ALL_POSTS.filter(p=>p.type?.includes(FILTER));
+
 const total=Math.max(filtered.length,60);
 
 for(let i=0;i<total;i++){
+
 const post=filtered[i];
 const card=document.createElement("div");
 card.className="card";
-
-if(post){
-card.onclick=()=>openModal(post);
-}
 
 if(post&&(post.attachment||post.video)){
 
@@ -320,10 +306,10 @@ card.appendChild(img);
 if(post.video){
 const vid=document.createElement("video");
 vid.src=post.video;
+vid.controls=true;
 card.appendChild(vid);
 }
 
-/* PIN BADGE */
 if(post.pinned){
 const pin=document.createElement("img");
 pin.src="/icons/pin.png";
@@ -331,57 +317,52 @@ pin.className="badge";
 card.appendChild(pin);
 }
 
-/* MULTI BADGE */
-if(post.multi){
+if(post.attachment&&post.attachment.length>1){
 const multi=document.createElement("img");
 multi.src="/icons/multi.png";
 multi.className="multiBadge";
 card.appendChild(multi);
 }
 
+card.onclick=()=>openModal(post);
+
 }else{
+
 const no=document.createElement("div");
 no.className="noContent";
 no.innerText="NO CONTENT";
 card.appendChild(no);
+
 }
 
 grid.appendChild(card);
 }
+
 }
 
 /* MODAL */
 function openModal(post){
+
 const modal=document.getElementById("modal");
 const media=document.getElementById("modalMedia");
 const info=document.getElementById("modalInfo");
 
 media.innerHTML="";
-info.innerHTML=`${post.name||"Untitled"}<br>${post.publishDate||""}`;
 
 if(post.attachment){
-const img=document.createElement("img");
-img.src=post.attachment;
-media.appendChild(img);
-}
-if(post.video){
-const vid=document.createElement("video");
-vid.src=post.video;
-vid.controls=true;
-media.appendChild(vid);
+media.innerHTML=`<img src="${post.attachment}">`;
+}else if(post.video){
+media.innerHTML=`<video src="${post.video}" controls autoplay></video>`;
 }
 
-modal.classList.add("show");
+info.innerHTML=`${post.name||""}<br>${post.publishDate||""}`;
+
+modal.style.display="flex";
 }
 
 function closeModal(){
-document.getElementById("modal").classList.remove("show");
+document.getElementById("modal").style.display="none";
 }
-
-/* AUTO HEIGHT (Notion Friendly) */
-setInterval(()=>{
-document.body.style.height=document.body.scrollHeight+"px";
-},500);
 
 loadPosts();
 </script>
