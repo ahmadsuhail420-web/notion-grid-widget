@@ -81,4 +81,157 @@ body {
 }
 
 .card {
-  aspect-
+  aspect-ratio:4/5;
+  background:#eee;
+  border-radius:8px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.card img,
+.card video {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.noContent {
+  font-size:12px;
+  color:#777;
+}
+
+/* BADGE ICON */
+.badge {
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:18px;
+}
+
+/* FOOTER */
+.footer {
+  text-align:center;
+  padding:10px;
+  font-size:13px;
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <button class="refreshBtn" onclick="loadPosts()">Refresh</button>
+    <div style="font-weight:700;">Grid Planner</div>
+  </div>
+
+  <div class="tabs">
+    <img id="tab-post" src="/icons/post-dark.png" onclick="setFilter('Post')">
+    <img id="tab-reel" src="/icons/reel-light.png" onclick="setFilter('Reels')">
+    <img id="tab-story" src="/icons/story-light.png" onclick="setFilter('Story')">
+    <img id="tab-tiktok" src="/icons/tiktok-light.png" onclick="setFilter('Tiktok')">
+  </div>
+
+  <div class="gridWrap">
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <div class="footer">Something Organized</div>
+
+</div>
+
+<script>
+let ALL_POSTS = [];
+let FILTER = "Post";
+
+/* TAB ICON SWITCH */
+function updateTabs(){
+  document.getElementById("tab-post").src =
+    FILTER==="Post"?"/icons/post-dark.png":"/icons/post-light.png";
+
+  document.getElementById("tab-reel").src =
+    FILTER==="Reels"?"/icons/reel-dark.png":"/icons/reel-light.png";
+
+  document.getElementById("tab-story").src =
+    FILTER==="Story"?"/icons/story-dark.png":"/icons/story-light.png";
+
+  document.getElementById("tab-tiktok").src =
+    FILTER==="Tiktok"?"/icons/tiktok-dark.png":"/icons/tiktok-light.png";
+}
+
+function setFilter(type){
+  FILTER = type;
+  updateTabs();
+  renderGrid();
+}
+
+/* FETCH DATA */
+async function loadPosts(){
+  const res = await fetch("/api/get-posts");
+  ALL_POSTS = await res.json();
+
+  /* SORT PINNED + DATE */
+  ALL_POSTS.sort((a,b)=>{
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+    return new Date(b.publishDate||0)-new Date(a.publishDate||0);
+  });
+
+  updateTabs();
+  renderGrid();
+}
+
+/* GRID RENDER */
+function renderGrid(){
+  const grid = document.getElementById("grid");
+  grid.innerHTML="";
+
+  const filtered = ALL_POSTS.filter(p=>p.type?.includes(FILTER));
+
+  const total = Math.max(filtered.length, 60);
+
+  for(let i=0;i<total;i++){
+
+    const post = filtered[i];
+    const card = document.createElement("div");
+    card.className="card";
+
+    if(post && (post.attachment || post.video)){
+
+      if(post.attachment){
+        const img = document.createElement("img");
+        img.crossOrigin="anonymous";
+        img.src = post.attachment;
+        card.appendChild(img);
+      }
+
+      else if(post.video){
+        const vid = document.createElement("video");
+        vid.src = post.video;
+        vid.controls=true;
+        card.appendChild(vid);
+      }
+
+    } else {
+
+      const no = document.createElement("div");
+      no.className="noContent";
+      no.innerText="NO CONTENT";
+      card.appendChild(no);
+
+    }
+
+    grid.appendChild(card);
+  }
+}
+
+loadPosts();
+</script>
+
+</body>
+</html>
