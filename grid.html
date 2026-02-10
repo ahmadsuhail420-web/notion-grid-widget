@@ -316,85 +316,84 @@ if(icon) icon.classList.remove("spin");
 }
 
 /* RENDER GRID */
+  function getMediaUrls(attachment) {
+  if (!attachment) return [];
+
+  // Already a string
+  if (typeof attachment === "string") return [attachment];
+
+  // Notion files
+  if (Array.isArray(attachment)) {
+    return attachment
+      .map(a => a?.file?.url || a?.external?.url)
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
 function renderGrid(){
 
-const grid=document.getElementById("grid");
-grid.innerHTML="";
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
 
-const filtered = ALL_POSTS.filter(p => {
-  if (!p.type) return false;
-  return p.type.toLowerCase() === FILTER.toLowerCase();
-});
-const total=Math.max(filtered.length,60);
+  const filtered = ALL_POSTS.filter(p =>
+    p && p.type && p.type.toLowerCase() === FILTER.toLowerCase()
+  );
 
-for(let i=0;i<total;i++){
+  const total = Math.max(filtered.length, 60);
 
-const post=filtered[i];
-const card=document.createElement("div");
-card.className="card";
+  for (let i = 0; i < total; i++) {
 
-if (post && (post.attachment || post.video)) {
+    const card = document.createElement("div");
+    card.className = "card";
 
-  const hasMultiple =
-    Array.isArray(post.attachment) && post.attachment.length > 1;
+    const post = filtered[i];
+    const mediaUrls = post ? getMediaUrls(post.attachment) : [];
 
-  /* IMAGE */
-  if (post.attachment) {
-    const img = document.createElement("img");
+    if (post && (mediaUrls.length || post.video)) {
 
-    // Show first image only in grid
-    img.src = Array.isArray(post.attachment)
-      ? post.attachment[0]
-      : post.attachment;
+      // IMAGE (first only)
+      if (mediaUrls.length) {
+        const img = document.createElement("img");
+        img.src = mediaUrls[0];
+        card.appendChild(img);
+      }
 
-    card.appendChild(img);
+      // VIDEO
+      if (post.video) {
+        const vid = document.createElement("video");
+        vid.src = post.video;
+        card.appendChild(vid);
+      }
+
+      // MULTI BADGE
+      if (mediaUrls.length > 1) {
+        const multi = document.createElement("img");
+        multi.src = "/icons/multi.png";
+        multi.className = "badge";
+        card.appendChild(multi);
+      }
+
+      // PIN BADGE
+      if (post.pinned && mediaUrls.length <= 1) {
+        const pin = document.createElement("img");
+        pin.src = "/icons/pin.png";
+        pin.className = "badge";
+        card.appendChild(pin);
+      }
+
+    } else {
+      const no = document.createElement("div");
+      no.className = "noContent";
+      no.textContent = "NO CONTENT";
+      card.appendChild(no);
+    }
+
+    grid.appendChild(card);
   }
-
-  /* VIDEO */
-  if (post.video) {
-    const vid = document.createElement("video");
-    vid.src = post.video;
-    card.appendChild(vid);
-  }
-
-  /* MULTI IMAGE BADGE */
-  if (hasMultiple) {
-    const multi = document.createElement("img");
-    multi.src = "/icons/multi.png";
-    multi.className = "badge";
-    card.appendChild(multi);
-  }
-
-  /* PIN BADGE (only if NOT multi OR if you want both) */
-  if (post.pinned && !hasMultiple) {
-    const pin = document.createElement("img");
-    pin.src = "/icons/pin.png";
-    pin.className = "badge";
-    card.appendChild(pin);
-  }
-
 }
 
-
-/* PIN BADGE */
-if(post.pinned){
-const pin=document.createElement("img");
-pin.src="/icons/pin.png";
-pin.className="badge";
-card.appendChild(pin);
-}
-
-}else{
-const no=document.createElement("div");
-no.className="noContent";
-no.innerText="NO CONTENT";
-card.appendChild(no);
-}
-
-grid.appendChild(card);
-}
-
-}
 
 loadPosts();
 </script>
