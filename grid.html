@@ -283,36 +283,33 @@ function setFilter(type, el) {
 }
 
 /* FETCH POSTS */
-async function loadPosts(btn){
+async function loadPosts(btn) {
+  const icon = btn?.querySelector(".refreshIcon");
+  if (icon) icon.classList.add("spin");
 
-const icon = btn?.querySelector(".refreshIcon");
+  try {
+    const res = await fetch("/api/get-posts");
+    if (!res.ok) throw new Error("API failed: " + res.status);
 
-/* START BUTTON SPIN ONLY */
-if(icon) icon.classList.add("spin");
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error("API did not return an array");
 
-try{
+    // SORT PINNED → NEWEST
+    data.sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
+    });
 
-const res = await fetch("/api/get-posts");
-const data = await res.json();
+    ALL_POSTS = data;
+  } catch (e) {
+    console.log("Refresh failed, showing placeholders:", e);
+    ALL_POSTS = []; // show NO CONTENT placeholders
+  }
 
-/* SORT PINNED → NEWEST */
-data.sort((a,b)=>{
-if(a.pinned && !b.pinned) return -1;
-if(!a.pinned && b.pinned) return 1;
-return new Date(b.publishDate||0) - new Date(a.publishDate||0);
-});
+  renderGrid();
 
-ALL_POSTS = data;
-
-renderGrid();
-
-}catch(e){
-console.log("Refresh failed");
-}
-
-/* STOP SPIN */
-if(icon) icon.classList.remove("spin");
-
+  if (icon) icon.classList.remove("spin");
 }
 
 /* RENDER GRID */
