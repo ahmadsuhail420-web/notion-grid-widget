@@ -7,7 +7,7 @@
 <style>
 body{
   font-family:Inter, sans-serif;
-  background:#ffffff;
+  background:#fff;
   margin:0;
   padding:0;
   display:flex;
@@ -19,94 +19,30 @@ body{
   width:90vw;
   height:70vh;
   max-height:80vh;
-  background:#ffffff;
-  border-radius:24px;
   border:2px solid #e2e2e2;
+  border-radius:24px;
+  padding:16px;
   display:flex;
   flex-direction:column;
-  padding:20px 20px 10px;
   position:relative;
 }
 
-/* HEADER */
-.header{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  padding:14px 18px;
-}
-
-.refreshBtn{
-  background:black;
-  color:white;
-  border:none;
-  padding:8px 16px;
-  border-radius:12px;
-  font-weight:600;
-  cursor:pointer;
-  font-size:14px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.title{
-  text-align:right;
-  font-weight:700;
-  font-size:16px;
-}
-
-/* TABS */
-.tabs{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  padding:10px 0 8px;
-}
-
-.tabItem{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:6px;
-  cursor:pointer;
-}
-
-.tabItem img{
-  width:22px;
-  height:22px;
-  opacity:.45;
-}
-
-.tabItem.active img{ opacity:1; }
-
-.tabUnderline{
-  width:18px;
-  height:2px;
-  background:black;
-  opacity:0;
-}
-
-.tabItem.active .tabUnderline{ opacity:1; }
-
 /* GRID */
-.gridWrap{ flex:1; overflow-y:auto; }
+.gridWrap{ flex:1; overflow:auto; }
 .grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:3px;
+  gap:4px;
 }
 
 /* CARD */
 .card{
   aspect-ratio:4/5;
-  background:#efefef;
+  background:#eee;
   position:relative;
   overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  cursor:pointer;
 }
-
 .card img,
 .card video{
   width:100%;
@@ -143,9 +79,7 @@ body{
   transition:.25s;
   pointer-events:none;
 }
-
 .card:hover .cardInfo{ transform:translateY(0); }
-
 .cardTitle{ font-size:12px; }
 .cardDate{ font-size:10px; opacity:.7; }
 
@@ -159,7 +93,6 @@ body{
   justify-content:center;
   z-index:50;
 }
-
 .viewer.hidden{ display:none; }
 
 .viewerInner{
@@ -170,9 +103,10 @@ body{
   overflow:hidden;
   display:flex;
   flex-direction:column;
+  position:relative;
 }
 
-/* MEDIA RATIO (4:5 SAME AS CARD) */
+/* 4:5 MEDIA */
 .viewerMedia{
   aspect-ratio:4/5;
   background:#000;
@@ -181,7 +115,6 @@ body{
   justify-content:center;
   position:relative;
 }
-
 .viewerMedia img,
 .viewerMedia video{
   max-width:100%;
@@ -195,7 +128,7 @@ body{
   top:50%;
   transform:translateY(-50%);
   background:rgba(0,0,0,.6);
-  color:white;
+  color:#fff;
   border:none;
   font-size:26px;
   padding:6px 12px;
@@ -211,18 +144,18 @@ body{
   padding:10px 14px;
   font-size:13px;
 }
-
 .viewerFooter div:last-child{
   font-size:11px;
   opacity:.6;
 }
 
+/* CLOSE */
 .viewerClose{
   position:absolute;
   top:8px;
   right:10px;
   background:rgba(0,0,0,.6);
-  color:white;
+  color:#fff;
   border:none;
   border-radius:50%;
   width:30px;
@@ -244,7 +177,7 @@ body{
   <div id="viewer" class="viewer hidden">
     <div class="viewerInner">
       <button class="viewerClose" onclick="closeViewer()">✕</button>
-      <div class="viewerMedia" id="viewerMedia"></div>
+      <div id="viewerMedia" class="viewerMedia"></div>
       <div class="viewerFooter">
         <div id="viewerTitle"></div>
         <div id="viewerDate"></div>
@@ -255,35 +188,129 @@ body{
 </div>
 
 <script>
-let ALL_POSTS = [];   // assume already filled
-let FILTER = "Post";
-
+let ALL_POSTS = [];
 let slides = [];
 let slideIndex = 0;
 
-function openViewer(post){
-  const viewer = document.getElementById("viewer");
-  const media = document.getElementById("viewerMedia");
-  media.innerHTML = "";
-  slides = [];
-  slideIndex = 0;
+/* FETCH DATA */
+async function loadPosts(){
+  try{
+    const res = await fetch("/api/get-posts");
+    ALL_POSTS = await res.json();
+    renderGrid();
+  }catch(e){
+    console.error("Fetch failed", e);
+  }
+}
 
-  if(post.attachment){
-    slides = Array.isArray(post.attachment) ? post.attachment : [post.attachment];
-    showSlide();
+/* VIDEO PREVIEW */
+function getVideoPreview(url){
+  if(!url) return null;
+
+  if(url.includes("youtube") || url.includes("youtu.be")){
+    const m = url.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if(m){
+      return { type:"image", src:`https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` };
+    }
   }
 
-  if(post.video){
-    media.innerHTML="";
+  if(url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)){
+    return { type:"video", src:url };
+  }
+
+  return { type:"placeholder", src:"/icons/video.png" };
+}
+
+/* RENDER GRID */
+function renderGrid(){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  ALL_POSTS.forEach(post=>{
+    const card = document.createElement("div");
+    card.className = "card";
+
+    /* IMAGE */
+    if(post.attachment){
+      const img = document.createElement("img");
+      img.src = Array.isArray(post.attachment)
+        ? post.attachment[0]
+        : post.attachment;
+      card.appendChild(img);
+    }
+
+    /* VIDEO */
+    else if(post.video){
+      const p = getVideoPreview(post.video);
+      if(p.type==="video"){
+        const v=document.createElement("video");
+        v.src=p.src;
+        v.muted=true; v.autoplay=true; v.loop=true;
+        card.appendChild(v);
+      }else{
+        const img=document.createElement("img");
+        img.src=p.src;
+        card.appendChild(img);
+      }
+    }
+
+    /* BADGE LOGIC */
+    const isMulti = Array.isArray(post.attachment) && post.attachment.length>1;
+    if(post.pinned){
+      const b=document.createElement("img");
+      b.src="/icons/pin.png";
+      b.className="badge";
+      card.appendChild(b);
+    }else if(isMulti){
+      const b=document.createElement("img");
+      b.src="/icons/multi.png";
+      b.className="badge";
+      card.appendChild(b);
+    }
+
+    /* HOVER INFO */
+    if(post.name || post.publishDate){
+      const info=document.createElement("div");
+      info.className="cardInfo";
+      if(post.name){
+        const t=document.createElement("div");
+        t.className="cardTitle";
+        t.textContent=post.name;
+        info.appendChild(t);
+      }
+      if(post.publishDate){
+        const d=document.createElement("div");
+        d.className="cardDate";
+        d.textContent=post.publishDate;
+        info.appendChild(d);
+      }
+      card.appendChild(info);
+    }
+
+    card.onclick=()=>openViewer(post);
+    grid.appendChild(card);
+  });
+}
+
+/* VIEWER */
+function openViewer(post){
+  const viewer=document.getElementById("viewer");
+  const media=document.getElementById("viewerMedia");
+  media.innerHTML="";
+  slides=[]; slideIndex=0;
+
+  if(post.attachment){
+    slides = Array.isArray(post.attachment)?post.attachment:[post.attachment];
+    showSlide();
+  }else if(post.video){
     const v=document.createElement("video");
     v.src=post.video;
     v.controls=true;
     media.appendChild(v);
   }
 
-  document.getElementById("viewerTitle").textContent = post.name || "";
-  document.getElementById("viewerDate").textContent = post.publishDate || "";
-
+  document.getElementById("viewerTitle").textContent=post.name||"";
+  document.getElementById("viewerDate").textContent=post.publishDate||"";
   viewer.classList.remove("hidden");
 }
 
@@ -313,6 +340,9 @@ function showSlide(){
 function closeViewer(){
   document.getElementById("viewer").classList.add("hidden");
 }
+
+/* START */
+loadPosts();
 </script>
 
 </body>
