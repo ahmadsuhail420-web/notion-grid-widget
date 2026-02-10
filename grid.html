@@ -763,6 +763,16 @@ if (post?.name || post?.publishDate) {
     grid.appendChild(card);
   }
 }
+  const viewer = document.getElementById("viewer");
+const viewerInner = document.querySelector(".viewerInner");
+
+viewer.addEventListener("click", () => {
+  closeViewer();
+});
+
+viewerInner.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
 
 loadPosts();
 </script>
