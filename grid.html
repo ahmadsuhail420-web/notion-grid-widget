@@ -508,90 +508,22 @@ if(icon) icon.classList.remove("spin");
 let currentMedia = [];
 
 function openViewer(post) {
-  const viewer = document.getElementById("viewer");
-  const content = document.getElementById("viewerContent");
+  currentMedia = Array.isArray(post.attachment)
+    ? post.attachment
+    : [post.attachment];
 
-  content.innerHTML = "";
   currentSlide = 0;
 
-  // IMAGE(S)
-  if (post.attachment) {
-    currentMedia = Array.isArray(post.attachment)
-      ? post.attachment
-      : [post.attachment];
+  // set image
+  document.getElementById("viewerImage").src = currentMedia[0] || "";
 
-    showSlide();
-  }
-
-  // VIDEO
-  if (post.video) {
-    content.innerHTML = "";
-    const vid = document.createElement("video");
-    vid.src = post.video;
-    vid.controls = true;
-    vid.autoplay = true;
-    content.appendChild(vid);
-  }
-
-  // Text
+  // set text
   document.getElementById("viewerTitle").textContent = post.name || "";
   document.getElementById("viewerDate").textContent = post.publishDate || "";
 
+  const viewer = document.getElementById("viewer");
   viewer.classList.remove("hidden");
-requestAnimationFrame(() => {
-  viewer.classList.add("show");
-});
-}
-
-function showSlide() {
-  const content = document.getElementById("viewerContent");
-  content.innerHTML = "";
-
-  const img = document.createElement("img");
-  img.src = currentMedia[currentSlide];
-  content.appendChild(img);
-
-  // desktop double-click zoom
-  img.addEventListener("dblclick", () => {
-    img.classList.toggle("zoomed");
-  });
-
-  // mobile double-tap zoom
-  let lastTap = 0;
-  img.addEventListener("touchend", () => {
-    const now = Date.now();
-    if (now - lastTap < 300) {
-      img.classList.toggle("zoomed");
-    }
-    lastTap = now;
-  });
-
-  if (currentMedia.length > 1) {
-    addControls();
-  }
-}
-
-function addControls() {
-  const content = document.getElementById("viewerContent");
-
-  const prev = document.createElement("button");
-  prev.textContent = "‹";
-  prev.className = "nav prev";
-  prev.onclick = () => {
-    currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
-    showSlide();
-  };
-
-  const next = document.createElement("button");
-  next.textContent = "›";
-  next.className = "nav next";
-  next.onclick = () => {
-    currentSlide = (currentSlide + 1) % currentMedia.length;
-    showSlide();
-  };
-
-  content.appendChild(prev);
-  content.appendChild(next);
+  requestAnimationFrame(() => viewer.classList.add("show"));
 }
 
 function closeViewer() {
