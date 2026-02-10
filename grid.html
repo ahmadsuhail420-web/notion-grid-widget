@@ -213,6 +213,25 @@ display:block;
   overflow: hidden;
   box-shadow: 0 12px 40px rgba(0,0,0,0.25);
 }
+  .viewer {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.viewer.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.viewerInner {
+  transform: scale(0.96);
+  transition: transform 0.25s ease;
+}
+
+.viewer.show .viewerInner {
+  transform: scale(1);
+}
 
 /* Close button */
 .viewerClose {
@@ -285,6 +304,16 @@ display:block;
   color: #888;
   margin-bottom: 6px;
 }
+  .viewerContent img.zoomed {
+  transform: scale(2);
+  cursor: zoom-out;
+}
+
+.viewerContent img {
+  transition: transform 0.25s ease;
+  cursor: zoom-in;
+}
+
 
 
 /* BADGES */
@@ -532,11 +561,28 @@ function openViewer(post) {
   document.getElementById("viewerDate").textContent = post.publishDate || "";
 
   viewer.classList.remove("hidden");
+requestAnimationFrame(() => {
+  viewer.classList.add("show");
+});
 }
 
 function showSlide() {
   const content = document.getElementById("viewerContent");
   content.innerHTML = "";
+ 
+  img.addEventListener("dblclick", () => {
+  img.classList.toggle("zoomed");
+});
+
+  let lastTap = 0;
+
+img.addEventListener("touchend", () => {
+  const now = Date.now();
+  if (now - lastTap < 300) {
+    img.classList.toggle("zoomed");
+  }
+  lastTap = now;
+});
 
   const img = document.createElement("img");
   img.src = currentMedia[currentSlide];
@@ -571,7 +617,12 @@ function addControls() {
 }
 
 function closeViewer() {
-  document.getElementById("viewer").classList.add("hidden");
+  const viewer = document.getElementById("viewer");
+  viewer.classList.remove("show");
+
+  setTimeout(() => {
+    viewer.classList.add("hidden");
+  }, 250);
 }
   
   function getVideoPreview(post) {
