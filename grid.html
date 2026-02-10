@@ -321,7 +321,10 @@ function renderGrid(){
 const grid=document.getElementById("grid");
 grid.innerHTML="";
 
-const filtered=ALL_POSTS.filter(p=>p.type?.includes(FILTER));
+const filtered = ALL_POSTS.filter(p => {
+  if (!p.type) return false;
+  return p.type.toLowerCase() === FILTER.toLowerCase();
+});
 const total=Math.max(filtered.length,60);
 
 for(let i=0;i<total;i++){
