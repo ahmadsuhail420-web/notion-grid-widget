@@ -347,45 +347,41 @@ if(icon) icon.classList.remove("spin");
 
 
 function renderGrid() {
-  console.log("ALL_POSTS:", ALL_POSTS);
+
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
   const filtered = ALL_POSTS.filter(p =>
-    p && p.type && p.type.toLowerCase() === FILTER.toLowerCase()
+    Array.isArray(p.type) && p.type.includes(FILTER)
   );
 
   const total = Math.max(filtered.length, 60);
 
   for (let i = 0; i < total; i++) {
+
     const card = document.createElement("div");
     card.className = "card";
 
     const post = filtered[i];
-    const mediaUrls = extractMediaUrls(post);
 
-    if (post && (mediaUrls.length > 0 || post.video)) {
+    if (post && (post.attachment || post.video)) {
 
-      if (mediaUrls.length > 0) {
+      // IMAGE
+      if (post.attachment) {
         const img = document.createElement("img");
-        img.src = mediaUrls[0];
+        img.src = post.attachment;
         card.appendChild(img);
       }
 
+      // VIDEO
       if (post.video) {
         const vid = document.createElement("video");
         vid.src = post.video;
         card.appendChild(vid);
       }
 
-      if (mediaUrls.length > 1) {
-        const multi = document.createElement("img");
-        multi.src = "/icons/multi.png";
-        multi.className = "badge";
-        card.appendChild(multi);
-      }
-
-      if (post.pinned && mediaUrls.length <= 1) {
+      // PIN
+      if (post.pinned) {
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
         pin.className = "badge";
@@ -402,7 +398,6 @@ function renderGrid() {
     grid.appendChild(card);
   }
 }
-
 
 loadPosts();
 </script>
