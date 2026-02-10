@@ -254,26 +254,16 @@ display:block;
 /* Media area */
 .viewerContent {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  align-items: flex-start; /* top-align tall images */
-  justify-content: center;
+  overflow: hidden;   /* ❌ no scroll in crop mode */
   background: #000;
-  
-  scrollbar-width: none;          /* Firefox */
-  -ms-overflow-style: none;       /* IE / Edge */
-}
-
-.viewerContent::-webkit-scrollbar {
-  display: none;                  /* Chrome / Safari */
 }
 
 .viewerContent img,
 .viewerContent video {
   width: 100%;
-  height: auto;          /* ✅ natural height */
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;        /* ✅ crop */
+  object-position: center; /* ✅ crop from middle */
   display: block;
 }
 
