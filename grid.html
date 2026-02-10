@@ -331,9 +331,22 @@ if(icon) icon.classList.remove("spin");
 
   return [];
 }
+  function extractMediaUrls(post) {
+  if (!post || !post.attachment) return [];
 
-function renderGrid(){
+  if (typeof post.attachment === "string") return [post.attachment];
 
+  if (Array.isArray(post.attachment)) {
+    return post.attachment
+      .map(a => a?.file?.url || a?.external?.url)
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+
+function renderGrid() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
@@ -344,30 +357,26 @@ function renderGrid(){
   const total = Math.max(filtered.length, 60);
 
   for (let i = 0; i < total; i++) {
-
     const card = document.createElement("div");
     card.className = "card";
 
     const post = filtered[i];
-    const mediaUrls = post ? getMediaUrls(post.attachment) : [];
+    const mediaUrls = extractMediaUrls(post);
 
-    if (post && (mediaUrls.length || post.video)) {
+    if (post && (mediaUrls.length > 0 || post.video)) {
 
-      // IMAGE (first only)
-      if (mediaUrls.length) {
+      if (mediaUrls.length > 0) {
         const img = document.createElement("img");
         img.src = mediaUrls[0];
         card.appendChild(img);
       }
 
-      // VIDEO
       if (post.video) {
         const vid = document.createElement("video");
         vid.src = post.video;
         card.appendChild(vid);
       }
 
-      // MULTI BADGE
       if (mediaUrls.length > 1) {
         const multi = document.createElement("img");
         multi.src = "/icons/multi.png";
@@ -375,7 +384,6 @@ function renderGrid(){
         card.appendChild(multi);
       }
 
-      // PIN BADGE
       if (post.pinned && mediaUrls.length <= 1) {
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
