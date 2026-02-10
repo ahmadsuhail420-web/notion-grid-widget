@@ -239,6 +239,14 @@ display:block;
   justify-content: center;
   background: #000;
 }
+  .viewerContent {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE / Edge */
+}
+
+.viewerContent::-webkit-scrollbar {
+  display: none;                  /* Chrome / Safari */
+}
 
 .viewerContent img,
 .viewerContent video {
@@ -256,7 +264,7 @@ display:block;
   bottom: 0;
   background: linear-gradient(
     to top,
-    rgba(0,0,0,.6),
+    rgba(0,0,0,.8),
     rgba(0,0,0,0)
   );
   color: #fff;
