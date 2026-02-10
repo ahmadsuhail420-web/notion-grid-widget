@@ -36,32 +36,30 @@ padding:14px 18px;
 }
 
 .refreshBtn{
-background:black;
-color:white;
-border:none;
-padding:8px 16px;
-border-radius:8px;
-font-weight:600;
-cursor:pointer;
-font-size:14px;
-display:flex;
-align-items:center;
-gap:2px;
+  background:black;
+  color:white;
+  border:none;
+  padding:8px 16px;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
 
 .refreshIcon{
-display:inline-block;
-margin-right:3px;
-transition:transform .3s;
+  font-size:18px;
 }
 
 .refreshIcon.spin{
-animation:spin 1s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin{
-from{transform:rotate(0deg);}
-to{transform:rotate(360deg);}
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
 }
 
 .title{
@@ -335,16 +333,14 @@ animation:spin 1s linear infinite;
 </head>
 
 <body>
-
+  
 <div class="container">
 
 <div class="header">
-<button class="refreshBtn" onclick="loadPosts(this)">
-<span class="refreshIcon">⟳</span>
-<svg class="refreshIcon" viewBox="0 0 24 24" fill="white">
-<path d="M12 6V3L8 7l4 4V8c2.8 0 5 2.2 5 5a5 5 0 11-9.9-1H5a7 7 0 1014 1c0-3.9-3.1-7-7-7z"/>
-</svg>
-Refresh
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<button class="refreshBtn">
+  <span class="material-icons refreshIcon">refresh</span>
+  Refresh
 </button>
 <div class="title">Grid Planner</div>
 <div></div>
