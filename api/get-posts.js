@@ -2,27 +2,20 @@ import { Client } from "@notionhq/client";
 
 export default async function handler(req, res) {
   try {
-    // -------- CHECK ENV FIRST --------
     if (!process.env.NOTION_TOKEN) {
-      return res.status(500).json({
-        error: "Missing NOTION_TOKEN env variable",
-      });
+      return res.status(500).json({ error: "Missing NOTION_TOKEN" });
     }
 
     if (!process.env.NOTION_DATABASE_ID) {
-      return res.status(500).json({
-        error: "Missing NOTION_DATABASE_ID env variable",
-      });
+      return res.status(500).json({ error: "Missing NOTION_DATABASE_ID" });
     }
 
     const notion = new Client({
       auth: process.env.NOTION_TOKEN,
     });
 
-    const databaseId = process.env.NOTION_DATABASE_ID;
-
     const response = await notion.databases.query({
-      database_id: databaseId,
+      database_id: process.env.NOTION_DATABASE_ID,
     });
 
     const posts = response.results.map((page) => {
@@ -33,16 +26,18 @@ export default async function handler(req, res) {
         const publishDate =
           page.properties?.["Publish Date"]?.date?.start || null;
 
-        const files =
-          page.properties?.Attachment?.files || [];
-
-        let attachment = null;
-        if (files.length > 0) {
-          attachment =
-            files[0]?.file?.url ||
-            files[0]?.external?.url ||
-            null;
-        }
+        // ✅ FIX: return ALL attachments
+        const files = page.properties?.Attachment?.files || [];
+        const attachment =
+          files.length > 0
+            ? files
+                .map(
+                  (f) =>
+                    f?.file?.url ||
+                    f?.external?.url
+                )
+                .filter(Boolean)
+            : null;
 
         const video =
           page.properties?.["Media/Video"]?.url || null;
@@ -59,7 +54,7 @@ export default async function handler(req, res) {
           id: page.id,
           name,
           publishDate,
-          attachment,
+          attachment, // <-- ARRAY when multi, STRING not used anymore
           video,
           type,
           pinned,
@@ -77,7 +72,6 @@ export default async function handler(req, res) {
     res.status(500).json({
       error: "Server crashed",
       message: error.message,
-      hint: "Check ENV variables or database access",
     });
   }
 }
