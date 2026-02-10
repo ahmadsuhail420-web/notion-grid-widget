@@ -217,24 +217,21 @@ display:block;
   width: min(360px, 85%);
   background: #fff;
   border-radius: 20px;
-  overflow: visible;
   position: relative;
   box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+  overflow: visible;   /* 🔴 KEY FIX */
+}
 
-  transform: scale(0.96);
-  transition: transform 0.25s ease;
+/* ---------- IMAGE AREA ---------- */
+
+.viewerImage {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;    /* crop image only */
 }
 
 .viewer.show .viewerInner {
   transform: scale(1);
-}
-
-/* ---------- IMAGE AREA ---------- */
-.viewerImage {
-  width: 100%;
-  aspect-ratio: 4 / 5;      /* 🔴 EXACT IMAGE SIZE */
-  overflow: hidden;
-  background: #000;
 }
 
 .viewerImage img {
@@ -243,12 +240,6 @@ display:block;
   object-fit: cover;        /* 🔴 center crop */
   object-position: center;
   display: block;
-}
-.viewerMask {
-  background: #fff;
-  border-radius: 20px;
-  overflow: hidden;          /* ✅ clips image + footer */
-  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
 }
 
 /* ---------- FOOTER ---------- */
@@ -425,17 +416,15 @@ animation:spin 1s linear infinite;
 
 </div>
  <!-- MEDIA VIEWER -->
-<div class="viewerInner">
+<div id="viewer" class="viewer hidden">
+  <div class="viewerInner">
 
-  <!-- CLOSE -->
-  <button class="viewerClose" onclick="closeViewer()">✕</button>
+    <!-- CLOSE -->
+    <button class="viewerClose" onclick="closeViewer()">✕</button>
 
-  <!-- NAV -->
-  <button class="nav prev" onclick="prevImage()">‹</button>
-  <button class="nav next" onclick="nextImage()">›</button>
-
-  <!-- MASK (NEW) -->
-  <div class="viewerMask">
+    <!-- NAVIGATION (ADD HERE) -->
+    <button class="nav prev" onclick="prevImage()">‹</button>
+    <button class="nav next" onclick="nextImage()">›</button>
 
     <!-- IMAGE -->
     <div class="viewerImage">
