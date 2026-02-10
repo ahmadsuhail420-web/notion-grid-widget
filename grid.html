@@ -316,90 +316,52 @@ if(icon) icon.classList.remove("spin");
 }
 
 /* RENDER GRID */
-function renderGrid() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
+function renderGrid(){
 
-  const filtered = ALL_POSTS.filter(p => p.type?.includes(FILTER));
-  const total = Math.max(filtered.length, 60);
+const grid=document.getElementById("grid");
+grid.innerHTML="";
 
-  for (let i = 0; i < total; i++) {
-    const post = filtered[i];
-    const card = document.createElement("div");
-    card.className = "card";
+const filtered=ALL_POSTS.filter(p=>p.type?.includes(FILTER));
+const total=Math.max(filtered.length,60);
 
-    const mediaItems = [];
+for(let i=0;i<total;i++){
 
-    // --- Attachment (Files & Media) ---
-    if (post?.Attachment) {
-  const attachments = Array.isArray(post.Attachment) ? post.Attachment : [post.Attachment];
-  attachments.forEach(file => {
-    let url = null;
-    if (file.type === "file" && file.file?.url) url = file.file.url;
-    else if (file.type === "external" && file.external?.url) url = file.external.url;
+const post=filtered[i];
+const card=document.createElement("div");
+card.className="card";
 
-    if (url) mediaItems.push({ src: url, type: "image" }); // treat all attachments as images
-  });
+if(post && (post.attachment || post.video)){
+
+if(post.attachment){
+const img=document.createElement("img");
+img.src=post.attachment;
+card.appendChild(img);
 }
 
-    // --- Media / Video (URL) ---
-    if (post?.Media || post?.Video) {
-  const videos = post.Media || post.Video;
-  const videoArray = Array.isArray(videos) ? videos : [videos];
-  videoArray.forEach(url => {
-    if (url) mediaItems.push({ src: url, type: "video" });
-  });
+if(post.video){
+const vid=document.createElement("video");
+vid.src=post.video;
+card.appendChild(vid);
 }
 
-    // --- Render media ---
-    if (mediaItems.length > 0) {
-      mediaItems.forEach(item => {
-        let el;
-        if (item.type === "video") {
-          el = document.createElement("video");
-          el.src = item.src;
-          el.autoplay = false;
-          el.loop = true;
-          el.muted = true;
-          el.controls = false;
-        } else {
-          el = document.createElement("img");
-          el.src = item.src;
-        }
+/* PIN BADGE */
+if(post.pinned){
+const pin=document.createElement("img");
+pin.src="/icons/pin.png";
+pin.className="badge";
+card.appendChild(pin);
+}
 
-        el.style.width = "100%";
-        el.style.height = "100%";
-        el.style.objectFit = "cover";
-        card.appendChild(el);
-      });
+}else{
+const no=document.createElement("div");
+no.className="noContent";
+no.innerText="NO CONTENT";
+card.appendChild(no);
+}
 
-      // --- Badge logic ---
-      if (post.pinned) {
-        const pin = document.createElement("img");
-        pin.src = "/icons/pin.png";
-        pin.className = "badge";
-        pin.style.top = "6px";
-        pin.style.right = "6px";
-        card.appendChild(pin);
-      } else if (mediaItems.length > 1) {
-        const multiIcon = document.createElement("img");
-        multiIcon.src = "/icons/multi.png";
-        multiIcon.className = "badge";
-        multiIcon.style.top = "6px";
-        multiIcon.style.right = "6px";
-        card.appendChild(multiIcon);
-      }
+grid.appendChild(card);
+}
 
-    } else {
-      // --- No media ---
-      const no = document.createElement("div");
-      no.className = "noContent";
-      no.innerText = "NO CONTENT";
-      card.appendChild(no);
-    }
-
-    grid.appendChild(card);
-  }
 }
 
 loadPosts();
