@@ -377,11 +377,20 @@ function renderGrid() {
       }
 
       // ---------- VIDEO ----------
-      if (post.video) {
-        const vid = document.createElement("video");
-        vid.src = post.video;
-        card.appendChild(vid);
-      }
+    if (post.video) {
+  const vid = document.createElement("video");
+  vid.src = post.video;
+
+  vid.muted = true;
+  vid.playsInline = true;
+  vid.preload = "metadata";
+
+  vid.style.width = "100%";
+  vid.style.height = "100%";
+  vid.style.objectFit = "cover";
+
+  card.appendChild(vid);
+}
 
       // ---------- MULTI IMAGE ICON ----------
       if (Array.isArray(post.attachment) && post.attachment.length > 1) {
