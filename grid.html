@@ -316,42 +316,12 @@ if(icon) icon.classList.remove("spin");
 }
 
 /* RENDER GRID */
-  function getMediaUrls(attachment) {
-  if (!attachment) return [];
-
-  // Already a string
-  if (typeof attachment === "string") return [attachment];
-
-  // Notion files
-  if (Array.isArray(attachment)) {
-    return attachment
-      .map(a => a?.file?.url || a?.external?.url)
-      .filter(Boolean);
-  }
-
-  return [];
-}
-  function extractMediaUrls(post) {
-  if (!post || !post.attachment) return [];
-
-  if (typeof post.attachment === "string") return [post.attachment];
-
-  if (Array.isArray(post.attachment)) {
-    return post.attachment
-      .map(a => a?.file?.url || a?.external?.url)
-      .filter(Boolean);
-  }
-
-  return [];
-}
-
-
-function renderGrid() {
+  function renderGrid() {
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  // FIX: type is an ARRAY in your data
+  // type is ARRAY in your data
   const filtered = ALL_POSTS.filter(p =>
     Array.isArray(p.type) && p.type.includes(FILTER)
   );
@@ -367,32 +337,45 @@ function renderGrid() {
 
     if (post && (post.attachment || post.video)) {
 
-      // ---------- IMAGE ----------
+      /* ---------- IMAGE ---------- */
       if (post.attachment) {
         const img = document.createElement("img");
         img.src = Array.isArray(post.attachment)
-          ? post.attachment[0]   // show first image only
+          ? post.attachment[0]
           : post.attachment;
         card.appendChild(img);
       }
 
-      // ---------- VIDEO ----------
-    if (post.video) {
-  const vid = document.createElement("video");
-  vid.src = post.video;
+      /* ---------- VIDEO ---------- */
+      if (post.video) {
 
-  vid.muted = true;
-  vid.playsInline = true;
-  vid.preload = "metadata";
+        // YOUTUBE / SHORTS → thumbnail
+        if (post.video.includes("youtube") || post.video.includes("youtu.be")) {
+          const match = post.video.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
 
-  vid.style.width = "100%";
-  vid.style.height = "100%";
-  vid.style.objectFit = "cover";
+          if (match) {
+            const thumb = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+            const img = document.createElement("img");
+            img.src = thumb;
+            card.appendChild(img);
+          }
 
-  card.appendChild(vid);
-}
+        } else {
+          // MP4 / direct video → muted autoplay loop
+          const vid = document.createElement("video");
+          vid.src = post.video;
+          vid.muted = true;
+          vid.autoplay = true;
+          vid.loop = true;
+          vid.playsInline = true;
+          vid.style.width = "100%";
+          vid.style.height = "100%";
+          vid.style.objectFit = "cover";
+          card.appendChild(vid);
+        }
+      }
 
-      // ---------- MULTI IMAGE ICON ----------
+      /* ---------- MULTI IMAGE ICON ---------- */
       if (Array.isArray(post.attachment) && post.attachment.length > 1) {
         const multi = document.createElement("img");
         multi.src = "/icons/multi.png";
@@ -400,7 +383,7 @@ function renderGrid() {
         card.appendChild(multi);
       }
 
-      // ---------- PIN ICON ----------
+      /* ---------- PIN ICON ---------- */
       if (post.pinned) {
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
@@ -409,7 +392,7 @@ function renderGrid() {
       }
 
     } else {
-      // ---------- NO CONTENT ----------
+      /* ---------- NO CONTENT ---------- */
       const no = document.createElement("div");
       no.className = "noContent";
       no.textContent = "NO CONTENT";
