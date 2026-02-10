@@ -314,31 +314,29 @@ async function loadPosts(btn) {
 
 /* RENDER GRID */
 function renderGrid() {
-
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  const filtered = ALL_POSTS.filter(p => {
-    return p && p.type && p.type.toLowerCase() === FILTER.toLowerCase();
-  });
+  const filtered = ALL_POSTS.filter(p =>
+    p && p.type && p.type.toLowerCase() === FILTER.toLowerCase()
+  );
 
   const total = Math.max(filtered.length, 60);
 
   for (let i = 0; i < total; i++) {
-
     const card = document.createElement("div");
     card.className = "card";
 
     const post = filtered[i];
 
-    if (post && (post.attachment || post.video)) {
+    const hasMedia = !!(post && (post.attachment || post.video));
+    if (hasMedia) {
+      const hasMultiple = Array.isArray(post.attachment) && post.attachment.length > 1;
 
-      // IMAGE
+      // IMAGE (first only)
       if (post.attachment) {
         const img = document.createElement("img");
-        img.src = Array.isArray(post.attachment)
-          ? post.attachment[0]
-          : post.attachment;
+        img.src = Array.isArray(post.attachment) ? post.attachment[0] : post.attachment;
         card.appendChild(img);
       }
 
@@ -349,24 +347,23 @@ function renderGrid() {
         card.appendChild(vid);
       }
 
-      // MULTI ICON
-      if (Array.isArray(post.attachment) && post.attachment.length > 1) {
+      // MULTI BADGE
+      if (hasMultiple) {
         const multi = document.createElement("img");
         multi.src = "/icons/multi.png";
         multi.className = "badge";
         card.appendChild(multi);
       }
 
-      // PIN ICON
-      if (post.pinned && !Array.isArray(post.attachment)) {
+      // PIN BADGE (only if not multi)
+      if (post.pinned && !hasMultiple) {
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
         pin.className = "badge";
         card.appendChild(pin);
       }
-
     } else {
-      // PLACEHOLDER
+      // NO CONTENT
       const no = document.createElement("div");
       no.className = "noContent";
       no.textContent = "NO CONTENT";
