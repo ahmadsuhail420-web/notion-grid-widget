@@ -6,161 +6,331 @@
 
 <style>
 body{
-  font-family:Inter, sans-serif;
-  background:#fff;
-  margin:0;
-  padding:0;
-  display:flex;
-  justify-content:center;
+font-family:Inter, sans-serif;
+background:#ffffff;
+margin:0;
+padding:0;
+display:flex;
+justify-content:center;
 }
 
 /* CONTAINER */
 .container{
-  width:90vw;
-  height:70vh;
-  max-height:80vh;
-  border:2px solid #e2e2e2;
-  border-radius:24px;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  position:relative;
+width:90vw;
+height: 70vh;
+max-height: 80vh;
+margin: 0;
+background:#ffffff;
+border-radius:24px;
+border: 2px solid #e2e2e2;
+display:flex;
+flex-direction:column;
+  padding: 20px 20px 10px;           /* ✅ INNER GAP ONLY */
+}
+
+/* HEADER */
+.header{
+display:grid;
+grid-template-columns:auto 1fr auto;
+align-items:center;
+padding:14px 18px;
+}
+
+.refreshBtn{
+background:black;
+color:white;
+border:none;
+padding:8px 16px;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+font-size:14px;
+display:flex;
+align-items:center;
+gap:1px;
+}
+
+.refreshIcon{
+display:inline-block;
+margin-right:3px;
+transition:transform .3s;
+}
+
+.refreshIcon.spin{
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+.title{
+text-align:right;
+font-weight:700;
+font-size:16px;
+}
+
+/* TABS */
+.tabs{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+align-items:center;
+padding:10px 0 8px;
+position:relative;
+}
+
+.tabItem{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:6px;
+cursor:pointer;
+}
+
+.tabItem img{
+width:22px;
+height:22px;
+opacity:.45;
+transition:.2s;
+}
+
+.tabItem.active img{
+opacity:1;
+transform:scale(1.05);
+}
+
+.tabUnderline{
+width:18px;
+height:2px;
+background:black;
+border-radius:2px;
+opacity:0;
+transition:.25s;
+}
+
+.tabItem.active .tabUnderline{
+opacity:1;
+}
+
+/* GRID WRAP */
+.gridWrap {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.gridWrap::-webkit-scrollbar {
+  display: none;
 }
 
 /* GRID */
-.gridWrap{ flex:1; overflow:auto; }
 .grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:4px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:3px;
+padding:4px;
 }
 
 /* CARD */
 .card{
-  aspect-ratio:4/5;
-  background:#eee;
-  position:relative;
-  overflow:hidden;
-  cursor:pointer;
+aspect-ratio:4/5;
+background:#efefef;
+overflow:hidden;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
 }
+
 .card img,
 .card video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
 }
 
-/* BADGE */
-.badge{
-  position:absolute;
-  top:4%;
-  right:6%;
-  width:16%;
-  height:16%;
-  object-fit:contain;
-  z-index:5;
-}
+ /* ---------- HOVER INFO OVERLAY ---------- */
+.cardInfo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
-/* HOVER INFO */
-.cardInfo{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  background:linear-gradient(
+  /* Fade from bottom to transparent top */
+  background: linear-gradient(
     to top,
-    rgba(0,0,0,.65),
-    rgba(0,0,0,.35),
-    rgba(0,0,0,0)
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0)
   );
-  color:#fff;
-  padding:10px;
-  transform:translateY(100%);
-  transition:.25s;
-  pointer-events:none;
-}
-.card:hover .cardInfo{ transform:translateY(0); }
-.cardTitle{ font-size:12px; }
-.cardDate{ font-size:10px; opacity:.7; }
 
-/* ---------- VIEWER ---------- */
-.viewer{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:50;
-}
-.viewer.hidden{ display:none; }
+  color: #fff;
+  padding: 10px 10px 8px;
 
-.viewerInner{
-  width:90%;
-  max-width:420px;
-  background:#000;
-  border-radius:16px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  position:relative;
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+  pointer-events: none;
 }
 
-/* 4:5 MEDIA */
-.viewerMedia{
-  aspect-ratio:4/5;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-}
-.viewerMedia img,
-.viewerMedia video{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
+.card:hover .cardInfo {
+  transform: translateY(0);
 }
 
-/* NAV */
-.nav{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  background:rgba(0,0,0,.6);
-  color:#fff;
-  border:none;
-  font-size:26px;
-  padding:6px 12px;
-  cursor:pointer;
+.cardTitle {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
 }
-.nav.prev{ left:8px; }
-.nav.next{ right:8px; }
+
+.cardDate {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+  /* ---------- VIEWER ---------- */
+.viewer {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.viewer.hidden {
+  display: none;
+}
+
+.viewerInner {
+  width: 92%;
+  height: 92%;
+  background: #000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Close button */
+.viewerClose {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 10;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  font-size: 18px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+/* Media area */
+.viewerContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.viewerContent img,
+.viewerContent video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Footer */
+.viewerFooter {
+  background: #fff;
+  color: #000;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+#viewerTitle {
+  font-weight: 500;
+}
+
+#viewerDate {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+/* BADGES */
+.card .badge {
+  position: absolute;
+  top: 4%;
+  right: 6%;
+  width: 16%;
+  height: 16%;
+  object-fit: contain;
+  z-index: 5;
+  pointer-events: none;
+  opacity: .8;
+}
+
+/* NO CONTENT */
+.noContent{
+font-size:11px;
+color:#b5b5b5;
+font-weight:500;
+letter-spacing:.4px;
+}
 
 /* FOOTER */
-.viewerFooter{
-  background:#fff;
-  color:#000;
-  padding:10px 14px;
-  font-size:13px;
-}
-.viewerFooter div:last-child{
-  font-size:11px;
-  opacity:.6;
+.footer{
+text-align:center;
+margin-top: auto
+padding-bottom :8px;
+padding-top :8px;
+font-size:13px;
+color:#777;
+  background: transparent;
 }
 
-/* CLOSE */
-.viewerClose{
-  position:absolute;
-  top:8px;
-  right:10px;
-  background:rgba(0,0,0,.6);
-  color:#fff;
-  border:none;
-  border-radius:50%;
-  width:30px;
-  height:30px;
-  cursor:pointer;
+  .nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  font-size: 28px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.nav.prev { left: 10px; }
+.nav.next { right: 10px; }
+
+/* LOADER */
+.loader{
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:rgba(255,255,255,.7);
+backdrop-filter:blur(2px);
+}
+
+.loaderCircle{
+width:30px;
+height:30px;
+border:3px solid #ddd;
+border-top:3px solid black;
+border-radius:50%;
+animation:spin 1s linear infinite;
 }
 </style>
 </head>
@@ -169,179 +339,343 @@ body{
 
 <div class="container">
 
-  <div class="gridWrap">
-    <div id="grid" class="grid"></div>
-  </div>
+<div class="header">
+<button class="refreshBtn" onclick="loadPosts(this)">
+<span class="refreshIcon">⟳</span>
+<svg class="refreshIcon" viewBox="0 0 24 24" fill="white">
+<path d="M12 6V3L8 7l4 4V8c2.8 0 5 2.2 5 5a5 5 0 11-9.9-1H5a7 7 0 1014 1c0-3.9-3.1-7-7-7z"/>
+</svg>
+Refresh
+</button>
+<div class="title">Grid Planner</div>
+<div></div>
+</div>
 
-  <!-- VIEWER -->
-  <div id="viewer" class="viewer hidden">
-    <div class="viewerInner">
-      <button class="viewerClose" onclick="closeViewer()">✕</button>
-      <div id="viewerMedia" class="viewerMedia"></div>
-      <div class="viewerFooter">
-        <div id="viewerTitle"></div>
-        <div id="viewerDate"></div>
-      </div>
-    </div>
-  </div>
+<!-- TABS -->
+<div class="tabs">
+
+<div class="tabItem active" onclick="setFilter('Post', this)">
+<img src="/icons/post-dark.png" id="icon-post">
+<div class="tabUnderline" id="tabUnderline"></div>
+</div>
+
+<div class="tabItem" onclick="setFilter('Reels', this)">
+<img src="/icons/reel-light.png" id="icon-reel">
+<div class="tabUnderline" id="tabUnderline"></div>
+</div>
+
+<div class="tabItem" onclick="setFilter('Story', this)">
+<img src="/icons/story-light.png" id="icon-story">
+<div class="tabUnderline" id="tabUnderline"></div>
+</div>
+
+<div class="tabItem" onclick="setFilter('Tiktok', this)">
+<img src="/icons/tiktok-light.png" id="icon-tiktok">
+<div class="tabUnderline" id="tabUnderline"></div>
+</div>
 
 </div>
 
-<script>
-let ALL_POSTS = [];
-let slides = [];
-let slideIndex = 0;
+<div class="gridWrap">
+<div id="grid" class="grid"></div>
+</div>
 
-/* FETCH DATA */
-async function loadPosts(){
-  try{
-    const res = await fetch("/api/get-posts");
-    ALL_POSTS = await res.json();
-    renderGrid();
-  }catch(e){
-    console.error("Fetch failed", e);
-  }
+<div class="footer">Created By: Suhail</div>
+
+</div>
+ <!-- MEDIA VIEWER -->
+<div id="viewer" class="viewer hidden">
+  <div class="viewerInner">
+
+    <button class="viewerClose" onclick="closeViewer()">✕</button>
+
+    <div class="viewerContent" id="viewerContent"></div>
+
+    <div class="viewerFooter">
+      <div id="viewerTitle"></div>
+      <div id="viewerDate"></div>
+    </div>
+
+  </div>
+</div> 
+
+<script>
+let ALL_POSTS=[];
+let FILTER="Post";
+
+/* TAB SWITCH */
+function setFilter(type, el) {
+  FILTER = type;
+
+  /* ACTIVE TAB */
+  document.querySelectorAll(".tabItem").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+
+  /* ICON SWITCH */
+  document.getElementById("icon-post").src =
+    FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
+
+  document.getElementById("icon-reel").src =
+    FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
+
+  document.getElementById("icon-story").src =
+    FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
+
+  document.getElementById("icon-tiktok").src =
+    FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
+
+  renderGrid();
 }
 
-/* VIDEO PREVIEW */
-function getVideoPreview(url){
-  if(!url) return null;
+/* FETCH POSTS */
+async function loadPosts(btn){
 
-  if(url.includes("youtube") || url.includes("youtu.be")){
-    const m = url.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-    if(m){
-      return { type:"image", src:`https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` };
-    }
-  }
+const icon = btn?.querySelector(".refreshIcon");
 
-  if(url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)){
-    return { type:"video", src:url };
-  }
+/* START BUTTON SPIN ONLY */
+if(icon) icon.classList.add("spin");
 
-  return { type:"placeholder", src:"/icons/video.png" };
+try{
+
+const res = await fetch("/api/get-posts");
+const data = await res.json();
+
+/* SORT PINNED → NEWEST */
+data.sort((a,b)=>{
+if(a.pinned && !b.pinned) return -1;
+if(!a.pinned && b.pinned) return 1;
+return new Date(b.publishDate||0) - new Date(a.publishDate||0);
+});
+
+ALL_POSTS = data;
+
+renderGrid();
+
+}catch(e){
+console.log("Refresh failed");
+}
+
+/* STOP SPIN */
+if(icon) icon.classList.remove("spin");
+
 }
 
 /* RENDER GRID */
-function renderGrid(){
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
+  let currentSlide = 0;
+let currentMedia = [];
 
-  ALL_POSTS.forEach(post=>{
-    const card = document.createElement("div");
-    card.className = "card";
+function openViewer(post) {
+  const viewer = document.getElementById("viewer");
+  const content = document.getElementById("viewerContent");
 
-    /* IMAGE */
-    if(post.attachment){
-      const img = document.createElement("img");
-      img.src = Array.isArray(post.attachment)
-        ? post.attachment[0]
-        : post.attachment;
-      card.appendChild(img);
-    }
+  content.innerHTML = "";
+  currentSlide = 0;
 
-    /* VIDEO */
-    else if(post.video){
-      const p = getVideoPreview(post.video);
-      if(p.type==="video"){
-        const v=document.createElement("video");
-        v.src=p.src;
-        v.muted=true; v.autoplay=true; v.loop=true;
-        card.appendChild(v);
-      }else{
-        const img=document.createElement("img");
-        img.src=p.src;
-        card.appendChild(img);
-      }
-    }
+  // IMAGE(S)
+  if (post.attachment) {
+    currentMedia = Array.isArray(post.attachment)
+      ? post.attachment
+      : [post.attachment];
 
-    /* BADGE LOGIC */
-    const isMulti = Array.isArray(post.attachment) && post.attachment.length>1;
-    if(post.pinned){
-      const b=document.createElement("img");
-      b.src="/icons/pin.png";
-      b.className="badge";
-      card.appendChild(b);
-    }else if(isMulti){
-      const b=document.createElement("img");
-      b.src="/icons/multi.png";
-      b.className="badge";
-      card.appendChild(b);
-    }
-
-    /* HOVER INFO */
-    if(post.name || post.publishDate){
-      const info=document.createElement("div");
-      info.className="cardInfo";
-      if(post.name){
-        const t=document.createElement("div");
-        t.className="cardTitle";
-        t.textContent=post.name;
-        info.appendChild(t);
-      }
-      if(post.publishDate){
-        const d=document.createElement("div");
-        d.className="cardDate";
-        d.textContent=post.publishDate;
-        info.appendChild(d);
-      }
-      card.appendChild(info);
-    }
-
-    card.onclick=()=>openViewer(post);
-    grid.appendChild(card);
-  });
-}
-
-/* VIEWER */
-function openViewer(post){
-  const viewer=document.getElementById("viewer");
-  const media=document.getElementById("viewerMedia");
-  media.innerHTML="";
-  slides=[]; slideIndex=0;
-
-  if(post.attachment){
-    slides = Array.isArray(post.attachment)?post.attachment:[post.attachment];
     showSlide();
-  }else if(post.video){
-    const v=document.createElement("video");
-    v.src=post.video;
-    v.controls=true;
-    media.appendChild(v);
   }
 
-  document.getElementById("viewerTitle").textContent=post.name||"";
-  document.getElementById("viewerDate").textContent=post.publishDate||"";
+  // VIDEO
+  if (post.video) {
+    content.innerHTML = "";
+    const vid = document.createElement("video");
+    vid.src = post.video;
+    vid.controls = true;
+    vid.autoplay = true;
+    content.appendChild(vid);
+  }
+
+  // Text
+  document.getElementById("viewerTitle").textContent = post.name || "";
+  document.getElementById("viewerDate").textContent = post.publishDate || "";
+
   viewer.classList.remove("hidden");
 }
 
-function showSlide(){
-  const media=document.getElementById("viewerMedia");
-  media.innerHTML="";
-  const img=document.createElement("img");
-  img.src=slides[slideIndex];
-  media.appendChild(img);
+function showSlide() {
+  const content = document.getElementById("viewerContent");
+  content.innerHTML = "";
 
-  if(slides.length>1){
-    const p=document.createElement("button");
-    p.className="nav prev";
-    p.textContent="‹";
-    p.onclick=()=>{ slideIndex=(slideIndex-1+slides.length)%slides.length; showSlide(); };
+  const img = document.createElement("img");
+  img.src = currentMedia[currentSlide];
+  content.appendChild(img);
 
-    const n=document.createElement("button");
-    n.className="nav next";
-    n.textContent="›";
-    n.onclick=()=>{ slideIndex=(slideIndex+1)%slides.length; showSlide(); };
-
-    media.appendChild(p);
-    media.appendChild(n);
+  if (currentMedia.length > 1) {
+    addControls();
   }
 }
 
-function closeViewer(){
-  document.getElementById("viewer").classList.add("hidden");
+function addControls() {
+  const content = document.getElementById("viewerContent");
+
+  const prev = document.createElement("button");
+  prev.textContent = "‹";
+  prev.className = "nav prev";
+  prev.onclick = () => {
+    currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+    showSlide();
+  };
+
+  const next = document.createElement("button");
+  next.textContent = "›";
+  next.className = "nav next";
+  next.onclick = () => {
+    currentSlide = (currentSlide + 1) % currentMedia.length;
+    showSlide();
+  };
+
+  content.appendChild(prev);
+  content.appendChild(next);
 }
 
-/* START */
+function closeViewer() {
+  document.getElementById("viewer").classList.add("hidden");
+}
+  
+  function getVideoPreview(post) {
+  const url = post?.video;
+  if (!url) return null;
+
+  // YouTube / Shorts
+  if (url.includes("youtube") || url.includes("youtu.be")) {
+    const match = url.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if (match) {
+      return {
+        type: "image",
+        src: `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
+      };
+    }
+  }
+
+  // Direct video files (mp4, webm, ogg)
+  if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+    return {
+      type: "video",
+      src: url
+    };
+  }
+
+  // Fallback (TikTok, IG, Vimeo, unknown)
+  return {
+    type: "placeholder"
+  };
+}
+
+ function renderGrid() {
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  // type is ARRAY in your data
+  const filtered = ALL_POSTS.filter(p =>
+    Array.isArray(p.type) && p.type.includes(FILTER)
+  );
+
+  const total = Math.max(filtered.length, 60);
+
+  for (let i = 0; i < total; i++) {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const post = filtered[i];
+
+    if (post && (post.attachment || post.video)) {
+
+      /* ---------- IMAGE ---------- */
+      if (post.attachment) {
+        const img = document.createElement("img");
+        img.src = Array.isArray(post.attachment)
+          ? post.attachment[0]
+          : post.attachment;
+        card.appendChild(img);
+      }
+
+      /* ---------- VIDEO ---------- */
+      if (post.video) {
+        const preview = getVideoPreview(post);
+
+        if (preview?.type === "image") {
+          const img = document.createElement("img");
+          img.src = preview.src;
+          card.appendChild(img);
+        }
+
+        if (preview?.type === "video") {
+          const vid = document.createElement("video");
+          vid.src = preview.src;
+          vid.muted = true;
+          vid.autoplay = true;
+          vid.loop = true;
+          vid.playsInline = true;
+          vid.style.width = "100%";
+          vid.style.height = "100%";
+          vid.style.objectFit = "cover";
+          card.appendChild(vid);
+        }
+
+        if (preview?.type === "placeholder") {
+          const img = document.createElement("img");
+          img.src = "/icons/video.png";
+          card.appendChild(img);
+        }
+      }
+
+      /* ---------- BADGE LOGIC (PIN > MULTI) ---------- */
+      const isMulti =
+        Array.isArray(post.attachment) && post.attachment.length > 1;
+
+      if (post.pinned) {
+        const pin = document.createElement("img");
+        pin.src = "/icons/pin.png";
+        pin.className = "badge";
+        card.appendChild(pin);
+      }
+      else if (isMulti) {
+        const multi = document.createElement("img");
+        multi.src = "/icons/multi.png";
+        multi.className = "badge";
+        card.appendChild(multi);
+      }
+
+    } else {
+      /* ---------- NO CONTENT ---------- */
+      const no = document.createElement("div");
+      no.className = "noContent";
+      no.textContent = "NO CONTENT";
+      card.appendChild(no);
+    }
+    card.onclick = () => openViewer(post);
+    /* ---------- HOVER INFO ---------- */
+if (post?.name || post?.publishDate) {
+  const info = document.createElement("div");
+  info.className = "cardInfo";
+
+  if (post.name) {
+    const title = document.createElement("div");
+    title.className = "cardTitle";
+    title.textContent = post.name;
+    info.appendChild(title);
+  }
+
+  if (post.publishDate) {
+    const date = document.createElement("div");
+    date.className = "cardDate";
+    date.textContent = post.publishDate;
+    info.appendChild(date);
+  }
+
+  card.appendChild(info);
+}
+    grid.appendChild(card);
+  }
+}
+
 loadPosts();
 </script>
 
