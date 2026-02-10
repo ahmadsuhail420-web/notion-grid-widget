@@ -158,10 +158,16 @@ display:block;
   right: 0;
   bottom: 0;
 
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  /* Fade from bottom to transparent top */
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0)
+  );
 
-  padding: 8px 10px;
+  color: #fff;
+  padding: 10px 10px 8px;
 
   transform: translateY(100%);
   transition: transform 0.25s ease;
@@ -180,7 +186,7 @@ display:block;
 
 .cardDate {
   font-size: 10px;
-  opacity: 0.75;
+  opacity: 0.7;
   margin-top: 2px;
 }
 
