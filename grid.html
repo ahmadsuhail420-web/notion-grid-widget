@@ -254,8 +254,13 @@ display:block;
 /* Media area */
 .viewerContent {
   flex: 1;
-  overflow: hidden;   /* ❌ no scroll in crop mode */
+  overflow: hidden;       /* crop happens here */
   background: #000;
+}
+
+.viewerMedia {
+  width: 100%;
+  height: 100%;           /* 🔴 THIS is the key */
 }
 
 .viewerContent img,
@@ -440,7 +445,9 @@ animation:spin 1s linear infinite;
 
     <button class="viewerClose" onclick="closeViewer()">✕</button>
 
-    <div class="viewerContent" id="viewerContent"></div>
+    <div class="viewerContent">
+  <div class="viewerMedia" id="viewerContent"></div>
+</div>
 
     <div class="viewerFooter">
       <div id="viewerTitle"></div>
