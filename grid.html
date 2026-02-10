@@ -422,14 +422,19 @@ animation:spin 1s linear infinite;
 <div id="viewer" class="viewer hidden">
   <div class="viewerInner">
 
+    <!-- CLOSE -->
     <button class="viewerClose" onclick="closeViewer()">✕</button>
 
-    <!-- IMAGE AREA (4:5) -->
+    <!-- NAVIGATION (ADD HERE) -->
+    <button class="nav prev" onclick="prevImage()">‹</button>
+    <button class="nav next" onclick="nextImage()">›</button>
+
+    <!-- IMAGE -->
     <div class="viewerImage">
       <img id="viewerImage" />
     </div>
 
-    <!-- TEXT AREA -->
+    <!-- TEXT -->
     <div class="viewerFooter">
       <div id="viewerTitle"></div>
       <div id="viewerDate"></div>
@@ -513,17 +518,20 @@ function openViewer(post) {
     : [post.attachment];
 
   currentSlide = 0;
+  updateViewerImage();
 
-  // set image
-  document.getElementById("viewerImage").src = currentMedia[0] || "";
-
-  // set text
   document.getElementById("viewerTitle").textContent = post.name || "";
   document.getElementById("viewerDate").textContent = post.publishDate || "";
 
   const viewer = document.getElementById("viewer");
   viewer.classList.remove("hidden");
   requestAnimationFrame(() => viewer.classList.add("show"));
+}
+
+function toggleNav() {
+  const show = currentMedia.length > 1;
+  document.querySelector(".nav.prev").style.display = show ? "flex" : "none";
+  document.querySelector(".nav.next").style.display = show ? "flex" : "none";
 }
 
 function closeViewer() {
@@ -535,6 +543,22 @@ function closeViewer() {
   }, 250);
 }
   
+  function updateViewerImage() {
+  document.getElementById("viewerImage").src = currentMedia[currentSlide];
+}
+
+function prevImage() {
+  currentSlide =
+    (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+  updateViewerImage();
+}
+
+function nextImage() {
+  currentSlide =
+    (currentSlide + 1) % currentMedia.length;
+  updateViewerImage();
+}
+
   function getVideoPreview(post) {
   const url = post?.video;
   if (!url) return null;
