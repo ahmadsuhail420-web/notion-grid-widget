@@ -345,7 +345,7 @@ if(icon) icon.classList.remove("spin");
   };
 }
 
-  function renderGrid() {
+ function renderGrid() {
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
@@ -375,7 +375,7 @@ if(icon) icon.classList.remove("spin");
         card.appendChild(img);
       }
 
-      /* ---------- VIDEO (SMART HANDLING) ---------- */
+      /* ---------- VIDEO ---------- */
       if (post.video) {
         const preview = getVideoPreview(post);
 
@@ -400,25 +400,26 @@ if(icon) icon.classList.remove("spin");
 
         if (preview?.type === "placeholder") {
           const img = document.createElement("img");
-          img.src = "/icons/video.png"; // generic video icon
+          img.src = "/icons/video.png";
           card.appendChild(img);
         }
       }
 
-      /* ---------- MULTI IMAGE ICON ---------- */
-      if (Array.isArray(post.attachment) && post.attachment.length > 1) {
-        const multi = document.createElement("img");
-        multi.src = "/icons/multi.png";
-        multi.className = "badge";
-        card.appendChild(multi);
-      }
+      /* ---------- BADGE LOGIC (PIN > MULTI) ---------- */
+      const isMulti =
+        Array.isArray(post.attachment) && post.attachment.length > 1;
 
-      /* ---------- PIN ICON ---------- */
       if (post.pinned) {
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
         pin.className = "badge";
         card.appendChild(pin);
+      }
+      else if (isMulti) {
+        const multi = document.createElement("img");
+        multi.src = "/icons/multi.png";
+        multi.className = "badge";
+        card.appendChild(multi);
       }
 
     } else {
