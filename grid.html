@@ -151,6 +151,45 @@ object-fit:cover;
 display:block;
 }
 
+  /* ---------- HOVER INFO OVERLAY ---------- */
+.cardInfo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.65),
+    rgba(0,0,0,0)
+  );
+
+  color: #fff;
+  padding: 10px 8px 8px;
+
+  font-size: 11px;
+  line-height: 1.3;
+
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+  pointer-events: none;
+}
+
+.card:hover .cardInfo {
+  transform: translateY(0);
+}
+
+.cardTitle {
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+.cardDate {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
 /* BADGES */
 .card .badge {
   position: absolute;
@@ -429,7 +468,27 @@ if(icon) icon.classList.remove("spin");
       no.textContent = "NO CONTENT";
       card.appendChild(no);
     }
+    /* ---------- HOVER INFO ---------- */
+if (post?.name || post?.publishDate) {
+  const info = document.createElement("div");
+  info.className = "cardInfo";
 
+  if (post.name) {
+    const title = document.createElement("div");
+    title.className = "cardTitle";
+    title.textContent = post.name;
+    info.appendChild(title);
+  }
+
+  if (post.publishDate) {
+    const date = document.createElement("div");
+    date.className = "cardDate";
+    date.textContent = post.publishDate;
+    info.appendChild(date);
+  }
+
+  card.appendChild(info);
+}
     grid.appendChild(card);
   }
 }
