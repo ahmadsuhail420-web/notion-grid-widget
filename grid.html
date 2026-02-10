@@ -330,19 +330,48 @@ const post=filtered[i];
 const card=document.createElement("div");
 card.className="card";
 
-if(post && (post.attachment || post.video)){
+if (post && (post.attachment || post.video)) {
 
-if(post.attachment){
-const img=document.createElement("img");
-img.src=post.attachment;
-card.appendChild(img);
+  const hasMultiple =
+    Array.isArray(post.attachment) && post.attachment.length > 1;
+
+  /* IMAGE */
+  if (post.attachment) {
+    const img = document.createElement("img");
+
+    // Show first image only in grid
+    img.src = Array.isArray(post.attachment)
+      ? post.attachment[0]
+      : post.attachment;
+
+    card.appendChild(img);
+  }
+
+  /* VIDEO */
+  if (post.video) {
+    const vid = document.createElement("video");
+    vid.src = post.video;
+    card.appendChild(vid);
+  }
+
+  /* MULTI IMAGE BADGE */
+  if (hasMultiple) {
+    const multi = document.createElement("img");
+    multi.src = "/icons/multi.png";
+    multi.className = "badge";
+    card.appendChild(multi);
+  }
+
+  /* PIN BADGE (only if NOT multi OR if you want both) */
+  if (post.pinned && !hasMultiple) {
+    const pin = document.createElement("img");
+    pin.src = "/icons/pin.png";
+    pin.className = "badge";
+    card.appendChild(pin);
+  }
+
 }
 
-if(post.video){
-const vid=document.createElement("video");
-vid.src=post.video;
-card.appendChild(vid);
-}
 
 /* PIN BADGE */
 if(post.pinned){
