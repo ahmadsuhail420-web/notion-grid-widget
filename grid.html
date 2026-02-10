@@ -317,66 +317,16 @@ if(icon) icon.classList.remove("spin");
 
 /* RENDER GRID */
 function renderGrid() {
-
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  const filtered = ALL_POSTS.filter(p => {
-    if (!p.type) return false;
-    return p.type.toLowerCase() === FILTER.toLowerCase();
-  });
-
-  const total = Math.max(filtered.length, 60);
-
-  for (let i = 0; i < total; i++) {
-
-    const post = filtered[i];
+  for (let i = 0; i < 12; i++) {
     const card = document.createElement("div");
     card.className = "card";
 
-    if (post && (post.attachment || post.video)) {
-
-      const hasMultiple =
-        Array.isArray(post.attachment) && post.attachment.length > 1;
-
-      /* IMAGE */
-      if (post.attachment) {
-        const img = document.createElement("img");
-        img.src = Array.isArray(post.attachment)
-          ? post.attachment[0]
-          : post.attachment;
-        card.appendChild(img);
-      }
-
-      /* VIDEO */
-      if (post.video) {
-        const vid = document.createElement("video");
-        vid.src = post.video;
-        card.appendChild(vid);
-      }
-
-      /* MULTI IMAGE BADGE */
-      if (hasMultiple) {
-        const multi = document.createElement("img");
-        multi.src = "/icons/multi.png";
-        multi.className = "badge";
-        card.appendChild(multi);
-      }
-
-      /* PIN BADGE (only for single media) */
-      if (post.pinned && !hasMultiple) {
-        const pin = document.createElement("img");
-        pin.src = "/icons/pin.png";
-        pin.className = "badge";
-        card.appendChild(pin);
-      }
-
-    } else {
-      const no = document.createElement("div");
-      no.className = "noContent";
-      no.innerText = "NO CONTENT";
-      card.appendChild(no);
-    }
+    const img = document.createElement("img");
+    img.src = "https://via.placeholder.com/300x400";
+    card.appendChild(img);
 
     grid.appendChild(card);
   }
