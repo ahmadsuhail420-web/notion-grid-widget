@@ -193,27 +193,10 @@ display:block;
   inset: 0;
   background: rgba(0,0,0,0.35);
   display: flex;
-  align-items: center;     /* vertical center */
-  justify-content: center; /* horizontal center */
+  align-items: center;
+  justify-content: center;
   z-index: 50;
-}
 
-.viewer.hidden {
-  display: none;
-}
-
-.viewerInner {
-  width: min(360px, 80%);
-  aspect-ratio: 4 / 5;
-  background: #fff;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-}
-  .viewer {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -224,7 +207,19 @@ display:block;
   pointer-events: auto;
 }
 
+.viewer.hidden {
+  display: none;
+}
+
 .viewerInner {
+  width: min(360px, 80%);
+  aspect-ratio: 4 / 5;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+
   transform: scale(0.96);
   transition: transform 0.25s ease;
 }
@@ -569,24 +564,25 @@ requestAnimationFrame(() => {
 function showSlide() {
   const content = document.getElementById("viewerContent");
   content.innerHTML = "";
- 
-  img.addEventListener("dblclick", () => {
-  img.classList.toggle("zoomed");
-});
-
-  let lastTap = 0;
-
-img.addEventListener("touchend", () => {
-  const now = Date.now();
-  if (now - lastTap < 300) {
-    img.classList.toggle("zoomed");
-  }
-  lastTap = now;
-});
 
   const img = document.createElement("img");
   img.src = currentMedia[currentSlide];
   content.appendChild(img);
+
+  // desktop double-click zoom
+  img.addEventListener("dblclick", () => {
+    img.classList.toggle("zoomed");
+  });
+
+  // mobile double-tap zoom
+  let lastTap = 0;
+  img.addEventListener("touchend", () => {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      img.classList.toggle("zoomed");
+    }
+    lastTap = now;
+  });
 
   if (currentMedia.length > 1) {
     addControls();
@@ -766,8 +762,10 @@ if (post?.name || post?.publishDate) {
   const viewer = document.getElementById("viewer");
 const viewerInner = document.querySelector(".viewerInner");
 
-viewer.addEventListener("click", () => {
-  closeViewer();
+viewer.addEventListener("click", (e) => {
+  if (e.target === viewer) {
+    closeViewer();
+  }
 });
 
 viewerInner.addEventListener("click", (e) => {
