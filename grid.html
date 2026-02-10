@@ -215,10 +215,7 @@ display:block;
 /* ---------- VIEWER CARD ---------- */
 .viewerInner {
   width: min(360px, 85%);
-  background: #fff;
-  border-radius: 20px;
   position: relative;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
   overflow: visible;   /* 🔴 KEY FIX */
 }
 
@@ -239,7 +236,14 @@ display:block;
   height: 100%;
   object-fit: cover;        /* 🔴 center crop */
   object-position: center;
-  display: block;
+}
+
+.viewerCard {
+  width: 100%;
+  background: #fff;
+  border-radius: 20px;     /* ✅ curved edges */
+  overflow: hidden;        /* ✅ clips content */
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
 }
 
 /* ---------- FOOTER ---------- */
@@ -419,24 +423,24 @@ animation:spin 1s linear infinite;
 <div id="viewer" class="viewer hidden">
   <div class="viewerInner">
 
-    <!-- CLOSE -->
+    <!-- CONTROLS -->
     <button class="viewerClose" onclick="closeViewer()">✕</button>
-
-    <!-- NAVIGATION (ADD HERE) -->
     <button class="nav prev" onclick="prevImage()">‹</button>
     <button class="nav next" onclick="nextImage()">›</button>
 
-    <!-- IMAGE -->
-    <div class="viewerImage">
-      <img id="viewerImage" />
-    </div>
+    <!-- CARD -->
+    <div class="viewerCard">
 
-    <!-- TEXT -->
-    <div class="viewerFooter">
-      <div id="viewerTitle"></div>
-      <div id="viewerDate"></div>
-    </div>
+      <div class="viewerImage">
+        <img id="viewerImage" />
+      </div>
 
+      <div class="viewerFooter">
+        <div id="viewerTitle"></div>
+        <div id="viewerDate"></div>
+      </div>
+
+    </div>
   </div>
 </div>
 
