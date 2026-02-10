@@ -255,99 +255,149 @@ Refresh
 </div>
 
 <script>
-let ALL_POSTS = [];
-let FILTER = "Post";
+let ALL_POSTS=[];
+let FILTER="Post";
 
-/* NOTION MEDIA NORMALIZER */
-function getNotionMediaUrls(media) {
-  if (!media) return [];
+/* TAB SWITCH */
+function setFilter(type, el) {
+  FILTER = type;
 
-  if (typeof media === "string") return [media];
-  if (Array.isArray(media) && typeof media[0] === "string") return media;
+  /* ACTIVE TAB */
+  document.querySelectorAll(".tabItem").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
 
-  if (Array.isArray(media)) {
-    return media
-      .map(item => item?.external?.url || item?.file?.url)
-      .filter(Boolean);
-  }
+  /* ICON SWITCH */
+  document.getElementById("icon-post").src =
+    FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
 
-  return [];
-}
+  document.getElementById("icon-reel").src =
+    FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
 
-/* RENDER GRID */
-function renderGrid() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
+  document.getElementById("icon-story").src =
+    FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
 
-  const filtered = ALL_POSTS.filter(p =>
-    p && p.type && p.type.toLowerCase() === FILTER.toLowerCase()
-  );
+  document.getElementById("icon-tiktok").src =
+    FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
 
-  const total = Math.max(filtered.length, 60);
-
-  for (let i = 0; i < total; i++) {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const post = filtered[i];
-    const mediaUrls = post ? getNotionMediaUrls(post.attachment) : [];
-
-    if (post && (mediaUrls.length || post.video)) {
-
-      if (mediaUrls.length) {
-        const img = document.createElement("img");
-        img.src = mediaUrls[0];
-        card.appendChild(img);
-      }
-
-      if (post.video) {
-        const vid = document.createElement("video");
-        vid.src = post.video;
-        card.appendChild(vid);
-      }
-
-      if (mediaUrls.length > 1) {
-        const multi = document.createElement("img");
-        multi.src = "https://yourdomain.com/icons/multi.png";
-        multi.className = "badge";
-        card.appendChild(multi);
-      }
-
-      if (post.pinned && mediaUrls.length <= 1) {
-        const pin = document.createElement("img");
-        pin.src = "https://yourdomain.com/icons/pin.png";
-        pin.className = "badge";
-        card.appendChild(pin);
-      }
-
-    } else {
-      const no = document.createElement("div");
-      no.className = "noContent";
-      no.textContent = "NO CONTENT";
-      card.appendChild(no);
-    }
-
-    grid.appendChild(card);
-  }
-}
-
-/* LOAD POSTS */
-async function loadPosts() {
-  try {
-    const res = await fetch("https://yourdomain.com/api/get-posts");
-    const data = await res.json();
-    ALL_POSTS = Array.isArray(data) ? data : [];
-  } catch (e) {
-    console.log("API failed, showing placeholders");
-    ALL_POSTS = [];
-  }
   renderGrid();
 }
 
-/* INIT */
+/* FETCH POSTS */
+async function loadPosts(btn){
+
+const icon = btn?.querySelector(".refreshIcon");
+
+/* START BUTTON SPIN ONLY */
+if(icon) icon.classList.add("spin");
+
+try{
+
+const res = await fetch("/api/get-posts");
+const data = await res.json();
+
+/* SORT PINNED → NEWEST */
+data.sort((a,b)=>{
+if(a.pinned && !b.pinned) return -1;
+if(!a.pinned && b.pinned) return 1;
+return new Date(b.publishDate||0) - new Date(a.publishDate||0);
+});
+
+ALL_POSTS = data;
+
+renderGrid();
+
+}catch(e){
+console.log("Refresh failed");
+}
+
+/* STOP SPIN */
+if(icon) icon.classList.remove("spin");
+
+}
+
+/* RENDER GRID */
+function renderGrid(){
+
+const grid=document.getElementById("grid");
+grid.innerHTML="";
+
+const filtered = ALL_POSTS.filter(p => {
+  if (!p.type) return false;
+  return p.type.toLowerCase() === FILTER.toLowerCase();
+});
+const total=Math.max(filtered.length,60);
+
+for(let i=0;i<total;i++){
+
+const post=filtered[i];
+const card=document.createElement("div");
+card.className="card";
+
+if (post && (post.attachment || post.video)) {
+
+  const hasMultiple =
+    Array.isArray(post.attachment) && post.attachment.length > 1;
+
+  /* IMAGE */
+  if (post.attachment) {
+    const img = document.createElement("img");
+
+    // Show first image only in grid
+    img.src = Array.isArray(post.attachment)
+      ? post.attachment[0]
+      : post.attachment;
+
+    card.appendChild(img);
+  }
+
+  /* VIDEO */
+  if (post.video) {
+    const vid = document.createElement("video");
+    vid.src = post.video;
+    card.appendChild(vid);
+  }
+
+  /* MULTI IMAGE BADGE */
+  if (hasMultiple) {
+    const multi = document.createElement("img");
+    multi.src = "/icons/multi.png";
+    multi.className = "badge";
+    card.appendChild(multi);
+  }
+
+  /* PIN BADGE (only if NOT multi OR if you want both) */
+  if (post.pinned && !hasMultiple) {
+    const pin = document.createElement("img");
+    pin.src = "/icons/pin.png";
+    pin.className = "badge";
+    card.appendChild(pin);
+  }
+
+}
+
+
+/* PIN BADGE */
+if(post.pinned){
+const pin=document.createElement("img");
+pin.src="/icons/pin.png";
+pin.className="badge";
+card.appendChild(pin);
+}
+
+}else{
+const no=document.createElement("div");
+no.className="noContent";
+no.innerText="NO CONTENT";
+card.appendChild(no);
+}
+
+grid.appendChild(card);
+}
+
+}
+
 loadPosts();
 </script>
-
 
 </body>
 </html>
