@@ -322,21 +322,21 @@ function renderGrid() {
   grid.innerHTML = "";
 
   const filtered = ALL_POSTS.filter(p => {
-    if (!p.type) return false;
-    return p.type.toLowerCase() === FILTER.toLowerCase();
+    return p && p.type && p.type.toLowerCase() === FILTER.toLowerCase();
   });
 
   const total = Math.max(filtered.length, 60);
 
   for (let i = 0; i < total; i++) {
 
-    const post = filtered[i];
     const card = document.createElement("div");
     card.className = "card";
 
+    const post = filtered[i];
+
     if (post && (post.attachment || post.video)) {
 
-      /* IMAGE */
+      // IMAGE
       if (post.attachment) {
         const img = document.createElement("img");
         img.src = Array.isArray(post.attachment)
@@ -345,14 +345,14 @@ function renderGrid() {
         card.appendChild(img);
       }
 
-      /* VIDEO */
+      // VIDEO
       if (post.video) {
         const vid = document.createElement("video");
         vid.src = post.video;
         card.appendChild(vid);
       }
 
-      /* MULTI IMAGE BADGE */
+      // MULTI ICON
       if (Array.isArray(post.attachment) && post.attachment.length > 1) {
         const multi = document.createElement("img");
         multi.src = "/icons/multi.png";
@@ -360,7 +360,7 @@ function renderGrid() {
         card.appendChild(multi);
       }
 
-      /* PIN BADGE */
+      // PIN ICON
       if (post.pinned && !Array.isArray(post.attachment)) {
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
@@ -369,10 +369,10 @@ function renderGrid() {
       }
 
     } else {
-      /* NO CONTENT PLACEHOLDER */
+      // PLACEHOLDER
       const no = document.createElement("div");
       no.className = "noContent";
-      no.innerText = "NO CONTENT";
+      no.textContent = "NO CONTENT";
       card.appendChild(no);
     }
 
