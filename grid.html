@@ -114,9 +114,16 @@ opacity:1;
 }
 
 /* GRID WRAP */
-.gridWrap{
-flex:1;
-overflow-y:auto;
+.gridWrap {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* Internet Explorer / Edge (old) */
+}
+
+/* Chrome, Safari, Opera */
+.gridWrap::-webkit-scrollbar {
+  display: none;
 }
 
 /* GRID */
