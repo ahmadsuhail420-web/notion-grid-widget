@@ -254,9 +254,9 @@ display:block;
 
 /* Media area */
 .viewerContent {
-  flex: 1;
-  position: relative;
-  overflow: hidden;       /* crop happens here */
+  position: absolute;
+  inset: 0;              /* 🔴 fills the entire card */
+  overflow: hidden;      /* 🔴 crop happens here */
   background: #000;
 }
 
