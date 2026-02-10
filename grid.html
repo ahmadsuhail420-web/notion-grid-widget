@@ -254,7 +254,7 @@ display:block;
 /* Media area */
 .viewerContent {
   flex: 1;
-  overflow-y: auto;      /* ✅ allow vertical scroll */
+  overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   align-items: flex-start; /* top-align tall images */
@@ -369,6 +369,10 @@ color:#777;
 
 .nav.next {
   right: -14px;  /* slightly outside card edge */
+}
+.nav,
+.viewerClose {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
 }
 
 
