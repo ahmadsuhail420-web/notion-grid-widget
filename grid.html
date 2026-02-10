@@ -316,6 +316,35 @@ if(icon) icon.classList.remove("spin");
 }
 
 /* RENDER GRID */
+  function getVideoPreview(post) {
+  const url = post?.video;
+  if (!url) return null;
+
+  // YouTube / Shorts
+  if (url.includes("youtube") || url.includes("youtu.be")) {
+    const match = url.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if (match) {
+      return {
+        type: "image",
+        src: `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
+      };
+    }
+  }
+
+  // Direct video files (mp4, webm, ogg)
+  if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+    return {
+      type: "video",
+      src: url
+    };
+  }
+
+  // Fallback (TikTok, IG, Vimeo, unknown)
+  return {
+    type: "placeholder"
+  };
+}
+
   function renderGrid() {
 
   const grid = document.getElementById("grid");
@@ -346,24 +375,19 @@ if(icon) icon.classList.remove("spin");
         card.appendChild(img);
       }
 
-      /* ---------- VIDEO ---------- */
+      /* ---------- VIDEO (SMART HANDLING) ---------- */
       if (post.video) {
+        const preview = getVideoPreview(post);
 
-        // YOUTUBE / SHORTS → thumbnail
-        if (post.video.includes("youtube") || post.video.includes("youtu.be")) {
-          const match = post.video.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        if (preview?.type === "image") {
+          const img = document.createElement("img");
+          img.src = preview.src;
+          card.appendChild(img);
+        }
 
-          if (match) {
-            const thumb = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
-            const img = document.createElement("img");
-            img.src = thumb;
-            card.appendChild(img);
-          }
-
-        } else {
-          // MP4 / direct video → muted autoplay loop
+        if (preview?.type === "video") {
           const vid = document.createElement("video");
-          vid.src = post.video;
+          vid.src = preview.src;
           vid.muted = true;
           vid.autoplay = true;
           vid.loop = true;
@@ -372,6 +396,12 @@ if(icon) icon.classList.remove("spin");
           vid.style.height = "100%";
           vid.style.objectFit = "cover";
           card.appendChild(vid);
+        }
+
+        if (preview?.type === "placeholder") {
+          const img = document.createElement("img");
+          img.src = "/icons/video.png"; // generic video icon
+          card.appendChild(img);
         }
       }
 
