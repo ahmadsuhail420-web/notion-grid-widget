@@ -436,10 +436,14 @@ const res = await fetch("/api/get-posts");
 const data = await res.json();
 
 /* SORT PINNED → NEWEST */
-data.sort((a,b)=>{
-if(a.pinned && !b.pinned) return -1;
-if(!a.pinned && b.pinned) return 1;
-return new Date(b.publishDate||0) - new Date(a.publishDate||0);
+data.sort((a, b) => {
+  if (a.pinned && !b.pinned) return -1;
+  if (!a.pinned && b.pinned) return 1;
+
+  const dateA = new Date(a.publishDate || a.created_time || 0);
+  const dateB = new Date(b.publishDate || b.created_time || 0);
+
+  return dateB - dateA;
 });
 
 ALL_POSTS = data;
@@ -673,15 +677,12 @@ if (post?.name || post?.publishDate) {
 
 loadPosts();
 </script>
-<script>
-  document.querySelector(".refreshBtn").addEventListener("click", () => {
-    const icon = document.querySelector(".refreshIcon");
-    icon.classList.add("spin");
-
-    setTimeout(() => {
-      icon.classList.remove("spin");
-    }, 1200);
-  });
+  <script>
+  document
+    .querySelector(".refreshBtn")
+    .addEventListener("click", function () {
+      loadPosts(this);
+    });
 </script>
 
 </body>
