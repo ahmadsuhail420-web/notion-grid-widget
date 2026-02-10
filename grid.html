@@ -190,6 +190,81 @@ display:block;
   margin-top: 2px;
 }
 
+  /* ---------- VIEWER ---------- */
+.viewer {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.viewer.hidden {
+  display: none;
+}
+
+.viewerInner {
+  width: 92%;
+  height: 92%;
+  background: #000;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Close button */
+.viewerClose {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 10;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  font-size: 18px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+/* Media area */
+.viewerContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.viewerContent img,
+.viewerContent video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Footer */
+.viewerFooter {
+  background: #fff;
+  color: #000;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+#viewerTitle {
+  font-weight: 500;
+}
+
+#viewerDate {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
 /* BADGES */
 .card .badge {
   position: absolute;
@@ -221,6 +296,22 @@ font-size:13px;
 color:#777;
   background: transparent;
 }
+
+  .nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  font-size: 28px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.nav.prev { left: 10px; }
+.nav.next { right: 10px; }
 
 /* LOADER */
 .loader{
@@ -292,6 +383,21 @@ Refresh
 <div class="footer">Created By: Suhail</div>
 
 </div>
+ <!-- MEDIA VIEWER -->
+<div id="viewer" class="viewer hidden">
+  <div class="viewerInner">
+
+    <button class="viewerClose" onclick="closeViewer()">✕</button>
+
+    <div class="viewerContent" id="viewerContent"></div>
+
+    <div class="viewerFooter">
+      <div id="viewerTitle"></div>
+      <div id="viewerDate"></div>
+    </div>
+
+  </div>
+</div> 
 
 <script>
 let ALL_POSTS=[];
@@ -355,6 +461,82 @@ if(icon) icon.classList.remove("spin");
 }
 
 /* RENDER GRID */
+  let currentSlide = 0;
+let currentMedia = [];
+
+function openViewer(post) {
+  const viewer = document.getElementById("viewer");
+  const content = document.getElementById("viewerContent");
+
+  content.innerHTML = "";
+  currentSlide = 0;
+
+  // IMAGE(S)
+  if (post.attachment) {
+    currentMedia = Array.isArray(post.attachment)
+      ? post.attachment
+      : [post.attachment];
+
+    showSlide();
+  }
+
+  // VIDEO
+  if (post.video) {
+    content.innerHTML = "";
+    const vid = document.createElement("video");
+    vid.src = post.video;
+    vid.controls = true;
+    vid.autoplay = true;
+    content.appendChild(vid);
+  }
+
+  // Text
+  document.getElementById("viewerTitle").textContent = post.name || "";
+  document.getElementById("viewerDate").textContent = post.publishDate || "";
+
+  viewer.classList.remove("hidden");
+}
+
+function showSlide() {
+  const content = document.getElementById("viewerContent");
+  content.innerHTML = "";
+
+  const img = document.createElement("img");
+  img.src = currentMedia[currentSlide];
+  content.appendChild(img);
+
+  if (currentMedia.length > 1) {
+    addControls();
+  }
+}
+
+function addControls() {
+  const content = document.getElementById("viewerContent");
+
+  const prev = document.createElement("button");
+  prev.textContent = "‹";
+  prev.className = "nav prev";
+  prev.onclick = () => {
+    currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+    showSlide();
+  };
+
+  const next = document.createElement("button");
+  next.textContent = "›";
+  next.className = "nav next";
+  next.onclick = () => {
+    currentSlide = (currentSlide + 1) % currentMedia.length;
+    showSlide();
+  };
+
+  content.appendChild(prev);
+  content.appendChild(next);
+}
+
+function closeViewer() {
+  document.getElementById("viewer").classList.add("hidden");
+}
+  
   function getVideoPreview(post) {
   const url = post?.video;
   if (!url) return null;
@@ -468,6 +650,7 @@ if(icon) icon.classList.remove("spin");
       no.textContent = "NO CONTENT";
       card.appendChild(no);
     }
+    card.onclick = () => openViewer(post);
     /* ---------- HOVER INFO ---------- */
 if (post?.name || post?.publishDate) {
   const info = document.createElement("div");
