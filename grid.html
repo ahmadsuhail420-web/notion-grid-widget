@@ -531,6 +531,8 @@ function openViewer(post) {
     : [post.attachment];
 
   currentSlide = 0;
+  updateViewerImage();        // ✅ LOAD IMAGE
+  toggleNav();                // ✅ SHOW/HIDE ARROWS
 
   document.getElementById("viewerTitle").textContent = post.name || "";
   document.getElementById("viewerDate").textContent = post.publishDate || "";
@@ -538,7 +540,7 @@ function openViewer(post) {
   const viewer = document.getElementById("viewer");
   const container = document.querySelector(".container");
 
-  container.classList.add("popup-open"); // ✅ dim container
+  container.classList.add("popup-open");
   viewer.classList.remove("hidden");
 
   requestAnimationFrame(() => viewer.classList.add("show"));
@@ -564,10 +566,6 @@ function closeViewer() {
   setTimeout(() => {
     viewer.classList.add("hidden");
   }, 250);
-}
-  
-  function updateViewerImage() {
-  document.getElementById("viewerImage").src = currentMedia[currentSlide];
 }
 
 function prevImage() {
