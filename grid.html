@@ -29,7 +29,7 @@ background:#ffffff;
 display:flex;
   position: relative;
 flex-direction:column;
-  padding: 20px 20px 0px;           /* ✅ INNER GAP ONLY */
+  padding: 30px 20px 0px;           /* ✅ INNER GAP ONLY */
 border-radius:24px;
 }
   
@@ -319,6 +319,11 @@ color:#b5b5b5;
 font-weight:500;
 letter-spacing:.4px;
 }
+  
+  .contentArea {
+  padding: 20px;
+  padding-top: 10px; /* optional fine-tune */
+}
 
 /* FOOTER */
 .footer{
@@ -400,6 +405,7 @@ animation:spin 1s linear infinite;
 </div>
 
 <!-- TABS -->
+<div class="contentArea">
 <div class="tabs">
 
 <div class="tabItem active" onclick="setFilter('Post', this)">
@@ -428,9 +434,10 @@ animation:spin 1s linear infinite;
 <div id="grid" class="grid"></div>
 </div>
 
-<div class="footer">Created By: Suhail</div>
+<div class="footer">Alif Designs</div>
 
 </div>
+  </div>
  <!-- MEDIA VIEWER -->
 <div id="viewer" class="viewer hidden">
   <div class="viewerInner">
