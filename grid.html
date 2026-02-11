@@ -536,6 +536,19 @@ function setFilter(type, el) {
   document.querySelectorAll(".tabItem")
     .forEach(t => t.classList.remove("active"));
   el.classList.add("active");
+  
+    /* ICON SWITCH */
+  document.getElementById("icon-post").src =
+    FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
+
+  document.getElementById("icon-reel").src =
+    FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
+
+  document.getElementById("icon-story").src =
+    FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
+
+  document.getElementById("icon-tiktok").src =
+    FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
 
   // 2. Slide underline immediately
   moveUnderline(el);
