@@ -532,30 +532,25 @@ let FILTER="Post";
 function setFilter(type, el) {
   FILTER = type;
 
-  /* ACTIVE TAB */
-  document.querySelectorAll(".tabItem").forEach(t => t.classList.remove("active"));
+  // 1. Active tab state
+  document.querySelectorAll(".tabItem")
+    .forEach(t => t.classList.remove("active"));
   el.classList.add("active");
 
-  /* ICON SWITCH */
-  document.getElementById("icon-post").src =
-    FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
+  // 2. Slide underline immediately
+  moveUnderline(el);
 
-  document.getElementById("icon-reel").src =
-    FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
+  // 3. Fade out grid
+  const gridWrap = document.querySelector(".gridWrap");
+  gridWrap.style.opacity = "0";
 
-  document.getElementById("icon-story").src =
-    FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
-
-  document.getElementById("icon-tiktok").src =
-    FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
-
-document.querySelector(".gridWrap").style.opacity = "0";
-
-requestAnimationFrame(() => {
-  document.querySelector(".gridWrap").style.opacity = "1";
-moveUnderline(el);
-});
+  // 4. Update grid content
   renderGrid();
+
+  // 5. Fade in grid (next frame)
+  requestAnimationFrame(() => {
+    gridWrap.style.opacity = "1";
+  });
 }
 
 function moveUnderline(tab) {
@@ -576,10 +571,6 @@ function moveUnderline(tab) {
 
 /* FETCH POSTS */
 async function loadPosts(btn){
-  window.addEventListener("load", () => {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (activeTab) moveUnderline(activeTab);
-});
 
 const icon = btn?.querySelector(".refreshIcon");
 
@@ -614,6 +605,11 @@ console.log("Refresh failed");
 if(icon) icon.classList.remove("spin");
 
 }
+
+window.addEventListener("load", () => {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (activeTab) moveUnderline(activeTab);
+});
 
 /* RENDER GRID */
   let currentSlide = 0;
