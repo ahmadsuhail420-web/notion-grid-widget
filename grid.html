@@ -18,7 +18,7 @@ align-items: center;
   
 border-radius:24px;
 border: 3px solid #e2e2e2;
-padding: 5px;
+padding: 6px;
 }
 
 /* CONTAINER */
@@ -227,7 +227,9 @@ display:block;
 .viewerInner {
   width: min(360px, 85%);
   position: relative;
-  overflow: visible;   /* 🔴 KEY FIX */
+  overflow: visible;
+  transform: scale(0.96);          /* ✅ add this */
+  transition: transform 0.25s ease;
 }
 
 /* ---------- IMAGE AREA ---------- */
@@ -529,8 +531,6 @@ function openViewer(post) {
     : [post.attachment];
 
   currentSlide = 0;
-  updateViewerImage();
-  toggleNav();
 
   document.getElementById("viewerTitle").textContent = post.name || "";
   document.getElementById("viewerDate").textContent = post.publishDate || "";
@@ -547,6 +547,11 @@ function openViewer(post) {
 function updateViewerImage() {
   document.getElementById("viewerImage").src = currentMedia[currentSlide];
   toggleNav(); // ✅ ensure nav visibility stays correct
+}
+  function toggleNav() {
+  const show = currentMedia.length > 1;
+  document.querySelector(".nav.prev").style.display = show ? "flex" : "none";
+  document.querySelector(".nav.next").style.display = show ? "flex" : "none";
 }
 
 function closeViewer() {
