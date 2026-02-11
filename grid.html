@@ -97,6 +97,20 @@ padding:10px 0 8px;
 position:relative;
 }
 
+/* SLIDING UNDERLINE */
+.slidingUnderline {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  width: 18px;
+  background: black;
+  border-radius: 2px;
+
+  left: 0;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+}
+
 .tabItem{
 display:flex;
 flex-direction:column;
@@ -479,6 +493,8 @@ animation:spin 1s linear infinite;
 <div class="tabUnderline" id="tabUnderline"></div>
 </div>
 
+<div class="slidingUnderline" id="slidingUnderline"></div>
+
 </div>
 
 <div class="gridWrap">
@@ -543,11 +559,31 @@ document.querySelector(".gridWrap").style.opacity = "0";
 requestAnimationFrame(() => {
   document.querySelector(".gridWrap").style.opacity = "1";
 });
+moveUnderline(el);
+
   renderGrid();
+}
+
+function moveUnderline(tab) {
+  const underline = document.getElementById("slidingUnderline");
+  const tabs = document.querySelector(".tabs");
+  const tabRect = tab.getBoundingClientRect();
+  const tabsRect = tabs.getBoundingClientRect();
+
+  const centerX =
+    tabRect.left - tabsRect.left +
+    tabRect.width / 2 -
+    underline.offsetWidth / 2;
+
+  underline.style.transform = `translateX(${centerX}px)`;
 }
 
 /* FETCH POSTS */
 async function loadPosts(btn){
+  window.addEventListener("load", () => {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (activeTab) moveUnderline(activeTab);
+});
 
 const icon = btn?.querySelector(".refreshIcon");
 
