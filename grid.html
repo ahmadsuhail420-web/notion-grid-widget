@@ -210,6 +210,7 @@ display:block;
   justify-content: center;
   z-index: 50;
 
+  border-radius:24px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -342,7 +343,7 @@ letter-spacing:.4px;
   transform: translateY(-50%);
   z-index: 6;
 
-  background: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.35);
   color: white;
   border: none;
   width: 36px;
@@ -393,6 +394,7 @@ animation:spin 1s linear infinite;
 </head>
 
 <body>
+<div class="widgetWrap">
   
 <div class="container">
 
@@ -461,7 +463,9 @@ animation:spin 1s linear infinite;
   </div>
 </div>
   </div>
+  <div class="widgetWrap">
   <div class="footer">Alif Designs</div>
+  </body>
 <script>
   
 let ALL_POSTS=[];
