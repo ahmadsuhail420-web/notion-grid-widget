@@ -532,12 +532,12 @@ let FILTER="Post";
 function setFilter(type, el) {
   FILTER = type;
 
-  // 1. Active tab state
+  // ACTIVE TAB
   document.querySelectorAll(".tabItem")
     .forEach(t => t.classList.remove("active"));
   el.classList.add("active");
-  
-    /* ICON SWITCH */
+
+  // ICON SWITCH
   document.getElementById("icon-post").src =
     FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
 
@@ -550,20 +550,19 @@ function setFilter(type, el) {
   document.getElementById("icon-tiktok").src =
     FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
 
-  // 2. Slide underline immediately
+  // 🔑 MOVE UNDERLINE FIRST
   moveUnderline(el);
 
-  // 3. Fade out grid
+  // GRID FADE
   const gridWrap = document.querySelector(".gridWrap");
   gridWrap.style.opacity = "0";
 
-  // 4. Update grid content
-  renderGrid();
-
-  // 5. Fade in grid (next frame)
   requestAnimationFrame(() => {
     gridWrap.style.opacity = "1";
   });
+
+  // RENDER CONTENT LAST
+  renderGrid();
 }
 
 function moveUnderline(tab) {
