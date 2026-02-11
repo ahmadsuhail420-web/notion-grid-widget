@@ -472,21 +472,21 @@ animation:spin 1s linear infinite;
 <!-- TABS -->
 <div class="contentArea">
 <div class="tabs">
-  <div class="tabItem active" onclick="setFilter('Post', this)">
-    <img src="/icons/post-dark.png">
-  </div>
+<div class="tabItem active" data-type="Post" onclick="setFilter('Post', this)">
+  <img>
+</div>
 
-  <div class="tabItem" onclick="setFilter('Reels', this)">
-    <img src="/icons/reel-light.png">
-  </div>
+<div class="tabItem" data-type="Reels" onclick="setFilter('Reels', this)">
+  <img>
+</div>
 
-  <div class="tabItem" onclick="setFilter('Story', this)">
-    <img src="/icons/story-light.png">
-  </div>
+<div class="tabItem" data-type="Story" onclick="setFilter('Story', this)">
+  <img>
+</div>
 
-  <div class="tabItem" onclick="setFilter('Tiktok', this)">
-    <img src="/icons/tiktok-light.png">
-  </div>
+<div class="tabItem" data-type="Tiktok" onclick="setFilter('Tiktok', this)">
+  <img>
+</div>
 
   <!-- ONE underline -->
   <div class="slidingUnderline" id="slidingUnderline"></div>
@@ -538,17 +538,14 @@ function setFilter(type, el) {
   el.classList.add("active");
 
   // ICON SWITCH
-  document.getElementById("icon-post").src =
-    FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png";
+  document.querySelectorAll(".tabItem").forEach(tab => {
+  const type = tab.dataset.type;
+  const img = tab.querySelector("img");
 
-  document.getElementById("icon-reel").src =
-    FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png";
-
-  document.getElementById("icon-story").src =
-    FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png";
-
-  document.getElementById("icon-tiktok").src =
-    FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
+  img.src = tab.classList.contains("active")
+    ? `/icons/${type.toLowerCase()}-dark.png`
+    : `/icons/${type.toLowerCase()}-light.png`;
+});
 
   // 🔑 MOVE UNDERLINE FIRST
   moveUnderline(el);
