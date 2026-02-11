@@ -18,7 +18,7 @@ align-items: center;
   
 border-radius:24px;
 border: 2px solid #e2e2e2;
-padding: 7px;
+padding: 8px;
 }
 
 /* CONTAINER */
@@ -31,17 +31,6 @@ display:flex;
   position: relative;
 flex-direction:column;
   padding: 20px 20px 0px;           /* ✅ INNER GAP ONLY */
-}
-  
-/* When viewer is open, blur container content */
-.container.popup-open .header,
-.container.popup-open .tabs,
-.container.popup-open .gridWrap,
-.container.popup-open .footer {
-  filter: blur(4px);
-  opacity: 0.6;
-  pointer-events: none;
-  transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
 /* HEADER */
@@ -530,46 +519,19 @@ if(icon) icon.classList.remove("spin");
 let currentMedia = [];
 
 function openViewer(post) {
-  const viewer = document.getElementById("viewer");
-  const content = document.getElementById("viewerContent");
-  const container = document.querySelector(".container");
+  currentMedia = Array.isArray(post.attachment)
+    ? post.attachment
+    : [post.attachment];
 
-  // reset
-  content.innerHTML = "";
   currentSlide = 0;
-  currentMedia = [];
+  updateViewerImage();
 
-  // IMAGE(S)
-  if (post.attachment) {
-    currentMedia = Array.isArray(post.attachment)
-      ? post.attachment
-      : [post.attachment];
-
-    showSlide();
-  }
-
-  // VIDEO
-  if (post.video) {
-    const vid = document.createElement("video");
-    vid.src = post.video;
-    vid.controls = true;
-    vid.autoplay = true;
-    vid.playsInline = true;
-    content.appendChild(vid);
-  }
-
-  // Text
   document.getElementById("viewerTitle").textContent = post.name || "";
   document.getElementById("viewerDate").textContent = post.publishDate || "";
 
-  // 🔥 BLUR ONLY CONTAINER CONTENT
-  container.classList.add("popup-open");
-
-  // show popup with animation
+  const viewer = document.getElementById("viewer");
   viewer.classList.remove("hidden");
-  requestAnimationFrame(() => {
-    viewer.classList.add("show");
-  });
+  requestAnimationFrame(() => viewer.classList.add("show"));
 }
 
 function toggleNav() {
@@ -580,15 +542,8 @@ function toggleNav() {
 
 function closeViewer() {
   const viewer = document.getElementById("viewer");
-  const container = document.querySelector(".container");
-
-  // start scale-out animation
   viewer.classList.remove("show");
 
-  // remove blur/dim from container content
-  container.classList.remove("popup-open");
-
-  // fully hide viewer after animation
   setTimeout(() => {
     viewer.classList.add("hidden");
   }, 250);
