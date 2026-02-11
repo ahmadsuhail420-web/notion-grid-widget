@@ -129,6 +129,33 @@ transition:.25s;
 .tabItem.active .tabUnderline{
 opacity:1;
 }
+/* TAB ANIMATION */
+.tabItem {
+  position: relative;
+}
+
+.tabItem img {
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.tabItem.active img {
+  transform: translateY(-2px) scale(1.05);
+  opacity: 1;
+}
+
+/* Underline animation */
+.tabUnderline {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.tabItem.active .tabUnderline {
+  transform: scaleX(1);
+  opacity: 1;
+}
 
 /* GRID WRAP */
 .gridWrap {
@@ -136,6 +163,7 @@ opacity:1;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  transition: opacity 0.2s ease;
 }
 .gridWrap::-webkit-scrollbar {
   display: none;
@@ -510,6 +538,11 @@ function setFilter(type, el) {
   document.getElementById("icon-tiktok").src =
     FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
 
+document.querySelector(".gridWrap").style.opacity = "0";
+
+requestAnimationFrame(() => {
+  document.querySelector(".gridWrap").style.opacity = "1";
+});
   renderGrid();
 }
 
