@@ -18,7 +18,7 @@ align-items: center;
   
 border-radius:24px;
 border: 2px solid #e2e2e2;
-padding: 5px;
+padding: 4px;
 }
 
 /* CONTAINER */
@@ -525,24 +525,31 @@ function openViewer(post) {
 
   currentSlide = 0;
   updateViewerImage();
+  toggleNav();
 
   document.getElementById("viewerTitle").textContent = post.name || "";
   document.getElementById("viewerDate").textContent = post.publishDate || "";
 
   const viewer = document.getElementById("viewer");
+  const container = document.querySelector(".container");
+
+  container.classList.add("popup-open"); // ✅ dim container
   viewer.classList.remove("hidden");
+
   requestAnimationFrame(() => viewer.classList.add("show"));
 }
 
-function toggleNav() {
-  const show = currentMedia.length > 1;
-  document.querySelector(".nav.prev").style.display = show ? "flex" : "none";
-  document.querySelector(".nav.next").style.display = show ? "flex" : "none";
+function updateViewerImage() {
+  document.getElementById("viewerImage").src = currentMedia[currentSlide];
+  toggleNav(); // ✅ ensure nav visibility stays correct
 }
 
 function closeViewer() {
   const viewer = document.getElementById("viewer");
+  const container = document.querySelector(".container");
+
   viewer.classList.remove("show");
+  container.classList.remove("popup-open"); // ✅ restore container
 
   setTimeout(() => {
     viewer.classList.add("hidden");
