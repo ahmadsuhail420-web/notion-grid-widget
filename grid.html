@@ -108,7 +108,7 @@ position:relative;
 
   left: 0;
   transform: translateX(0);
-  transition: transform 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tabItem{
@@ -472,29 +472,24 @@ animation:spin 1s linear infinite;
 <!-- TABS -->
 <div class="contentArea">
 <div class="tabs">
+  <div class="tabItem active" onclick="setFilter('Post', this)">
+    <img src="/icons/post-dark.png">
+  </div>
 
-<div class="tabItem active" onclick="setFilter('Post', this)">
-<img src="/icons/post-dark.png" id="icon-post">
-<div class="tabUnderline" id="tabUnderline"></div>
-</div>
+  <div class="tabItem" onclick="setFilter('Reels', this)">
+    <img src="/icons/reel-light.png">
+  </div>
 
-<div class="tabItem" onclick="setFilter('Reels', this)">
-<img src="/icons/reel-light.png" id="icon-reel">
-<div class="tabUnderline" id="tabUnderline"></div>
-</div>
+  <div class="tabItem" onclick="setFilter('Story', this)">
+    <img src="/icons/story-light.png">
+  </div>
 
-<div class="tabItem" onclick="setFilter('Story', this)">
-<img src="/icons/story-light.png" id="icon-story">
-<div class="tabUnderline" id="tabUnderline"></div>
-</div>
+  <div class="tabItem" onclick="setFilter('Tiktok', this)">
+    <img src="/icons/tiktok-light.png">
+  </div>
 
-<div class="tabItem" onclick="setFilter('Tiktok', this)">
-<img src="/icons/tiktok-light.png" id="icon-tiktok">
-<div class="tabUnderline" id="tabUnderline"></div>
-</div>
-
-<div class="slidingUnderline" id="slidingUnderline"></div>
-
+  <!-- ONE underline -->
+  <div class="slidingUnderline" id="slidingUnderline"></div>
 </div>
 
 <div class="gridWrap">
@@ -558,24 +553,25 @@ document.querySelector(".gridWrap").style.opacity = "0";
 
 requestAnimationFrame(() => {
   document.querySelector(".gridWrap").style.opacity = "1";
-});
 moveUnderline(el);
-
+});
   renderGrid();
 }
 
 function moveUnderline(tab) {
   const underline = document.getElementById("slidingUnderline");
   const tabs = document.querySelector(".tabs");
+
   const tabRect = tab.getBoundingClientRect();
   const tabsRect = tabs.getBoundingClientRect();
 
-  const centerX =
-    tabRect.left - tabsRect.left +
+  const x =
+    tabRect.left -
+    tabsRect.left +
     tabRect.width / 2 -
     underline.offsetWidth / 2;
 
-  underline.style.transform = `translateX(${centerX}px)`;
+  underline.style.transform = `translateX(${x}px)`;
 }
 
 /* FETCH POSTS */
