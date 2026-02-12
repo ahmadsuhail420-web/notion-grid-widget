@@ -495,8 +495,10 @@ function renderGrid() {
   grid.innerHTML = "";
 
   const filtered = ALL_POSTS.filter(post =>
-    Array.isArray(post.type) && post.type.includes(FILTER)
-  );
+  Array.isArray(post.type) &&
+  post.type.includes(FILTER) &&
+  !post.hide // ✅ hide = true → removed from grid
+);
 
   for (let i = 0; i < filtered.length; i++) {
     const post = filtered[i];
