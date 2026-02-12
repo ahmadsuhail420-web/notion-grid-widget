@@ -5,206 +5,880 @@
 <title>Grid Planner</title>
 
 <style>
-/* ====== YOUR ORIGINAL CSS (UNCHANGED) ====== */
 body{
 font-family: sans-serif;
 max-width:640px;
 min-height: 640px;
 margin:auto;
+  
 background:#ffffff;
 display:flex;
 justify-content:center;
 align-items: center; 
+
 padding: 15px 20px 0px;
+  
 border-radius:24px;
 border: 3px solid #e2e2e2;
 }
-.widgetWrap{
-width:640px;height:640px;background:#fff;display:flex;flex-direction:column;border-radius:24px;
+  .widgetWrap {
+width:640px;
+height:640px;
+margin: 0;
+background:#ffffff;
+  position: relative;
+flex-direction:column;
+border-radius:24px;
+display:flex;
 }
-.container{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;}
-.container.popup-open .gridWrap{opacity:.4}
-.header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;padding:14px 18px;}
-.refreshBtn{background:black;color:white;border:none;padding:6px;border-radius:10px;font-weight:600;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;}
-.refreshIcon.spin{animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.title{text-align:right;font-weight:700;font-size:16px}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);padding:10px 0 8px;position:relative}
-.slidingUnderline{position:absolute;bottom:0;height:2px;width:18px;background:black;border-radius:2px;transition:.35s}
-.tabItem{display:flex;flex-direction:column;align-items:center;cursor:pointer}
-.tabItem img{width:22px;height:22px;opacity:.45}
-.tabItem.active img{opacity:1}
-.gridWrap{flex:1;overflow-y:auto}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:4px}
-.card{aspect-ratio:4/5;background:#efefef;position:relative;overflow:hidden}
-.card img,.card video{width:100%;height:100%;object-fit:cover}
-.cardInfo{position:absolute;bottom:0;width:100%;background:linear-gradient(to top,rgba(0,0,0,.7),transparent);color:#fff;padding:6px;transform:translateY(100%);transition:.25s}
-.card:hover .cardInfo{transform:translateY(0)}
-.cardTitle{font-size:13px;line-height:1}
-.cardDate{font-size:10px;margin-top:2px}
-.badge{position:absolute;top:6%;right:6%;width:16%;opacity:.8}
-.noContent{font-size:11px;color:#aaa}
-.viewer{position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.25s}
-.viewer.show{opacity:1;pointer-events:auto}
-.viewer.hidden{display:none}
-.viewerInner{width:min(360px,85%);position:relative}
-.viewerCard{background:#fff;border-radius:20px;overflow:hidden}
-.viewerImage{aspect-ratio:4/5}
-.viewerImage img,.viewerImage video{width:100%;height:100%;object-fit:cover}
-.viewerFooter{padding:14px}
-.viewerClose{position:absolute;top:-14px;right:-14px;background:#000;color:#fff;border:none;border-radius:50%;width:32px;height:32px}
-.nav{position:absolute;top:50%;transform:translateY(-50%);background:#000;color:#fff;border:none;border-radius:50%;width:36px;height:36px}
-.nav.prev{left:-14px}
-.nav.next{right:-14px}
-.footer{text-align:center;font-size:13px;color:#777;padding:8px}
+
+/* CONTAINER */
+.container{
+flex: 1;
+min-height: 0;
+position: relative;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+}
+  
+.container.popup-open .gridWrap {
+  opacity: 0.4;
+}
+
+
+/* HEADER */
+.header{
+display:grid;
+grid-template-columns:auto 1fr auto;
+align-items:center;
+padding:14px 18px;
+}
+
+.refreshBtn{
+  background:black;
+  color:white;
+  border:none;
+  padding:6px 6px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.refreshIcon{
+  font-size:18px;
+}
+
+.refreshIcon.spin{
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
+}
+
+.title{
+text-align:right;
+font-weight:700;
+font-size:16px;
+}
+
+/* TABS */
+.tabs{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+align-items:center;
+padding:10px 0 8px;
+position:relative;
+}
+
+/* SLIDING UNDERLINE */
+.slidingUnderline {
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  width: 18px;
+  background: black;
+  border-radius: 2px;
+
+  left: 0;
+  transform: translateX(0);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tabItem{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:6px;
+cursor:pointer;
+}
+
+.tabItem img{
+width:22px;
+height:22px;
+opacity:.45;
+transition:.2s;
+}
+
+.tabItem.active img{
+opacity:1;
+transform:scale(1.05);
+}
+
+.tabItem.active .tabUnderline{
+opacity:1;
+}
+/* TAB ANIMATION */
+.tabItem {
+  position: relative;
+}
+
+.tabItem img {
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.tabItem.active img {
+  transform: translateY(-2px) scale(1.05);
+  opacity: 1;
+}
+
+/* Underline animation */
+.tabUnderline {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.tabItem.active .tabUnderline {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* GRID WRAP */
+.gridWrap {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  transition: opacity 0.2s ease;
+}
+.gridWrap::-webkit-scrollbar {
+  display: none;
+}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:3px;
+padding:4px;
+}
+
+/* CARD */
+.card{
+aspect-ratio:4/5;
+background:#efefef;
+overflow:hidden;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+  .card img {
+  position: relative;
+  z-index: 1;
+}
+
+.card img,
+.card video{
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
+}
+
+ /* ---------- HOVER INFO OVERLAY ---------- */
+.cardInfo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0)
+  );
+
+  color: #fff;
+  padding: 8px 8px 6px;
+
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+  pointer-events: none;
+
+  /* 🔑 allow text to grow */
+  max-height: 70%;
+  overflow: hidden;
+}
+
+.card:hover .cardInfo {
+  transform: translateY(0);
+}
+
+.cardTitle {
+  font-size: 13px;          /* 🔽 smaller */
+  font-weight: 500;
+  line-height: 1;
+
+  white-space: normal;      /* 🔑 allow wrapping */
+  word-break: break-word;  /* 🔑 long words wrap */
+}
+
+.cardDate {
+  font-size: 10px;
+  font-weight: 300
+  opacity: 1;
+  margin-top: 2px;
+}
+  .card video {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.card:hover video {
+  opacity: 1;
+}
+
+
+  /* ---------- VIEWER ---------- */
+  
+.viewer {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+
+  border-radius:3px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.viewer.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.viewer.hidden {
+  display: none;
+}
+
+/* ---------- VIEWER CARD ---------- */
+.viewerInner {
+  width: min(360px, 85%);
+  position: relative;
+  overflow: visible;
+  transform: scale(0.96);          /* ✅ add this */
+  transition: transform 0.25s ease;
+}
+
+/* ---------- IMAGE AREA ---------- */
+
+.viewerImage {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;    /* crop image only */
+}
+
+.viewer.show .viewerInner {
+  transform: scale(1);
+}
+
+.viewerImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* 🔴 center crop */
+  object-position: center;
+}
+
+.viewerCard {
+  width: 100%;
+  background: #fff;
+  border-radius: 20px;     /* ✅ curved edges */
+  overflow: hidden;        /* ✅ clips content */
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+
+/* ---------- FOOTER ---------- */
+.viewerFooter {
+  background: #fff;
+  padding: 14px 16px 16px;
+  border-top: 1px solid #eee;
+}
+
+#viewerTitle {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+#viewerDate {
+  font-size: 12px;
+  color: #888;
+}
+
+/* ---------- CLOSE BUTTON ---------- */
+.viewerClose {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 10;
+
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+/* BADGES */
+.card .badge {
+  position: absolute;
+  top: 4%;
+  right: 6%;
+  width: 16%;
+  height: 16%;
+  object-fit: contain;
+  z-index: 5;
+  pointer-events: none;
+  opacity: .8;
+}
+
+/* NO CONTENT */
+.noContent{
+font-size:11px;
+color:#b5b5b5;
+font-weight:500;
+letter-spacing:.4px;
+}
+  
+  .contentArea {
+    flex: 1;
+    min-height: 0;
+  padding: 0 15px 0;
+  overflow: hidden;
+  display: flex;
+flex-direction: column;
+}
+
+/* FOOTER */
+.footer{
+  text-align:center;
+  margin-top: auto;
+  padding: 8px 0;
+  font-size:13px;
+  color:#777;
+  background: transparent;
+}
+
+  .nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+
+  background: rgba(0,0,0,0.35);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  cursor: pointer;
+}
+  .nav.prev {
+  left: -14px;   /* slightly outside card edge */
+}
+
+.nav.next {
+  right: -14px;  /* slightly outside card edge */
+}
+.nav,
+.viewerClose {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+
+
+/* LOADER */
+.loader{
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background:rgba(255,255,255,.7);
+backdrop-filter:blur(2px);
+}
+
+.loaderCircle{
+width:30px;
+height:30px;
+border:3px solid #ddd;
+border-top:3px solid black;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
+
 </style>
 </head>
 
 <body>
-<div class="widgetWrap">
+  <div class="widgetWrap">
+  
 <div class="container">
 
 <div class="header">
-<button class="refreshBtn"><span class="refreshIcon">⟳</span>Refresh</button>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<button class="refreshBtn">
+  <span class="material-icons refreshIcon">refresh</span>
+  Refresh
+</button>
 <div class="title">Grid Planner</div>
+<div></div>
 </div>
 
+<!-- TABS -->
 <div class="contentArea">
 <div class="tabs">
-  <div class="tabItem active" data-type="post" onclick="setFilter('Post',this)"><img src="/icons/post-dark.png"></div>
-  <div class="tabItem" data-type="reel" onclick="setFilter('Reels',this)"><img src="/icons/reel-light.png"></div>
-  <div class="tabItem" data-type="story" onclick="setFilter('Story',this)"><img src="/icons/story-light.png"></div>
-  <div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok',this)"><img src="/icons/tiktok-light.png"></div>
+<div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
+  <img src="/icons/post-dark.png">
+</div>
+
+<div class="tabItem" data-type="reel" onclick="setFilter('Reels', this)">
+  <img src="/icons/reel-light.png">
+</div>
+
+<div class="tabItem" data-type="story" onclick="setFilter('Story', this)">
+  <img src="/icons/story-light.png">
+</div>
+
+<div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok', this)">
+  <img src="/icons/tiktok-light.png">
+</div>
+
+  <!-- ONE underline -->
   <div class="slidingUnderline" id="slidingUnderline"></div>
 </div>
 
-<div class="gridWrap"><div id="grid" class="grid"></div></div>
+<div class="gridWrap">
+<div id="grid" class="grid"></div>
 </div>
+  </div>
 
+ <!-- MEDIA VIEWER -->
 <div id="viewer" class="viewer hidden">
   <div class="viewerInner">
+
+    <!-- CONTROLS -->
     <button class="viewerClose" onclick="closeViewer()">✕</button>
     <button class="nav prev" onclick="prevImage()">‹</button>
     <button class="nav next" onclick="nextImage()">›</button>
+
+    <!-- CARD -->
     <div class="viewerCard">
-      <div class="viewerImage" id="viewerMedia"></div>
+      <div class="viewerImage">
+        <img id="viewerImage" />
+      </div>
+
       <div class="viewerFooter">
         <div id="viewerTitle"></div>
         <div id="viewerDate"></div>
       </div>
+
     </div>
   </div>
 </div>
-
-</div>
-<div class="footer">Alif Designs</div>
-
+  </div>
+    <div class="footer">Alif Designs</div>
+    </div>
 <script>
-/* ====== HELPERS ====== */
-function formatDateShort(d){if(!d)return"";const x=new Date(d);return isNaN(x)?"":x.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"2-digit"})}
+  
+let ALL_POSTS=[];
+let FILTER="Post";
 
-function normalizeMedia(post){
-  if(post.attachment){
-    const arr=Array.isArray(post.attachment)?post.attachment:[post.attachment];
-    return {type:"image",src:arr[0],all:arr}
-  }
-  if(post.video){
-    const yt=post.video.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    if(yt)return{type:"youtube",src:`https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`,all:[`https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`]}
-    if(post.video.match(/\.(mp4|webm|ogg)$/i))return{type:"video",src:post.video,all:[post.video]}
-    return{type:"link",src:"/icons/video.png"}
-  }
-  return null
+/* TAB SWITCH */
+function setFilter(type, el) {
+  FILTER = type;
+
+  // ACTIVE TAB
+  document.querySelectorAll(".tabItem").forEach(tab => {
+    tab.classList.remove("active");
+  });
+  el.classList.add("active");
+
+  // ICON SWITCH (correct way)
+  document.querySelectorAll(".tabItem").forEach(tab => {
+    const img = tab.querySelector("img");
+    const iconType = tab.dataset.type;
+
+    img.src = tab.classList.contains("active")
+      ? `/icons/${iconType}-dark.png`
+      : `/icons/${iconType}-light.png`;
+  });
+
+  // SLIDE UNDERLINE
+  moveUnderline(el);
+
+  // GRID FADE
+  const gridWrap = document.querySelector(".gridWrap");
+  gridWrap.style.opacity = "0";
+  requestAnimationFrame(() => {
+    gridWrap.style.opacity = "1";
+  });
+
+  // RENDER GRID
+  renderGrid();
 }
 
-/* ====== STATE ====== */
-let ALL_POSTS=[],FILTER="Post",currentMedia=[],currentSlide=0;
+function moveUnderline(tab) {
+  const underline = document.getElementById("slidingUnderline");
+  const tabs = document.querySelector(".tabs");
 
-/* ====== TABS ====== */
-function setFilter(type,el){
-FILTER=type;
-document.querySelectorAll(".tabItem").forEach(t=>t.classList.remove("active"));
-el.classList.add("active");
-renderGrid();
+  const tabRect = tab.getBoundingClientRect();
+  const tabsRect = tabs.getBoundingClientRect();
+
+  const x =
+    tabRect.left -
+    tabsRect.left +
+    tabRect.width / 2 -
+    underline.offsetWidth / 2;
+
+  underline.style.transform = `translateX(${x}px)`;
 }
 
-/* ====== FETCH ====== */
-async function loadPosts(){
+/* FETCH POSTS */
+async function loadPosts(btn){
+
+const icon = btn?.querySelector(".refreshIcon");
+
+/* START BUTTON SPIN ONLY */
+if(icon) icon.classList.add("spin");
+
 try{
-const r=await fetch("/api/get-posts");
-ALL_POSTS=await r.json();
-}catch{ALL_POSTS=[]}
+
+const res = await fetch("/api/get-posts");
+const data = await res.json();
+
+/* SORT PINNED → NEWEST */
+data.sort((a, b) => {
+  if (a.pinned && !b.pinned) return -1;
+  if (!a.pinned && b.pinned) return 1;
+
+  const dateA = new Date(a.publishDate || a.created_time || 0);
+  const dateB = new Date(b.publishDate || b.created_time || 0);
+
+  return dateB - dateA;
+});
+
+ALL_POSTS = data;
+
 renderGrid();
+
+}catch(e){
+console.log("Refresh failed");
 }
 
-/* ====== GRID ====== */
-function renderGrid(){
-const grid=document.getElementById("grid");
-grid.innerHTML="";
-const filtered=ALL_POSTS.filter(p=>!p.type?.length||p.type.includes(FILTER));
-for(let i=0;i<Math.max(filtered.length,60);i++){
-const card=document.createElement("div");card.className="card";
-const post=filtered[i];
-if(post){
-const media=normalizeMedia(post);
-if(media){
-const img=document.createElement("img");img.src=media.src;card.appendChild(img);
-if(media.type==="video"){
-const vid=document.createElement("video");
-Object.assign(vid,{src:media.src,muted:true,loop:true,playsInline:true});
-vid.style.position="absolute";vid.style.inset=0;vid.style.opacity=0;vid.style.transition=".2s";
-card.appendChild(vid);
-card.onmouseenter=()=>{vid.play();vid.style.opacity=1};
-card.onmouseleave=()=>{vid.pause();vid.currentTime=0;vid.style.opacity=0};
-}
-card.onclick=()=>openViewer(post);
-}
-if(post.name||post.publishDate){
-const info=document.createElement("div");info.className="cardInfo";
-if(post.name){const t=document.createElement("div");t.className="cardTitle";t.textContent=post.name;info.appendChild(t)}
-if(post.publishDate){const d=document.createElement("div");d.className="cardDate";d.textContent=formatDateShort(post.publishDate);info.appendChild(d)}
-card.appendChild(info);
-}
-}else{
-const n=document.createElement("div");n.className="noContent";n.textContent="NO CONTENT";card.appendChild(n)
-}
-grid.appendChild(card)
-}
+/* STOP SPIN */
+if(icon) icon.classList.remove("spin");
+
 }
 
-/* ====== VIEWER ====== */
-function openViewer(post){
-const media=normalizeMedia(post);
-currentMedia=media?.all||[];
-currentSlide=0;
-updateViewer();
-document.getElementById("viewerTitle").textContent=post.name||"";
-document.getElementById("viewerDate").textContent=formatDateShort(post.publishDate);
-document.getElementById("viewer").classList.remove("hidden");
-requestAnimationFrame(()=>document.getElementById("viewer").classList.add("show"));
+window.addEventListener("load", () => {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (activeTab) moveUnderline(activeTab);
+});
+
+/* RENDER GRID */
+  let currentSlide = 0;
+let currentMedia = [];
+
+function openViewer(post) {
+  currentMedia = Array.isArray(post.attachment)
+    ? post.attachment
+    : [post.attachment];
+
+  currentSlide = 0;
+  updateViewerImage();        // ✅ LOAD IMAGE
+  toggleNav();                // ✅ SHOW/HIDE ARROWS
+
+  document.getElementById("viewerTitle").textContent = post.name || "";
+  document.getElementById("viewerDate").textContent =
+  formatDateShort(post.publishDate);
+
+  const viewer = document.getElementById("viewer");
+  const container = document.querySelector(".container");
+
+  container.classList.add("popup-open");
+  viewer.classList.remove("hidden");
+
+  requestAnimationFrame(() => viewer.classList.add("show"));
 }
 
-function updateViewer(){
-const c=document.getElementById("viewerMedia");c.innerHTML="";
-if(!currentMedia.length)return;
-const src=currentMedia[currentSlide];
-if(src.match(/\.(mp4|webm|ogg)$/)){
-const v=document.createElement("video");v.src=src;v.controls=true;v.autoplay=true;c.appendChild(v)
-}else{
-const i=document.createElement("img");i.src=src;c.appendChild(i)
+function updateViewerImage() {
+  document.getElementById("viewerImage").src = currentMedia[currentSlide];
+  toggleNav(); // ✅ ensure nav visibility stays correct
 }
+  function toggleNav() {
+  const show = currentMedia.length > 1;
+  document.querySelector(".nav.prev").style.display = show ? "flex" : "none";
+  document.querySelector(".nav.next").style.display = show ? "flex" : "none";
 }
 
-function closeViewer(){
-const v=document.getElementById("viewer");
-v.classList.remove("show");
-setTimeout(()=>v.classList.add("hidden"),200)
-}
-function prevImage(){currentSlide=(currentSlide-1+currentMedia.length)%currentMedia.length;updateViewer()}
-function nextImage(){currentSlide=(currentSlide+1)%currentMedia.length;updateViewer()}
+function closeViewer() {
+  const viewer = document.getElementById("viewer");
+  const container = document.querySelector(".container");
 
-/* ====== INIT ====== */
+  viewer.classList.remove("show");
+  container.classList.remove("popup-open"); // ✅ restore container
+
+  setTimeout(() => {
+    viewer.classList.add("hidden");
+  }, 250);
+}
+
+function prevImage() {
+  currentSlide =
+    (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+  updateViewerImage();
+}
+
+function nextImage() {
+  currentSlide =
+    (currentSlide + 1) % currentMedia.length;
+  updateViewerImage();
+}
+
+  function getVideoPreview(post) {
+  const url = post?.video;
+  if (!url) return null;
+
+  // YouTube / Shorts
+  if (url.includes("youtube") || url.includes("youtu.be")) {
+    const match = url.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if (match) {
+      return {
+        type: "image",
+        src: `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
+      };
+    }
+  }
+
+  // Direct video files (mp4, webm, ogg)
+  if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+    return {
+      type: "video",
+      src: url
+    };
+  }
+
+  // Fallback (TikTok, IG, Vimeo, unknown)
+  return {
+    type: "placeholder"
+  };
+}
+
+ function renderGrid() {
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  // type is ARRAY in your data
+  const filtered = ALL_POSTS.filter(p =>
+    Array.isArray(p.type) && p.type.includes(FILTER)
+  );
+
+  const total = Math.max(filtered.length, 60);
+
+  for (let i = 0; i < total; i++) {
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const post = filtered[i];
+
+    if (post && (post.attachment || post.video)) {
+
+      /* ---------- IMAGE ---------- */
+      if (post.attachment) {
+        const img = document.createElement("img");
+        img.src = Array.isArray(post.attachment)
+          ? post.attachment[0]
+          : post.attachment;
+        card.appendChild(img);
+      }
+
+      /* ---------- VIDEO ---------- */
+      if (post.video) {
+        const preview = getVideoPreview(post);
+
+        if (preview?.type === "video") {
+  const vid = document.createElement("video");
+  vid.src = preview.src;
+
+  vid.muted = true;
+  vid.loop = true;
+  vid.playsInline = true;
+  vid.preload = "metadata";
+
+  vid.style.position = "absolute";
+  vid.style.inset = "0";
+  vid.style.width = "100%";
+  vid.style.height = "100%";
+  vid.style.objectFit = "cover";
+  vid.style.zIndex = "2";
+  vid.style.opacity = "0";
+  vid.style.transition = "opacity 0.2s ease";
+
+  card.appendChild(vid);
+
+  // ▶️ play on hover
+  card.addEventListener("mouseenter", () => {
+    vid.currentTime = 0;
+    vid.play().catch(() => {});
+    vid.style.opacity = "1";
+  });
+
+  // ⏸️ pause on leave
+  card.addEventListener("mouseleave", () => {
+    vid.pause();
+    vid.currentTime = 0;
+    vid.style.opacity = "0";
+  });
+}
+
+        if (preview?.type === "placeholder") {
+          const img = document.createElement("img");
+          img.src = "/icons/video.png";
+          card.appendChild(img);
+        }
+      }
+
+      /* ---------- BADGE LOGIC (PIN > MULTI) ---------- */
+      const isMulti =
+        Array.isArray(post.attachment) && post.attachment.length > 1;
+
+      if (post.pinned) {
+        const pin = document.createElement("img");
+        pin.src = "/icons/pin.png";
+        pin.className = "badge";
+        card.appendChild(pin);
+      }
+      else if (isMulti) {
+        const multi = document.createElement("img");
+        multi.src = "/icons/multi.png";
+        multi.className = "badge";
+        card.appendChild(multi);
+      }
+
+    } else {
+      /* ---------- NO CONTENT ---------- */
+      const no = document.createElement("div");
+      no.className = "noContent";
+      no.textContent = "NO CONTENT";
+      card.appendChild(no);
+    }
+    card.addEventListener("click", (e) => {
+  const hasVideo = post?.video;
+  if (hasVideo) {
+    e.stopPropagation(); // allow hover preview to work
+  }
+  openViewer(post);
+});
+    
+    /* ---------- HOVER INFO ---------- */
+if (post?.name || post?.publishDate) {
+  const info = document.createElement("div");
+  info.className = "cardInfo";
+
+  if (post.name) {
+    const title = document.createElement("div");
+    title.className = "cardTitle";
+    title.textContent = post.name;
+    info.appendChild(title);
+  }
+
+  if (post.publishDate) {
+    const date = document.createElement("div");
+    date.className = "cardDate";
+    date.textContent = formatDateShort(post.publishDate);
+    info.appendChild(date);
+  }
+
+  card.appendChild(info);
+}
+    grid.appendChild(card);
+  }
+}
+  const viewer = document.getElementById("viewer");
+const viewerInner = document.querySelector(".viewerInner");
+
+viewer.addEventListener("click", (e) => {
+  if (e.target === viewer) {
+    closeViewer();
+  }
+});
+
+viewerInner.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
+
 loadPosts();
 </script>
+  <script>
+  document
+    .querySelector(".refreshBtn")
+    .addEventListener("click", function () {
+      loadPosts(this);
+    });
+    function formatDateShort(dateStr) {
+  if (!dateStr) return "";
+
+  const date = new Date(dateStr);
+  if (isNaN(date)) return "";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "2-digit"
+  });
+}
+</script>
+
 </body>
 </html>
