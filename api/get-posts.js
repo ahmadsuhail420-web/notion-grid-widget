@@ -68,6 +68,10 @@ const thumbnail =
         /* ---------- PIN ---------- */
         const pinned =
           page.properties?.Pin?.checkbox || false;
+          
+/* ---------- Hide ---------- */
+const hide =
+page.properties?.Hide?.checkbox || false;
 
         return {
           id: page.id,
@@ -78,6 +82,7 @@ const thumbnail =
           thumbnail, // ✅ NOW SENT TO FRONTEND
           type,
           pinned,
+          hide,
         };
       } catch (e) {
         return {
