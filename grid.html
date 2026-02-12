@@ -817,25 +817,34 @@ if (post.video) {
     });
   }
 }
-      /* ---------- BADGE LOGIC (PIN > MULTI) ---------- */
-      const isMulti =
-        Array.isArray(post.attachment) && post.attachment.length > 1;
+      /* ---------- BADGE LOGIC (PIN > VIDEO > MULTI) ---------- */
 
-      if (post.pinned) {
-        const pin = document.createElement("img");
-        pin.src = "/icons/pin.png";
-        pin.className = "badge";
-        card.appendChild(pin);
-      }
-      else if (isMulti) {
-        const multi = document.createElement("img");
-        multi.src = "/icons/multi.png";
-        multi.className = "badge";
-        card.appendChild(multi);
-      }
+const hasVideo = !!post.video;
+const isMulti =
+  Array.isArray(post.attachment) && post.attachment.length > 1;
 
-    } else {
-      /* ---------- NO CONTENT ---------- */
+if (post.pinned) {
+  const pin = document.createElement("img");
+  pin.src = "/icons/pin.png";
+  pin.className = "badge";
+  card.appendChild(pin);
+}
+
+else if (hasVideo) {
+  const videoBadge = document.createElement("img");
+  videoBadge.src = "/icons/reel-badge.png"; // ▶️ icon
+  videoBadge.className = "badge";
+  card.appendChild(videoBadge);
+}
+
+else if (isMulti) {
+  const multi = document.createElement("img");
+  multi.src = "/icons/multi.png";
+  multi.className = "badge";
+  card.appendChild(multi);
+}
+    } 
+    else {
       const no = document.createElement("div");
       no.className = "noContent";
       no.textContent = "NO CONTENT";
