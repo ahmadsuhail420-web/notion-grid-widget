@@ -701,7 +701,7 @@ function nextImage() {
     }
   }
 
-  // Direct video files (mp4, webm, ogg)
+  // Direct video files
   if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
     return {
       type: "video",
@@ -709,12 +709,12 @@ function nextImage() {
     };
   }
 
-  // Fallback (TikTok, IG, Vimeo, unknown)
+  // ✅ ANY OTHER URL (Instagram, TikTok, Notion, etc.)
   return {
     type: "placeholder"
   };
 }
-
+  
  function renderGrid() {
 
   const grid = document.getElementById("grid");
@@ -784,12 +784,31 @@ function nextImage() {
   });
 }
 
-        if (preview?.type === "placeholder") {
-          const img = document.createElement("img");
-          img.src = "/icons/video.png";
-          card.appendChild(img);
-        }
+    if (preview?.type === "placeholder") {
+  const thumb = getThumbnail(post);
+
+  const img = document.createElement("img");
+  img.src = thumb || "/icons/video.png"; // fallback safe
+  card.appendChild(img);
+}
       }
+      
+      function getThumbnail(post) {
+  if (!post?.thumbnail) return null;
+
+  // Notion Files & Media
+  if (Array.isArray(post.thumbnail) && post.thumbnail[0]?.file?.url) {
+    return post.thumbnail[0].file.url;
+  }
+
+  // URL property
+  if (typeof post.thumbnail === "string") {
+    return post.thumbnail;
+  }
+
+  return null;
+}
+
 
       /* ---------- BADGE LOGIC (PIN > MULTI) ---------- */
       const isMulti =
