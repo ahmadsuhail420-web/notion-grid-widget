@@ -745,41 +745,50 @@ function nextImage() {
 
       /* ---------- VIDEO ---------- */
       if (post.video) {
-        const preview = getVideoPreview(post);
+  const preview = getVideoPreview(post);
 
-        if (preview?.type === "video") {
-  const vid = document.createElement("video");
-  vid.src = preview.src;
+  // 🖼 ALWAYS add thumbnail
+  if (preview?.type === "image") {
+    const img = document.createElement("img");
+    img.src = preview.src;
+    card.appendChild(img);
+  }
 
-  vid.muted = true;
-  vid.loop = true;
-  vid.playsInline = true;
-  vid.preload = "metadata";
+  // 🎞 VIDEO overlay (only if real video file)
+  if (preview?.type === "video") {
+    const vid = document.createElement("video");
+    vid.src = preview.src;
 
-  vid.style.position = "absolute";
-  vid.style.inset = "0";
-  vid.style.width = "100%";
-  vid.style.height = "100%";
-  vid.style.objectFit = "cover";
-  vid.style.zIndex = "2";
-  vid.style.opacity = "0";
-  vid.style.transition = "opacity 0.2s ease";
+    vid.muted = true;
+    vid.loop = true;
+    vid.playsInline = true;
+    vid.preload = "metadata";
 
-  card.appendChild(vid);
-
-  // ▶️ play on hover
-  card.addEventListener("mouseenter", () => {
-    vid.currentTime = 0;
-    vid.play().catch(() => {});
-    vid.style.opacity = "1";
-  });
-
-  // ⏸️ pause on leave
-  card.addEventListener("mouseleave", () => {
-    vid.pause();
-    vid.currentTime = 0;
+    vid.style.position = "absolute";
+    vid.style.inset = "0";
+    vid.style.width = "100%";
+    vid.style.height = "100%";
+    vid.style.objectFit = "cover";
+    vid.style.zIndex = "2";
     vid.style.opacity = "0";
-  });
+    vid.style.transition = "opacity 0.2s ease";
+
+    card.appendChild(vid);
+
+    // ▶️ hover play
+    card.addEventListener("mouseenter", () => {
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
+      vid.style.opacity = "1";
+    });
+
+    // ⏸️ hover out
+    card.addEventListener("mouseleave", () => {
+      vid.pause();
+      vid.currentTime = 0;
+      vid.style.opacity = "0";
+    });
+  }
 }
 
         if (preview?.type === "placeholder") {
