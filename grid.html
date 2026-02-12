@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Grid Planner</title>
 
-  <!-- ===================== STYLES ===================== -->
   <style>
     /* ---------- BASE ---------- */
     body {
@@ -331,7 +330,74 @@
     }
   </style>
 </head>
+<body>
+  <div class="widgetWrap">
+  
+<div class="container">
 
+<div class="header">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<button class="refreshBtn">
+  <span class="material-icons refreshIcon">refresh</span>
+  Refresh
+</button>
+<div class="title">Grid Planner</div>
+<div></div>
+</div>
+
+<!-- TABS -->
+<div class="contentArea">
+<div class="tabs">
+<div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
+  <img src="/icons/post-dark.png">
+</div>
+
+<div class="tabItem" data-type="reel" onclick="setFilter('Reels', this)">
+  <img src="/icons/reel-light.png">
+</div>
+
+<div class="tabItem" data-type="story" onclick="setFilter('Story', this)">
+  <img src="/icons/story-light.png">
+</div>
+
+<div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok', this)">
+  <img src="/icons/tiktok-light.png">
+</div>
+
+  <!-- ONE underline -->
+  <div class="slidingUnderline" id="slidingUnderline"></div>
+</div>
+
+<div class="gridWrap">
+<div id="grid" class="grid"></div>
+</div>
+  </div>
+
+ <!-- MEDIA VIEWER -->
+<div id="viewer" class="viewer hidden">
+  <div class="viewerInner">
+
+    <!-- CONTROLS -->
+    <button class="viewerClose" onclick="closeViewer()">✕</button>
+    <button class="nav prev" onclick="prevImage()">‹</button>
+    <button class="nav next" onclick="nextImage()">›</button>
+
+    <!-- CARD -->
+    <div class="viewerCard">
+      <div class="viewerImage" id="viewerMedia"></div>
+
+      <div class="viewerFooter">
+        <div id="viewerTitle"></div>
+        <div id="viewerDate"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+  </div>
+    <div class="footer">Alif Designs</div>
+    </div>
+    
   <script>
 
 let ALL_POSTS = [];
@@ -657,4 +723,6 @@ document
   .addEventListener("click", e => e.stopPropagation());
 </script>
 
+</body>
+</html>
 
