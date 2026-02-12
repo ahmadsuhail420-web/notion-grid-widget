@@ -528,7 +528,9 @@ animation:spin 1s linear infinite;
     <div class="footer">Alif Designs</div>
     </div>
 <script>
-  
+
+  let currentVideo = null;
+
 let ALL_POSTS=[];
 let FILTER="Post";
 
@@ -600,18 +602,28 @@ let currentMedia = [];
 
 function openViewer(post) {
   currentSlide = 0;
+  currentVideo = null;
 
-  // CASE 1: IMAGE ATTACHMENTS
+  // IMAGE ATTACHMENTS
   if (post.attachment) {
     currentMedia = Array.isArray(post.attachment)
       ? post.attachment
       : [post.attachment];
   }
-  // CASE 2: VIDEO URL (YouTube / Insta / TikTok)
+
+  // VIDEO
   else if (post.video) {
-  const thumb = getNotionThumbnail(post);
-  currentMedia = thumb ? [thumb] : [];
-}
+    // ✅ real video file
+    if (post.video.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+      currentVideo = post.video;
+      currentMedia = [post.video]; // popup will play
+    }
+    // ❌ social URL → thumbnail only
+    else {
+      const thumb = getNotionThumbnail(post);
+      currentMedia = thumb ? [thumb] : [];
+    }
+  }
   else {
     currentMedia = [];
   }
@@ -628,12 +640,10 @@ function openViewer(post) {
 
   container.classList.add("popup-open");
   viewer.classList.remove("hidden");
-
   requestAnimationFrame(() => viewer.classList.add("show"));
 }
-
-function updateViewerImage() {
   
+function updateViewerImage() {
   const wrapper = document.getElementById("viewerMedia");
   wrapper.innerHTML = "";
 if (!currentMedia.length) return;
@@ -641,7 +651,6 @@ if (!currentMedia.length) return;
 
   if (!src) return;
 
-  // VIDEO
   if (src.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
     const video = document.createElement("video");
     video.src = src;
@@ -658,7 +667,7 @@ if (!currentMedia.length) return;
 
     wrapper.appendChild(video);
   }
-  // IMAGE
+    
   else {
     const img = document.createElement("img");
     img.src = src;
@@ -747,20 +756,20 @@ function nextImage() {
         card.appendChild(img);
       }
 if (post.video) {
-  const preview = getVideoPreview(post);
-  const notionThumb = getNotionThumbnail(post);
+  const isRealVideo = post.video.match(/\.(mp4|webm|ogg)(\?.*)?$/i);
+  const thumb = getNotionThumbnail(post);
 
-  // ✅ SOCIAL VIDEO → use Notion thumbnail
-  if (notionThumb) {
+  // 🖼 ALWAYS show thumbnail if exists
+  if (thumb) {
     const img = document.createElement("img");
-    img.src = notionThumb;
+    img.src = thumb;
     card.appendChild(img);
   }
 
-  // ✅ REAL VIDEO FILE → hover play
-  else if (preview?.type === "video") {
+  // 🎞 hover play ONLY for real video files
+  if (isRealVideo) {
     const vid = document.createElement("video");
-    vid.src = preview.src;
+    vid.src = post.video;
     vid.muted = true;
     vid.loop = true;
     vid.playsInline = true;
@@ -791,14 +800,7 @@ if (post.video) {
       vid.style.opacity = "0";
     });
   }
-
-  // fallback
-  else {
-    const img = document.createElement("img");
-    img.src = "/icons/video.png";
-    card.appendChild(img);
-  }
-} 
+}
       function getNotionThumbnail(post) {
   if (!post?.thumbnail) return null;
 
