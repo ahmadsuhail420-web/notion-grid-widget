@@ -534,6 +534,22 @@ animation:spin 1s linear infinite;
 let ALL_POSTS=[];
 let FILTER="Post";
 
+      function getNotionThumbnail(post) {
+  if (!post?.thumbnail) return null;
+
+  // Files & Media
+  if (Array.isArray(post.thumbnail) && post.thumbnail[0]?.file?.url) {
+    return post.thumbnail[0].file.url;
+  }
+
+  // URL property
+  if (typeof post.thumbnail === "string") {
+    return post.thumbnail;
+  }
+
+  return null;
+}    
+  
 /* TAB SWITCH */
 function setFilter(type, el) {
   FILTER = type;
@@ -800,23 +816,7 @@ if (post.video) {
       vid.style.opacity = "0";
     });
   }
-}
-      function getNotionThumbnail(post) {
-  if (!post?.thumbnail) return null;
-
-  // Files & Media
-  if (Array.isArray(post.thumbnail) && post.thumbnail[0]?.file?.url) {
-    return post.thumbnail[0].file.url;
-  }
-
-  // URL property
-  if (typeof post.thumbnail === "string") {
-    return post.thumbnail;
-  }
-
-  return null;
-}    
-      
+}   
       function getThumbnail(post) {
   if (!post?.thumbnail) return null;
 
