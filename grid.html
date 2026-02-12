@@ -246,7 +246,7 @@ display:block;
 
 .cardDate {
   font-size: 10px;
-  font-weight: 300
+  font-weight: 300;
   opacity: 1;
   margin-top: 2px;
 }
@@ -528,41 +528,47 @@ animation:spin 1s linear infinite;
     <div class="footer">Alif Designs</div>
     </div>
 <script>
-  
-let ALL_POSTS=[];
-let FILTER="Post";
+/* ---------- HELPERS (must be defined BEFORE use) ---------- */
+function formatDateShort(dateStr) {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  if (isNaN(date)) return "";
+  return date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "2-digit"
+  });
+}
 
-/* TAB SWITCH */
+/* ---------- STATE ---------- */
+let ALL_POSTS = [];
+let FILTER = "Post";
+
+let currentSlide = 0;
+let currentMedia = [];
+
+/* ---------- TAB SWITCH ---------- */
 function setFilter(type, el) {
   FILTER = type;
 
-  // ACTIVE TAB
-  document.querySelectorAll(".tabItem").forEach(tab => {
-    tab.classList.remove("active");
-  });
+  document.querySelectorAll(".tabItem").forEach(tab => tab.classList.remove("active"));
   el.classList.add("active");
 
-  // ICON SWITCH (correct way)
+  // icon switch
   document.querySelectorAll(".tabItem").forEach(tab => {
     const img = tab.querySelector("img");
     const iconType = tab.dataset.type;
-
     img.src = tab.classList.contains("active")
       ? `/icons/${iconType}-dark.png`
       : `/icons/${iconType}-light.png`;
   });
 
-  // SLIDE UNDERLINE
   moveUnderline(el);
 
-  // GRID FADE
   const gridWrap = document.querySelector(".gridWrap");
   gridWrap.style.opacity = "0";
-  requestAnimationFrame(() => {
-    gridWrap.style.opacity = "1";
-  });
+  requestAnimationFrame(() => (gridWrap.style.opacity = "1"));
 
-  // RENDER GRID
   renderGrid();
 }
 
@@ -582,79 +588,78 @@ function moveUnderline(tab) {
   underline.style.transform = `translateX(${x}px)`;
 }
 
-/* FETCH POSTS */
-async function loadPosts(btn){
+/* ---------- VIDEO PREVIEW ---------- */
+function getVideoPreview(post) {
+  const url = post?.video;
+  if (!url) return null;
 
-const icon = btn?.querySelector(".refreshIcon");
+  if (url.includes("youtube") || url.includes("youtu.be")) {
+    const match = url.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if (match) {
+      return { type: "image", src: `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` };
+    }
+  }
 
-/* START BUTTON SPIN ONLY */
-if(icon) icon.classList.add("spin");
+  if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+    return { type: "video", src: url };
+  }
 
-try{
-
-const res = await fetch("/api/get-posts");
-const data = await res.json();
-
-/* SORT PINNED → NEWEST */
-data.sort((a, b) => {
-  if (a.pinned && !b.pinned) return -1;
-  if (!a.pinned && b.pinned) return 1;
-
-  const dateA = new Date(a.publishDate || a.created_time || 0);
-  const dateB = new Date(b.publishDate || b.created_time || 0);
-
-  return dateB - dateA;
-});
-
-ALL_POSTS = data;
-
-renderGrid();
-
-}catch(e){
-console.log("Refresh failed");
+  return { type: "placeholder" };
 }
 
-/* STOP SPIN */
-if(icon) icon.classList.remove("spin");
+/* ---------- FETCH POSTS ---------- */
+async function loadPosts(btn) {
+  const icon = btn?.querySelector(".refreshIcon");
+  if (icon) icon.classList.add("spin");
 
+  try {
+    const res = await fetch("/api/get-posts");
+    const data = await res.json();
+
+    data.sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      const dateA = new Date(a.publishDate || a.created_time || 0);
+      const dateB = new Date(b.publishDate || b.created_time || 0);
+      return dateB - dateA;
+    });
+
+    ALL_POSTS = data;
+  } catch (e) {
+    console.log("Refresh failed", e);
+    ALL_POSTS = [];
+  } finally {
+    renderGrid(); // ✅ always render something
+    if (icon) icon.classList.remove("spin");
+  }
 }
 
-window.addEventListener("load", () => {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (activeTab) moveUnderline(activeTab);
-});
-
-/* RENDER GRID */
-  let currentSlide = 0;
-let currentMedia = [];
-
+/* ---------- VIEWER ---------- */
 function openViewer(post) {
-  currentMedia = Array.isArray(post.attachment)
-    ? post.attachment
-    : [post.attachment];
+  if (!post) return;
 
+  currentMedia = Array.isArray(post.attachment) ? post.attachment : [post.attachment];
   currentSlide = 0;
-  updateViewerImage();        // ✅ LOAD IMAGE
-  toggleNav();                // ✅ SHOW/HIDE ARROWS
+
+  updateViewerImage();
 
   document.getElementById("viewerTitle").textContent = post.name || "";
-  document.getElementById("viewerDate").textContent =
-  formatDateShort(post.publishDate);
+  document.getElementById("viewerDate").textContent = formatDateShort(post.publishDate);
 
   const viewer = document.getElementById("viewer");
   const container = document.querySelector(".container");
 
   container.classList.add("popup-open");
   viewer.classList.remove("hidden");
-
   requestAnimationFrame(() => viewer.classList.add("show"));
 }
 
 function updateViewerImage() {
-  document.getElementById("viewerImage").src = currentMedia[currentSlide];
-  toggleNav(); // ✅ ensure nav visibility stays correct
+  document.getElementById("viewerImage").src = currentMedia[currentSlide] || "";
+  toggleNav();
 }
-  function toggleNav() {
+
+function toggleNav() {
   const show = currentMedia.length > 1;
   document.querySelector(".nav.prev").style.display = show ? "flex" : "none";
   document.querySelector(".nav.next").style.display = show ? "flex" : "none";
@@ -665,226 +670,155 @@ function closeViewer() {
   const container = document.querySelector(".container");
 
   viewer.classList.remove("show");
-  container.classList.remove("popup-open"); // ✅ restore container
+  container.classList.remove("popup-open");
 
-  setTimeout(() => {
-    viewer.classList.add("hidden");
-  }, 250);
+  setTimeout(() => viewer.classList.add("hidden"), 250);
 }
 
 function prevImage() {
-  currentSlide =
-    (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+  currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
   updateViewerImage();
 }
 
 function nextImage() {
-  currentSlide =
-    (currentSlide + 1) % currentMedia.length;
+  currentSlide = (currentSlide + 1) % currentMedia.length;
   updateViewerImage();
 }
 
-  function getVideoPreview(post) {
-  const url = post?.video;
-  if (!url) return null;
-
-  // YouTube / Shorts
-  if (url.includes("youtube") || url.includes("youtu.be")) {
-    const match = url.match(/(?:shorts\/|v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-    if (match) {
-      return {
-        type: "image",
-        src: `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
-      };
-    }
-  }
-
-  // Direct video files (mp4, webm, ogg)
-  if (url.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
-    return {
-      type: "video",
-      src: url
-    };
-  }
-
-  // Fallback (TikTok, IG, Vimeo, unknown)
-  return {
-    type: "placeholder"
-  };
-}
-
- function renderGrid() {
-
+/* ---------- RENDER GRID ---------- */
+function renderGrid() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  // type is ARRAY in your data
-  const filtered = ALL_POSTS.filter(p =>
-    Array.isArray(p.type) && p.type.includes(FILTER)
-  );
-
+  const filtered = ALL_POSTS.filter(p => Array.isArray(p.type) && p.type.includes(FILTER));
   const total = Math.max(filtered.length, 60);
 
   for (let i = 0; i < total; i++) {
-
     const card = document.createElement("div");
     card.className = "card";
 
     const post = filtered[i];
 
     if (post && (post.attachment || post.video)) {
-
-      /* ---------- IMAGE ---------- */
+      // IMAGE
       if (post.attachment) {
         const img = document.createElement("img");
-        img.src = Array.isArray(post.attachment)
-          ? post.attachment[0]
-          : post.attachment;
+        img.src = Array.isArray(post.attachment) ? post.attachment[0] : post.attachment;
         card.appendChild(img);
       }
 
-      /* ---------- VIDEO ---------- */
+      // VIDEO
       if (post.video) {
-  const preview = getVideoPreview(post);
+        const preview = getVideoPreview(post);
 
-  // 🖼 THUMBNAIL (always visible)
-  const thumb = document.createElement("img");
+        const thumb = document.createElement("img");
+        thumb.src = preview?.type === "image" ? preview.src : "/icons/video.png";
+        card.appendChild(thumb);
 
-  if (preview?.type === "image") {
-    thumb.src = preview.src;
-  } else {
-    thumb.src = "/icons/video.png"; // fallback
-  }
+        if (preview?.type === "video") {
+          const vid = document.createElement("video");
+          vid.src = preview.src;
+          vid.muted = true;
+          vid.loop = true;
+          vid.playsInline = true;
+          vid.preload = "metadata";
 
-  card.appendChild(thumb);
+          vid.style.position = "absolute";
+          vid.style.inset = "0";
+          vid.style.width = "100%";
+          vid.style.height = "100%";
+          vid.style.objectFit = "cover";
+          vid.style.zIndex = "2";
+          vid.style.opacity = "0";
+          vid.style.transition = "opacity 0.2s ease";
 
-  // 🎞 HOVER VIDEO (only for real video files)
-  if (preview?.type === "video") {
-    const vid = document.createElement("video");
-    vid.src = preview.src;
+          card.appendChild(vid);
 
-    vid.muted = true;
-    vid.loop = true;
-    vid.playsInline = true;
-    vid.preload = "metadata";
+          card.addEventListener("mouseenter", () => {
+            vid.currentTime = 0;
+            vid.play().catch(() => {});
+            vid.style.opacity = "1";
+          });
 
-    vid.style.position = "absolute";
-    vid.style.inset = "0";
-    vid.style.width = "100%";
-    vid.style.height = "100%";
-    vid.style.objectFit = "cover";
-    vid.style.zIndex = "2";
-    vid.style.opacity = "0";
-    vid.style.transition = "opacity 0.2s ease";
-
-    card.appendChild(vid);
-
-    card.addEventListener("mouseenter", () => {
-      vid.currentTime = 0;
-      vid.play().catch(() => {});
-      vid.style.opacity = "1";
-    });
-
-    card.addEventListener("mouseleave", () => {
-      vid.pause();
-      vid.currentTime = 0;
-      vid.style.opacity = "0";
-    });
-  }
-}
-
-        if (preview?.type === "placeholder") {
-          const img = document.createElement("img");
-          img.src = "/icons/video.png";
-          card.appendChild(img);
+          card.addEventListener("mouseleave", () => {
+            vid.pause();
+            vid.currentTime = 0;
+            vid.style.opacity = "0";
+          });
         }
+
+        // placeholder already handled via /icons/video.png thumb
       }
 
-      /* ---------- BADGE LOGIC (PIN > MULTI) ---------- */
-      const isMulti =
-        Array.isArray(post.attachment) && post.attachment.length > 1;
+      // BADGES
+      const isMulti = Array.isArray(post.attachment) && post.attachment.length > 1;
 
       if (post.pinned) {
         const pin = document.createElement("img");
         pin.src = "/icons/pin.png";
         pin.className = "badge";
         card.appendChild(pin);
-      }
-      else if (isMulti) {
+      } else if (isMulti) {
         const multi = document.createElement("img");
         multi.src = "/icons/multi.png";
         multi.className = "badge";
         card.appendChild(multi);
       }
 
+      // HOVER INFO
+      if (post?.name || post?.publishDate) {
+        const info = document.createElement("div");
+        info.className = "cardInfo";
+
+        if (post.name) {
+          const title = document.createElement("div");
+          title.className = "cardTitle";
+          title.textContent = post.name;
+          info.appendChild(title);
+        }
+
+        if (post.publishDate) {
+          const date = document.createElement("div");
+          date.className = "cardDate";
+          date.textContent = formatDateShort(post.publishDate);
+          info.appendChild(date);
+        }
+
+        card.appendChild(info);
+      }
+
+      // ✅ only clickable if post exists
+      card.addEventListener("click", () => openViewer(post));
     } else {
-      /* ---------- NO CONTENT ---------- */
       const no = document.createElement("div");
       no.className = "noContent";
       no.textContent = "NO CONTENT";
       card.appendChild(no);
     }
-   card.addEventListener("click", () => {
-  openViewer(post);
-});
 
-    /* ---------- HOVER INFO ---------- */
-if (post?.name || post?.publishDate) {
-  const info = document.createElement("div");
-  info.className = "cardInfo";
-
-  if (post.name) {
-    const title = document.createElement("div");
-    title.className = "cardTitle";
-    title.textContent = post.name;
-    info.appendChild(title);
-  }
-
-  if (post.publishDate) {
-    const date = document.createElement("div");
-    date.className = "cardDate";
-    date.textContent = formatDateShort(post.publishDate);
-    info.appendChild(date);
-  }
-
-  card.appendChild(info);
-}
     grid.appendChild(card);
   }
 }
-  const viewer = document.getElementById("viewer");
-const viewerInner = document.querySelector(".viewerInner");
 
-viewer.addEventListener("click", (e) => {
-  if (e.target === viewer) {
-    closeViewer();
-  }
-});
+/* ---------- INIT ---------- */
+window.addEventListener("load", () => {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (activeTab) moveUnderline(activeTab);
 
-viewerInner.addEventListener("click", (e) => {
-  e.stopPropagation();
-});
-
-loadPosts();
-</script>
-  <script>
-  document
-    .querySelector(".refreshBtn")
-    .addEventListener("click", function () {
-      loadPosts(this);
-    });
-    function formatDateShort(dateStr) {
-  if (!dateStr) return "";
-
-  const date = new Date(dateStr);
-  if (isNaN(date)) return "";
-
-  return date.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "2-digit"
+  document.querySelector(".refreshBtn").addEventListener("click", function () {
+    loadPosts(this);
   });
-}
+
+  const viewer = document.getElementById("viewer");
+  const viewerInner = document.querySelector(".viewerInner");
+
+  viewer.addEventListener("click", (e) => {
+    if (e.target === viewer) closeViewer();
+  });
+  viewerInner.addEventListener("click", (e) => e.stopPropagation());
+
+  loadPosts(); // first load
+});
 </script>
 
 </body>
