@@ -192,6 +192,10 @@ display:flex;
 align-items:center;
 justify-content:center;
 }
+  .card img {
+  position: relative;
+  z-index: 1;
+}
 
 .card img,
 .card video{
@@ -743,38 +747,39 @@ function nextImage() {
       if (post.video) {
         const preview = getVideoPreview(post);
 
-        if (preview?.type === "image") {
-          const img = document.createElement("img");
-          img.src = preview.src;
-          card.appendChild(img);
-        }
-
-       if (preview?.type === "video") {
+        if (preview?.type === "video") {
   const vid = document.createElement("video");
   vid.src = preview.src;
 
   vid.muted = true;
   vid.loop = true;
   vid.playsInline = true;
-  vid.preload = "metadata";   // 🔑 faster hover start
+  vid.preload = "metadata";
 
+  vid.style.position = "absolute";
+  vid.style.inset = "0";
   vid.style.width = "100%";
   vid.style.height = "100%";
   vid.style.objectFit = "cover";
+  vid.style.zIndex = "2";
+  vid.style.opacity = "0";
+  vid.style.transition = "opacity 0.2s ease";
+
+  card.appendChild(vid);
 
   // ▶️ play on hover
   card.addEventListener("mouseenter", () => {
     vid.currentTime = 0;
-    vid.play();
+    vid.play().catch(() => {});
+    vid.style.opacity = "1";
   });
 
   // ⏸️ pause on leave
   card.addEventListener("mouseleave", () => {
     vid.pause();
-    vid.currentTime = 0; // optional: reset preview
+    vid.currentTime = 0;
+    vid.style.opacity = "0";
   });
-
-  card.appendChild(vid);
 }
 
         if (preview?.type === "placeholder") {
@@ -808,7 +813,14 @@ function nextImage() {
       no.textContent = "NO CONTENT";
       card.appendChild(no);
     }
-    card.onclick = () => openViewer(post);
+    card.addEventListener("click", (e) => {
+  const hasVideo = post?.video;
+  if (hasVideo) {
+    e.stopPropagation(); // allow hover preview to work
+  }
+  openViewer(post);
+});
+    
     /* ---------- HOVER INFO ---------- */
 if (post?.name || post?.publishDate) {
   const info = document.createElement("div");
