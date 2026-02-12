@@ -246,6 +246,15 @@ display:block;
   opacity: 1;
   margin-top: 2px;
 }
+  .card video {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.card:hover video {
+  opacity: 1;
+}
+
 
   /* ---------- VIEWER ---------- */
   
@@ -740,18 +749,33 @@ function nextImage() {
           card.appendChild(img);
         }
 
-        if (preview?.type === "video") {
-          const vid = document.createElement("video");
-          vid.src = preview.src;
-          vid.muted = true;
-          vid.autoplay = true;
-          vid.loop = true;
-          vid.playsInline = true;
-          vid.style.width = "100%";
-          vid.style.height = "100%";
-          vid.style.objectFit = "cover";
-          card.appendChild(vid);
-        }
+       if (preview?.type === "video") {
+  const vid = document.createElement("video");
+  vid.src = preview.src;
+
+  vid.muted = true;
+  vid.loop = true;
+  vid.playsInline = true;
+  vid.preload = "metadata";   // 🔑 faster hover start
+
+  vid.style.width = "100%";
+  vid.style.height = "100%";
+  vid.style.objectFit = "cover";
+
+  // ▶️ play on hover
+  card.addEventListener("mouseenter", () => {
+    vid.currentTime = 0;
+    vid.play();
+  });
+
+  // ⏸️ pause on leave
+  card.addEventListener("mouseleave", () => {
+    vid.pause();
+    vid.currentTime = 0; // optional: reset preview
+  });
+
+  card.appendChild(vid);
+}
 
         if (preview?.type === "placeholder") {
           const img = document.createElement("img");
