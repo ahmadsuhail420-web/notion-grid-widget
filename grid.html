@@ -192,8 +192,7 @@ align-items:center;
 justify-content:center;
 }
   .card img {
-  position: relative;
-  z-index: 1;
+  pointer-events: none;
 }
 
 .card img,
@@ -252,6 +251,7 @@ display:block;
   .card video {
   opacity: 0;
   transition: opacity 0.2s ease;
+    pointer-events: none;
 }
 
 .card:hover video {
@@ -812,13 +812,11 @@ function nextImage() {
       no.textContent = "NO CONTENT";
       card.appendChild(no);
     }
-    card.addEventListener("click", (e) => {
-  const hasVideo = post?.video;
-  if (hasVideo) {
-    e.stopPropagation(); // allow hover preview to work
-  }
+
+    card.addEventListener("click", () => {
   openViewer(post);
 });
+
     
     /* ---------- HOVER INFO ---------- */
 if (post?.name || post?.publishDate) {
