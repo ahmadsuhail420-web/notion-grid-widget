@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>Your widget is ready 🎉</h2>
+
+  <p>Copy this URL and embed it in Notion:</p>
+
+  <input id="url" readonly />
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+
+    document.getElementById("url").value =
+      `https://notion-grid-widget-psi.vercel.app/grid.html?slug=${slug}`;
+  </script>
+</body>
+</html>
