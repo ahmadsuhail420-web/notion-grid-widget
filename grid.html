@@ -609,9 +609,9 @@ function openViewer(post) {
   }
   // CASE 2: VIDEO URL (YouTube / Insta / TikTok)
   else if (post.video) {
-    const preview = getVideoPreview(post);
-    currentMedia = preview?.src ? [preview.src] : [];
-  }
+  const thumb = getNotionThumbnail(post);
+  currentMedia = thumb ? [thumb] : [];
+}
   else {
     currentMedia = [];
   }
@@ -729,24 +729,16 @@ function nextImage() {
 
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-
-  // type is ARRAY in your data
   const filtered = ALL_POSTS.filter(p =>
     Array.isArray(p.type) && p.type.includes(FILTER)
   );
-
   const total = Math.max(filtered.length, 60);
-
   for (let i = 0; i < total; i++) {
-
     const card = document.createElement("div");
     card.className = "card";
-
     const post = filtered[i];
 
     if (post && (post.attachment || post.video)) {
-
-      /* ---------- IMAGE ---------- */
       if (post.attachment) {
         const img = document.createElement("img");
         img.src = Array.isArray(post.attachment)
@@ -754,21 +746,19 @@ function nextImage() {
           : post.attachment;
         card.appendChild(img);
       }
-
-      /* ---------- VIDEO ---------- */
-/* ---------- VIDEO ---------- */
 if (post.video) {
   const preview = getVideoPreview(post);
+  const notionThumb = getNotionThumbnail(post);
 
-  // ✅ ALWAYS show thumbnail for video URLs
-  if (preview?.type === "image") {
+  // ✅ SOCIAL VIDEO → use Notion thumbnail
+  if (notionThumb) {
     const img = document.createElement("img");
-    img.src = preview.src;
+    img.src = notionThumb;
     card.appendChild(img);
   }
 
-  // ✅ Hover preview ONLY for real video files
-  if (preview?.type === "video") {
+  // ✅ REAL VIDEO FILE → hover play
+  else if (preview?.type === "video") {
     const vid = document.createElement("video");
     vid.src = preview.src;
     vid.muted = true;
@@ -803,12 +793,27 @@ if (post.video) {
   }
 
   // fallback
-  if (preview?.type === "placeholder") {
+  else {
     const img = document.createElement("img");
     img.src = "/icons/video.png";
     card.appendChild(img);
   }
-}
+} 
+      function getNotionThumbnail(post) {
+  if (!post?.thumbnail) return null;
+
+  // Files & Media
+  if (Array.isArray(post.thumbnail) && post.thumbnail[0]?.file?.url) {
+    return post.thumbnail[0].file.url;
+  }
+
+  // URL property
+  if (typeof post.thumbnail === "string") {
+    return post.thumbnail;
+  }
+
+  return null;
+}    
       
       function getThumbnail(post) {
   if (!post?.thumbnail) return null;
