@@ -41,17 +41,23 @@ export default async function handler(req, res) {
             : null;
 
         /* ---------- VIDEO URL ---------- */
-        const video =
-          page.properties?.["Media/Video"]?.url || null;
+      // VIDEO (Files & Media)
+const videoFiles = page.properties?.["Media/Video"]?.files || [];
+const video =
+  videoFiles.length > 0
+    ? videoFiles
+        .map(f => f?.file?.url || f?.external?.url)
+        .filter(Boolean)[0] // take first video only
+    : null;
 
-        /* ---------- ✅ THUMBNAIL (THIS WAS MISSING) ---------- */
-        const thumbFiles = page.properties?.Thumbnail?.files || [];
-        const thumbnail =
-          thumbFiles.length > 0
-            ? thumbFiles[0]?.file?.url ||
-              thumbFiles[0]?.external?.url ||
-              null
-            : null;
+// THUMBNAIL (Files & Media)
+const thumbFiles = page.properties?.Thumbnail?.files || [];
+const thumbnail =
+  thumbFiles.length > 0
+    ? thumbFiles
+        .map(f => f?.file?.url || f?.external?.url)
+        .filter(Boolean)[0]
+    : null;
 
         /* ---------- TYPE ---------- */
         const type =
