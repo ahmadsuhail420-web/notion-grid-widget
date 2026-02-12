@@ -463,17 +463,20 @@ animation:spin 1s linear infinite;
 <!-- TABS -->
 <div class="contentArea">
 <div class="tabs">
-<div class="tabItem active" onclick="setFilter('Post', this)">
-  <img src="/icons/post-dark.png"> 
-</div> 
-  <div class="tabItem" onclick="setFilter('Reels', this)">
-    <img src="/icons/reel-light.png"> 
-  </div> 
-  <div class="tabItem" onclick="setFilter('Story', this)"> 
-    <img src="/icons/story-light.png"> 
-  </div> 
-  <div class="tabItem" onclick="setFilter('Tiktok', this)"> 
-    <img src="/icons/tiktok-light.png">
+<div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
+  <img src="/icons/post-dark.png">
+</div>
+
+<div class="tabItem" data-type="reel" onclick="setFilter('Reels', this)">
+  <img src="/icons/reel-light.png">
+</div>
+
+<div class="tabItem" data-type="story" onclick="setFilter('Story', this)">
+  <img src="/icons/story-light.png">
+</div>
+
+<div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok', this)">
+  <img src="/icons/tiktok-light.png">
 </div>
 
   <!-- ONE underline -->
@@ -521,29 +524,32 @@ function setFilter(type, el) {
   FILTER = type;
 
   // ACTIVE TAB
-  document.querySelectorAll(".tabItem")
-    .forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".tabItem").forEach(tab => {
+    tab.classList.remove("active");
+  });
   el.classList.add("active");
 
-  // ICON SWITCH
- document.getElementById("icon-post").src = FILTER === "Post" ? "/icons/post-dark.png" : "/icons/post-light.png"; 
-  document.getElementById("icon-reel").src = FILTER === "Reels" ? "/icons/reel-dark.png" : "/icons/reel-light.png"; 
-  document.getElementById("icon-story").src = FILTER === "Story" ? "/icons/story-dark.png" : "/icons/story-light.png"; 
-  document.getElementById("icon-tiktok").src = FILTER === "Tiktok" ? "/icons/tiktok-dark.png" : "/icons/tiktok-light.png";
-});
+  // ICON SWITCH (correct way)
+  document.querySelectorAll(".tabItem").forEach(tab => {
+    const img = tab.querySelector("img");
+    const iconType = tab.dataset.type;
 
-  // 🔑 MOVE UNDERLINE FIRST
+    img.src = tab.classList.contains("active")
+      ? `/icons/${iconType}-dark.png`
+      : `/icons/${iconType}-light.png`;
+  });
+
+  // SLIDE UNDERLINE
   moveUnderline(el);
 
   // GRID FADE
   const gridWrap = document.querySelector(".gridWrap");
   gridWrap.style.opacity = "0";
-
   requestAnimationFrame(() => {
     gridWrap.style.opacity = "1";
   });
 
-  // RENDER CONTENT LAST
+  // RENDER GRID
   renderGrid();
 }
 
