@@ -816,24 +816,7 @@ if (post.video) {
       vid.style.opacity = "0";
     });
   }
-}   
-      function getThumbnail(post) {
-  if (!post?.thumbnail) return null;
-
-  // Notion Files & Media
-  if (Array.isArray(post.thumbnail) && post.thumbnail[0]?.file?.url) {
-    return post.thumbnail[0].file.url;
-  }
-
-  // URL property
-  if (typeof post.thumbnail === "string") {
-    return post.thumbnail;
-  }
-
-  return null;
 }
-
-
       /* ---------- BADGE LOGIC (PIN > MULTI) ---------- */
       const isMulti =
         Array.isArray(post.attachment) && post.attachment.length > 1;
