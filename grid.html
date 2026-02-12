@@ -535,111 +535,93 @@ let FILTER="Post";
 /* TAB SWITCH */
 function setFilter(type, el) {
   FILTER = type;
-
-  // ACTIVE TAB
   document.querySelectorAll(".tabItem").forEach(tab => {
     tab.classList.remove("active");
   });
   el.classList.add("active");
-
-  // ICON SWITCH (correct way)
   document.querySelectorAll(".tabItem").forEach(tab => {
     const img = tab.querySelector("img");
     const iconType = tab.dataset.type;
-
     img.src = tab.classList.contains("active")
       ? `/icons/${iconType}-dark.png`
       : `/icons/${iconType}-light.png`;
   });
-
-  // SLIDE UNDERLINE
   moveUnderline(el);
-
-  // GRID FADE
   const gridWrap = document.querySelector(".gridWrap");
   gridWrap.style.opacity = "0";
   requestAnimationFrame(() => {
     gridWrap.style.opacity = "1";
   });
-
-  // RENDER GRID
   renderGrid();
 }
 
 function moveUnderline(tab) {
   const underline = document.getElementById("slidingUnderline");
   const tabs = document.querySelector(".tabs");
-
   const tabRect = tab.getBoundingClientRect();
   const tabsRect = tabs.getBoundingClientRect();
-
   const x =
     tabRect.left -
     tabsRect.left +
     tabRect.width / 2 -
     underline.offsetWidth / 2;
-
   underline.style.transform = `translateX(${x}px)`;
 }
 
 /* FETCH POSTS */
 async function loadPosts(btn){
-
 const icon = btn?.querySelector(".refreshIcon");
-
-/* START BUTTON SPIN ONLY */
 if(icon) icon.classList.add("spin");
-
 try{
-
 const res = await fetch("/api/get-posts");
 const data = await res.json();
-
-/* SORT PINNED → NEWEST */
 data.sort((a, b) => {
   if (a.pinned && !b.pinned) return -1;
   if (!a.pinned && b.pinned) return 1;
-
   const dateA = new Date(a.publishDate || a.created_time || 0);
   const dateB = new Date(b.publishDate || b.created_time || 0);
-
   return dateB - dateA;
 });
 
 ALL_POSTS = data;
-
 renderGrid();
-
 }catch(e){
 console.log("Refresh failed");
 }
-
-/* STOP SPIN */
 if(icon) icon.classList.remove("spin");
-
 }
-
 window.addEventListener("load", () => {
   const activeTab = document.querySelector(".tabItem.active");
   if (activeTab) moveUnderline(activeTab);
 });
 
-/* RENDER GRID */
   let currentSlide = 0;
 let currentMedia = [];
 
 function openViewer(post) {
-  currentMedia = Array.isArray(post.attachment)
-    ? post.attachment
-    : [post.attachment];
-
   currentSlide = 0;
-  updateViewerImage();        // ✅ LOAD IMAGE
-  toggleNav();                // ✅ SHOW/HIDE ARROWS
+
+  // CASE 1: IMAGE ATTACHMENTS
+  if (post.attachment) {
+    currentMedia = Array.isArray(post.attachment)
+      ? post.attachment
+      : [post.attachment];
+  }
+  // CASE 2: VIDEO URL (YouTube / Insta / TikTok)
+  else if (post.video) {
+    const preview = getVideoPreview(post);
+    currentMedia = preview?.src ? [preview.src] : [];
+  }
+  else {
+    currentMedia = [];
+  }
+
+  updateViewerImage();
+  toggleNav();
 
   document.getElementById("viewerTitle").textContent = post.name || "";
   document.getElementById("viewerDate").textContent =
-  formatDateShort(post.publishDate);
+    formatDateShort(post.publishDate);
 
   const viewer = document.getElementById("viewer");
   const container = document.querySelector(".container");
@@ -648,17 +630,13 @@ function openViewer(post) {
   viewer.classList.remove("hidden");
 
   requestAnimationFrame(() => viewer.classList.add("show"));
- 
-  if (post.video && post.video.includes("youtube")) {
-  document.getElementById("viewerImage").src =
-    getVideoPreview(post)?.src || "";
-}
 }
 
 function updateViewerImage() {
+  
   const wrapper = document.getElementById("viewerMedia");
   wrapper.innerHTML = "";
-
+if (!currentMedia.length) return;
   const src = currentMedia[currentSlide];
 
   if (!src) return;
