@@ -514,9 +514,7 @@ animation:spin 1s linear infinite;
 
     <!-- CARD -->
     <div class="viewerCard">
-      <div class="viewerImage">
-        <img id="viewerImage" />
-      </div>
+      <div class="viewerImage" id="viewerMedia"></div>
 
       <div class="viewerFooter">
         <div id="viewerTitle"></div>
@@ -653,9 +651,38 @@ function openViewer(post) {
 }
 
 function updateViewerImage() {
-  document.getElementById("viewerImage").src = currentMedia[currentSlide];
-  toggleNav(); // ✅ ensure nav visibility stays correct
+  const wrapper = document.getElementById("viewerMedia");
+  wrapper.innerHTML = "";
+
+  const src = currentMedia[currentSlide];
+
+  if (!src) return;
+
+  // VIDEO
+  if (src.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+    const video = document.createElement("video");
+    video.src = src;
+    video.controls = true;
+    video.autoplay = true;
+    video.muted = false;
+    video.playsInline = true;
+
+    Object.assign(video.style, {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover"
+    });
+
+    wrapper.appendChild(video);
+  }
+  // IMAGE
+  else {
+    const img = document.createElement("img");
+    img.src = src;
+    wrapper.appendChild(img);
+  }
 }
+  
   function toggleNav() {
   const show = currentMedia.length > 1;
   document.querySelector(".nav.prev").style.display = show ? "flex" : "none";
@@ -746,52 +773,52 @@ function nextImage() {
       }
 
       /* ---------- VIDEO ---------- */
-      if (post.video) {
-        const preview = getVideoPreview(post);
+      /* ---------- VIDEO ---------- */
+if (post.video) {
+  const preview = getVideoPreview(post);
 
-        if (preview?.type === "video") {
-  const vid = document.createElement("video");
-  vid.src = preview.src;
+  // 1️⃣ SHOW THUMBNAIL ALWAYS
+  if (post.thumbnail) {
+    const thumb = document.createElement("img");
+    thumb.src = post.thumbnail;
+    card.appendChild(thumb);
+  }
 
-  vid.muted = true;
-  vid.loop = true;
-  vid.playsInline = true;
-  vid.preload = "metadata";
+  // 2️⃣ HOVER PLAY ONLY FOR DIRECT VIDEO FILES
+  if (preview?.type === "video") {
+    const vid = document.createElement("video");
+    vid.src = preview.src;
+    vid.muted = true;
+    vid.loop = true;
+    vid.playsInline = true;
+    vid.preload = "metadata";
 
-  vid.style.position = "absolute";
-  vid.style.inset = "0";
-  vid.style.width = "100%";
-  vid.style.height = "100%";
-  vid.style.objectFit = "cover";
-  vid.style.zIndex = "2";
-  vid.style.opacity = "0";
-  vid.style.transition = "opacity 0.2s ease";
+    Object.assign(vid.style, {
+      position: "absolute",
+      inset: "0",
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      zIndex: "2",
+      opacity: "0",
+      transition: "opacity 0.2s ease"
+    });
 
-  card.appendChild(vid);
+    card.appendChild(vid);
 
-  // ▶️ play on hover
-  card.addEventListener("mouseenter", () => {
-    vid.currentTime = 0;
-    vid.play().catch(() => {});
-    vid.style.opacity = "1";
-  });
+    card.addEventListener("mouseenter", () => {
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
+      vid.style.opacity = "1";
+    });
 
-  // ⏸️ pause on leave
-  card.addEventListener("mouseleave", () => {
-    vid.pause();
-    vid.currentTime = 0;
-    vid.style.opacity = "0";
-  });
+    card.addEventListener("mouseleave", () => {
+      vid.pause();
+      vid.currentTime = 0;
+      vid.style.opacity = "0";
+    });
+  }
 }
-
-    if (preview?.type === "placeholder") {
-  const thumb = getThumbnail(post);
-
-  const img = document.createElement("img");
-  img.src = thumb || "/icons/video.png"; // fallback safe
-  card.appendChild(img);
-}
-      }
       
       function getThumbnail(post) {
   if (!post?.thumbnail) return null;
