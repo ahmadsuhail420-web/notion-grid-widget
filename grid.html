@@ -757,8 +757,7 @@ function nextImage() {
   const filtered = ALL_POSTS.filter(p =>
     Array.isArray(p.type) && p.type.includes(FILTER)
   );
-  const total = Math.max(filtered.length, 60);
-  for (let i = 0; i < total; i++) {
+ for (let i = 0; i < filtered.length; i++) {
     const card = document.createElement("div");
     card.className = "card";
     const post = filtered[i];
