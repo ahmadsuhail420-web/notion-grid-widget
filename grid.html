@@ -648,6 +648,11 @@ function openViewer(post) {
   viewer.classList.remove("hidden");
 
   requestAnimationFrame(() => viewer.classList.add("show"));
+ 
+  if (post.video && post.video.includes("youtube")) {
+  document.getElementById("viewerImage").src =
+    getVideoPreview(post)?.src || "";
+}
 }
 
 function updateViewerImage() {
@@ -773,18 +778,18 @@ function nextImage() {
       }
 
       /* ---------- VIDEO ---------- */
-      /* ---------- VIDEO ---------- */
+/* ---------- VIDEO ---------- */
 if (post.video) {
   const preview = getVideoPreview(post);
 
-  // 1️⃣ SHOW THUMBNAIL ALWAYS
-  if (post.thumbnail) {
-    const thumb = document.createElement("img");
-    thumb.src = post.thumbnail;
-    card.appendChild(thumb);
+  // ✅ ALWAYS show thumbnail for video URLs
+  if (preview?.type === "image") {
+    const img = document.createElement("img");
+    img.src = preview.src;
+    card.appendChild(img);
   }
 
-  // 2️⃣ HOVER PLAY ONLY FOR DIRECT VIDEO FILES
+  // ✅ Hover preview ONLY for real video files
   if (preview?.type === "video") {
     const vid = document.createElement("video");
     vid.src = preview.src;
@@ -817,6 +822,13 @@ if (post.video) {
       vid.currentTime = 0;
       vid.style.opacity = "0";
     });
+  }
+
+  // fallback
+  if (preview?.type === "placeholder") {
+    const img = document.createElement("img");
+    img.src = "/icons/video.png";
+    card.appendChild(img);
   }
 }
       
