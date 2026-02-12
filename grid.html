@@ -747,14 +747,18 @@ function nextImage() {
       if (post.video) {
   const preview = getVideoPreview(post);
 
-  // 🖼 ALWAYS add thumbnail
+  // 🖼 THUMBNAIL (always visible)
+  const thumb = document.createElement("img");
+
   if (preview?.type === "image") {
-    const img = document.createElement("img");
-    img.src = preview.src;
-    card.appendChild(img);
+    thumb.src = preview.src;
+  } else {
+    thumb.src = "/icons/video.png"; // fallback
   }
 
-  // 🎞 VIDEO overlay (only if real video file)
+  card.appendChild(thumb);
+
+  // 🎞 HOVER VIDEO (only for real video files)
   if (preview?.type === "video") {
     const vid = document.createElement("video");
     vid.src = preview.src;
@@ -775,14 +779,12 @@ function nextImage() {
 
     card.appendChild(vid);
 
-    // ▶️ hover play
     card.addEventListener("mouseenter", () => {
       vid.currentTime = 0;
       vid.play().catch(() => {});
       vid.style.opacity = "1";
     });
 
-    // ⏸️ hover out
     card.addEventListener("mouseleave", () => {
       vid.pause();
       vid.currentTime = 0;
@@ -822,14 +824,10 @@ function nextImage() {
       no.textContent = "NO CONTENT";
       card.appendChild(no);
     }
-    card.addEventListener("click", (e) => {
-  const hasVideo = post?.video;
-  if (hasVideo) {
-    e.stopPropagation(); // allow hover preview to work
-  }
+   card.addEventListener("click", () => {
   openViewer(post);
 });
-    
+
     /* ---------- HOVER INFO ---------- */
 if (post?.name || post?.publishDate) {
   const info = document.createElement("div");
