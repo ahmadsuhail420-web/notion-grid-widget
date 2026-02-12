@@ -20,13 +20,14 @@ export default async function handler(req, res) {
 
     const posts = response.results.map((page) => {
       try {
+        /* ---------- BASIC FIELDS ---------- */
         const name =
           page.properties?.Name?.title?.[0]?.plain_text || "";
 
         const publishDate =
           page.properties?.["Publish Date"]?.date?.start || null;
 
-        // ✅ FIX: return ALL attachments
+        /* ---------- ATTACHMENTS (IMAGES) ---------- */
         const files = page.properties?.Attachment?.files || [];
         const attachment =
           files.length > 0
@@ -39,14 +40,26 @@ export default async function handler(req, res) {
                 .filter(Boolean)
             : null;
 
+        /* ---------- VIDEO URL ---------- */
         const video =
           page.properties?.["Media/Video"]?.url || null;
 
+        /* ---------- ✅ THUMBNAIL (THIS WAS MISSING) ---------- */
+        const thumbFiles = page.properties?.Thumbnail?.files || [];
+        const thumbnail =
+          thumbFiles.length > 0
+            ? thumbFiles[0]?.file?.url ||
+              thumbFiles[0]?.external?.url ||
+              null
+            : null;
+
+        /* ---------- TYPE ---------- */
         const type =
           page.properties?.Type?.multi_select?.map(
             (t) => t.name
           ) || [];
 
+        /* ---------- PIN ---------- */
         const pinned =
           page.properties?.Pin?.checkbox || false;
 
@@ -54,8 +67,9 @@ export default async function handler(req, res) {
           id: page.id,
           name,
           publishDate,
-          attachment, // <-- ARRAY when multi, STRING not used anymore
+          attachment,
           video,
+          thumbnail, // ✅ NOW SENT TO FRONTEND
           type,
           pinned,
         };
