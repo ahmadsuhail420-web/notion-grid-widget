@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Setup Grid Widget</title>
+</head>
+<body>
+  <h2>Connect your Notion</h2>
+  <button id="connect">Connect Notion</button>
+
+  <script>
+    document.getElementById("connect").onclick = () => {
+      window.location.href = "/api/notion-auth";
+    };
+  </script>
+</body>
+</html>
