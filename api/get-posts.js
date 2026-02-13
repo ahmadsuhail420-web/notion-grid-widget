@@ -1,22 +1,34 @@
 import { Client } from "@notionhq/client";
 
 export default async function handler(req, res) {
+  const { slug } = req.query;
+
+if (!slug) {
+  return res.status(400).json({ error: "Missing widget slug" });
+}
+const workspaceRes = await fetch(
+  `${process.env.SUPABASE_URL}/rest/v1/workspaces?slug=eq.${slug}&is_active=eq.true`,
+  {
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+    },
+  }
+);
+
+const [workspace] = await workspaceRes.json();
+
+if (!workspace) {
+  return res.status(404).json({ error: "Workspace not found" });
+}
   try {
-    if (!process.env.NOTION_TOKEN) {
-      return res.status(500).json({ error: "Missing NOTION_TOKEN" });
-    }
-
-    if (!process.env.NOTION_DATABASE_ID) {
-      return res.status(500).json({ error: "Missing NOTION_DATABASE_ID" });
-    }
-
     const notion = new Client({
-      auth: process.env.NOTION_TOKEN,
-    });
+  auth: workspace.notion_access_token,
+});
 
-    const response = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID,
-    });
+   const response = await notion.databases.query({
+  database_id: workspace.notion_database_id,
+});
 
     const posts = response.results.map((page) => {
       try {
