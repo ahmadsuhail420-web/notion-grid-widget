@@ -5,6 +5,5 @@ export default function handler(req, res) {
     "&response_type=code" +
     "&owner=user" +
     "&redirect_uri=" + process.env.NOTION_REDIRECT_URI;
-
   res.redirect(url);
 }
