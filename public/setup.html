@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>Setup Grid Widget</title>
+</head>
 <body>
-  <h2>Select your Notion database</h2>
-  <ul id="dbs"></ul>
 
-  <script>
-    const slug = new URLSearchParams(location.search).get("slug");
+<h2>Setup your Grid Widget</h2>
 
-    if (!slug) {
-      document.body.innerHTML = "Missing slug";
+<label>
+  Workspace name:
+  <input id="name" placeholder="My Content Planner" />
+</label>
+
+<br><br>
+
+<button id="connect">Connect Notion</button>
+
+<script>
+  function slugify(text) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-");
+  }
+
+  document.getElementById("connect").onclick = () => {
+    const name = document.getElementById("name").value;
+
+    if (!name) {
+      alert("Please enter a name");
+      return;
     }
 
-    fetch(`/api/list-databases?slug=${slug}`)
-      .then(res => res.json())
-      .then(dbs => {
-        const ul = document.getElementById("dbs");
+    const slug = slugify(name);
 
-        dbs.forEach(db => {
-          const li = document.createElement("li");
-          li.innerHTML = `
-            ${db.title}
-            <button onclick="selectDB('${db.id}')">Select</button>
-          `;
-          ul.appendChild(li);
-        });
-      });
+    // redirect to Notion OAuth
+    window.location.href = `/api/auth?slug=${slug}`;
+  };
+</script>
 
-    function selectDB(dbId) {
-      fetch("/api/save-database", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, dbId })
-      }).then(() => {
-        location.href = `/setup-success.html?slug=${slug}`;
-      });
-    }
-  </script>
 </body>
 </html>
