@@ -8,6 +8,14 @@
   <button id="connect">Connect Notion</button>
 
   <script>
+    // ✅ read slug from URL
+    const params = new URLSearchParams(window.location.search);
+    const SLUG = params.get("slug");
+
+    if (!SLUG) {
+      alert("Missing widget slug");
+    }
+
     document.getElementById("connect").onclick = () => {
       window.location.href = `/api/auth?slug=${SLUG}`;
     };
