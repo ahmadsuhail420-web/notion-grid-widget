@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Select Notion Database</title>
+</head>
+<body>
+  <h2>Select your Notion database</h2>
+
+  <select id="dbSelect">
+    <option>Loading databases...</option>
+  </select>
+
+  <br><br>
+  <button id="save">Continue</button>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+
+    if (!slug) {
+      document.body.innerHTML = "Missing slug";
+      throw new Error("Missing slug");
+    }
+
+    // 1️⃣ Fetch databases
+    fetch(`/api/list-databases?slug=${slug}`)
+      .then(res => res.json())
+      .then(dbs => {
+        const select = document.getElementById("dbSelect");
+        select.innerHTML = "";
+
+        dbs.forEach(db => {
+          const option = document.createElement("option");
+          option.value = db.id;
+          option.textContent = db.title || db.id;
+          select.appendChild(option);
+        });
+      });
+
+    // 2️⃣ Save selected database
+    document.getElementById("save").onclick = () => {
+      const databaseId = document.getElementById("dbSelect").value;
+
+      fetch("/api/save-database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, databaseId })
+      }).then(() => {
+        window.location.href = `/setup-success.html?slug=${slug}`;
+      });
+    };
+  </script>
+</body>
+</html>
