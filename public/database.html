@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Connect Database</h2>
+
+<input id="db" placeholder="Paste Notion Database ID" />
+<br><br>
+<button id="save">Save Database</button>
+
+<p id="status"></p>
+
+<script>
+  const token = new URLSearchParams(location.search).get("token");
+  const status = document.getElementById("status");
+
+  document.getElementById("save").onclick = async () => {
+    const db = document.getElementById("db").value;
+    if (!db) return alert("Enter database ID");
+
+    status.innerText = "Saving...";
+
+    const res = await fetch("/api/save-database", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, databaseId: db }),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      status.innerHTML = `
+        Done!<br><br>
+        Embed this URL in Notion:<br>
+        <a href="${data.url}" target="_blank">${data.url}</a>
+      `;
+    } else {
+      status.innerText = data.error || "Error saving database";
+    }
+  };
+</script>
+
+</body>
+</html>
