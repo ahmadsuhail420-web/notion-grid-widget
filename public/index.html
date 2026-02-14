@@ -1,26 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Notion Grid Planner</title>
-  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
-      font-family: sans-serif;
-      max-width: 640px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      max-width: 720px;
       margin: 60px auto;
       padding: 0 20px;
+      color: #111;
       text-align: center;
     }
-    a {
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .box {
+      margin-top: 40px;
+      padding: 24px;
+      border: 1px solid #e5e5e5;
+      border-radius: 16px;
+      text-align: left;
+    }
+
+    .btn {
       display: inline-block;
       margin-top: 20px;
-      padding: 12px 18px;
-      background: black;
-      color: white;
+      padding: 12px 20px;
+      background: #000;
+      color: #fff;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: 600;
+    }
+
+    .note {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    code {
+      background: #f4f4f4;
+      padding: 4px 6px;
+      border-radius: 6px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -28,15 +62,33 @@
 
   <h1>Notion Grid Planner</h1>
   <p>
-    Visual content planner widget for Notion.
+    A visual grid widget for planning and previewing content directly inside Notion.
   </p>
 
-  <a href="/setup.html">
-    Get Started
+  <a class="btn" href="/setup.html">
+    Start Setup
   </a>
 
-  <p style="margin-top:40px;color:#666;font-size:14px;">
-    Setup requires desktop browser.
+  <div class="box">
+    <h3>How it works</h3>
+    <p>1. Purchase the planner</p>
+    <p>2. Open your private setup link</p>
+    <p>3. Connect your Notion workspace</p>
+    <p>4. Paste your database ID</p>
+    <p>5. Embed the widget URL into Notion</p>
+  </div>
+
+  <div class="box">
+    <h3>Already purchased?</h3>
+    <p>
+      Open your setup link that looks like:
+    </p>
+    <p><code>/setup.html?token=your-token</code></p>
+  </div>
+
+  <p class="note">
+    ⚠️ Setup requires a desktop browser (Chrome or Safari).<br>
+    Mobile in-app browsers are not supported by Notion OAuth.
   </p>
 
 </body>
