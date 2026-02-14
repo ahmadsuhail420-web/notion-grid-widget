@@ -11,7 +11,7 @@ export default function handler(req, res) {
     "&response_type=code" +
     "&owner=user" +
     "&redirect_uri=" + encodeURIComponent(process.env.NOTION_REDIRECT_URI) +
-    "&state=" + encodeURIComponent(slug);
+    "&state=" + slug;
 
   res.redirect(url);
 }
