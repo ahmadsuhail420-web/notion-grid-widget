@@ -2,94 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Notion Grid Planner</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      max-width: 720px;
-      margin: 60px auto;
-      padding: 0 20px;
-      color: #111;
-      text-align: center;
-    }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Something Organized</title>
 
-    h1 {
-      font-size: 36px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 16px;
-      color: #555;
-      line-height: 1.6;
-    }
-
-    .box {
-      margin-top: 40px;
-      padding: 24px;
-      border: 1px solid #e5e5e5;
-      border-radius: 16px;
-      text-align: left;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 12px 20px;
-      background: #000;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
-    .note {
-      margin-top: 30px;
-      font-size: 14px;
-      color: #777;
-    }
-
-    code {
-      background: #f4f4f4;
-      padding: 4px 6px;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-  </style>
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
-  <h1>Notion Grid Planner</h1>
-  <p>
-    A visual grid widget for planning and previewing content directly inside Notion.
-  </p>
+<!-- Announcement Bar -->
+<div class="announcement">
+  10% off with minimum purchase of $10 — use code: <b>SOMETHING10</b>
+</div>
 
-  <a class="btn" href="/setup.html">
-    Start Setup
-  </a>
+<!-- Header -->
+<header class="header">
+  <div class="hamburger">☰</div>
+  <h1 class="logo">SOMETHING<br>ORGANIZED</h1>
+  <div class="header-icons">🔍 👜</div>
+</header>
 
-  <div class="box">
-    <h3>How it works</h3>
-    <p>1. Purchase the planner</p>
-    <p>2. Open your private setup link</p>
-    <p>3. Connect your Notion workspace</p>
-    <p>4. Paste your database ID</p>
-    <p>5. Embed the widget URL into Notion</p>
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-box">
+    <h2>Organize & Elevate Your Life</h2>
+    <p>Beautiful & Functional Productivity Tools</p>
+    <a href="#shop" class="btn">SHOP NOW</a>
   </div>
+</section>
 
-  <div class="box">
-    <h3>Already purchased?</h3>
-    <p>
-      Open your setup link that looks like:
-    </p>
-    <p><code>/setup.html?token=your-token</code></p>
+<!-- Products -->
+<section id="shop" class="products">
+  <h2>Your Productivity Essentials</h2>
+
+  <div class="product-grid">
+    <div class="product">
+      <img src="/images/life-planner.jpg" alt="Life Planner">
+      <h3>Notion Life Planner</h3>
+      <span>$7.99</span>
+    </div>
+
+    <div class="product">
+      <img src="/images/travel-planner.jpg" alt="Travel Planner">
+      <h3>Notion Travel Planner</h3>
+      <span>$4.99</span>
+    </div>
+
+    <div class="product">
+      <img src="/images/tracker.jpg" alt="Tracker">
+      <h3>Habit Tracker</h3>
+      <span>$12.00</span>
+    </div>
   </div>
+</section>
 
-  <p class="note">
-    ⚠️ Setup requires a desktop browser (Chrome or Safari).<br>
-    Mobile in-app browsers are not supported by Notion OAuth.
-  </p>
+<!-- Newsletter -->
+<section class="newsletter">
+  <h2>Join the Newsletter & Get 10% Off</h2>
+  <p>Subscribe for exclusive offers, updates, and free templates.</p>
 
+  <form>
+    <input type="email" placeholder="Email address" required>
+    <button type="submit">→</button>
+  </form>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <h3>SOMETHING ORGANIZED</h3>
+  <p>Your favorite digital planning tools to level up your life.</p>
+
+  <nav>
+    <a href="#">Life</a>
+    <a href="#">Work</a>
+    <a href="#">Study</a>
+    <a href="#">Shop All</a>
+  </nav>
+</footer>
+
+<script src="/script.js"></script>
 </body>
 </html>
