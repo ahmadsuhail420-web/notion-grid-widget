@@ -465,6 +465,23 @@ function moveUnderline(tab) {
   underline.style.transform = `translateX(${x}px)`;
 }
 
+async function checkAccess() {
+  const res = await fetch(`/api/check-access?slug=${SLUG}`);
+  const data = await res.json();
+
+  if (!data.active) {
+    document.body.innerHTML = `
+      <div style="text-align:center;padding:40px;font-family:sans-serif;">
+        <h3>Access inactive</h3>
+        <p>Your subscription is not active.</p>
+      </div>
+    `;
+    throw new Error("Access inactive");
+  }
+}
+
+await checkAccess();
+    
 async function loadPosts(btn) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
