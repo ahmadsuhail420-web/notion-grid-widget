@@ -1,9 +1,8 @@
 export default async function handler(req, res) {
-  const { slug, dbId } = req.body;
+  const { slug, databaseId } = req.body;
 
-  if (!slug || !dbId) {
+  if (!slug || !databaseId)
     return res.status(400).json({ error: "Missing data" });
-  }
 
   await fetch(`${process.env.SUPABASE_URL}/rest/v1/workspaces`, {
     method: "PATCH",
@@ -13,7 +12,7 @@ export default async function handler(req, res) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      notion_database_id: dbId,
+      notion_database_id: databaseId,
     }),
   });
 
