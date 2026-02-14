@@ -7,18 +7,19 @@
   <h2>Connect your Notion</h2>
   <button id="connect">Connect Notion</button>
 
-  <script>
-    // ✅ read slug from URL
-    const params = new URLSearchParams(window.location.search);
-    const SLUG = params.get("slug");
+<input id="slug" placeholder="Choose a name (example: my-brand)" />
+<button id="connect">Connect Notion</button>
 
-    if (!SLUG) {
-      alert("Missing widget slug");
-    }
+<script>
+document.getElementById("connect").onclick = () => {
+  const slug = document.getElementById("slug").value.trim();
+  if (!slug) {
+    alert("Please enter a name");
+    return;
+  }
 
-    document.getElementById("connect").onclick = () => {
-      window.location.href = `/api/auth?slug=${SLUG}`;
-    };
-  </script>
+  window.location.href = `/api/auth?slug=${encodeURIComponent(slug)}`;
+};
+</script>
 </body>
 </html>
