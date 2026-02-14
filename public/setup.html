@@ -1,4 +1,7 @@
 <body>
+ <p style="color:red; font-size:14px;">
+⚠️ If you are on mobile, please open this page in Chrome or Safari (not inside Notion app).
+</p> 
 
 <h2>Setup your Grid Widget</h2>
 
@@ -62,7 +65,17 @@
 
     const slug = slugify(name);
 
-    window.location.href = `/api/auth?token=${token}&slug=${slug}`;
+const authUrl = `/api/auth?token=${token}&slug=${slug}`;
+
+// Try normal redirect
+window.location.href = authUrl;
+
+// Fallback message for mobile in-app browsers
+setTimeout(() => {
+  alert(
+    "If Notion login does not open or gets stuck, please open this page in Chrome or Safari and try again."
+  );
+}, 1500);
   };
 </script>
 
