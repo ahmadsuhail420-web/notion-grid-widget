@@ -1,14 +1,12 @@
-import { Client } from "@notionhq/client";
-
 export default async function handler(req, res) {
-  const { code, state } = req.query;
-  const slug = state;
+  const { code, state } = req.query; // state = slug
 
-  if (!code || !slug) {
+  if (!code || !state) {
     return res.status(400).send("Missing code or slug");
   }
 
   try {
+    // 1️⃣ Exchange code for access token
     const tokenRes = await fetch("https://api.notion.com/v1/oauth/token", {
       method: "POST",
       headers: {
@@ -32,6 +30,7 @@ export default async function handler(req, res) {
       return res.status(400).json(tokenData);
     }
 
+    // 2️⃣ Save workspace to Supabase
     await fetch(`${process.env.SUPABASE_URL}/rest/v1/workspaces`, {
       method: "POST",
       headers: {
@@ -41,14 +40,15 @@ export default async function handler(req, res) {
         Prefer: "resolution=merge-duplicates",
       },
       body: JSON.stringify({
-        slug,
+        slug: state,
         notion_access_token: tokenData.access_token,
         notion_workspace_id: tokenData.workspace_id,
         is_active: true,
       }),
     });
 
-    res.redirect(`/setup-success.html?slug=${slug}`);
+    // 3️⃣ Redirect to next setup step
+    res.redirect(`/setup-database.html?slug=${state}`);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
