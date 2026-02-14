@@ -3,11 +3,11 @@ import { Client } from "@notionhq/client";
 export default async function handler(req, res) {
   const { slug } = req.query;
 
-  if (!slug) return res.status(400).json([]);
+  if (!slug) return res.status(400).json({ error: "Missing slug" });
 
-  // 1️⃣ Get workspace token from Supabase
-  const wsRes = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/workspaces?slug=eq.${slug}&is_active=eq.true`,
+  // 1️⃣ Get token from Supabase
+  const dbRes = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/workspaces?slug=eq.${slug}`,
     {
       headers: {
         apikey: process.env.SUPABASE_SERVICE_KEY,
@@ -16,23 +16,28 @@ export default async function handler(req, res) {
     }
   );
 
-  const [workspace] = await wsRes.json();
-  if (!workspace) return res.status(404).json([]);
+  const [workspace] = await dbRes.json();
 
-  // 2️⃣ Fetch databases from Notion
+  if (!workspace?.notion_access_token) {
+    return res.status(401).json({ error: "Not connected to Notion" });
+  }
+
+  // 2️⃣ Search databases
   const notion = new Client({
     auth: workspace.notion_access_token,
   });
 
-  const search = await notion.search({
-    filter: { property: "object", value: "database" },
+  const result = await notion.search({
+    filter: {
+      property: "object",
+      value: "database",
+    },
   });
 
-  // 3️⃣ Return clean list
   res.json(
-    search.results.map(db => ({
+    result.results.map(db => ({
       id: db.id,
-      title: db.title?.[0]?.plain_text || "Untitled database",
+      title: db.title?.[0]?.plain_text || "Untitled"
     }))
   );
 }
