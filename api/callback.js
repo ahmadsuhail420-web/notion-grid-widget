@@ -1,7 +1,8 @@
 export default async function handler(req, res) {
-  const { code, state } = req.query; // state = slug
+  const { code, state } = req.query;
+  const slug = state; // ✅ THIS WAS MISSING
 
-  if (!code || !state) {
+  if (!code || !slug) {
     return res.status(400).send("Missing code or slug");
   }
 
