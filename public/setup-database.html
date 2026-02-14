@@ -1,54 +1,88 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Select Notion Database</title>
+  <meta charset="UTF-8" />
+  <title>Connect Database</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 420px;
+      margin: 40px auto;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+    button {
+      margin-top: 14px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Select your Notion database</h2>
 
-  <select id="dbSelect">
-    <option>Loading databases...</option>
-  </select>
+<h2>Connect your Notion database</h2>
 
-  <br><br>
-  <button id="save">Continue</button>
+<p>
+Paste your <strong>Notion Database ID</strong> below.
+</p>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const slug = params.get("slug");
+<input
+  id="dbId"
+  placeholder="2faf44a5-4945-8067-8234-fb85b22ddf7f"
+/>
 
-    if (!slug) {
-      document.body.innerHTML = "Missing slug";
-      throw new Error("Missing slug");
+<button onclick="saveDb()">Continue</button>
+
+<div id="error" class="error"></div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get("slug");
+
+  if (!slug) {
+    document.body.innerHTML = "Missing setup link.";
+    throw new Error("Missing slug");
+  }
+
+  function saveDb() {
+    const databaseId = document.getElementById("dbId").value.trim();
+    const error = document.getElementById("error");
+    error.textContent = "";
+
+    // basic validation
+    if (!databaseId || databaseId.length < 30) {
+      error.textContent = "Please enter a valid Database ID.";
+      return;
     }
 
-    // 1️⃣ Fetch databases
-    fetch(`/api/list-databases?slug=${slug}`)
-      .then(res => res.json())
-      .then(dbs => {
-        const select = document.getElementById("dbSelect");
-        select.innerHTML = "";
-
-        dbs.forEach(db => {
-          const option = document.createElement("option");
-          option.value = db.id;
-          option.textContent = db.title || db.id;
-          select.appendChild(option);
-        });
-      });
-
-    // 2️⃣ Save selected database
-    document.getElementById("save").onclick = () => {
-      const databaseId = document.getElementById("dbSelect").value;
-
-      fetch("/api/save-database", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, databaseId })
-      }).then(() => {
+    fetch("/api/save-database", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, databaseId })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to save database");
+        return res.json();
+      })
+      .then(() => {
         window.location.href = `/setup-success.html?slug=${slug}`;
+      })
+      .catch(() => {
+        error.textContent =
+          "Could not connect database. Make sure it is shared with the integration.";
       });
-    };
-  </script>
+  }
+</script>
+
 </body>
 </html>
