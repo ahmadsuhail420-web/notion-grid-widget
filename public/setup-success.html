@@ -8,11 +8,9 @@
   <input id="url" readonly />
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const slug = params.get("slug");
-
-    document.getElementById("url").value =
-      `https://notion-grid-widget-psi.vercel.app/grid.html?slug=${slug}`;
-  </script>
+const slug = new URLSearchParams(location.search).get("slug");
+document.getElementById("url").textContent =
+  `https://notion-grid-widget-psi.vercel.app/grid.html?slug=${slug}`;
+</script>
 </body>
 </html>
