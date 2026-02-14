@@ -24,6 +24,26 @@
       .replace(/[^a-z0-9]+/g, "-");
   }
 
+  // get token from URL
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
+
+  if (!token) {
+    alert("Invalid setup link");
+    document.body.innerHTML = "Invalid setup link";
+    throw new Error("No token");
+  }
+
+  // verify token with backend
+  fetch(`/api/verify-token?token=${token}`)
+    .then(res => res.json())
+    .then(data => {
+      if (!data.valid) {
+        alert("Setup link expired or invalid");
+        document.body.innerHTML = "Setup link expired or invalid";
+      }
+    });
+
   document.getElementById("connect").onclick = () => {
     const name = document.getElementById("name").value;
 
@@ -35,7 +55,7 @@
     const slug = slugify(name);
 
     // redirect to Notion OAuth
-    window.location.href = `/api/auth?slug=${slug}`;
+    window.location.href = `/api/auth?token=${token}&slug=${slug}`;
   };
 </script>
 
