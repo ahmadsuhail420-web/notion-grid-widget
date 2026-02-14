@@ -1,20 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Setup Grid Widget</title>
-</head>
 <body>
 
 <h2>Setup your Grid Widget</h2>
 
-<label>
-  Workspace name:
-  <input id="name" placeholder="My Content Planner" />
-</label>
+<div id="content" style="display:none;">
+  <label>
+    Workspace name:
+    <input id="name" placeholder="My Content Planner" />
+  </label>
 
-<br><br>
+  <br><br>
 
-<button id="connect">Connect Notion</button>
+  <button id="connect">Connect Notion</button>
+</div>
+
+<p id="status">Verifying setup link...</p>
 
 <script>
   function slugify(text) {
@@ -24,27 +23,36 @@
       .replace(/[^a-z0-9]+/g, "-");
   }
 
-  // get token from URL
   const params = new URLSearchParams(window.location.search);
   const token = params.get("token");
 
+  const content = document.getElementById("content");
+  const status = document.getElementById("status");
+  const connectBtn = document.getElementById("connect");
+
   if (!token) {
-    alert("Invalid setup link");
-    document.body.innerHTML = "Invalid setup link";
+    status.innerText = "Invalid setup link";
     throw new Error("No token");
   }
 
-  // verify token with backend
+  // Verify token FIRST
   fetch(`/api/verify-token?token=${token}`)
     .then(res => res.json())
     .then(data => {
       if (!data.valid) {
-        alert("Setup link expired or invalid");
-        document.body.innerHTML = "Setup link expired or invalid";
+        status.innerText = "Setup link expired or invalid";
+        return;
       }
+
+      // Token valid → show page
+      status.style.display = "none";
+      content.style.display = "block";
+    })
+    .catch(() => {
+      status.innerText = "Error verifying setup link";
     });
 
-  document.getElementById("connect").onclick = () => {
+  connectBtn.onclick = () => {
     const name = document.getElementById("name").value;
 
     if (!name) {
@@ -54,10 +62,8 @@
 
     const slug = slugify(name);
 
-    // redirect to Notion OAuth
     window.location.href = `/api/auth?token=${token}&slug=${slug}`;
   };
 </script>
 
 </body>
-</html>
