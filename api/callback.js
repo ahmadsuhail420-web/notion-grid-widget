@@ -32,21 +32,27 @@ export default async function handler(req, res) {
     }
 
     // 2️⃣ Save workspace to Supabase
-    await fetch(`${process.env.SUPABASE_URL}/rest/v1/workspaces`, {
-      method: "POST",
-      headers: {
-        apikey: process.env.SUPABASE_SERVICE_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: "resolution=merge-duplicates",
-      },
-      body: JSON.stringify({
-        slug: state,
-        notion_access_token: tokenData.access_token,
-        notion_workspace_id: tokenData.workspace_id,
-        is_active: true,
-      }),
-    });
+    const supabaseRes = await fetch(
+  `${process.env.SUPABASE_URL}/rest/v1/workspaces?on_conflict=slug`,
+  {
+    method: "POST",
+    headers: {
+      apikey: process.env.SUPABASE_SERVICE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates",
+    },
+    body: JSON.stringify({
+      slug,
+      notion_access_token: accessToken,
+      notion_workspace_id: workspaceId,
+      is_active: true,
+    }),
+  }
+);
+
+const text = await supabaseRes.text();
+console.log("SUPABASE RESPONSE:", text);
 
     // 3️⃣ Redirect to next setup step
     res.redirect(`/setup-database.html?slug=${state}`);
