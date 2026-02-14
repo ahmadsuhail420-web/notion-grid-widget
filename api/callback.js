@@ -2,13 +2,13 @@ import { Client } from "@notionhq/client";
 
 export default async function handler(req, res) {
   const { code, state } = req.query;
+  const slug = state;
 
   if (!code || !slug) {
     return res.status(400).send("Missing code or slug");
   }
 
   try {
-    // 1️⃣ Exchange code for access token
     const tokenRes = await fetch("https://api.notion.com/v1/oauth/token", {
       method: "POST",
       headers: {
@@ -28,14 +28,10 @@ export default async function handler(req, res) {
 
     const tokenData = await tokenRes.json();
 
-    const accessToken = tokenData.access_token;
-    const workspaceId = tokenData.workspace_id;
-
-    if (!accessToken) {
+    if (!tokenData.access_token) {
       return res.status(400).json(tokenData);
     }
 
-    // 2️⃣ Save token ONLY (database comes later)
     await fetch(`${process.env.SUPABASE_URL}/rest/v1/workspaces`, {
       method: "POST",
       headers: {
@@ -46,13 +42,12 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         slug,
-        notion_access_token: accessToken,
-        notion_workspace_id: workspaceId,
+        notion_access_token: tokenData.access_token,
+        notion_workspace_id: tokenData.workspace_id,
         is_active: true,
       }),
     });
 
-    // 3️⃣ Redirect user to success page
     res.redirect(`/setup-success.html?slug=${slug}`);
   } catch (err) {
     res.status(500).json({ error: err.message });
