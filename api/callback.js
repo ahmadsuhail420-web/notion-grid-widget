@@ -1,7 +1,8 @@
 import { Client } from "@notionhq/client";
 
 export default async function handler(req, res) {
-  const { code, slug } = req.query;
+  const { code, state } = req.query;
+const slug = state;
 
   if (!code || !slug) {
     return res.status(400).send("Missing code or slug");
