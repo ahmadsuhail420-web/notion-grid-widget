@@ -1,0 +1,96 @@
+/* ---------- BASE ---------- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #fafafa;
+  color: #111;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- LAYOUT ---------- */
+.page {
+  max-width: 640px;
+  margin: 60px auto;
+  padding: 32px 28px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #e6e6e6;
+}
+
+/* ---------- TYPOGRAPHY ---------- */
+h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+
+p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* ---------- INPUTS ---------- */
+input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  outline: none;
+}
+
+input:focus {
+  border-color: #000;
+}
+
+/* ---------- BUTTON ---------- */
+button {
+  padding: 12px 18px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- HELP TEXT ---------- */
+.helper {
+  font-size: 13px;
+  color: #777;
+  margin-top: 6px;
+}
+
+/* ---------- ALERT ---------- */
+.alert {
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+}
