@@ -2,56 +2,158 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Setup Grid Planner</title>
+  <title>Grid Planner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Shared classic styles -->
   <link rel="stylesheet" href="/styles.css">
+
+  <style>
+    /* ---------- NAV ---------- */
+    .nav {
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .nav a {
+      margin-left: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      max-width: 640px;
+      margin: 120px auto 0;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 44px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .hero h1 span {
+      color: #3b82f6; /* accent like SwipeWell */
+    }
+
+    .hero p {
+      margin-top: 16px;
+      font-size: 17px;
+      color: var(--text-muted);
+    }
+
+    /* ---------- CARD ---------- */
+    .card {
+      margin-top: 36px;
+      padding: 28px;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      text-align: left;
+    }
+
+    /* ---------- LOADER ---------- */
+    .loader {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) { animation-delay: .15s; }
+    .dot:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes pulse {
+      0%, 80%, 100% { opacity: .2; }
+      40% { opacity: 1; }
+    }
+  </style>
 </head>
 
 <body>
 
-  <div class="page">
+  <!-- NAV -->
+  <div class="nav">
+    <div class="logo">Grid Planner</div>
+    <div>
+      <a href="#">Docs</a>
+      <a href="#">Pricing</a>
+      <a href="#">Support</a>
+    </div>
+  </div>
 
-    <h1>Set up your Grid Planner</h1>
+  <!-- HERO -->
+  <div class="hero">
+
+    <h1>
+      Create a grid you’ll<br>
+      <span>actually use</span>
+    </h1>
+
     <p>
-  Connect your Notion workspace to create a live visual grid
-  that stays perfectly in sync with your content.
-</p>
+      Connect your Notion workspace to build a live visual planner
+      that stays perfectly in sync.
+    </p>
 
-    <p id="status">Verifying setup link...</p>
+    <!-- STATE CARD -->
+    <div class="card">
 
-    <div id="content" style="display:none;">
-
-      <label>
-        Workspace name
-        <input id="name" placeholder="My Content Planner" />
-      </label>
-
-      <div class="helper">
-        This name is only for your reference.
+      <div id="status" class="loader">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <span>Verifying setup link</span>
       </div>
 
-      <br><br>
+      <div id="content" style="display:none;">
 
-      <button id="connect">
-        Connect Notion
-      </button>
+        <label>
+          Workspace name
+          <input id="name" placeholder="My Content Planner" />
+        </label>
+
+        <div class="helper">
+          This is only for your reference.
+        </div>
+
+        <button id="connect">
+          Connect Notion
+        </button>
+
+      </div>
 
     </div>
 
   </div>
 
-  <div class="footer">
-    Alif Designs
-  </div>
-
+  <!-- SCRIPT -->
   <script>
     function slugify(text) {
-      return text
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, "-");
+      return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
     }
 
     const params = new URLSearchParams(window.location.search);
@@ -63,56 +165,34 @@
 
     if (!token) {
       status.innerHTML = `
-        <div class="alert">
-          <strong>Invalid setup link</strong><br>
-          This setup link is missing or incorrect.
-        </div>
+        <strong>Setup link unavailable</strong><br>
+        Please contact support.
       `;
       throw new Error("No token");
     }
 
-    // Verify token
     fetch(`/api/verify-token?token=${token}`)
       .then(res => res.json())
       .then(data => {
         if (!data.valid) {
-  status.innerHTML = `
-    <div class="alert">
-      <strong>Setup link unavailable</strong><br>
-      This setup link has already been used or is no longer valid.<br><br>
-      <a href="mailto:support@alifdesigns.com"
-         style="font-weight:600;color:#000;text-decoration:underline;">
-        Contact support
-      </a>
-    </div>
-  `;
-  return;
-}
-        // Token valid
+          status.innerHTML = `
+            <strong>Setup link unavailable</strong><br>
+            This link has already been used or expired.<br><br>
+            <a href="mailto:support@alifdesigns.com">Contact support</a>
+          `;
+          return;
+        }
+
         status.style.display = "none";
         content.style.display = "block";
-      })
-      .catch(() => {
-        status.innerHTML = `
-          <div class="alert">
-            <strong>Error verifying link</strong><br>
-            Please refresh the page or try again later.
-          </div>
-        `;
       });
 
     connectBtn.onclick = () => {
       const name = document.getElementById("name").value;
-
-      if (!name) {
-        alert("Please enter a workspace name");
-        return;
-      }
+      if (!name) return alert("Enter workspace name");
 
       const slug = slugify(name);
-      const authUrl = `/api/auth?token=${token}&slug=${slug}`;
-
-      window.location.href = authUrl;
+      window.location.href = `/api/auth?token=${token}&slug=${slug}`;
     };
   </script>
 
