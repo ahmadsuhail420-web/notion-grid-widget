@@ -142,12 +142,20 @@
   />
 </label>
 
-<<div class="helper" style="margin-top:10px;">
+<div class="helper" style="margin-top:10px;">
   Open the
-  <a href="#" id="dbHelpLink" style="color:#3b82f6; text-decoration:none;">
+  <a href="#" class="helpLink" data-img="/images/database.png">
     database
   </a>
-  in Notion → Share → Copy link → Paste here
+  in Notion → 
+  <a href="#" class="helpLink" data-img="/images/click.png">
+  Right (⋯) Menu
+  </a>
+  → 
+  <a href="#" class="helpLink" data-img="/images/copylink.png">
+    Copy link
+  </a>
+  → Paste here
 </div>
 
 <button id="save" style="margin-top:22px;">
@@ -162,10 +170,11 @@
 
   </div>
   <!-- DATABASE HELP MODAL -->
-<div id="dbHelpModal" style="
+<<!-- HELP IMAGE MODAL -->
+<div id="helpModal" style="
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.4);
+  background:rgba(0,0,0,0.45);
   display:none;
   align-items:center;
   justify-content:center;
@@ -174,17 +183,17 @@
 
   <div style="
     background:#fff;
-    border-radius:16px;
-    max-width:520px;
+    padding:16px;
+    border-radius:14px;
+    max-width:700px;
     width:90%;
-    padding:20px;
     position:relative;
-    box-shadow:0 20px 60px rgba(0,0,0,0.2);
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
   ">
 
-    <button id="closeDbHelp" style="
+    <button id="closeHelpModal" style="
       position:absolute;
-      top:12px;
+      top:10px;
       right:12px;
       border:none;
       background:none;
@@ -192,20 +201,15 @@
       cursor:pointer;
     ">✕</button>
 
-    <h3 style="margin-top:0;">What is a Notion database?</h3>
-    <p style="font-size:14px; color:#555;">
-      A database is where your content lives (rows, properties, media).
-    </p>
-
     <img
-      src="/images/notion-database-example.png"
-      alt="Notion database example"
-      style="width:100%; border-radius:10px; border:1px solid #e5e7eb;"
+      id="helpModalImg"
+      src=""
+      style="width:100%; border-radius:10px;"
+      alt="Notion help"
     />
   </div>
 
 </div>
-
 
   <!-- SCRIPT -->
 <script>
@@ -252,22 +256,26 @@
       }
     };
   
-  const dbHelpLink = document.getElementById("dbHelpLink");
-  const dbHelpModal = document.getElementById("dbHelpModal");
-  const closeDbHelp = document.getElementById("closeDbHelp");
+  const helpModal = document.getElementById("helpModal");
+  const helpModalImg = document.getElementById("helpModalImg");
+  const closeHelpModal = document.getElementById("closeHelpModal");
 
-  dbHelpLink.onclick = (e) => {
-    e.preventDefault();
-    dbHelpModal.style.display = "flex";
+  document.querySelectorAll(".helpLink").forEach(link => {
+    link.onclick = (e) => {
+      e.preventDefault();
+      const img = link.getAttribute("data-img");
+      helpModalImg.src = img;
+      helpModal.style.display = "flex";
+    };
+  });
+
+  closeHelpModal.onclick = () => {
+    helpModal.style.display = "none";
   };
 
-  closeDbHelp.onclick = () => {
-    dbHelpModal.style.display = "none";
-  };
-
-  dbHelpModal.onclick = (e) => {
-    if (e.target === dbHelpModal) {
-      dbHelpModal.style.display = "none";
+  helpModal.onclick = (e) => {
+    if (e.target === helpModal) {
+      helpModal.style.display = "none";
     }
   };
 
