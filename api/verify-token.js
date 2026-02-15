@@ -27,15 +27,15 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    if (!Array.isArray(data) || data.length === 0) {
-      return res.json({ valid: false });
-    }
+    if (error || !data) {
+  return res.json({ valid: false, reason: "invalid" });
+}
 
-    if (data[0].setup_used) {
-      return res.json({ valid: false });
-    }
+if (data.setup_used) {
+  return res.json({ valid: false, reason: "used" });
+}
 
-    return res.json({ valid: true });
+res.json({ valid: true });
 
   } catch (err) {
     return res.status(500).json({
