@@ -1,64 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Connect Database – Grid Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
 <body>
-<p style="font-size:14px;">
-Paste your Notion <b>Database ID</b>.<br>
-Open the database → Share → Copy link → paste here.
-</p>  
 
-<h2>Connect Database</h2>
+  <!-- NAV -->
+  <div class="nav">
+    <div class="logo">Grid Planner</div>
+    <div>
+      <a href="#">Docs</a>
+      <a href="#">Support</a>
+    </div>
+  </div>
 
-<input id="db" placeholder="Paste Notion Database ID" />
-<br><br>
-<button id="save">Save Database</button>
+  <!-- HERO -->
+  <div class="hero">
 
-<p id="status"></p>
+    <h1>
+      Connect your<br>
+      <span>Notion database</span>
+    </h1>
 
-<script>
-  const token = new URLSearchParams(location.search).get("token");
-  const status = document.getElementById("status");
+    <p>
+      Choose the database you want to use for your grid.
+    </p>
 
-  function extractDatabaseId(input) {
-    const match = input.match(/[a-f0-9]{32}/i);
-    return match ? match[0] : null;
-  }
+    <!-- CARD -->
+    <div class="card">
 
-  document.getElementById("save").onclick = async () => {
-    const raw = document.getElementById("db").value.trim();
-    if (!raw) return alert("Enter Notion database ID or URL");
+      <label>
+        Database ID or URL
+        <input
+          id="db"
+          placeholder="https://www.notion.so/..."
+        />
+      </label>
 
-    const databaseId = extractDatabaseId(raw);
-    if (!databaseId) {
-      alert("Invalid Notion database ID or URL");
-      return;
+      <div class="helper">
+        Open the database in Notion → Share → Copy link → Paste here
+      </div>
+
+      <button id="save">
+        Save database
+      </button>
+
+      <div id="status" style="margin-top:18px; font-size:14px;"></div>
+
+    </div>
+
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    const token = new URLSearchParams(location.search).get("token");
+    const status = document.getElementById("status");
+
+    function extractDatabaseId(input) {
+      const match = input.match(/[a-f0-9]{32}/i);
+      return match ? match[0] : null;
     }
 
-    status.innerText = "Saving database…";
+    document.getElementById("save").onclick = async () => {
+      const raw = document.getElementById("db").value.trim();
+      if (!raw) return alert("Enter Notion database ID or URL");
 
-    try {
-      const res = await fetch("/api/save-database", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, databaseId }),
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        status.innerHTML = `
-          <strong>Done</strong><br><br>
-          Embed this URL in Notion:<br>
-          <a href="${data.url}" target="_blank">${data.url}</a>
-        `;
-      } else {
-        status.innerText = data.error || "Error saving database";
+      const databaseId = extractDatabaseId(raw);
+      if (!databaseId) {
+        alert("Invalid Notion database ID or URL");
+        return;
       }
-    } catch (e) {
-      status.innerText = "Something went wrong. Try again.";
-    }
-  };
-</script>
 
+      status.innerText = "Saving database…";
+
+      try {
+        const res = await fetch("/api/save-database", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, databaseId })
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+          status.innerHTML = `
+            <strong>Database connected</strong><br><br>
+            Embed this URL in Notion:<br>
+            <a href="${data.url}" target="_blank">${data.url}</a>
+          `;
+        } else {
+          status.innerText = data.error || "Failed to save database";
+        }
+      } catch (e) {
+        status.innerText = "Something went wrong. Please try again.";
+      }
+    };
+  </script>
 
 </body>
 </html>
