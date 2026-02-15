@@ -480,7 +480,6 @@ async function checkAccess() {
   }
 }
 
-await checkAccess();
     
 async function loadPosts(btn) {
   const icon = btn?.querySelector(".refreshIcon");
@@ -747,7 +746,23 @@ document.getElementById("viewer").addEventListener("click", e => {
 document
   .querySelector(".viewerInner")
   .addEventListener("click", e => e.stopPropagation());
-</script>
+
+  async function startGrid() {
+  try {
+    await checkAccess();
+
+    const activeTab = document.querySelector(".tabItem.active");
+    if (activeTab) moveUnderline(activeTab);
+
+    await loadPosts();
+  } catch (e) {
+    console.error("Grid init failed", e);
+  }
+}
+
+window.addEventListener("load", startGrid);
+
+  </script>
 
 </body>
 </html>
