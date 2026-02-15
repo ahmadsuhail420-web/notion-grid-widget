@@ -85,6 +85,59 @@
       font-size: 16px;
     }
 
+    .profile {
+  padding: 12px 16px;
+}
+
+.profileTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.stats div {
+  text-align: center;
+}
+
+.highlightsRow {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 12px 8px;
+}
+
+.highlightItem {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.highlightItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
     /* ---------- TABS ---------- */
     .tabs {
       display: grid;
@@ -343,6 +396,37 @@
 </button>
 <div class="title">Grid Planner</div>
 <div></div>
+
+</div>
+  <div id="profileHeader" class="profile">
+
+  <div class="profileTop">
+    <div class="profileName" id="plannerName">Content Planner</div>
+
+    <button class="menuBtn" onclick="toggleMenu()">⋯</button>
+
+    <div id="menu" class="menu hidden">
+      <label>
+        <input type="checkbox" checked onchange="toggleSection('header', this)">
+        Show header
+      </label>
+      <label>
+        <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+        Show highlights
+      </label>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div><strong id="statPosts">0</strong><span>Posts</span></div>
+    <div><strong id="statScheduled">0</strong><span>Scheduled</span></div>
+    <div><strong id="statPublished">0</strong><span>Published</span></div>
+  </div>
+
+</div>
+
+  <div id="highlightsWrap" class="highlights">
+  <div id="highlights" class="highlightsRow"></div>
 </div>
 
 <!-- TABS -->
@@ -413,7 +497,27 @@ let FILTER = "Post";
 let currentSlide = 0;
 let currentMedia = [];
 let currentVideo = null;
+    
+function computeStats(posts) {
+  const today = new Date().toISOString().split("T")[0];
 
+  const visible = posts.filter(p => !p.hide);
+
+  const scheduled = visible.filter(
+    p => p.publishDate && p.publishDate > today
+  );
+
+  const published = visible.filter(
+    p => p.publishDate && p.publishDate <= today
+  );
+
+  return {
+    total: visible.length,
+    scheduled: scheduled.length,
+    published: published.length
+  };
+}
+    
 function getNotionThumbnail(post) {
   if (!post?.thumbnail) return null;
 
@@ -500,7 +604,15 @@ async function loadPosts(btn) {
     });
 
     ALL_POSTS = data;
-    renderGrid();
+
+const stats = computeStats(ALL_POSTS);
+document.getElementById("statPosts").innerText = stats.total;
+document.getElementById("statScheduled").innerText = stats.scheduled;
+document.getElementById("statPublished").innerText = stats.published;
+
+renderHighlights(ALL_POSTS);
+renderGrid();
+  
   } catch (e) {
     console.log("Refresh failed");
   }
@@ -584,6 +696,20 @@ function renderGrid() {
       }
     }
 
+    function getHighlights(posts) {
+  return posts
+    .filter(p =>
+      p.highlight &&
+      !p.hide &&
+      (p.attachment?.length || p.thumbnail)
+    )
+    .sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
+    });
+}
+    
     /* ---------- BADGES (PRIORITY) ---------- */
     const hasVideo = !!post.video;
     const isMulti =
@@ -623,6 +749,21 @@ function renderGrid() {
     }
 
     grid.appendChild(card);
+  }
+}
+    function toggleMenu() {
+  document.getElementById("menu").classList.toggle("hidden");
+}
+
+function toggleSection(section, checkbox) {
+  if (section === "header") {
+    document.getElementById("profileHeader").style.display =
+      checkbox.checked ? "block" : "none";
+  }
+
+  if (section === "highlights") {
+    document.getElementById("highlightsWrap").style.display =
+      checkbox.checked ? "block" : "none";
   }
 }
 
@@ -721,6 +862,36 @@ function nextImage() {
     (currentSlide + 1) % currentMedia.length;
   updateViewerImage();
 }
+
+    function renderHighlights(posts) {
+  const highlights = getHighlights(posts);
+  const wrap = document.getElementById("highlightsWrap");
+  const row = document.getElementById("highlights");
+
+  if (!highlights.length) {
+    wrap.style.display = "none";
+    return;
+  }
+
+  row.innerHTML = "";
+
+  highlights.forEach(post => {
+    const media =
+      post.attachment?.[0] || post.thumbnail;
+
+    const item = document.createElement("div");
+    item.className = "highlightItem";
+
+    const img = document.createElement("img");
+    img.src = media;
+
+    item.appendChild(img);
+    item.onclick = () => openViewer(post);
+
+    row.appendChild(item);
+  });
+}
+    
   /* ===================== UTILITIES ===================== */
 
 function formatDateShort(dateStr) {
