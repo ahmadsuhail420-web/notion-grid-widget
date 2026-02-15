@@ -75,26 +75,18 @@
       .then(res => res.json())
       .then(data => {
         if (!data.valid) {
-          if (data.reason === "used") {
-            status.innerHTML = `
-              <div class="alert">
-                <strong>Setup already completed</strong><br>
-                This setup link has already been used.<br>
-                If you need help, please contact support.
-              </div>
-            `;
-          } else {
-            status.innerHTML = `
-              <div class="alert">
-                <strong>Setup link unavailable</strong><br>
-This setup link has already been used or is no longer valid.
-If you need help, please contact support.
-              </div>
-            `;
-          }
-          return;
-        }
-
+  status.innerHTML = `
+    <div class="alert">
+      <strong>Setup link unavailable</strong><br>
+      This setup link has already been used or is no longer valid.<br><br>
+      <a href="mailto:support@alifdesigns.com"
+         style="font-weight:600;color:#000;text-decoration:underline;">
+        Contact support
+      </a>
+    </div>
+  `;
+  return;
+}
         // Token valid
         status.style.display = "none";
         content.style.display = "block";
