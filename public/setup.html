@@ -120,35 +120,44 @@
     </p>
 
     <!-- STATE CARD -->
-    <div class="card">
+   <div class="card" style="text-align:center;">
 
-      <div id="status" class="loader">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <span>Verifying setup link</span>
-      </div>
+  <h2 style="margin:0 0 6px; font-size:20px;">
+    One step ahead to connect your grid to Notion
+  </h2>
 
-      <div id="content" style="display:none;">
+  <p style="margin:0 0 28px; color:var(--text-muted); font-size:15px;">
+    Connect your Notion workspace to build a live visual planner
+    that stays perfectly in sync.
+  </p>
 
-        <label>
-          Workspace name
-          <input id="name" placeholder="My Content Planner" />
-        </label>
+  <div id="status" style="font-size:14px; color:var(--text-muted);">
+    Verifying your setup link…
+  </div>
 
-        <div class="helper">
-          This is only for your reference.
-        </div>
+  <div id="content" style="display:none; margin-top:20px; text-align:left;">
+    <label>
+      Workspace name
+      <input id="name" placeholder="My Content Planner" />
+    </label>
 
-        <button id="connect">
-          Connect Notion
-        </button>
-
-      </div>
-
+    <div class="helper">
+      This is only for your reference.
     </div>
 
+    <button id="connect">
+      Connect Notion
+    </button>
   </div>
+
+  <div id="support" style="margin-top:24px; display:none;">
+    <a href="mailto:support@alifdesigns.com"
+       style="font-size:14px; font-weight:500; color:#3b82f6; text-decoration:none;">
+      Contact support
+    </a>
+  </div>
+
+</div>
 
   <!-- SCRIPT -->
   <script>
@@ -175,13 +184,10 @@
       .then(res => res.json())
       .then(data => {
         if (!data.valid) {
-          status.innerHTML = `
-            <strong>Setup link unavailable</strong><br>
-            This link has already been used or expired.<br><br>
-            <a href="mailto:support@alifdesigns.com">Contact support</a>
-          `;
-          return;
-        }
+  status.innerText = "This setup link has already been used or expired.";
+  document.getElementById("support").style.display = "block";
+  return;
+}
 
         status.style.display = "none";
         content.style.display = "block";
