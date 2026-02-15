@@ -45,7 +45,6 @@
     Alif Designs
   </div>
 
-  <!-- SCRIPT (unchanged logic, just cleaned formatting) -->
   <script>
     function slugify(text) {
       return text
@@ -58,4 +57,70 @@
     const token = params.get("token");
 
     const content = document.getElementById("content");
-    const status = documen
+    const status = document.getElementById("status");
+    const connectBtn = document.getElementById("connect");
+
+    if (!token) {
+      status.innerHTML = `
+        <div class="alert">
+          <strong>Invalid setup link</strong><br>
+          This setup link is missing or incorrect.
+        </div>
+      `;
+      throw new Error("No token");
+    }
+
+    // Verify token
+    fetch(`/api/verify-token?token=${token}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.valid) {
+          if (data.reason === "used") {
+            status.innerHTML = `
+              <div class="alert">
+                <strong>Setup already completed</strong><br>
+                This setup link has already been used.<br>
+                If you need help, please contact support.
+              </div>
+            `;
+          } else {
+            status.innerHTML = `
+              <div class="alert">
+                <strong>Invalid or expired link</strong><br>
+                This setup link is no longer valid.
+              </div>
+            `;
+          }
+          return;
+        }
+
+        // Token valid
+        status.style.display = "none";
+        content.style.display = "block";
+      })
+      .catch(() => {
+        status.innerHTML = `
+          <div class="alert">
+            <strong>Error verifying link</strong><br>
+            Please refresh the page or try again later.
+          </div>
+        `;
+      });
+
+    connectBtn.onclick = () => {
+      const name = document.getElementById("name").value;
+
+      if (!name) {
+        alert("Please enter a workspace name");
+        return;
+      }
+
+      const slug = slugify(name);
+      const authUrl = `/api/auth?token=${token}&slug=${slug}`;
+
+      window.location.href = authUrl;
+    };
+  </script>
+
+</body>
+</html>
