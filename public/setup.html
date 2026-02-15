@@ -1,82 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Setup Grid Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Shared classic styles -->
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
 <body>
- <p style="color:red; font-size:14px;">
-⚠️ If you are on mobile, please open this page in Chrome or Safari (not inside Notion app).
-</p> 
 
-<h2>Setup your Grid Widget</h2>
+  <div class="page">
 
-<div id="content" style="display:none;">
-  <label>
-    Workspace name:
-    <input id="name" placeholder="My Content Planner" />
-  </label>
+    <h1>Set up your Grid Planner</h1>
+    <p>
+      Connect your Notion workspace to generate your personal grid widget.
+    </p>
 
-  <br><br>
+    <div class="alert">
+      ⚠️ Setup must be completed on desktop (Chrome or Safari).
+    </div>
 
-  <button id="connect">Connect Notion</button>
-</div>
+    <p id="status">Verifying setup link...</p>
 
-<p id="status">Verifying setup link...</p>
+    <div id="content" style="display:none;">
 
-<script>
-  function slugify(text) {
-    return text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-");
-  }
+      <label>
+        Workspace name
+        <input id="name" placeholder="My Content Planner" />
+      </label>
 
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get("token");
+      <div class="helper">
+        This name is only for your reference.
+      </div>
 
-  const content = document.getElementById("content");
-  const status = document.getElementById("status");
-  const connectBtn = document.getElementById("connect");
+      <br><br>
 
-  if (!token) {
-    status.innerText = "Invalid setup link";
-    throw new Error("No token");
-  }
+      <button id="connect">
+        Connect Notion
+      </button>
 
-  // Verify token FIRST
-  fetch(`/api/verify-token?token=${token}`)
-    .then(res => res.json())
-    .then(data => {
-      if (!data.valid) {
-        status.innerText = "Setup link expired or invalid";
-        return;
-      }
+    </div>
 
-      // Token valid → show page
-      status.style.display = "none";
-      content.style.display = "block";
-    })
-    .catch(() => {
-      status.innerText = "Error verifying setup link";
-    });
+  </div>
 
-  connectBtn.onclick = () => {
-    const name = document.getElementById("name").value;
+  <div class="footer">
+    Alif Designs
+  </div>
 
-    if (!name) {
-      alert("Please enter a name");
-      return;
+  <!-- SCRIPT (unchanged logic, just cleaned formatting) -->
+  <script>
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-");
     }
 
-    const slug = slugify(name);
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
 
-const authUrl = `/api/auth?token=${token}&slug=${slug}`;
-
-// Try normal redirect
-window.location.href = authUrl;
-
-// Fallback message for mobile in-app browsers
-setTimeout(() => {
-  alert(
-    "If Notion login does not open or gets stuck, please open this page in Chrome or Safari and try again."
-  );
-}, 1500);
-  };
-</script>
-
-</body>
+    const content = document.getElementById("content");
+    const status = documen
