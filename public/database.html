@@ -18,31 +18,47 @@ Open the database → Share → Copy link → paste here.
   const token = new URLSearchParams(location.search).get("token");
   const status = document.getElementById("status");
 
+  function extractDatabaseId(input) {
+    const match = input.match(/[a-f0-9]{32}/i);
+    return match ? match[0] : null;
+  }
+
   document.getElementById("save").onclick = async () => {
-    const db = document.getElementById("db").value;
-    if (!db) return alert("Enter database ID");
+    const raw = document.getElementById("db").value.trim();
+    if (!raw) return alert("Enter Notion database ID or URL");
 
-    status.innerText = "Saving...";
+    const databaseId = extractDatabaseId(raw);
+    if (!databaseId) {
+      alert("Invalid Notion database ID or URL");
+      return;
+    }
 
-    const res = await fetch("/api/save-database", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, databaseId: db }),
-    });
+    status.innerText = "Saving database…";
 
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/save-database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, databaseId }),
+      });
 
-    if (data.url) {
-      status.innerHTML = `
-        Done!<br><br>
-        Embed this URL in Notion:<br>
-        <a href="${data.url}" target="_blank">${data.url}</a>
-      `;
-    } else {
-      status.innerText = data.error || "Error saving database";
+      const data = await res.json();
+
+      if (data.url) {
+        status.innerHTML = `
+          <strong>Done</strong><br><br>
+          Embed this URL in Notion:<br>
+          <a href="${data.url}" target="_blank">${data.url}</a>
+        `;
+      } else {
+        status.innerText = data.error || "Error saving database";
+      }
+    } catch (e) {
+      status.innerText = "Something went wrong. Try again.";
     }
   };
 </script>
+
 
 </body>
 </html>
