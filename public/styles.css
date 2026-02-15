@@ -94,3 +94,36 @@ button:disabled {
   font-size: 13px;
   color: #888;
 }
+/* ---------- VERIFY LOADER ---------- */
+.verify-bar {
+  margin: 18px auto 0;
+  width: 180px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.verify-bar::before {
+  content: "";
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent),
+    transparent
+  );
+  animation: slide 1.2s ease-in-out infinite;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
