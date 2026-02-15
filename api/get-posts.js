@@ -69,11 +69,11 @@ const posts = notionData.results.map(page => {
 
     attachment: getFiles("Attachment"),
 
-    video: getFiles("Media / Video")[0] || null,
+    video: getFiles("Media/Video")[0] || null,
 
     thumbnail: getFiles("Thumbnail"),
 
-    publishDate: props["Publish date"]?.date?.start || null,
+    publishDate: props["Publish Date"]?.date?.start || null,
 
     pinned: props.Pin?.checkbox || false,
 
