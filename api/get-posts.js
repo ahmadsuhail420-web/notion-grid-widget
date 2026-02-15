@@ -55,16 +55,45 @@ export default async function handler(req, res) {
 
     // 4️⃣ Map Notion → grid format
 const posts = notionData.results.map(page => { 
-  const props = page.properties; 
-  return { 
-    name: props.Name?.title?.[0]?.plain_text || "", 
-    type: props.Type?.multi_select?.map(t => t.name) || [], 
-    attachment: props.Media?.files ?.map(f => f.file?.url || f.external?.url) .filter(Boolean) || [], 
-    publishDate: props["Publish Date"]?.date?.start || null,
-    thumbnail: props.Media?.files ?.map(f => f.file?.url || f.external?.url) .filter(Boolean) || [],
-    pinned: props.Pinned?.checkbox || false, 
-    hide: props.Hide?.checkbox || false, }; });
+      const name =
+        page.properties?.Name?.title?.[0]?.plain_text || "";
 
+      const publishDate =
+        page.properties?.["Publish Date"]?.date?.start || null;
+
+      const files = page.properties?.Attachment?.files || [];
+      const attachment = files.length
+        ? files.map(f => f.file?.url || f.external?.url).filter(Boolean)
+        : null;
+
+      const videoFiles = page.properties?.["Media/Video"]?.files || [];
+      const video = videoFiles.length
+        ? videoFiles.map(f => f.file?.url || f.external?.url)[0]
+        : null;
+
+      const thumbFiles = page.properties?.Thumbnail?.files || [];
+      const thumbnail = thumbFiles.length
+        ? thumbFiles.map(f => f.file?.url || f.external?.url)[0]
+        : null;
+
+      const type =
+        page.properties?.Type?.multi_select?.map(t => t.name) || [];
+
+      const pinned = page.properties?.Pin?.checkbox || false;
+      const hide = page.properties?.Hide?.checkbox || false;
+
+      return {
+        id: page.id,
+        name,
+        publishDate,
+        attachment,
+        video,
+        thumbnail,
+        type,
+        pinned,
+        hide,
+      };
+    });   
     res.json(posts);
 
   } catch (err) {
