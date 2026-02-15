@@ -416,12 +416,15 @@ let currentVideo = null;
 
 function getNotionThumbnail(post) {
   if (!post?.thumbnail) return null;
-  if (Array.isArray(post.thumbnail) && post.thumbnail.length) {
-    return post.thumbnail[0];
+
+  if (Array.isArray(post.thumbnail) && post.thumbnail[0]?.file?.url) {
+    return post.thumbnail[0].file.url;
   }
+
   if (typeof post.thumbnail === "string") {
     return post.thumbnail;
   }
+
   return null;
 }
 
