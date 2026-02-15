@@ -251,10 +251,57 @@
 
         if (data.url) {
           status.innerHTML = `
-            <strong>Database connected</strong><br><br>
-            Embed this URL in Notion:<br>
-            <a href="${data.url}" target="_blank">${data.url}</a>
-          `;
+  <strong>Database connected</strong><br><br>
+  Embed this URL in Notion:
+  <div style="
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+  ">
+    <input
+      id="embedUrl"
+      value="${data.url}"
+      readonly
+      style="
+        flex:1;
+        padding:10px 12px;
+        font-size:14px;
+        border-radius:8px;
+        border:1px solid var(--border);
+        background:#f9fafb;
+      "
+    />
+    <button
+      id="copyUrl"
+      style="
+        padding:10px 14px;
+        font-size:14px;
+        border-radius:8px;
+        border:none;
+        background:#3b82f6;
+        color:#fff;
+        font-weight:600;
+        cursor:pointer;
+      "
+    >
+      Copy
+    </button>
+  </div>
+`;
+          setTimeout(() => {
+  const copyBtn = document.getElementById("copyUrl");
+  const input = document.getElementById("embedUrl");
+
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(input.value);
+    copyBtn.innerText = "Copied";
+    setTimeout(() => {
+      copyBtn.innerText = "Copy";
+    }, 1500);
+  };
+}, 0);
         } else {
           status.innerText = data.error || "Error saving database";
         }
@@ -262,6 +309,7 @@
         status.innerText = "Something went wrong. Please try again.";
       }
     };
+  
   
   const helpModal = document.getElementById("helpModal");
   const helpModalImg = document.getElementById("helpModalImg");
