@@ -81,7 +81,7 @@ const posts = notionData.results.map(page => {
 
       const pinned = page.properties?.Pin?.checkbox || false;
       const hide = page.properties?.Hide?.checkbox || false;
-
+      const highlight = page.properties?.Highlight?.checkbox || false;
       return {
         id: page.id,
         name,
@@ -92,6 +92,7 @@ const posts = notionData.results.map(page => {
         type,
         pinned,
         hide,
+        highlight
       };
     });   
     res.json(posts);
