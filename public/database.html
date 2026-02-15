@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Connect Database – Grid Planner</title>
+  <title>Grid Planner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <link rel="stylesheet" href="/styles.css">
@@ -23,33 +23,42 @@
   <div class="hero">
 
     <h1>
-      Connect your<br>
-      <span>Notion database</span>
+      A grid that stays in<br>
+      <span>sync with your content</span>
     </h1>
 
     <p>
-      Choose the database you want to use for your grid.
+      Connect your Notion database to finish setting up your grid.
     </p>
 
     <!-- CARD -->
-    <div class="card">
+    <div class="card" style="text-align:center;">
 
-      <label>
-        Database ID or URL
-        <input
-          id="db"
-          placeholder="https://www.notion.so/..."
-        />
-      </label>
+      <h2 style="margin:0 0 6px; font-size:20px;">
+        Connect your Notion database
+      </h2>
 
-      <div class="helper">
-        Open the database in Notion → Share → Copy link → Paste here
+      <div id="content" style="margin-top:16px; text-align:left;">
+
+        <label>
+          Database ID or URL
+          <input
+            id="db"
+            placeholder="https://www.notion.so/..."
+          />
+        </label>
+
+        <div class="helper">
+          Open the database in Notion → Share → Copy link → Paste here
+        </div>
+
+        <button id="save">
+          Save database
+        </button>
+
       </div>
 
-      <button id="save">
-        Save database
-      </button>
-
+      <!-- STATUS -->
       <div id="status" style="margin-top:18px; font-size:14px;"></div>
 
     </div>
@@ -82,7 +91,7 @@
         const res = await fetch("/api/save-database", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, databaseId })
+          body: JSON.stringify({ token, databaseId }),
         });
 
         const data = await res.json();
@@ -94,7 +103,7 @@
             <a href="${data.url}" target="_blank">${data.url}</a>
           `;
         } else {
-          status.innerText = data.error || "Failed to save database";
+          status.innerText = data.error || "Error saving database";
         }
       } catch (e) {
         status.innerText = "Something went wrong. Please try again.";
