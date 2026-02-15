@@ -170,69 +170,71 @@
 </button>
   </div>
      <details style="margin-top:18px;">
-  <summary style="
-    font-size:14px;
-    color:#555;
-    cursor:pointer;
-  ">
+  <summary style="font-size:14px; color:#555; cursor:pointer;">
     Database structure & property guide
   </summary>
 
-  <div style="
-    margin-top:12px;
-    font-size:13px;
-    color:#666;
-    line-height:1.6;
-  ">
-    For the grid to work correctly, your Notion database should use the
-    following property names and types. 
-    Each property controls how items appear in your grid.
+  <div style="margin-top:14px; font-size:13px; color:#666;">
 
-    <ul style="margin-top:12px; padding-left:0; list-style:none;">
-      <li style="margin-bottom:10px;">
-        <b>Name</b> — <i>Title</i> —  
-        The main label for each item shown in the grid.
-      </li>
+    <p style="margin-bottom:12px;">
+      For the grid to work correctly, your Notion database must use the
+      following property names and types.
+    </p>
 
-      <li style="margin-bottom:10px;">
-        <b>Type</b> — <i>Multi-select</i> —  
-        Used to categorize content (Post, Story, Reel, Tiktok).
-      </li>
+    <!-- HEADER -->
+    <div style="
+      display:grid;
+      grid-template-columns: 1.2fr 1fr 3fr;
+      font-weight:600;
+      color:#444;
+      margin-bottom:8px;
+    ">
+      <div>Property</div>
+      <div>Type</div>
+      <div>Explanation</div>
+    </div>
 
-      <li style="margin-bottom:10px;">
-        <b>Publish Date</b> — <i>Date</i> —  
-        Controls scheduling and sorting of items.
-      </li>
+    <!-- ROWS -->
+    <div style="display:grid; grid-template-columns: 1.2fr 1fr 3fr; row-gap:10px;">
 
-      <li style="margin-bottom:10px;">
-        <b>Attachment</b> — <i>Files & Media</i> —  
-        Images or files displayed directly inside the grid.
-      </li>
+      <div><b>Name</b></div>
+      <div><i>Title</i></div>
+      <div>Main label shown for each item in the grid.</div>
 
-      <li style="margin-bottom:10px;">
-        <b>Media/Video</b> — <i>Files & Media</i> —  
-        Video files or external video links.
-      </li>
+      <div><b>Type</b></div>
+      <div><i>Multi-select</i></div>
+      <div>Used to categorize content (Post, Story, Reel, Tiktok).</div>
 
-      <li style="margin-bottom:10px;">
-        <b>Thumbnail</b> — <i>Files & Media</i> —  
-        Preview image shown before opening media.
-      </li>
+      <div><b>Publish Date</b></div>
+      <div><i>Date</i></div>
+      <div>Controls scheduling and chronological order.</div>
 
-      <li style="margin-bottom:10px;">
-        <b>Pin</b> — <i>Checkbox</i> —  
-        Pins an item to the top of the grid.
-      </li>
+      <div><b>Attachment</b></div>
+      <div><i>Files & Media</i></div>
+      <div>Images or files displayed directly inside the grid.</div>
 
-      <li>
-        <b>Hide</b> — <i>Checkbox</i> —  
-        Hides an item from the grid without deleting it.
-      </li>
-    </ul>
+      <div><b>Media/Video</b></div>
+      <div><i>Files & Media</i></div>
+      <div>Video files or external video links.</div>
 
-    <p style="margin-top:12px;">
+      <div><b>Thumbnail</b></div>
+      <div><i>Files & Media</i></div>
+      <div>Preview image shown before opening media.</div>
+
+      <div><b>Pin</b></div>
+      <div><i>Checkbox</i></div>
+      <div>Pins an item to the top of the grid.</div>
+
+      <div><b>Hide</b></div>
+      <div><i>Checkbox</i></div>
+      <div>Hides an item from the grid without deleting it.</div>
+
+    </div>
+
+    <p style="margin-top:14px; color:#777;">
       Property names are case-sensitive and must match exactly.
     </p>
+
   </div>
 </details>
 
