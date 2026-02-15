@@ -142,8 +142,12 @@
   />
 </label>
 
-<div class="helper" style="margin-top:10px;">
-  Open the database in Notion → Share → Copy link → Paste here
+<<div class="helper" style="margin-top:10px;">
+  Open the
+  <a href="#" id="dbHelpLink" style="color:#3b82f6; text-decoration:none;">
+    database
+  </a>
+  in Notion → Share → Copy link → Paste here
 </div>
 
 <button id="save" style="margin-top:22px;">
@@ -157,6 +161,51 @@
     </div>
 
   </div>
+  <!-- DATABASE HELP MODAL -->
+<div id="dbHelpModal" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+">
+
+  <div style="
+    background:#fff;
+    border-radius:16px;
+    max-width:520px;
+    width:90%;
+    padding:20px;
+    position:relative;
+    box-shadow:0 20px 60px rgba(0,0,0,0.2);
+  ">
+
+    <button id="closeDbHelp" style="
+      position:absolute;
+      top:12px;
+      right:12px;
+      border:none;
+      background:none;
+      font-size:18px;
+      cursor:pointer;
+    ">✕</button>
+
+    <h3 style="margin-top:0;">What is a Notion database?</h3>
+    <p style="font-size:14px; color:#555;">
+      A database is where your content lives (rows, properties, media).
+    </p>
+
+    <img
+      src="/images/notion-database-example.png"
+      alt="Notion database example"
+      style="width:100%; border-radius:10px; border:1px solid #e5e7eb;"
+    />
+  </div>
+
+</div>
+
 
   <!-- SCRIPT -->
 <script>
@@ -202,6 +251,26 @@
         status.innerText = "Something went wrong. Please try again.";
       }
     };
+  
+  const dbHelpLink = document.getElementById("dbHelpLink");
+  const dbHelpModal = document.getElementById("dbHelpModal");
+  const closeDbHelp = document.getElementById("closeDbHelp");
+
+  dbHelpLink.onclick = (e) => {
+    e.preventDefault();
+    dbHelpModal.style.display = "flex";
+  };
+
+  closeDbHelp.onclick = () => {
+    dbHelpModal.style.display = "none";
+  };
+
+  dbHelpModal.onclick = (e) => {
+    if (e.target === dbHelpModal) {
+      dbHelpModal.style.display = "none";
+    }
+  };
+
   </script>
 
 </body>
