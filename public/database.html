@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="/styles.css">
 
   <style>
+    #save {
+  background: #3b82f6; /* blue */
+}
+
+#save:hover {
+  background: #2563eb; /* slightly darker blue */
+}
     /* ---------- NAV ---------- */
     .nav {
       max-width: 1100px;
@@ -127,20 +134,21 @@
 
   <div id="content" style="margin-top:20px; text-align:left;">
     <label>
-          Database ID or URL
-          <input
-            id="db"
-            placeholder="https://www.notion.so/..."
-          />
-        </label>
-    
-    <div class="helper">
-      Open the database in Notion → Share → Copy link → Paste here
-    </div>
+  Enter Database ID or URL
+  <input
+    id="db"
+    placeholder="https://www.notion.so/..."
+    style="margin-top:8px;"
+  />
+</label>
 
-    <button id="save">
-      Save Database
-    </button>
+<div class="helper" style="margin-top:10px;">
+  Open the database in Notion → Share → Copy link → Paste here
+</div>
+
+<button id="save" style="margin-top:22px;">
+  Save
+</button>
   </div>
 
  <!-- STATUS -->
