@@ -145,3 +145,29 @@ button:disabled {
   font-size: 13px;
   color: var(--text-muted);
 }
+/* === VERIFY LOADER (SAFE VERSION) === */
+.verify-bar {
+  width: 200px;
+  height: 6px;
+  margin: 14px auto 0;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.verify-bar-inner {
+  width: 40%;
+  height: 100%;
+  background: #111827;
+  animation: verifySlide 1.2s ease-in-out infinite;
+}
+
+@keyframes verifySlide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
