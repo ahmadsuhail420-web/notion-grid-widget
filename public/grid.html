@@ -85,57 +85,85 @@
       font-size: 16px;
     }
 
-    .profile {
-  padding: 12px 16px;
+  /* PROFILE */
+.profile {
+  padding: 16px;
 }
 
-.profileTop {
+/* ROW */
+.profileRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 20px;
 }
 
-.stats {
+/* PROFILE PIC */
+.profilePic {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.profilePic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* STATS */
+.profileStats {
   display: flex;
-  gap: 24px;
-  margin-top: 8px;
+  flex: 1;
+  justify-content: space-around;
 }
 
-.stats div {
+.stat {
   text-align: center;
+}
+
+.stat strong {
+  font-size: 18px;
+  font-weight: 700;
+  display: block;
+}
+
+.stat span {
+  font-size: 13px;
+  color: #777;
+}
+
+/* HIGHLIGHTS */
+.highlights {
+  padding: 12px 16px 0;
 }
 
 .highlightsRow {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding: 12px 8px;
+  scrollbar-width: none;
+}
+
+.highlightsRow::-webkit-scrollbar {
+  display: none;
 }
 
 .highlightItem {
-  width: 64px;
-  height: 64px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
+  border: 2px solid #ddd;
 }
 
 .highlightItem img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.menu {
-  position: absolute;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px;
-}
-
-.hidden {
-  display: none;
 }
 
     /* ---------- TABS ---------- */
@@ -397,35 +425,38 @@
 <div class="title">Grid Planner</div>
 <div></div>
 
-</div>
-  <div id="profileHeader" class="profile">
+<!-- PROFILE HEADER -->
+<div id="profileHeader" class="profile">
 
-  <div class="profileTop">
-    <div class="profileName" id="plannerName">Content Planner</div>
+  <div class="profileRow">
 
-    <button class="menuBtn" onclick="toggleMenu()">⋯</button>
-
-    <div id="menu" class="menu hidden">
-      <label>
-        <input type="checkbox" checked onchange="toggleSection('header', this)">
-        Show header
-      </label>
-      <label>
-        <input type="checkbox" checked onchange="toggleSection('highlights', this)">
-        Show highlights
-      </label>
+    <!-- LEFT: PROFILE PIC -->
+    <div class="profilePic">
+      <img id="profileImage" src="/icons/profile-placeholder.png" />
     </div>
-  </div>
 
-  <div class="stats">
-    <div><strong id="statPosts">0</strong><span>Posts</span></div>
-    <div><strong id="statScheduled">0</strong><span>Scheduled</span></div>
-    <div><strong id="statPublished">0</strong><span>Published</span></div>
+    <!-- RIGHT: STATS -->
+    <div class="profileStats">
+      <div class="stat">
+        <strong id="statPosts">0</strong>
+        <span>Posts</span>
+      </div>
+      <div class="stat">
+        <strong id="statScheduled">0</strong>
+        <span>Scheduled</span>
+      </div>
+      <div class="stat">
+        <strong id="statPublished">0</strong>
+        <span>Published</span>
+      </div>
+    </div>
+
   </div>
 
 </div>
 
-  <div id="highlightsWrap" class="highlights">
+<!-- HIGHLIGHTS -->
+<div id="highlightsWrap" class="highlights">
   <div id="highlights" class="highlightsRow"></div>
 </div>
 
