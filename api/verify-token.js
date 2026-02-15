@@ -1,45 +1,44 @@
 export default async function handler(req, res) {
   try {
     const { token } = req.query;
-
-    if (!token) {
-      return res.json({ valid: false });
-    }
+    if (!token) return res.json({ valid: false });
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!supabaseUrl || !serviceKey) {
-      return res.status(500).json({
-        error: "Missing Supabase env vars"
-      });
-    }
-
-    const response = await fetch(
-      `${supabaseUrl}/rest/v1/customers?setup_token=eq.${token}&select=id,setup_used`,
+    const customerRes = await fetch(
+      `${supabaseUrl}/rest/v1/customers?setup_token=eq.${token}&select=id,status,setup_used`,
       {
         headers: {
           apikey: serviceKey,
           Authorization: `Bearer ${serviceKey}`,
-        }
+        },
       }
     );
 
-    const data = await response.json();
+    const customers = await customerRes.json();
 
-    if (error || !data) {
-  return res.json({ valid: false, reason: "invalid" });
-}
+    // ❌ Token not found
+    if (!customers.length) {
+      return res.json({ valid: false, reason: "not_found" });
+    }
 
-if (data.setup_used) {
-  return res.json({ valid: false, reason: "used" });
-}
+    const customer = customers[0];
 
-res.json({ valid: true });
+    // ❌ Status check
+    if (customer.status !== "active") {
+      return res.json({ valid: false, reason: "inactive" });
+    }
+
+    // ❌ Already used
+    if (customer.setup_used === true) {
+      return res.json({ valid: false, reason: "used" });
+    }
+
+    // ✅ VALID
+    return res.json({ valid: true });
 
   } catch (err) {
-    return res.status(500).json({
-      error: err.message
-    });
+    return res.status(500).json({ valid: false, error: err.message });
   }
 }
