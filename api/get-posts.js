@@ -54,32 +54,16 @@ export default async function handler(req, res) {
     const notionData = await notionRes.json();
 
     // 4️⃣ Map Notion → grid format
-const posts = notionData.results.map(page => {
-  const props = page.properties;
-
-  const getFiles = (field) =>
-    props[field]?.files
-      ?.map(f => f.file?.url || f.external?.url)
-      .filter(Boolean) || [];
-
-  return {
-    name: props.Name?.title?.[0]?.plain_text || "",
-
-    type: props.Type?.multi_select?.map(t => t.name) || [],
-
-    attachment: getFiles("Attachment"),
-
-    video: getFiles("Media/Video")[0] || null,
-
-    thumbnail: getFiles("Thumbnail"),
-
+const posts = notionData.results.map(page => { 
+  const props = page.properties; 
+  return { 
+    name: props.Name?.title?.[0]?.plain_text || "", 
+    type: props.Type?.multi_select?.map(t => t.name) || [], 
+    attachment: props.Media?.files ?.map(f => f.file?.url || f.external?.url) .filter(Boolean) || [], 
     publishDate: props["Publish Date"]?.date?.start || null,
-
-    pinned: props.Pin?.checkbox || false,
-
-    hide: props.Hide?.checkbox || false,
-  };
-});
+    thumbnail: props.Media?.files ?.map(f => f.file?.url || f.external?.url) .filter(Boolean) || [],
+    pinned: props.Pinned?.checkbox || false, 
+    hide: props.Hide?.checkbox || false, }; });
 
     res.json(posts);
 
