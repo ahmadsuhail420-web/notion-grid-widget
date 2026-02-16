@@ -893,6 +893,16 @@ function renderGrid() {
     grid.appendChild(card);
   }
 }
+    async function startGrid() {
+  try {
+    await checkAccess();
+    await loadProfile();   // ✅ ADD THIS
+    await loadPosts();
+  } catch (e) {
+    console.error("Grid init failed", e);
+  }
+}
+
 
 function addBadge(card, src) {
   const img = document.createElement("img");
