@@ -714,7 +714,9 @@ async function checkAccess() {
     
 async function loadPosts(btn) {
   const res = await fetch(`/api/get-posts?slug=${SLUG}`);
-const { profile, posts } = await res.json();
+document.querySelector(".profileTitle").innerText = profile.name;
+document.querySelector(".profilePic img").src =
+  profile.picture || "/icons/profile-placeholder.png";
 
 ALL_POSTS = posts;
 // PROFILE NAME
