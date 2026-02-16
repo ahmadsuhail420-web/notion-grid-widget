@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     const { slug } = req.query;
-    if (!slug) return res.json([]);
+    if (!slug) return res.json({ profile: null, posts: [] });
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -18,7 +18,9 @@ export default async function handler(req, res) {
     );
 
     const customers = await customerRes.json();
-    if (!customers.length) return res.json([]);
+    if (!customers.length) {
+      return res.json({ profile: null, posts: [] });
+    }
 
     const customerId = customers[0].id;
 
@@ -34,7 +36,9 @@ export default async function handler(req, res) {
     );
 
     const conns = await connRes.json();
-    if (!conns.length) return res.json([]);
+    if (!conns.length) {
+      return res.json({ profile: null, posts: [] });
+    }
 
     const { access_token, database_id } = conns[0];
 
@@ -44,7 +48,7 @@ export default async function handler(req, res) {
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${access_token}`,
+          Authorization: `Bearer ${access_token}`,
           "Content-Type": "application/json",
           "Notion-Version": "2022-06-28",
         },
@@ -53,9 +57,23 @@ export default async function handler(req, res) {
 
     const notionData = await notionRes.json();
 
-    // 4️⃣ Map Notion → grid format
-const posts = notionData.results.map(page => { 
-      const name =
+    // 4️⃣ PROFILE (database-level, fallback safe)
+    const profile = {
+      name: "Grid Planner",
+      picture: null,
+    };
+
+    // OPTIONAL: use database title as profile name
+    if (notionData?.results?.length) {
+      profile.name =
+        notionData.results[0]?.parent?.database_id
+          ? profile.name
+          : profile.name;
+    }
+
+    // 5️⃣ POSTS
+    const posts = notionData.results.map(page => {
+      const postName =
         page.properties?.Name?.title?.[0]?.plain_text || "";
 
       const publishDate =
@@ -82,16 +100,10 @@ const posts = notionData.results.map(page => {
       const pinned = page.properties?.Pin?.checkbox || false;
       const hide = page.properties?.Hide?.checkbox || false;
       const highlight = page.properties?.Highlight?.checkbox || false;
-  const name =
-      db.properties?.["Profile Name"]?.title?.[0]?.plain_text || "Grid Planner";
 
-    const picture =
-      db.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
-      db.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
-      null;
       return {
         id: page.id,
-        name,
+        name: postName,
         publishDate,
         attachment,
         video,
@@ -100,13 +112,14 @@ const posts = notionData.results.map(page => {
         pinned,
         hide,
         highlight,
-        profileName,
-        profilePicture
       };
-    });   
-    res.json(posts);
+    });
+
+    // 6️⃣ FINAL RESPONSE
+    res.json({ profile, posts });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 }
