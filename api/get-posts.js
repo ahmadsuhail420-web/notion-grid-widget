@@ -57,19 +57,6 @@ export default async function handler(req, res) {
 
     const notionData = await notionRes.json();
 
-    // 4️⃣ PROFILE (database-level, fallback safe)
-    const profile = {
-      name: "Grid Planner",
-      picture: null,
-    };
-
-    // OPTIONAL: use database title as profile name
-    if (notionData?.results?.length) {
-      profile.name =
-        notionData.results[0]?.parent?.database_id
-          ? profile.name
-          : profile.name;
-    }
 
     // 5️⃣ POSTS
     const posts = notionData.results.map(page => {
@@ -78,6 +65,14 @@ export default async function handler(req, res) {
 
       const publishDate =
         page.properties?.["Publish Date"]?.date?.start || null;
+
+      const profileName =
+  page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
+
+const profilePicture =
+  page.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
+  page.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
+  null;
 
       const files = page.properties?.Attachment?.files || [];
       const attachment = files.length
