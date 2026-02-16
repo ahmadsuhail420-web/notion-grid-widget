@@ -35,56 +35,18 @@
   padding: 8px 12px;
   position: relative;
 }
-    .profile {
+    /* PROFILE */
+.profile {
   padding: 16px;
-  display: flex;
-  justify-content: center;
 }
-/* PROFILE ROW */
+
 .profileRow {
   display: flex;
-  align-items: flex-start; /* 👈 important */
+  align-items: flex-start;
   gap: 18px;
 }
 
-/* RIGHT COLUMN */
-.profileRight {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-/* TITLE */
-.profileTitle {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-left: 0; /* ensure no offset */
-}
-
-/* STATS */
-.profileStats {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  column-gap: 28px;
-  margin-top: 10px;
-  justify-content: start; /* 👈 important */
-}
-/* STAT ITEM */
-.stat {
-  text-align: center;
-}
-
-.stat strong {
-  font-size: 16px;
-  font-weight: 700;
-  display: block;
-}
-
-.stat span {
-  font-size: 12px;
-  color: #777;
-}
+/* PROFILE PIC */
 .profilePic {
   width: 72px;
   height: 72px;
@@ -100,6 +62,45 @@
   object-fit: cover;
 }
 
+/* RIGHT COLUMN */
+.profileRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 🔑 */
+}
+
+/* TITLE */
+.profileTitle {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* STATS */
+.profileStats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  column-gap: 28px;
+  margin-top: 10px;
+}
+
+/* STAT ITEM */
+.stat {
+  text-align: center;
+}
+
+.stat strong {
+  font-size: 16px;
+  font-weight: 700;
+  display: block;
+}
+
+.stat span {
+  font-size: 12px;
+  color: #777;
+}
+
+    
     /* ---------- CONTAINER ---------- */
     .container {
       flex: 1;
@@ -537,33 +538,21 @@
     </label>
   </div>
 </div>
-  <div class="titleRow">
-  <div class="title">Grid Planner</div>
-</div>
 <div></div>
 
-<!-- PROFILE HEADER -->
-<!-- PROFILE HEADER -->
 <div id="profileHeader" class="profile">
   <div class="profileRow">
 
-    <!-- LEFT: PROFILE PIC -->
     <div class="profilePic">
       <img src="/icons/profile-placeholder.png" />
     </div>
 
-    <!-- RIGHT: TITLE + STATS -->
     <div class="profileRight">
+      <div class="profileTitle">Grid Planner</div>
 
-      <!-- TITLE -->
-      <div class="profileTitle">
-        Grid Planner
-      </div>
-
-      <!-- STATS -->
       <div class="profileStats">
         <div class="stat">
-          <strong id="statPosts">0</strong>
+          <strong id="statPosts">6</strong>
           <span>Posts</span>
         </div>
         <div class="stat">
@@ -571,14 +560,15 @@
           <span>Scheduled</span>
         </div>
         <div class="stat">
-          <strong id="statPublished">0</strong>
+          <strong id="statPublished">1</strong>
           <span>Published</span>
         </div>
       </div>
-
     </div>
+
   </div>
 </div>
+
 
 <!-- HIGHLIGHTS -->
 <div id="highlightsWrap" class="highlights">
