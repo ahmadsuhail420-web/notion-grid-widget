@@ -737,11 +737,19 @@ async function loadPosts(btn) {
 
   try {
     const res = await fetch(`/api/get-posts?slug=${SLUG}`);
-    const raw = await res.json();
+const { profile, posts } = await res.json();
 
-    const { profile: apiProfile, posts } = normalizeApiResponse(raw);
+// ✅ PROFILE
+if (profile?.name) {
+  document.getElementById("profileName").innerText = profile.name;
+}
 
-    ALL_POSTS = posts;
+if (profile?.picture) {
+  document.getElementById("profileImage").src = profile.picture;
+}
+
+// ✅ POSTS
+ALL_POSTS = posts;
 
     // ✅ if backend doesn't provide profile, derive from posts row fields
     const derivedProfile = extractProfileFromPosts(ALL_POSTS);
@@ -779,7 +787,10 @@ async function loadPosts(btn) {
 
   if (icon) icon.classList.remove("spin");
 }
-
+requestAnimationFrame(() => {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (activeTab) moveUnderline(activeTab);
+});
 /* -------------------- GRID -------------------- */
 
 function renderGrid() {
@@ -854,18 +865,18 @@ function renderHighlights(posts) {
   const items = getHighlights(posts);
 
   // ✅ always show + button when empty
-  if (!items.length) {
-    const add = document.createElement("div");
-    add.className = "highlightItem";
-    add.style.display = "flex";
-    add.style.alignItems = "center";
-    add.style.justifyContent = "center";
-    add.style.fontSize = "28px";
-    add.style.color = "#777";
-    add.textContent = "+";
-    row.appendChild(add);
-    return;
-  }
+
+if (!highlights.length) {
+  const add = document.createElement("div");
+  add.className = "highlightItem";
+  add.style.display = "flex";
+  add.style.alignItems = "center";
+  add.style.justifyContent = "center";
+  add.style.fontSize = "26px";
+  add.innerText = "+";
+  row.appendChild(add);
+  return;
+}
 
   items.forEach(post => {
     const media = (Array.isArray(post.attachment) ? post.attachment[0] : post.attachment) || post.thumbnail;
