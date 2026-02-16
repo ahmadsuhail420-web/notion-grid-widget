@@ -530,10 +530,12 @@
   </div>
 
 <script>
+
 const params = new URLSearchParams(window.location.search);
 const SLUG = params.get("slug");
 if (!SLUG) alert("Missing widget slug");
 
+let HAS_LOADED_ONCE = false;
 let ALL_POSTS = [];
 let FILTER = "Post";
 let currentSlide = 0;
@@ -631,24 +633,24 @@ async function loadPosts(btn) {
 
   try {
     const res = await fetch(`/api/get-posts?slug=${SLUG}`);
-    const { profile, posts } = await res.json();
+    const { profile: apiProfile, posts } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
 
-    const finalProfile = profile || extractProfileFromPosts(ALL_POSTS);
-    document.getElementById("profileName").innerText = finalProfile.name;
-    document.getElementById("profileImage").src = finalProfile.picture;
+    const derivedProfile = extractProfileFromPosts(ALL_POSTS);
+    const finalProfile = apiProfile || derivedProfile;
 
+    document.getElementById("profileName").innerText =
+      finalProfile?.name || "Grid Planner";
+
+    document.getElementById("profileImage").src =
+      finalProfile?.picture || "/icons/profile-placeholder.png";
+
+    // IMPORTANT: render AFTER data exists
+    renderHighlights(ALL_POSTS);
     renderGrid();
 
-    const visible = getVisibleGridPosts();
-    const stats = computeStatsFromGrid(visible);
-
-    document.getElementById("statPosts").innerText = stats.total;
-    document.getElementById("statScheduled").innerText = stats.scheduled;
-    document.getElementById("statPublished").innerText = stats.published;
-
-    renderHighlights(ALL_POSTS);
+    HAS_LOADED_ONCE = true;
 
     requestAnimationFrame(() => {
       const activeTab = document.querySelector(".tabItem.active");
@@ -761,6 +763,15 @@ function updateViewerImage() {
     : Object.assign(document.createElement("img"), { src });
 
   wrap.appendChild(el);
+}
+
+async function startGrid() {
+  try {
+    await checkAccess();
+    await loadPosts(); // ← this is enough
+  } catch (e) {
+    console.error("Grid init failed", e);
+  }
 }
 
 function closeViewer() {
