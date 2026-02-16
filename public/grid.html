@@ -754,8 +754,7 @@ const finalProfile = apiProfile || derivedProfile;
   finalProfile.name || "Grid Planner";
 
 document.getElementById("profileImage").src =
-  finalProfile.picture || "/icons/profile-placeholder.png"; else {
-      document.getElementById("profileImage").src = "/icons/profile-placeholder.png";
+  finalProfile.picture || "/icons/profile-placeholder.png";
     }
 
     // STATS UI
@@ -838,11 +837,6 @@ function renderGrid() {
     grid.appendChild(card);
   });
 await loadPosts();
-
-requestAnimationFrame(() => {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (activeTab) moveUnderline(activeTab);
-});
 }
 
 
