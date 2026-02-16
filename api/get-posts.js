@@ -1,56 +1,30 @@
 export default async function handler(req, res) {
   try {
     const { slug } = req.query;
-    if (!slug) {
-      return res.json({ profile: null, posts: [] });
-    }
+    if (!slug) return res.json({ profile: null, posts: [] });
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    /* -------------------------------
-       1️⃣ FIND CUSTOMER
-    -------------------------------- */
+    // 1. Customer
     const customerRes = await fetch(
       `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id`,
-      {
-        headers: {
-          apikey: serviceKey,
-          Authorization: `Bearer ${serviceKey}`,
-        },
-      }
+      { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` } }
     );
-
     const customers = await customerRes.json();
-    if (!customers.length) {
-      return res.json({ profile: null, posts: [] });
-    }
+    if (!customers.length) return res.json({ profile: null, posts: [] });
 
-    const customerId = customers[0].id;
-
-    /* -------------------------------
-       2️⃣ GET NOTION CONNECTION
-    -------------------------------- */
+    // 2. Notion connection
     const connRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customerId}&select=access_token,database_id`,
-      {
-        headers: {
-          apikey: serviceKey,
-          Authorization: `Bearer ${serviceKey}`,
-        },
-      }
+      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customers[0].id}&select=access_token,database_id`,
+      { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` } }
     );
-
     const conns = await connRes.json();
-    if (!conns.length) {
-      return res.json({ profile: null, posts: [] });
-    }
+    if (!conns.length) return res.json({ profile: null, posts: [] });
 
     const { access_token, database_id } = conns[0];
 
-    /* -------------------------------
-       3️⃣ QUERY NOTION DATABASE
-    -------------------------------- */
+    // 3. Query Notion
     const notionRes = await fetch(
       `https://api.notion.com/v1/databases/${database_id}/query`,
       {
@@ -62,80 +36,70 @@ export default async function handler(req, res) {
         },
       }
     );
-
     const notionData = await notionRes.json();
-    const rows = notionData.results || [];
 
-    /* -------------------------------
-       4️⃣ PROFILE ROW
-    -------------------------------- */
-    const profileRow = rows.find(
-      page => page.properties?.["Row Type"]?.select?.name === "Profile"
-    );
+    let profile = null;
+    const posts = [];
 
-    const profile = profileRow
-      ? {
-          name:
-            profileRow.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text ||
-            "Grid Planner",
+    for (const page of notionData.results) {
+      const profileName =
+        page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
 
-          picture:
-            profileRow.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
-            profileRow.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
-            null,
-        }
-      : null;
+      const profilePicture =
+        page.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
+        page.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
+        null;
 
-    /* -------------------------------
-       5️⃣ POST ROWS
-    -------------------------------- */
-    const posts = rows
-      .filter(
-        page => page.properties?.["Row Type"]?.select?.name === "Post"
-      )
-      .map(page => {
-        const props = page.properties;
-
-        return {
-          id: page.id,
-
-          name: props?.Name?.title?.[0]?.plain_text || "",
-
-          publishDate: props?.["Publish Date"]?.date?.start || null,
-
-          attachment:
-            props?.Attachment?.files?.map(
-              f => f.file?.url || f.external?.url
-            ) || null,
-
-          video:
-            props?.["Media/Video"]?.files?.[0]?.file?.url ||
-            props?.["Media/Video"]?.files?.[0]?.external?.url ||
-            null,
-
-          thumbnail:
-            props?.Thumbnail?.files?.[0]?.file?.url ||
-            props?.Thumbnail?.files?.[0]?.external?.url ||
-            null,
-
-          type: props?.Type?.multi_select?.map(t => t.name) || [],
-
-          pinned: props?.Pin?.checkbox || false,
-          hide: props?.Hide?.checkbox || false,
-          highlight: props?.Highlight?.checkbox || false,
+      // 👉 PROFILE ROW
+      if (profileName || profilePicture) {
+        profile = {
+          name: profileName || "Grid Planner",
+          picture: profilePicture || null,
         };
+        continue;
+      }
+
+      // 👉 POST ROW
+      const name =
+        page.properties?.Name?.title?.[0]?.plain_text || "";
+
+      const publishDate =
+        page.properties?.["Publish Date"]?.date?.start || null;
+
+      const attachment =
+        page.properties?.Attachment?.files?.map(f =>
+          f.file?.url || f.external?.url
+        ) || null;
+
+      const video =
+        page.properties?.["Media/Video"]?.files?.[0]?.file?.url ||
+        page.properties?.["Media/Video"]?.files?.[0]?.external?.url ||
+        null;
+
+      const thumbnail =
+        page.properties?.Thumbnail?.files?.[0]?.file?.url ||
+        page.properties?.Thumbnail?.files?.[0]?.external?.url ||
+        null;
+
+      const type =
+        page.properties?.Type?.multi_select?.map(t => t.name) || [];
+
+      posts.push({
+        id: page.id,
+        name,
+        publishDate,
+        attachment,
+        video,
+        thumbnail,
+        type,
+        pinned: page.properties?.Pin?.checkbox || false,
+        hide: page.properties?.Hide?.checkbox || false,
+        highlight: page.properties?.Highlight?.checkbox || false,
       });
+    }
 
-    /* -------------------------------
-       6️⃣ FINAL RESPONSE
-    -------------------------------- */
-    res.json({
-      profile,
-      posts,
-    });
-
+    res.json({ profile, posts });
   } catch (err) {
-    console.error("API ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 }
