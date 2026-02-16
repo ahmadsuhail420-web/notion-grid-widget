@@ -740,13 +740,7 @@ async function loadPosts(btn) {
 const { profile: apiProfile, posts } = await res.json();
 
 // ✅ PROFILE
-if (profile?.name) {
-  document.getElementById("profileName").innerText = profile.name;
-}
 
-if (profile?.picture) {
-  document.getElementById("profileImage").src = profile.picture;
-}
 
 // ✅ POSTS
 ALL_POSTS = posts;
@@ -756,10 +750,11 @@ ALL_POSTS = posts;
 const finalProfile = apiProfile || derivedProfile;
 
     // PROFILE UI
-    document.getElementById("profileName").innerText = profile.name || "Grid Planner";
-    if (profile.picture) {
-      document.getElementById("profileImage").src = profile.picture;
-    } else {
+    document.getElementById("profileName").innerText =
+  finalProfile.name || "Grid Planner";
+
+document.getElementById("profileImage").src =
+  finalProfile.picture || "/icons/profile-placeholder.png"; else {
       document.getElementById("profileImage").src = "/icons/profile-placeholder.png";
     }
 
@@ -842,13 +837,14 @@ function renderGrid() {
 
     grid.appendChild(card);
   });
-}
 await loadPosts();
 
 requestAnimationFrame(() => {
   const activeTab = document.querySelector(".tabItem.active");
   if (activeTab) moveUnderline(activeTab);
 });
+}
+
 
 function addBadge(card, src) {
   const img = document.createElement("img");
