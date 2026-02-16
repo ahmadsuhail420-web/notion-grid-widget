@@ -713,33 +713,6 @@ async function checkAccess() {
 
     
 async function loadPosts(btn) {
-  const res = await fetch(`/api/get-posts?slug=${SLUG}`);
-document.querySelector(".profileTitle").innerText = profile.name;
-document.querySelector(".profilePic img").src =
-  profile.picture || "/icons/profile-placeholder.png";
-
-ALL_POSTS = posts;
-// PROFILE NAME
-if (profile?.name) {
-  document.getElementById("profileName").innerText = profile.name;
-}
-
-// PROFILE IMAGE / EMOJI
-if (profile?.icon) {
-  const img = document.getElementById("profileImage");
-
-  if (profile.icon.length <= 2) {
-    img.remove();
-    const pic = document.querySelector(".profilePic");
-    pic.innerText = profile.icon;
-    pic.style.fontSize = "36px";
-    pic.style.display = "flex";
-    pic.style.alignItems = "center";
-    pic.style.justifyContent = "center";
-  } else {
-    img.src = profile.icon;
-  }
-}
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
 
@@ -747,27 +720,49 @@ if (profile?.icon) {
     const res = await fetch(`/api/get-posts?slug=${SLUG}`);
     const data = await res.json();
 
-    data.sort((a, b) => {
+    // ✅ EXPECTED BACKEND SHAPE
+    const profile = data.profile || {};
+    const posts = data.posts || [];
+
+    // ---------- PROFILE ----------
+    if (profile.name) {
+      document.getElementById("profileName").innerText = profile.name;
+    }
+
+    if (profile.picture) {
+      document.getElementById("profileImage").src = profile.picture;
+    }
+
+    // ---------- POSTS ----------
+    ALL_POSTS = posts;
+
+    // Sort
+    ALL_POSTS.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
       return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
     });
 
-    ALL_POSTS = data;
-
-    // ✅ Stats
+    // ---------- STATS ----------
     const stats = computeStats(ALL_POSTS);
-    document.getElementById("statPosts").innerText = stats.total;
-    document.getElementById("statScheduled").innerText = stats.scheduled;
-    document.getElementById("statPublished").innerText = stats.published;
+    statPosts.innerText = stats.total;
+    statScheduled.innerText = stats.scheduled;
+    statPublished.innerText = stats.published;
 
-    // ✅ Highlights
+    // ---------- HIGHLIGHTS ----------
     renderHighlights(ALL_POSTS);
 
-renderGrid();
+    // ---------- GRID (INITIAL RENDER) ----------
+    renderGrid();
+
+    // ---------- FIX UNDERLINE ----------
+    requestAnimationFrame(() => {
+      const activeTab = document.querySelector(".tabItem.active");
+      if (activeTab) moveUnderline(activeTab);
+    });
 
   } catch (e) {
-    console.error("Refresh failed", e);
+    console.error("loadPosts failed", e);
   }
 
   if (icon) icon.classList.remove("spin");
@@ -996,20 +991,38 @@ function nextImage() {
 }
 
     function renderHighlights(posts) {
-  const highlights = getHighlights(posts);
   const wrap = document.getElementById("highlightsWrap");
   const row = document.getElementById("highlights");
 
+  row.innerHTML = "";
+
+  const highlights = posts.filter(p =>
+    p.highlight &&
+    !p.hide &&
+    (p.attachment?.length || p.thumbnail)
+  );
+
+  // ✅ If no highlights → show Add button
   if (!highlights.length) {
-    wrap.style.display = "none";
+    wrap.style.display = "block";
+
+    const add = document.createElement("div");
+    add.className = "highlightItem";
+    add.style.display = "flex";
+    add.style.alignItems = "center";
+    add.style.justifyContent = "center";
+    add.style.fontSize = "28px";
+    add.innerText = "+";
+
+    row.appendChild(add);
     return;
   }
 
-  row.innerHTML = "";
+  wrap.style.display = "block";
 
   highlights.forEach(post => {
-    const media =
-      post.attachment?.[0] || post.thumbnail;
+    const media = post.attachment?.[0] || post.thumbnail;
+    if (!media) return;
 
     const item = document.createElement("div");
     item.className = "highlightItem";
@@ -1056,7 +1069,6 @@ document
   async function startGrid() {
   try {
     await checkAccess();
-
     await loadPosts();
   } catch (e) {
     console.error("Grid init failed", e);
