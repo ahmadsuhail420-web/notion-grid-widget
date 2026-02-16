@@ -35,36 +35,54 @@
   padding: 8px 12px;
   position: relative;
 }
-.titleRow {
-  text-align: center;
-  margin: 8px 0 14px;
-}
-
-.title {
-  font-weight: 700;
-  font-size: 16px;
-}
     .profile {
   padding: 16px;
   display: flex;
   justify-content: center;
 }
-
+/* PROFILE ROW */
 .profileRow {
   display: flex;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
-  max-width: 420px; /* Instagram-like width */
+  align-items: flex-start; /* 👈 important */
+  gap: 18px;
 }
 
+/* RIGHT COLUMN */
+.profileRight {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* TITLE */
+.profileTitle {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* STATS */
 .profileStats {
   display: flex;
-  flex: 1;
-  justify-content: space-between;
+  gap: 28px;
+  margin-top: 10px; /* 👈 pushes stats DOWN */
 }
 
+/* STAT ITEM */
+.stat {
+  text-align: center;
+}
 
+.stat strong {
+  font-size: 16px;
+  font-weight: 700;
+  display: block;
+}
+
+.stat span {
+  font-size: 12px;
+  color: #777;
+}
 .profilePic {
   width: 72px;
   height: 72px;
@@ -80,20 +98,6 @@
   object-fit: cover;
 }
 
-.stat {
-  text-align: center;
-  min-width: 70px;
-}
-
-.stat strong {
-  font-size: 16px;
-  display: block;
-}
-
-.stat span {
-  font-size: 12px;
-  color: #777;
-}
     /* ---------- CONTAINER ---------- */
     .container {
       flex: 1;
@@ -537,25 +541,39 @@
 <div></div>
 
 <!-- PROFILE HEADER -->
+<!-- PROFILE HEADER -->
 <div id="profileHeader" class="profile">
   <div class="profileRow">
+
+    <!-- LEFT: PROFILE PIC -->
     <div class="profilePic">
       <img src="/icons/profile-placeholder.png" />
     </div>
 
-    <div class="profileStats">
-      <div class="stat">
-        <strong id="statPosts">0</strong>
-        <span>Posts</span>
+    <!-- RIGHT: TITLE + STATS -->
+    <div class="profileRight">
+
+      <!-- TITLE -->
+      <div class="profileTitle">
+        Grid Planner
       </div>
-      <div class="stat">
-        <strong id="statScheduled">0</strong>
-        <span>Scheduled</span>
+
+      <!-- STATS -->
+      <div class="profileStats">
+        <div class="stat">
+          <strong id="statPosts">0</strong>
+          <span>Posts</span>
+        </div>
+        <div class="stat">
+          <strong id="statScheduled">0</strong>
+          <span>Scheduled</span>
+        </div>
+        <div class="stat">
+          <strong id="statPublished">0</strong>
+          <span>Published</span>
+        </div>
       </div>
-      <div class="stat">
-        <strong id="statPublished">0</strong>
-        <span>Published</span>
-      </div>
+
     </div>
   </div>
 </div>
