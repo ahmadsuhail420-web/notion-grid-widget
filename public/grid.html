@@ -536,49 +536,10 @@ if (!SLUG) alert("Missing widget slug");
 
 let ALL_POSTS = [];
 let FILTER = "Post";
-
 let currentSlide = 0;
 let currentMedia = [];
 
 /* -------------------- HELPERS -------------------- */
-
-function computeStats(posts) {
-  const today = new Date().toISOString().split("T")[0];
-  const visible = posts.filter(p => !p.hide);
-
-  const scheduled = visible.filter(p => p.publishDate && p.publishDate > today);
-  const published = visible.filter(p => p.publishDate && p.publishDate <= today);
-
-  return {
-    total: visible.length,
-    scheduled: scheduled.length,
-    published: published.length
-  };
-}
-
-function extractProfileFromPosts(posts) {
-  const rowWithName = posts.find(p => p.profileName);
-  const rowWithPic = posts.find(p => p.profilePicture);
-
-  return {
-    name: rowWithName?.profileName || "Grid Planner",
-    picture: rowWithPic?.profilePicture || null
-  };
-}
-
-function getHighlights(posts) {
-  return posts.filter(p =>
-    p.highlight &&
-    !p.hide &&
-    ((Array.isArray(p.attachment) && p.attachment.length) || p.thumbnail)
-  );
-}
-
-function getNotionThumbnail(post) {
-  if (!post?.thumbnail) return null;
-  if (typeof post.thumbnail === "string") return post.thumbnail;
-  return null;
-}
 
 function hasMedia(post) {
   return (
@@ -586,6 +547,36 @@ function hasMedia(post) {
     post.thumbnail ||
     post.video
   );
+}
+
+function getVisibleGridPosts() {
+  return ALL_POSTS
+    .filter(post => {
+      if (post.hide) return false;
+      if (!hasMedia(post)) return false;
+
+      if (!Array.isArray(post.type) || post.type.length === 0) return true;
+      return post.type.includes(FILTER);
+    })
+    .sort((a, b) => (b.pinned === true) - (a.pinned === true));
+}
+
+function computeStatsFromGrid(posts) {
+  const today = new Date().toISOString().split("T")[0];
+  return {
+    total: posts.length,
+    scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
+    published: posts.filter(p => p.publishDate && p.publishDate <= today).length
+  };
+}
+
+function extractProfileFromPosts(posts) {
+  const rowWithName = posts.find(p => p.profileName);
+  const rowWithPic = posts.find(p => p.profilePicture);
+  return {
+    name: rowWithName?.profileName || "Grid Planner",
+    picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png"
+  };
 }
 
 /* -------------------- MENU -------------------- */
@@ -596,15 +587,11 @@ function toggleMenu() {
 window.toggleMenu = toggleMenu;
 
 function toggleSection(section, checkbox) {
-  if (section === "header") {
-    document.getElementById("profileHeader").style.display =
-      checkbox.checked ? "block" : "none";
-  }
+  const el = section === "header"
+    ? document.getElementById("profileHeader")
+    : document.getElementById("highlightsWrap");
 
-  if (section === "highlights") {
-    document.getElementById("highlightsWrap").style.display =
-      checkbox.checked ? "block" : "none";
-  }
+  el.style.display = checkbox.checked ? "block" : "none";
 }
 window.toggleSection = toggleSection;
 
@@ -617,51 +604,26 @@ function moveUnderline(tab) {
 
   const tabRect = tab.getBoundingClientRect();
   const tabsRect = tabs.getBoundingClientRect();
-
-  const x =
-    tabRect.left - tabsRect.left +
-    tabRect.width / 2 - underline.offsetWidth / 2;
-
+  const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underline.offsetWidth / 2;
   underline.style.transform = `translateX(${x}px)`;
 }
 
 function setFilter(type, el) {
   FILTER = type;
 
-  document.querySelectorAll(".tabItem").forEach(tab => tab.classList.remove("active"));
-  el.classList.add("active");
-
   document.querySelectorAll(".tabItem").forEach(tab => {
+    tab.classList.remove("active");
     const img = tab.querySelector("img");
-    const iconType = tab.dataset.type;
-    img.src = tab.classList.contains("active")
-      ? `/icons/${iconType}-dark.png`
-      : `/icons/${iconType}-light.png`;
+    img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
   });
 
+  el.classList.add("active");
   moveUnderline(el);
   renderGrid();
 }
 window.setFilter = setFilter;
 
-/* -------------------- ACCESS -------------------- */
-
-async function checkAccess() {
-  const res = await fetch(`/api/check-access?slug=${SLUG}`);
-  const data = await res.json();
-
-  if (!data.active) {
-    document.body.innerHTML = `
-      <div style="text-align:center;padding:40px;font-family:sans-serif;">
-        <h3>Access inactive</h3>
-        <p>Your subscription is not active.</p>
-      </div>
-    `;
-    throw new Error("Access inactive");
-  }
-}
-
-/* -------------------- FETCH -------------------- */
+/* -------------------- DATA LOAD -------------------- */
 
 async function loadPosts(btn) {
   const icon = btn?.querySelector(".refreshIcon");
@@ -669,40 +631,25 @@ async function loadPosts(btn) {
 
   try {
     const res = await fetch(`/api/get-posts?slug=${SLUG}`);
-    const { profile: apiProfile, posts } = await res.json();
+    const { profile, posts } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
 
-    const derivedProfile = extractProfileFromPosts(ALL_POSTS);
-    const finalProfile = apiProfile || derivedProfile;
+    const finalProfile = profile || extractProfileFromPosts(ALL_POSTS);
+    document.getElementById("profileName").innerText = finalProfile.name;
+    document.getElementById("profileImage").src = finalProfile.picture;
 
-    // PROFILE UI
-    document.getElementById("profileName").innerText =
-      finalProfile?.name || "Grid Planner";
+    renderGrid();
 
-    document.getElementById("profileImage").src =
-      finalProfile?.picture || "/icons/profile-placeholder.png";
+    const visible = getVisibleGridPosts();
+    const stats = computeStatsFromGrid(visible);
 
-    // STATS UI
-    const stats = computeStats(ALL_POSTS);
     document.getElementById("statPosts").innerText = stats.total;
     document.getElementById("statScheduled").innerText = stats.scheduled;
     document.getElementById("statPublished").innerText = stats.published;
-    const visibleGridPosts = getVisibleGridPosts();
 
-const stats = computeStatsFromGrid(visibleGridPosts);
-
-document.getElementById("statPosts").innerText = stats.total;
-document.getElementById("statScheduled").innerText = stats.scheduled;
-document.getElementById("statPublished").innerText = stats.published;
-
-    // HIGHLIGHTS UI
     renderHighlights(ALL_POSTS);
 
-    // GRID UI
-    renderGrid();
-
-    // UNDERLINE FIX (after layout)
     requestAnimationFrame(() => {
       const activeTab = document.querySelector(".tabItem.active");
       if (activeTab) moveUnderline(activeTab);
@@ -719,84 +666,33 @@ document.getElementById("statPublished").innerText = stats.published;
 
 function renderGrid() {
   const grid = document.getElementById("grid");
-  if (!grid) return;
-
   grid.innerHTML = "";
 
-  const visiblePosts = getVisibleGridPosts();
-
-  visiblePosts.forEach(post => {
+  getVisibleGridPosts().forEach(post => {
     const card = document.createElement("div");
     card.className = "card";
 
-    let mediaSrc = null;
+    const src =
+      (Array.isArray(post.attachment) && post.attachment[0]) ||
+      post.thumbnail ||
+      post.video;
 
-    if (Array.isArray(post.attachment) && post.attachment.length > 0) {
-      mediaSrc = post.attachment[0];
-    } else if (post.thumbnail) {
-      mediaSrc = post.thumbnail;
-    }
-
-    if (!mediaSrc && post.video) {
-      mediaSrc = post.video;
-    }
-
-    if (mediaSrc) {
-      if (mediaSrc.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
-        const video = document.createElement("video");
-        video.src = mediaSrc;
-        video.muted = true;
-        video.playsInline = true;
-        card.appendChild(video);
+    if (src) {
+      if (src.match(/\.(mp4|webm|ogg)/i)) {
+        const v = document.createElement("video");
+        v.src = src;
+        v.muted = true;
+        v.playsInline = true;
+        card.appendChild(v);
       } else {
         const img = document.createElement("img");
-        img.src = mediaSrc;
+        img.src = src;
         card.appendChild(img);
       }
     }
 
     if (post.pinned) addBadge(card, "/icons/pin.png");
-
-    card.addEventListener("click", () => openViewer(post));
-    grid.appendChild(card);
-  });
-}
-
-function computeStatsFromGrid(posts) {
-  const today = new Date().toISOString().split("T")[0];
-
-  const scheduled = posts.filter(p => p.publishDate && p.publishDate > today);
-  const published = posts.filter(p => p.publishDate && p.publishDate <= today);
-
-  return {
-    total: posts.length,
-    scheduled: scheduled.length,
-    published: published.length
-  };
-}
-
-     function getVisibleGridPosts() {
-  return ALL_POSTS
-    .filter(post => {
-      if (post.hide) return false;
-      if (!hasMedia(post)) return false;
-
-      // type filter
-      if (!Array.isArray(post.type) || post.type.length === 0) {
-        return true;
-      }
-      return post.type.includes(FILTER);
-    })
-    .sort((a, b) => (b.pinned === true) - (a.pinned === true));
-}
-    const hasVideo = !!post.video;
-    const isMulti = Array.isArray(post.attachment) && post.attachment.length > 1;
-
-    if (post.pinned) addBadge(card, "/icons/pin.png");
-    else if (hasVideo) addBadge(card, "/icons/reel-badge.png");
-    else if (isMulti) addBadge(card, "/icons/multi.png");
-
-    card.addEventListener("click", () => openViewer(post));
+    card.onclick = () => openViewer(post);
     grid.appendChild(card);
   });
 }
@@ -811,160 +707,76 @@ function addBadge(card, src) {
 /* -------------------- HIGHLIGHTS -------------------- */
 
 function renderHighlights(posts) {
-  const wrap = document.getElementById("highlightsWrap");
   const row = document.getElementById("highlights");
-  if (!wrap || !row) return;
-
   row.innerHTML = "";
-  wrap.style.display = "block";
 
-  const items = getHighlights(posts);
+  const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
 
   if (!items.length) {
     const add = document.createElement("div");
     add.className = "highlightItem";
+    add.innerText = "+";
     add.style.display = "flex";
     add.style.alignItems = "center";
     add.style.justifyContent = "center";
-    add.style.fontSize = "26px";
-    add.innerText = "+";
     row.appendChild(add);
     return;
   }
 
   items.forEach(post => {
-    const media =
-      (Array.isArray(post.attachment) ? post.attachment[0] : post.attachment) ||
-      post.thumbnail;
-
-    if (!media) return;
-
-    const item = document.createElement("div");
-    item.className = "highlightItem";
-
     const img = document.createElement("img");
-    img.src = media;
-
-    item.appendChild(img);
-    item.onclick = () => openViewer(post);
-    row.appendChild(item);
+    img.src = post.attachment?.[0] || post.thumbnail;
+    const wrap = document.createElement("div");
+    wrap.className = "highlightItem";
+    wrap.appendChild(img);
+    wrap.onclick = () => openViewer(post);
+    row.appendChild(wrap);
   });
 }
 
 /* -------------------- VIEWER -------------------- */
 
 function openViewer(post) {
+  currentMedia =
+    post.attachment?.length ? post.attachment :
+    post.video ? [post.video] :
+    post.thumbnail ? [post.thumbnail] : [];
+
   currentSlide = 0;
-  currentMedia = [];
-
-  if (post.attachment) {
-    currentMedia = Array.isArray(post.attachment) ? post.attachment : [post.attachment];
-  } else if (post.video) {
-    currentMedia = [post.video];
-  } else if (post.thumbnail) {
-    currentMedia = [post.thumbnail];
-  }
-
   updateViewerImage();
-  toggleNav();
 
-  document.getElementById("viewerTitle").textContent = post.name || "";
-  document.getElementById("viewerDate").textContent = formatDateShort(post.publishDate);
-
-  document.querySelector(".container").classList.add("popup-open");
-  const viewer = document.getElementById("viewer");
-  viewer.classList.remove("hidden");
-  requestAnimationFrame(() => viewer.classList.add("show"));
+  document.getElementById("viewerTitle").innerText = post.name || "";
+  document.getElementById("viewer").classList.remove("hidden");
+  requestAnimationFrame(() => document.getElementById("viewer").classList.add("show"));
 }
-window.openViewer = openViewer;
 
 function updateViewerImage() {
-  const wrapper = document.getElementById("viewerMedia");
-  wrapper.innerHTML = "";
-  if (!currentMedia.length) return;
-
+  const wrap = document.getElementById("viewerMedia");
+  wrap.innerHTML = "";
   const src = currentMedia[currentSlide];
   if (!src) return;
 
-  if (src.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
-    const video = document.createElement("video");
-    video.src = src;
-    video.controls = true;
-    video.autoplay = true;
-    video.playsInline = true;
-    video.style.width = "100%";
-    video.style.height = "100%";
-    video.style.objectFit = "cover";
-    wrapper.appendChild(video);
-  } else {
-    const img = document.createElement("img");
-    img.src = src;
-    wrapper.appendChild(img);
-  }
-}
+  const el = src.match(/\.(mp4|webm|ogg)/i)
+    ? Object.assign(document.createElement("video"), { src, controls: true })
+    : Object.assign(document.createElement("img"), { src });
 
-function toggleNav() {
-  const show = currentMedia.length > 1;
-  document.querySelector(".nav.prev").style.display = show ? "flex" : "none";
-  document.querySelector(".nav.next").style.display = show ? "flex" : "none";
+  wrap.appendChild(el);
 }
 
 function closeViewer() {
-  const viewer = document.getElementById("viewer");
-  viewer.classList.remove("show");
-  document.querySelector(".container").classList.remove("popup-open");
-  setTimeout(() => viewer.classList.add("hidden"), 250);
+  const v = document.getElementById("viewer");
+  v.classList.remove("show");
+  setTimeout(() => v.classList.add("hidden"), 250);
 }
 window.closeViewer = closeViewer;
 
-function prevImage() {
-  currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
-  updateViewerImage();
-}
-window.prevImage = prevImage;
-
-function nextImage() {
-  currentSlide = (currentSlide + 1) % currentMedia.length;
-  updateViewerImage();
-}
-window.nextImage = nextImage;
-
-/* -------------------- UTIL -------------------- */
-
-function formatDateShort(dateStr) {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  if (isNaN(date)) return "";
-  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" });
-}
-
 /* -------------------- INIT -------------------- */
 
-document.querySelector(".refreshBtn").addEventListener("click", function () {
+document.querySelector(".refreshBtn").onclick = function () {
   loadPosts(this);
-});
+};
 
-document.getElementById("viewer").addEventListener("click", e => {
-  if (e.target.id === "viewer") closeViewer();
-});
-
-document.querySelector(".viewerInner").addEventListener("click", e => e.stopPropagation());
-
-async function startGrid() {
-  try {
-    await checkAccess();
-    await loadPosts(); // ← THIS must finish first
-
-    requestAnimationFrame(() => {
-      const activeTab = document.querySelector(".tabItem.active");
-      if (activeTab) moveUnderline(activeTab);
-    });
-  } catch (e) {
-    console.error("Grid init failed", e);
-  }
-}
-
-window.addEventListener("load", startGrid);
+window.addEventListener("load", loadPosts);
 </script>
 </body>
 </html>
