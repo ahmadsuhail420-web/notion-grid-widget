@@ -735,7 +735,6 @@ document.getElementById("statScheduled").innerText = stats.scheduled;
 document.getElementById("statPublished").innerText = stats.published;
 
 renderHighlights(ALL_POSTS);
-renderGrid();
   
   } catch (e) {
     console.log("Refresh failed");
@@ -819,6 +818,13 @@ function renderGrid() {
         });
       }
     }
+  // Force initial tab render (same as user click)
+const activeTab = document.querySelector('.tabItem.active');
+if (activeTab) {
+  const type = activeTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+  setFilter(type, activeTab);
+}
+
 
     function getHighlights(posts) {
   return posts
