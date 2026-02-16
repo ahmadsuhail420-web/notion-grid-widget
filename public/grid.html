@@ -787,10 +787,7 @@ ALL_POSTS = posts;
 
   if (icon) icon.classList.remove("spin");
 }
-requestAnimationFrame(() => {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (activeTab) moveUnderline(activeTab);
-});
+
 /* -------------------- GRID -------------------- */
 
 function renderGrid() {
@@ -799,11 +796,17 @@ function renderGrid() {
 
   grid.innerHTML = "";
 
-  const filtered = ALL_POSTS.filter(post =>
-    Array.isArray(post.type) &&
-    post.type.includes(FILTER) &&
-    !post.hide
-  );
+  const filtered = ALL_POSTS.filter(post => {
+  if (post.hide) return false;
+
+  // If no type selected in Notion → show everywhere
+  if (!Array.isArray(post.type) || post.type.length === 0) {
+    return true;
+  }
+
+  // Otherwise match active tab
+  return post.type.includes(FILTER);
+});
 
   filtered.forEach(post => {
     const card = document.createElement("div");
@@ -812,10 +815,11 @@ function renderGrid() {
     // ✅ attachment first
     const firstAttachment = Array.isArray(post.attachment) ? post.attachment[0] : post.attachment;
 
-    if (firstAttachment) {
-      const img = document.createElement("img");
-      img.src = firstAttachment;
-      card.appendChild(img);
+    if (Array.isArray(post.attachment) && post.attachment.length > 0) {
+  const img = document.createElement("img");
+  img.src = post.attachment[0];
+  card.appendChild(img);
+}
     } else if (post.thumbnail) {
       const img = document.createElement("img");
       img.src = post.thumbnail;
