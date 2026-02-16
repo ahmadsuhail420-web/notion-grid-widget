@@ -776,10 +776,6 @@ const finalProfile = apiProfile || derivedProfile;
     renderGrid();
 
     // UNDERLINE FIX (after layout)
-    requestAnimationFrame(() => {
-      const activeTab = document.querySelector(".tabItem.active");
-      if (activeTab) moveUnderline(activeTab);
-    });
 
   } catch (e) {
     console.error("loadPosts failed:", e);
@@ -847,6 +843,12 @@ function renderGrid() {
     grid.appendChild(card);
   });
 }
+await loadPosts();
+
+requestAnimationFrame(() => {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (activeTab) moveUnderline(activeTab);
+});
 
 function addBadge(card, src) {
   const img = document.createElement("img");
@@ -869,7 +871,7 @@ function renderHighlights(posts) {
 
   // ✅ always show + button when empty
 
-if (!highlights.length) {
+if (!items.length) {
   const add = document.createElement("div");
   add.className = "highlightItem";
   add.style.display = "flex";
