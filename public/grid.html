@@ -105,13 +105,48 @@
     .container.popup-open .gridWrap {
       opacity: 0.4;
     }
+    .menuBtn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.menu {
+  position: absolute;
+  top: 44px;
+  right: 12px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 20;
+}
+
+.menu.hidden {
+  display: none;
+}
+
+.menuItem {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
 
     /* ---------- HEADER ---------- */
     .header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   padding: 12px 16px;
+  position: relative;
 }
     .refreshBtn {
       background: black;
@@ -155,7 +190,7 @@
 .profileRow {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 /* PROFILE PIC */
@@ -178,13 +213,13 @@
 .profileStats {
   display: flex;
   flex: 1;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .stat {
   text-align: center;
+  min-width: 60px;
 }
-
 .stat strong {
   font-size: 18px;
   font-weight: 700;
