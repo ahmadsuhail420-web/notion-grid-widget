@@ -59,15 +59,17 @@
   font-size: 18px;
   font-weight: 700;
   line-height: 1.2;
+  margin-left: 0; /* ensure no offset */
 }
 
 /* STATS */
 .profileStats {
-  display: flex;
-  gap: 28px;
-  margin-top: 10px; /* 👈 pushes stats DOWN */
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  column-gap: 28px;
+  margin-top: 10px;
+  justify-content: start; /* 👈 important */
 }
-
 /* STAT ITEM */
 .stat {
   text-align: center;
