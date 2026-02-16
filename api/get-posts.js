@@ -82,6 +82,13 @@ const posts = notionData.results.map(page => {
       const pinned = page.properties?.Pin?.checkbox || false;
       const hide = page.properties?.Hide?.checkbox || false;
       const highlight = page.properties?.Highlight?.checkbox || false;
+  const name =
+      db.properties?.["Profile Name"]?.title?.[0]?.plain_text || "Grid Planner";
+
+    const picture =
+      db.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
+      db.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
+      null;
       return {
         id: page.id,
         name,
@@ -92,7 +99,9 @@ const posts = notionData.results.map(page => {
         type,
         pinned,
         hide,
-        highlight
+        highlight,
+        profileName,
+        profilePicture
       };
     });   
     res.json(posts);
