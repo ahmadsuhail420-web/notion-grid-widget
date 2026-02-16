@@ -19,94 +19,90 @@
       border: 3px solid #e2e2e2;
     }
 
-  .widgetWrap {
-  width: 100%;
-  max-width: 640px;
-  height: 640px;
-  background: #ffffff;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  border-radius: 24px;
-}
+    .widgetWrap {
+      width: 100%;
+      max-width: 640px;
+      height: 640px;
+      background: #ffffff;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-radius: 24px;
+    }
 
     .topBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  position: relative;
-}
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      position: relative;
+    }
+
     /* PROFILE */
-.profile {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-}
+    .profile {
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
 
-.profileRow {
-  display: flex;
-  width: 100%;
-  max-width: 520px;
-  align-items: center;
-  gap: 20px;
-}
-/* PROFILE PIC */
-.profilePic {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #eee;
-  flex-shrink: 0;
-}
+    .profileRow {
+      display: flex;
+      width: 100%;
+      max-width: 520px;
+      align-items: center;
+      gap: 20px;
+    }
 
-.profilePic img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .profilePic {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #eee;
+      flex-shrink: 0;
+    }
 
-/* RIGHT COLUMN */
-.profileRight {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* 🔑 */
-padding: 2px 6px
-}
+    .profilePic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-/* TITLE */
-.profileTitle {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
-}
+    .profileRight {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 2px 6px;
+    }
 
-/* STATS */
-.profileStats {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  column-gap: 28px;
-  margin-top: 10px;
-}
+    .profileTitle {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
 
-/* STAT ITEM */
-.stat {
-  text-align: center;
-}
+    .profileStats {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      column-gap: 28px;
+      margin-top: 10px;
+    }
 
-.stat strong {
-  font-size: 16px;
-  font-weight: 700;
-  display: block;
-}
+    .stat {
+      text-align: center;
+    }
 
-.stat span {
-  font-size: 12px;
-  color: #777;
-}
+    .stat strong {
+      font-size: 16px;
+      font-weight: 700;
+      display: block;
+    }
 
-    
+    .stat span {
+      font-size: 12px;
+      color: #777;
+    }
+
     /* ---------- CONTAINER ---------- */
     .container {
       flex: 1;
@@ -121,51 +117,52 @@ padding: 2px 6px
     .container.popup-open .gridWrap {
       opacity: 0.4;
     }
+
     .menuBtn {
-  background: transparent;
-  border: none;
-  font-size: 22px;
-  color: #000;                 /* ✅ black menu dots */
-  cursor: pointer;
-  padding: 4px 6px;
-}
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      color: #000;
+      cursor: pointer;
+      padding: 4px 6px;
+    }
 
-.menu {
-  position: absolute;
-  top: 44px;
-  right: 12px;
-  background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  padding: 10px 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 20;
-}
+    .menu {
+      position: absolute;
+      top: 44px;
+      right: 12px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 20;
+    }
 
-.menu.hidden {
-  display: none;
-}
+    .menu.hidden {
+      display: none;
+    }
 
-.menuItem {
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
+    .menuItem {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
 
     /* ---------- HEADER ---------- */
     .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  position: relative;
-}
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      position: relative;
+    }
+
     .refreshBtn {
       background: transparent;
       color: #000;
@@ -194,45 +191,36 @@ padding: 2px 6px
       to { transform: rotate(360deg); }
     }
 
-    .title {
-      text-align: right;
-      font-weight: 700;
-      font-size: 16px;
+    /* HIGHLIGHTS */
+    .highlights {
+      padding: 8px 16px 0;
     }
 
-  /* PROFILE */
+    .highlightsRow {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
 
+    .highlightsRow::-webkit-scrollbar {
+      display: none;
+    }
 
-/* HIGHLIGHTS */
-.highlights {
-  padding: 8px 16px 0;
-}
+    .highlightItem {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 2px solid #ddd;
+    }
 
-.highlightsRow {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.highlightsRow::-webkit-scrollbar {
-  display: none;
-}
-
-.highlightItem {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-  border: 2px solid #ddd;
-}
-
-.highlightItem img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .highlightItem img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
     /* ---------- TABS ---------- */
     .tabs {
@@ -263,7 +251,6 @@ padding: 2px 6px
       transform: translateY(-2px) scale(1.05);
     }
 
-    /* Sliding underline */
     .slidingUnderline {
       position: absolute;
       bottom: 0;
@@ -294,7 +281,6 @@ padding: 2px 6px
       padding: 4px;
     }
 
-    /* ---------- CARD ---------- */
     .card {
       aspect-ratio: 4 / 5;
       background: #efefef;
@@ -328,46 +314,6 @@ padding: 2px 6px
       opacity: 1;
     }
 
-    /* ---------- CARD INFO OVERLAY ---------- */
-    .cardInfo {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 3;
-      background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.7),
-        rgba(0, 0, 0, 0.4),
-        rgba(0, 0, 0, 0)
-      );
-      color: #fff;
-      padding: 8px;
-      transform: translateY(100%);
-      transition: transform 0.25s ease;
-      max-height: 70%;
-      overflow: hidden;
-      pointer-events: none;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    }
-
-    .card:hover .cardInfo {
-      transform: translateY(0);
-    }
-
-    .cardTitle {
-      font-size: 13px;
-      font-weight: 500;
-      line-height: 1;
-      word-break: break-word;
-    }
-
-    .cardDate {
-      font-size: 10px;
-      margin-top: 2px;
-    }
-
-    /* ---------- BADGES ---------- */
     .card .badge {
       position: absolute;
       top: 4%;
@@ -438,7 +384,6 @@ padding: 2px 6px
       border-top: 1px solid #eee;
     }
 
-    /* ---------- VIEWER CONTROLS ---------- */
     .viewerClose,
     .nav {
       position: absolute;
@@ -470,7 +415,6 @@ padding: 2px 6px
     .nav.prev { left: -14px; }
     .nav.next { right: -14px; }
 
-    /* ---------- FOOTER ---------- */
     .footer {
       text-align: center;
       padding: 8px 0;
@@ -481,120 +425,113 @@ padding: 2px 6px
 </head>
 <body>
   <div class="widgetWrap">
-  
-<div class="container">
+    <div class="container">
 
-<div class="header">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<button class="refreshBtn">
-  <span class="material-icons refreshIcon">refresh</span>
-</button>
-  <button class="menuBtn" onclick="toggleMenu()">⋯</button>
-<div id="menu" class="menu hidden">
-    <label class="menuItem">
-      <input type="checkbox" checked onchange="toggleSection('header', this)">
-      Show header
-    </label>
-    <label class="menuItem">
-      <input type="checkbox" checked onchange="toggleSection('highlights', this)">
-      Show highlights
-    </label>
-  </div>
-</div>
-<div></div>
+      <div class="header">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <button class="refreshBtn">
+          <span class="material-icons refreshIcon">refresh</span>
+        </button>
 
-<div id="profileHeader" class="profile">
-  <div class="profileRow">
+        <button class="menuBtn" onclick="toggleMenu()">⋯</button>
 
- <div class="profilePic">
-  <img id="profileImage" src="/icons/profile-placeholder.png" />
-</div>
-
-<div class="profileRight">
-  <div id="profileName" class="profileTitle">Grid Planner</div>
-
-      <div class="profileStats">
-        <div class="stat">
-          <strong id="statPosts">0</strong>
-          <span>Posts</span>
-        </div>
-        <div class="stat">
-          <strong id="statScheduled">0</strong>
-          <span>Scheduled</span>
-        </div>
-        <div class="stat">
-          <strong id="statPublished">0</strong>
-          <span>Published</span>
+        <div id="menu" class="menu hidden">
+          <label class="menuItem">
+            <input type="checkbox" checked onchange="toggleSection('header', this)">
+            Show header
+          </label>
+          <label class="menuItem">
+            <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+            Show highlights
+          </label>
         </div>
       </div>
-    </div>
 
-  </div>
-</div>
+      <div id="profileHeader" class="profile">
+        <div class="profileRow">
+          <div class="profilePic">
+            <img id="profileImage" src="/icons/profile-placeholder.png" />
+          </div>
 
+          <div class="profileRight">
+            <div id="profileName" class="profileTitle">Grid Planner</div>
 
-<!-- HIGHLIGHTS -->
-<div id="highlightsWrap" class="highlights">
-  <div id="highlights" class="highlightsRow"></div>
-</div>
+            <div class="profileStats">
+              <div class="stat">
+                <strong id="statPosts">0</strong>
+                <span>Posts</span>
+              </div>
+              <div class="stat">
+                <strong id="statScheduled">0</strong>
+                <span>Scheduled</span>
+              </div>
+              <div class="stat">
+                <strong id="statPublished">0</strong>
+                <span>Published</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<!-- TABS -->
-   <div class="contentArea">
-<div class="tabs">
-<div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
-  <img src="/icons/post-dark.png">
-</div>
+      <!-- HIGHLIGHTS -->
+      <div id="highlightsWrap" class="highlights">
+        <div id="highlights" class="highlightsRow"></div>
+      </div>
 
-<div class="tabItem" data-type="reel" onclick="setFilter('Reels', this)">
-  <img src="/icons/reel-light.png">
-</div>
+      <!-- TABS -->
+      <div class="contentArea">
+        <div class="tabs">
+          <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
+            <img src="/icons/post-dark.png">
+          </div>
 
-<div class="tabItem" data-type="story" onclick="setFilter('Story', this)">
-  <img src="/icons/story-light.png">
-</div>
+          <div class="tabItem" data-type="reel" onclick="setFilter('Reels', this)">
+            <img src="/icons/reel-light.png">
+          </div>
 
-<div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok', this)">
-  <img src="/icons/tiktok-light.png">
-</div>
+          <div class="tabItem" data-type="story" onclick="setFilter('Story', this)">
+            <img src="/icons/story-light.png">
+          </div>
 
-  <!-- ONE underline -->
-  <div class="slidingUnderline" id="slidingUnderline"></div>
-</div>
+          <div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok', this)">
+            <img src="/icons/tiktok-light.png">
+          </div>
 
-<div class="gridWrap">
-<div id="grid" class="grid"></div>
-</div>
-  </div>
+          <div class="slidingUnderline" id="slidingUnderline"></div>
+        </div>
 
- <!-- MEDIA VIEWER -->
-<div id="viewer" class="viewer hidden">
-  <div class="viewerInner">
+        <div class="gridWrap">
+          <div id="grid" class="grid"></div>
+        </div>
+      </div>
 
-    <!-- CONTROLS -->
-    <button class="viewerClose" onclick="closeViewer()">✕</button>
-    <button class="nav prev" onclick="prevImage()">‹</button>
-    <button class="nav next" onclick="nextImage()">›</button>
+      <!-- MEDIA VIEWER -->
+      <div id="viewer" class="viewer hidden">
+        <div class="viewerInner">
+          <button class="viewerClose" onclick="closeViewer()">✕</button>
+          <button class="nav prev" onclick="prevImage()">‹</button>
+          <button class="nav next" onclick="nextImage()">›</button>
 
-    <!-- CARD -->
-    <div class="viewerCard">
-      <div class="viewerImage" id="viewerMedia"></div>
+          <div class="viewerCard">
+            <div class="viewerImage" id="viewerMedia"></div>
 
-      <div class="viewerFooter">
-        <div id="viewerTitle"></div>
-        <div id="viewerDate"></div>
+            <div class="viewerFooter">
+              <div id="viewerTitle"></div>
+              <div id="viewerDate"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
-  </div>
-</div>
-  </div>
+
     <div class="footer">Alif Designs</div>
-    </div>
-    
+  </div>
+
 <script>
 const params = new URLSearchParams(window.location.search);
 const SLUG = params.get("slug");
-
 if (!SLUG) alert("Missing widget slug");
 
 let ALL_POSTS = [];
@@ -619,13 +556,7 @@ function computeStats(posts) {
   };
 }
 
-function safeUrlFromFiles(files) {
-  if (!files || !files.length) return null;
-  return files[0].file?.url || files[0].external?.url || null;
-}
-
 function extractProfileFromPosts(posts) {
-  // ✅ Your requirement: profile fields are in a normal row
   const rowWithName = posts.find(p => p.profileName);
   const rowWithPic = posts.find(p => p.profilePicture);
 
@@ -722,14 +653,7 @@ async function checkAccess() {
   }
 }
 
-/* -------------------- FETCH + NORMALIZE DATA -------------------- */
-
-function normalizeApiResponse(data) {
-  // ✅ supports: array, {posts}, {profile, posts}
-  if (Array.isArray(data)) return { profile: null, posts: data };
-  if (data && Array.isArray(data.posts)) return { profile: data.profile || null, posts: data.posts };
-  return { profile: null, posts: [] };
-}
+/* -------------------- FETCH -------------------- */
 
 async function loadPosts(btn) {
   const icon = btn?.querySelector(".refreshIcon");
@@ -737,25 +661,19 @@ async function loadPosts(btn) {
 
   try {
     const res = await fetch(`/api/get-posts?slug=${SLUG}`);
-const { profile: apiProfile, posts } = await res.json();
+    const { profile: apiProfile, posts } = await res.json();
 
-// ✅ PROFILE
+    ALL_POSTS = Array.isArray(posts) ? posts : [];
 
-
-// ✅ POSTS
-ALL_POSTS = posts;
-
-    // ✅ if backend doesn't provide profile, derive from posts row fields
     const derivedProfile = extractProfileFromPosts(ALL_POSTS);
-const finalProfile = apiProfile || derivedProfile;
+    const finalProfile = apiProfile || derivedProfile;
 
     // PROFILE UI
     document.getElementById("profileName").innerText =
-  finalProfile.name || "Grid Planner";
+      finalProfile?.name || "Grid Planner";
 
-document.getElementById("profileImage").src =
-  finalProfile.picture || "/icons/profile-placeholder.png";
-    }
+    document.getElementById("profileImage").src =
+      finalProfile?.picture || "/icons/profile-placeholder.png";
 
     // STATS UI
     const stats = computeStats(ALL_POSTS);
@@ -770,6 +688,10 @@ document.getElementById("profileImage").src =
     renderGrid();
 
     // UNDERLINE FIX (after layout)
+    requestAnimationFrame(() => {
+      const activeTab = document.querySelector(".tabItem.active");
+      if (activeTab) moveUnderline(activeTab);
+    });
 
   } catch (e) {
     console.error("loadPosts failed:", e);
@@ -787,43 +709,34 @@ function renderGrid() {
   grid.innerHTML = "";
 
   const filtered = ALL_POSTS.filter(post => {
-  if (post.hide) return false;
-
-  // If no type selected in Notion → show everywhere
-  if (!Array.isArray(post.type) || post.type.length === 0) {
-    return true;
-  }
-
-  // Otherwise match active tab
-  return post.type.includes(FILTER);
-});
+    if (post.hide) return false;
+    if (!Array.isArray(post.type) || post.type.length === 0) return true;
+    return post.type.includes(FILTER);
+  });
 
   filtered.forEach(post => {
     const card = document.createElement("div");
     card.className = "card";
 
-    // ✅ attachment first
-    const firstAttachment = Array.isArray(post.attachment) ? post.attachment[0] : post.attachment;
+    if (Array.isArray(post.attachment) && post.attachment.length > 0) {
+      const img = document.createElement("img");
+      img.src = post.attachment[0];
+      card.appendChild(img);
 
-  if (Array.isArray(post.attachment) && post.attachment.length > 0) {
-  const img = document.createElement("img");
-  img.src = post.attachment[0];
-  card.appendChild(img);
+    } else if (post.thumbnail) {
+      const img = document.createElement("img");
+      img.src = post.thumbnail;
+      card.appendChild(img);
 
-} else if (post.thumbnail) {
-  const img = document.createElement("img");
-  img.src = post.thumbnail;
-  card.appendChild(img);
+    } else if (post.video) {
+      const thumb = getNotionThumbnail(post);
+      if (thumb) {
+        const img = document.createElement("img");
+        img.src = thumb;
+        card.appendChild(img);
+      }
+    }
 
-} else if (post.video) {
-  const thumb = getNotionThumbnail(post);
-  if (thumb) {
-    const img = document.createElement("img");
-    img.src = thumb;
-    card.appendChild(img);
-  }
-}
-    // badges
     const hasVideo = !!post.video;
     const isMulti = Array.isArray(post.attachment) && post.attachment.length > 1;
 
@@ -831,14 +744,10 @@ function renderGrid() {
     else if (hasVideo) addBadge(card, "/icons/reel-badge.png");
     else if (isMulti) addBadge(card, "/icons/multi.png");
 
-    // click viewer
     card.addEventListener("click", () => openViewer(post));
-
     grid.appendChild(card);
   });
-await loadPosts();
 }
-
 
 function addBadge(card, src) {
   const img = document.createElement("img");
@@ -859,22 +768,23 @@ function renderHighlights(posts) {
 
   const items = getHighlights(posts);
 
-  // ✅ always show + button when empty
-
-if (!items.length) {
-  const add = document.createElement("div");
-  add.className = "highlightItem";
-  add.style.display = "flex";
-  add.style.alignItems = "center";
-  add.style.justifyContent = "center";
-  add.style.fontSize = "26px";
-  add.innerText = "+";
-  row.appendChild(add);
-  return;
-}
+  if (!items.length) {
+    const add = document.createElement("div");
+    add.className = "highlightItem";
+    add.style.display = "flex";
+    add.style.alignItems = "center";
+    add.style.justifyContent = "center";
+    add.style.fontSize = "26px";
+    add.innerText = "+";
+    row.appendChild(add);
+    return;
+  }
 
   items.forEach(post => {
-    const media = (Array.isArray(post.attachment) ? post.attachment[0] : post.attachment) || post.thumbnail;
+    const media =
+      (Array.isArray(post.attachment) ? post.attachment[0] : post.attachment) ||
+      post.thumbnail;
+
     if (!media) return;
 
     const item = document.createElement("div");
@@ -992,7 +902,6 @@ async function startGrid() {
   try {
     await checkAccess();
 
-    // underline position once immediately
     requestAnimationFrame(() => {
       const activeTab = document.querySelector(".tabItem.active");
       if (activeTab) moveUnderline(activeTab);
