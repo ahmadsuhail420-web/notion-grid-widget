@@ -19,16 +19,17 @@
       border: 3px solid #e2e2e2;
     }
 
-    .widgetWrap {
-      width: 640px;
-      height: 640px;
-      width: 100%;
-      background: #ffffff;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      border-radius: 24px;
-    }
+  .widgetWrap {
+  width: 100%;
+  max-width: 640px;
+  height: 640px;
+  background: #ffffff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 24px;
+}
+
     .topBar {
   display: flex;
   justify-content: space-between;
@@ -715,40 +716,41 @@ async function checkAccess() {
 async function loadPosts(btn) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
+
   try {
-    const res = await fetch(`/api/get-posts?slug=${SLUG}`)
+    const res = await fetch(`/api/get-posts?slug=${SLUG}`);
     const data = await res.json();
+
     data.sort((a, b) => {
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
-
-      const dateA = new Date(a.publishDate || 0);
-      const dateB = new Date(b.publishDate || 0);
-      return dateB - dateA;
+      return new Date(b.publishDate || 0) - new Date(a.publishDate || 0);
     });
 
     ALL_POSTS = data;
 
-const stats = computeStats(ALL_POSTS);
-document.getElementById("statPosts").innerText = stats.total;
-document.getElementById("statScheduled").innerText = stats.scheduled;
-document.getElementById("statPublished").innerText = stats.published;
+    // ✅ Stats
+    const stats = computeStats(ALL_POSTS);
+    document.getElementById("statPosts").innerText = stats.total;
+    document.getElementById("statScheduled").innerText = stats.scheduled;
+    document.getElementById("statPublished").innerText = stats.published;
 
-renderHighlights(ALL_POSTS);
-  
+    // ✅ Highlights
+    renderHighlights(ALL_POSTS);
+
+    // ✅ INITIAL GRID RENDER (KEY FIX)
+    const activeTab = document.querySelector(".tabItem.active");
+    if (activeTab) {
+      const type = activeTab.getAttribute("onclick").match(/'([^']+)'/)[1];
+      setFilter(type, activeTab);
+    }
+
   } catch (e) {
-    console.log("Refresh failed");
+    console.error("Refresh failed", e);
   }
 
   if (icon) icon.classList.remove("spin");
 }
-
-window.addEventListener("load", () => {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (activeTab) moveUnderline(activeTab);
-  loadPosts();
-});
-
   /* ===================== GRID RENDERING ===================== */
 
 function renderGrid() {
@@ -818,12 +820,6 @@ function renderGrid() {
         });
       }
     }
-  // Force initial tab render (same as user click)
-const activeTab = document.querySelector('.tabItem.active');
-if (activeTab) {
-  const type = activeTab.getAttribute('onclick').match(/'([^']+)'/)[1];
-  setFilter(type, activeTab);
-}
 
 
     function getHighlights(posts) {
@@ -879,21 +875,6 @@ if (activeTab) {
     }
 
     grid.appendChild(card);
-  }
-}
-    function toggleMenu() {
-  document.getElementById("menu").classList.toggle("hidden");
-}
-
-function toggleSection(section, checkbox) {
-  if (section === "header") {
-    document.getElementById("profileHeader").style.display =
-      checkbox.checked ? "block" : "none";
-  }
-
-  if (section === "highlights") {
-    document.getElementById("highlightsWrap").style.display =
-      checkbox.checked ? "block" : "none";
   }
 }
 
