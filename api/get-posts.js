@@ -8,7 +8,9 @@ export default async function handler(req, res) {
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    /* ===================== 1. FIND CUSTOMER ===================== */
+    /* -------------------------------
+       1️⃣ FIND CUSTOMER
+    -------------------------------- */
     const customerRes = await fetch(
       `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id`,
       {
@@ -26,7 +28,9 @@ export default async function handler(req, res) {
 
     const customerId = customers[0].id;
 
-    /* ===================== 2. GET NOTION CONNECTION ===================== */
+    /* -------------------------------
+       2️⃣ GET NOTION CONNECTION
+    -------------------------------- */
     const connRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customerId}&select=access_token,database_id`,
       {
@@ -44,7 +48,9 @@ export default async function handler(req, res) {
 
     const { access_token, database_id } = conns[0];
 
-    /* ===================== 3. QUERY NOTION ===================== */
+    /* -------------------------------
+       3️⃣ QUERY NOTION DATABASE
+    -------------------------------- */
     const notionRes = await fetch(
       `https://api.notion.com/v1/databases/${database_id}/query`,
       {
@@ -58,87 +64,78 @@ export default async function handler(req, res) {
     );
 
     const notionData = await notionRes.json();
-    const results = notionData.results || [];
+    const rows = notionData.results || [];
 
-    /* ===================== 4. EXTRACT PROFILE ===================== */
-    let profile = {
-      name: "Grid Planner",
-      picture: null,
-    };
+    /* -------------------------------
+       4️⃣ PROFILE ROW
+    -------------------------------- */
+    const profileRow = rows.find(
+      page => page.properties?.["Row Type"]?.select?.name === "Profile"
+    );
 
-    results.forEach(page => {
-      const isProfile =
-        page.properties?.Pin?.checkbox === true &&
-        page.properties?.Highlight?.checkbox === true;
+    const profile = profileRow
+      ? {
+          name:
+            profileRow.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text ||
+            "Grid Planner",
 
-      if (isProfile) {
-        profile.name =
-          page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text ||
-          profile.name;
+          picture:
+            profileRow.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
+            profileRow.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
+            null,
+        }
+      : null;
 
-        profile.picture =
-          page.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
-          page.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
-          null;
-      }
-    });
-
-    /* ===================== 5. MAP POSTS (EXCLUDE PROFILE ROW) ===================== */
-    const posts = results
-      .filter(page => {
-        const isProfile =
-          page.properties?.Pin?.checkbox === true &&
-          page.properties?.Highlight?.checkbox === true;
-        return !isProfile;
-      })
+    /* -------------------------------
+       5️⃣ POST ROWS
+    -------------------------------- */
+    const posts = rows
+      .filter(
+        page => page.properties?.["Row Type"]?.select?.name === "Post"
+      )
       .map(page => {
-        const name =
-          page.properties?.Name?.title?.[0]?.plain_text || "";
-
-        const publishDate =
-          page.properties?.["Publish Date"]?.date?.start || null;
-
-        const attachment =
-          page.properties?.Attachment?.files?.map(
-            f => f.file?.url || f.external?.url
-          ).filter(Boolean) || null;
-
-        const video =
-          page.properties?.["Media/Video"]?.files?.[0]?.file?.url ||
-          page.properties?.["Media/Video"]?.files?.[0]?.external?.url ||
-          null;
-
-        const thumbnail =
-          page.properties?.Thumbnail?.files?.[0]?.file?.url ||
-          page.properties?.Thumbnail?.files?.[0]?.external?.url ||
-          null;
-
-        const type =
-          page.properties?.Type?.multi_select?.map(t => t.name) || [];
-
-        const pinned = page.properties?.Pin?.checkbox || false;
-        const hide = page.properties?.Hide?.checkbox || false;
-        const highlight = page.properties?.Highlight?.checkbox || false;
+        const props = page.properties;
 
         return {
           id: page.id,
-          name,
-          publishDate,
-          attachment,
-          video,
-          thumbnail,
-          type,
-          pinned,
-          hide,
-          highlight,
+
+          name: props?.Name?.title?.[0]?.plain_text || "",
+
+          publishDate: props?.["Publish Date"]?.date?.start || null,
+
+          attachment:
+            props?.Attachment?.files?.map(
+              f => f.file?.url || f.external?.url
+            ) || null,
+
+          video:
+            props?.["Media/Video"]?.files?.[0]?.file?.url ||
+            props?.["Media/Video"]?.files?.[0]?.external?.url ||
+            null,
+
+          thumbnail:
+            props?.Thumbnail?.files?.[0]?.file?.url ||
+            props?.Thumbnail?.files?.[0]?.external?.url ||
+            null,
+
+          type: props?.Type?.multi_select?.map(t => t.name) || [],
+
+          pinned: props?.Pin?.checkbox || false,
+          hide: props?.Hide?.checkbox || false,
+          highlight: props?.Highlight?.checkbox || false,
         };
       });
 
-    /* ===================== 6. RESPONSE ===================== */
-    res.json({ profile, posts });
+    /* -------------------------------
+       6️⃣ FINAL RESPONSE
+    -------------------------------- */
+    res.json({
+      profile,
+      posts,
+    });
 
   } catch (err) {
-    console.error(err);
+    console.error("API ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 }
