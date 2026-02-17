@@ -825,18 +825,28 @@ function renderGrid() {
       }
     }
 
-    if (post.pinned) addBadge(card, "/icons/pin.png");
+    if (isMultiMedia(post)) {
+  addBadge(card, "/icons/multi.png");   // stacked icon
+}
+if (post.pinned) {
+  addBadge(card, "/icons/pin.png");     // pin on top
+}
     card.onclick = () => openViewer(post);
     grid.appendChild(card);
   });
 }
 
-function addBadge(card, src) {
+function addBadge(card, src, index = 0) {
   const img = document.createElement("img");
   img.src = src;
   img.className = "badge";
+  img.style.top = `${6 + index * 18}px`;  // stack vertically
   card.appendChild(img);
 }
+  function isMultiMedia(post) {
+  return Array.isArray(post.attachment) && post.attachment.length > 1;
+}
+
 
 /* -------------------- HIGHLIGHTS -------------------- */
 
