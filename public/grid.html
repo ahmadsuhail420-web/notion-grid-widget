@@ -841,12 +841,6 @@ function renderHighlights(posts) {
     p => p.highlight && hasMedia(p) && !p.hide
   );
 
-  /* 1️⃣ ADD "+ NEW" ALWAYS */
-  const add = document.createElement("div");
-  add.className = "highlightItem";
-  add.innerHTML = `<span class="highlightAdd">+</span>`;
-  row.appendChild(add);
-
   /* 2️⃣ IF NO HIGHLIGHTS → SHOW PLACEHOLDERS */
   if (!items.length) {
     for (let i = 0; i < 4; i++) {
