@@ -332,17 +332,19 @@ body[data-theme="dark"] {
 
 .highlightsRow {
   width: 100%;
-  max-width: 520px;   /* SAME as profileRow */
+  max-width: 520px;
   display: flex;
   gap: 12px;
-  padding-left: 12px; /* aligns under avatar */
+  padding-left: 12px;
+  overflow-x: auto;          /* ✅ allow scroll */
+  flex-wrap: nowrap;         /* ✅ prevent wrapping */
 }
     .highlightsRow::-webkit-scrollbar {
       display: none;
     }
 
-    .highlightItem {
-     width: clamp(36px, 16vw, 76px);
+.highlightItem {
+  width: clamp(36px, 16vw, 76px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   display: flex;
@@ -350,7 +352,9 @@ body[data-theme="dark"] {
   justify-content: center;
   background: var(--bg-card);
   border: 2px solid var(--border-color);
+  flex-shrink: 0;            /* ✅ KEEP SIZE */
 }
+
  .highlightItem img {
   width: 92%;
   height: 92%;
@@ -359,9 +363,13 @@ body[data-theme="dark"] {
 }
 /* empty placeholder */
 .highlightPlaceholder {
-  background: #fafafa;
-  opacity: 0.4;
-  border-style: dashed;
+  background: var(--bg-muted);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body[data-theme="dark"] .highlightPlaceholder {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.15);
 }
     #highlightsWrap {
   margin-bottom: 12px; /* adjust: 8px / 12px / 16px */
