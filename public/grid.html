@@ -587,32 +587,21 @@
         
         <div class="headerTitle">Grid Widget</div>
 
-        <button class="menuBtn" onclick="toggleMenu()">⋯</button>
+       <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
 
-        <div id="menu" class="menu hidden">
-          <label class="menuItem toggleItem">
-  <span class="menuLabel">Show header</span>
+        <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
+  <label class="menuItem toggleItem">
+    <span class="menuLabel">Show header</span>
+    <input type="checkbox" checked onchange="toggleSection('header', this)">
+    <span class="toggle"></span>
+  </label>
 
-  <input
-    type="checkbox"
-    checked
-    onchange="toggleSection('header', this)"
-  />
-
-  <span class="toggle"></span>
-</label>
-          <label class="menuItem toggleItem">
-  <span class="menuLabel">Show highlights</span>
-
-  <input
-    type="checkbox"
-    checked
-    onchange="toggleSection('highlights', this)"
-  />
-
-  <span class="toggle"></span>
-</label>
-        </div>
+  <label class="menuItem toggleItem">
+    <span class="menuLabel">Show highlights</span>
+    <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+    <span class="toggle"></span>
+  </label>
+</div>
       </div>
       
 <!-- SKELETON -->
@@ -775,7 +764,8 @@ function extractProfileFromPosts(posts) {
 /* -------------------- MENU -------------------- */
 
 function toggleMenu() {
-  document.getElementById("menu").classList.toggle("hidden");
+  const menu = document.getElementById("menu");
+  menu.classList.toggle("hidden");
 }
 window.toggleMenu = toggleMenu;
 
@@ -1036,6 +1026,12 @@ window.closeViewer = closeViewer;
 document.querySelector(".refreshBtn").onclick = function () {
   loadPosts(this);
 };
+  document.addEventListener("click", () => {
+  const menu = document.getElementById("menu");
+  if (!menu.classList.contains("hidden")) {
+    menu.classList.add("hidden");
+  }
+});
 
 window.addEventListener("load", startGrid);
 </script>
