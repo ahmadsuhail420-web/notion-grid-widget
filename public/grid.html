@@ -111,6 +111,12 @@ body[data-theme="dark"] {
       height: 100%;
       object-fit: cover;
     }
+  
+      .profileNoteWrap.hidden-section {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
 
     .profileRight {
       display: flex;
@@ -989,9 +995,10 @@ function toggleProfileNote(checkbox) {
   if (!wrap) return;
 
   wrap.classList.toggle("hidden-section", !checkbox.checked);
+  localStorage.setItem("showProfileNote", checkbox.checked);
   document.getElementById("menu").classList.add("hidden");
 }
-localStorage.setItem("showProfileNote", checkbox.checked);
+
 
 /* -------------------- DATA LOAD -------------------- */
 
