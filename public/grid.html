@@ -119,10 +119,19 @@ body[data-theme="dark"] {
       padding: 2px 6px;
     }
 
+.profileNoteWrap {
+  display: flex;
+  justify-content: center;
+  padding: 6px 16px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
 .profileNote {
-  font-size: clamp(10px, 3.2vw, 14px);
+  font-size: clamp(11px, 3.4vw, 14px);
   color: var(--text-muted);
   font-weight: 500;
+  text-align: center;
+  max-width: 520px;
 }
 
 .profile.no-avatar .profileRight {
@@ -757,7 +766,8 @@ body[data-theme="dark"] .tabItem.active img {
   </div>
 
 </div>
-   <div id="profileHeader" class="profile">
+   <!-- PROFILE -->
+<div id="profileHeader" class="profile">
   <div class="profileRow">
 
     <div class="profilePic">
@@ -766,7 +776,6 @@ body[data-theme="dark"] .tabItem.active img {
 
     <div class="profileText">
       <div id="profileName" class="profileTitle">Grid Planner</div>
-      <div id="profileNote" class="profileNote">Content Planner</div>
     </div>
 
     <div class="profileStats">
@@ -787,10 +796,15 @@ body[data-theme="dark"] .tabItem.active img {
   </div>
 </div>
 
-      <!-- HIGHLIGHTS -->
-      <div id="highlightsWrap" class="highlights">
-        <div id="highlights" class="highlightsRow"></div>
-      </div>
+<!-- ✅ PROFILE NOTE (NEW ROW) -->
+<div id="profileNoteWrap" class="profileNoteWrap">
+  <div id="profileNote" class="profileNote">Content Planner</div>
+</div>
+
+<!-- HIGHLIGHTS -->
+<div id="highlightsWrap" class="highlights">
+  <div id="highlights" class="highlightsRow"></div>
+</div>
 
       <!-- TABS -->
       <div class="contentArea">
@@ -971,12 +985,13 @@ function setFilter(type, el) {
 window.setFilter = setFilter;
 
 function toggleProfileNote(checkbox) {
-  const note = document.getElementById("profileNote");
-  if (!note) return;
+  const wrap = document.getElementById("profileNoteWrap");
+  if (!wrap) return;
 
-  note.style.display = checkbox.checked ? "block" : "none";
+  wrap.classList.toggle("hidden-section", !checkbox.checked);
   document.getElementById("menu").classList.add("hidden");
 }
+localStorage.setItem("showProfileNote", checkbox.checked);
 
 /* -------------------- DATA LOAD -------------------- */
 
@@ -1193,6 +1208,17 @@ if (showAvatar === "false") {
     document.getElementById("profileHeader")
       .classList.add("no-avatar");
   }
+}
+
+const showNote = localStorage.getItem("showProfileNote");
+if (showNote === "false") {
+  document.getElementById("profileNoteWrap")
+    ?.classList.add("hidden-section");
+
+  const noteToggle = document.querySelector(
+    'input[onchange="toggleProfileNote(this)"]'
+  );
+  if (noteToggle) noteToggle.checked = false;
 }
 
     await checkAccess();
