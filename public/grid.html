@@ -996,7 +996,7 @@ if (!btn) {
   try {
     const slug = getSlug();
     const res = await fetch(`/api/get-posts?slug=${slug}`);
-    const { profile: apiProfile, posts } = await res.json();
+    const { profile: apiProfile, posts, plan } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
     
@@ -1022,6 +1022,15 @@ if (!btn) {
     console.error("loadPosts failed:", e);
   }
   
+  if (apiProfile?.note) {
+  const noteEl = document.getElementById("profileNote");
+  noteEl.textContent = apiProfile.note;
+  noteEl.classList.remove("hidden-section");
+}
+  if (!apiProfile?.note) {
+  document.getElementById("profileNote")?.classList.add("hidden-section");
+}
+
 if (!btn) {
 document.getElementById("skeleton").style.display = "none";
 document.querySelector(".container").removeAttribute("data-loading");
