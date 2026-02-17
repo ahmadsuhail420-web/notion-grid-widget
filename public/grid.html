@@ -850,13 +850,6 @@ let FILTER = "Post";
 let currentSlide = 0;
 let currentMedia = [];
 
-let LAST_POSTS = null;
-
-if (LAST_POSTS) {
-  ALL_POSTS = LAST_POSTS;
-  renderGrid();
-}
-
 const res = await fetch(...);
 LAST_POSTS = posts;
 
@@ -997,8 +990,8 @@ async function loadPosts(btn) {
   
 
 if (!btn) {
-  // initial load only
   document.querySelector(".container").setAttribute("data-loading","true");
+  document.getElementById("skeleton").style.display = "block";
 }
   
   try {
@@ -1026,15 +1019,14 @@ if (!btn) {
     document.getElementById("statScheduled").innerText = stats.scheduled;
     document.getElementById("statPublished").innerText = stats.published;
 
-    /* ✅ SHOW UI ONLY AFTER DATA IS READY */
-    document.querySelector(".container").removeAttribute("data-loading");
-
   } catch (e) {
     console.error("loadPosts failed:", e);
   }
   
+if (!btn) {
 document.getElementById("skeleton").style.display = "none";
 document.querySelector(".container").removeAttribute("data-loading");
+}
 
   if (icon) icon.classList.remove("spin");
 }
