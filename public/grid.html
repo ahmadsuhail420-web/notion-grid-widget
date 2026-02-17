@@ -1007,6 +1007,8 @@ if (!btn) {
     const { profile: apiProfile, posts } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
+    
+    sessionStorage.setItem("cachedPosts", JSON.stringify(ALL_POSTS));
 
     const derivedProfile = extractProfileFromPosts(ALL_POSTS);
     const finalProfile = apiProfile || derivedProfile;
@@ -1184,6 +1186,17 @@ async function startGrid() {
       return;
     }
     
+    const cached = sessionStorage.getItem("cachedPosts");
+if (cached) {
+  ALL_POSTS = JSON.parse(cached);
+
+  renderHighlights(ALL_POSTS);
+  renderGrid();
+
+  document.querySelector(".container")
+    .removeAttribute("data-loading");
+}
+
 (function applySavedTheme() {
   const saved = localStorage.getItem("theme");
 
