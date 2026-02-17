@@ -36,7 +36,7 @@ body[data-theme="dark"] {
   --border-color: #ffffff;
   --shadow: 0 10px 30px rgba(0,0,0,0.35);
 
-  --toggle-off: #444;
+  --toggle-off: #555;
   --toggle-on: #fff;
 }
 
@@ -238,10 +238,15 @@ body[data-theme="dark"] {
   left: 2px;
   width: 12px;          /* ↓ from 16 */
   height: 12px;         /* ↓ from 16 */
-  background: linear-gradient(#fff,#f2f2f2,#e6e6e6);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   transition: transform 0.3s cubic-bezier(0.68,-0.55,0.265,1.55);
+}
+.menuLabel {
+  font-size: 13px;
+  color: var(--text-main);
 }
 
 .toggleItem input:checked + .toggle {
