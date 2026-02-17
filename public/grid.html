@@ -834,45 +834,42 @@ function addBadge(card, src) {
 /* -------------------- HIGHLIGHTS -------------------- */
 
 function renderHighlights(posts) {
-  const wrap = document.getElementById("highlightsWrap");
   const row = document.getElementById("highlights");
-
   row.innerHTML = "";
-  wrap.style.display = "block";
 
   const items = posts.filter(
     p => p.highlight && hasMedia(p) && !p.hide
   );
 
-  // 👉 IF NO HIGHLIGHTS → SHOW PLACEHOLDERS (Instagram style)
+  /* 1️⃣ ADD "+ NEW" ALWAYS */
+  const add = document.createElement("div");
+  add.className = "highlightItem";
+  add.innerHTML = `<span class="highlightAdd">+</span>`;
+  row.appendChild(add);
+
+  /* 2️⃣ IF NO HIGHLIGHTS → SHOW PLACEHOLDERS */
   if (!items.length) {
-    const PLACEHOLDER_COUNT = 4;
-
-    for (let i = 0; i < PLACEHOLDER_COUNT; i++) {
-      const placeholder = document.createElement("div");
-      placeholder.className = "highlightItem";
-      placeholder.style.borderColor = "#333";
-      placeholder.style.background = "#1c1c1c";
-
-      row.appendChild(placeholder);
+    for (let i = 0; i < 4; i++) {
+      const ph = document.createElement("div");
+      ph.className = "highlightItem highlightPlaceholder";
+      row.appendChild(ph);
     }
     return;
   }
 
-  // 👉 NORMAL HIGHLIGHTS
+  /* 3️⃣ REAL HIGHLIGHTS */
   items.forEach(post => {
-    const wrapItem = document.createElement("div");
-    wrapItem.className = "highlightItem";
+    const wrap = document.createElement("div");
+    wrap.className = "highlightItem";
 
     const img = document.createElement("img");
     img.src = post.attachment?.[0] || post.thumbnail;
 
-    wrapItem.appendChild(img);
-    wrapItem.onclick = () => openViewer(post);
-    row.appendChild(wrapItem);
+    wrap.appendChild(img);
+    wrap.onclick = () => openViewer(post);
+    row.appendChild(wrap);
   });
 }
-
 /* -------------------- VIEWER -------------------- */
 
 function openViewer(post) {
