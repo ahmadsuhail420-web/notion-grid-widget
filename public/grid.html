@@ -168,7 +168,7 @@
       background: transparent;
       border: none;
       font-size: 22px;
-      color: #000;
+      color: var(--text-main);
       cursor: pointer;
     }
 
@@ -177,7 +177,7 @@
       top: 44px;
       right: 12px;
       background: var(--bg-card);
-      border: 1px solid #e5e5e5;
+      border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 10px 12px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.12);
@@ -265,13 +265,13 @@
   transform: translateX(-50%);
   font-size: 14px;
   font-weight: 600;
-  color: #111;
+  color: var(--text-main);
   pointer-events: none; /* prevents blocking clicks */
 }
 
     .refreshBtn {
       background: transparent;
-      color: #000;
+      color: var(--text-main);
       border: none;
       padding: 1px;
       border-radius: 10px;
@@ -319,11 +319,11 @@
      width: clamp(36px, 16vw, 76px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 2px solid #ddd;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
 }
  .highlightItem img {
   width: 92%;
@@ -397,7 +397,7 @@
 
     .card {
       aspect-ratio: 5 / 7;
-      background: #efefef;
+      background: var(--bg-muted);
       overflow: hidden;
       position: relative;
       display: flex;
@@ -475,7 +475,7 @@
     }
 
     .viewerCard {
-      background: #fff;
+      background: var(--bg-card);
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 12px 40px rgba(0,0,0,0.25);
@@ -495,7 +495,8 @@
 
     .viewerFooter {
       padding: 14px 16px;
-      border-top: 1px solid #eee;
+      border-top: 1px solid var(--border-color);
+  color: var(--text-main);
     }
 
     .viewerClose,
@@ -533,7 +534,7 @@
       text-align: center;
       padding: 8px 0;
       font-size: 13px;
-      color: #777;
+      color: var(--text-muted);
     }
     /* ---------- SKELETON ---------- */
 
@@ -552,7 +553,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #eee;
+  background: var(--bg-muted);
 }
 
 .sk-lines {
@@ -561,7 +562,7 @@
 
 .sk-line {
   height: 12px;
-  background: #eee;
+  background: var(--bg-muted);
   border-radius: 6px;
   margin-bottom: 8px;
 }
@@ -580,7 +581,7 @@
   width: 62px;
   height: 62px;
   border-radius: 50%;
-  background: #eee;
+  background: var(--bg-muted);
 }
 
 .sk-grid {
@@ -591,7 +592,7 @@
 
 .sk-grid div {
   aspect-ratio: 4 / 5;
-  background: #eee;
+  background: var(--bg-muted);
   border-radius: 2px;
 }
 
