@@ -634,8 +634,8 @@
       </div>
 
       <!-- MEDIA VIEWER -->
-      <div id="viewer" class="viewer hidden">
-        <div class="viewerInner">
+      <div id="viewer" class="viewer hidden" onclick="closeViewer()">
+  <div class="viewerInner" onclick="event.stopPropagation()">
           <button class="viewerClose" onclick="closeViewer()">✕</button>
           <button class="nav prev" onclick="prevImage()">‹</button>
           <button class="nav next" onclick="nextImage()">›</button>
@@ -961,6 +961,10 @@ function closeViewer() {
   setTimeout(() => v.classList.add("hidden"), 250);
 }
 window.closeViewer = closeViewer;
+  document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeViewer();
+});
+
 
 /* -------------------- INIT -------------------- */
 
