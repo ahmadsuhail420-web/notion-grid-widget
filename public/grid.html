@@ -160,6 +160,56 @@
       gap: 8px;
       white-space: nowrap;
     }
+    
+.toggleItem input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+    .toggleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.menuLabel {
+  font-size: 13px;
+}
+
+/* switch background */
+.toggle {
+  width: 38px;
+  height: 20px;
+  background: #e6e6e6;
+  border-radius: 999px;
+  position: relative;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.2);
+  transition: background 0.3s ease;
+}
+
+/* knob */
+.toggle::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(#fff,#f2f2f2,#e6e6e6);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  transition: transform 0.35s cubic-bezier(0.68,-0.55,0.265,1.55);
+}
+.toggleItem input:checked + .toggle {
+  background: #664AFF;
+}
+
+.toggleItem input:checked + .toggle::before {
+  transform: translateX(18px);
+}
+
 
     /* ---------- HEADER ---------- */
     .header {
@@ -539,14 +589,28 @@
         <button class="menuBtn" onclick="toggleMenu()">⋯</button>
 
         <div id="menu" class="menu hidden">
-          <label class="menuItem">
-            <input type="checkbox" checked onchange="toggleSection('header', this)">
-            Show header
-          </label>
-          <label class="menuItem">
-            <input type="checkbox" checked onchange="toggleSection('highlights', this)">
-            Show highlights
-          </label>
+          <label class="menuItem toggleItem">
+  <span class="menuLabel">Show header</span>
+
+  <input
+    type="checkbox"
+    checked
+    onchange="toggleSection('header', this)"
+  />
+
+  <span class="toggle"></span>
+</label>
+          <label class="menuItem toggleItem">
+  <span class="menuLabel">Show highlights</span>
+
+  <input
+    type="checkbox"
+    checked
+    onchange="toggleSection('highlights', this)"
+  />
+
+  <span class="toggle"></span>
+</label>
         </div>
       </div>
       
