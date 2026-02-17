@@ -706,11 +706,19 @@ body[data-theme="dark"] .tabItem.active img {
     <input type="checkbox" checked onchange="toggleSection('highlights', this)">
     <span class="toggle"></span>
   </label>
+  
   <label class="menuItem toggleItem">
   <span class="menuLabel">Show avatar</span>
   <input type="checkbox" checked onchange="toggleAvatar(this)">
   <span class="toggle"></span>
 </label>
+
+<label class="menuItem toggleItem">
+  <span class="menuLabel">Show profile note</span>
+  <input type="checkbox" checked onchange="toggleProfileNote(this)">
+  <span class="toggle"></span>
+</label>
+          
           <label class="menuItem toggleItem">
   <span class="menuLabel">Dark mode</span>
 
@@ -927,6 +935,19 @@ function toggleAvatar(checkbox) {
   profile.classList.toggle("no-avatar", !checkbox.checked);
   localStorage.setItem("showAvatar", checkbox.checked);
 
+  document.getElementById("menu").classList.add("hidden");
+}
+
+function toggleProfileNote(checkbox) {
+  const note = document.getElementById("profileNote");
+  if (!note) return;
+
+  note.classList.toggle("hidden-section", !checkbox.checked);
+
+  // optional: remember choice
+  localStorage.setItem("showProfileNote", checkbox.checked);
+
+  // close menu
   document.getElementById("menu").classList.add("hidden");
 }
 
@@ -1173,6 +1194,16 @@ if (showAvatar === "false") {
     document.getElementById("profileHeader")
       .classList.add("no-avatar");
   }
+}
+
+const showNote = localStorage.getItem("showProfileNote");
+if (showNote === "false") {
+  document.getElementById("profileNote")?.classList.add("hidden-section");
+
+  const noteToggle = document.querySelector(
+    'input[onchange="toggleProfileNote(this)"]'
+  );
+  if (noteToggle) noteToggle.checked = false;
 }
 
     await checkAccess();
