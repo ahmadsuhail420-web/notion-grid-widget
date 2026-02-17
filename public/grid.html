@@ -425,7 +425,7 @@
 </head>
 <body>
   <div class="widgetWrap">
-    <div class="container">
+   <div class="container" data-loading="true">
 
       <div class="header">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -530,13 +530,18 @@
   </div>
 
 <script>
+/* hide until data loads */
+.container[data-loading="true"] .profile,
+.container[data-loading="true"] .highlights,
+.container[data-loading="true"] .gridWrap {
+  visibility: hidden;
+}
 
 function getSlug() {
   const params = new URLSearchParams(window.location.search);
   return params.get("slug");
 }
 
-let HAS_LOADED_ONCE = false;
 let ALL_POSTS = [];
 let FILTER = "Post";
 let currentSlide = 0;
@@ -652,9 +657,13 @@ async function loadPosts(btn) {
     const stats = computeStatsFromGrid(visible);
 
     document.getElementById("statPosts").innerText = stats.total;
-    document.getElementById("statScheduled").innerText = stats.scheduled;
-    document.getElementById("statPublished").innerText = stats.published;
+document.getElementById("statScheduled").innerText = stats.scheduled;
+document.getElementById("statPublished").innerText = stats.published;
 
+/* ✅ SHOW UI ONLY NOW */
+document.querySelector(".container")
+  .removeAttribute("data-loading");
+  
   } catch (e) {
     console.error("loadPosts failed:", e);
   }
