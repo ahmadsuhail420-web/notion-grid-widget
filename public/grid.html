@@ -120,6 +120,20 @@ body[data-theme="dark"] {
       padding: 2px 6px;
     }
 
+.profileNote {
+  font-size: clamp(10px, 3.2vw, 14px);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.profile.no-avatar .profileRight {
+  justify-content: center;
+}
+
+.profile.no-avatar .profileText {
+  align-items: center;
+}
+
     .profileTitle {
      font-size: clamp(12px, 4.5vw, 20px);
       font-weight: 700;
@@ -704,6 +718,12 @@ body[data-theme="dark"] .tabItem.active img {
   <input type="checkbox" checked onchange="toggleAvatar(this)">
   <span class="toggle"></span>
 </label>
+
+<label class="menuItem toggleItem">
+  <span class="menuLabel">Show subtitle</span>
+  <input type="checkbox" checked onchange="toggleProfileNote(this)">
+  <span class="toggle"></span>
+</label>
           <label class="menuItem toggleItem">
   <span class="menuLabel">Dark mode</span>
 
@@ -744,8 +764,10 @@ body[data-theme="dark"] .tabItem.active img {
             <img id="profileImage" src="/icons/profile-placeholder.png" />
           </div>
 
-          <div class="profileRight">
-            <div id="profileName" class="profileTitle">Grid Planner</div>
+            <div class="profileText">
+    <div id="profileName" class="profileTitle">Grid Planner</div>
+    <div id="profileNote" class="profileNote">Content Planner</div>
+  </div>
 
             <div class="profileStats">
               <div class="stat">
@@ -947,6 +969,14 @@ function setFilter(type, el) {
   renderGrid();
 }
 window.setFilter = setFilter;
+
+function toggleProfileNote(checkbox) {
+  const note = document.getElementById("profileNote");
+  if (!note) return;
+
+  note.style.display = checkbox.checked ? "block" : "none";
+  document.getElementById("menu").classList.add("hidden");
+}
 
 /* -------------------- DATA LOAD -------------------- */
 
