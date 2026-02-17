@@ -180,13 +180,13 @@
 
 /* switch background */
 .toggle {
-  width: 38px;
-  height: 20px;
-  background: #e6e6e6;
+  width: 32px;          /* ↓ from 38 */
+  height: 16px;         /* ↓ from 20 */
+  background: #ddd;      /*e6e6e6*/
   border-radius: 999px;
   position: relative;
-  box-shadow: inset 0 0 4px rgba(0,0,0,0.2);
-  transition: background 0.3s ease;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
+  transition: background 0.25s ease;
 }
 
 /* knob */
@@ -195,19 +195,20 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 16px;
-  height: 16px;
+  width: 12px;          /* ↓ from 16 */
+  height: 12px;         /* ↓ from 16 */
   background: linear-gradient(#fff,#f2f2f2,#e6e6e6);
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
-  transition: transform 0.35s cubic-bezier(0.68,-0.55,0.265,1.55);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.3s cubic-bezier(0.68,-0.55,0.265,1.55);
 }
+
 .toggleItem input:checked + .toggle {
-  background: #664AFF;
+  background: #000;
 }
 
 .toggleItem input:checked + .toggle::before {
-  transform: translateX(18px);
+  transform: translateX(16px);   /* adjusted for new width */
 }
 
 
