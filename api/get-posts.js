@@ -49,13 +49,18 @@ export default async function handler(req, res) {
         page.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
         page.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
         null;
+        const profileNote =
+  page.properties?.["Profile Note"]?.rich_text
+    ?.map(t => t.plain_text)
+    .join("") || null;
 
       // 👉 PROFILE ROW
       if (profileName || profilePicture) {
         profile = {
-          name: profileName || "Grid Planner",
-          picture: profilePicture || null,
-        };
+  name: profileName || "Grid Planner",
+  picture: profilePicture || null,
+  note: profileNote || null
+};
         continue;
       }
 
