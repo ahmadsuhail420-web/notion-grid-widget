@@ -30,6 +30,13 @@
       border-radius: 24px;
     }
 
+    /* ✅ HIDE CONTENT UNTIL DATA LOADS (CSS MUST BE HERE, NOT IN <script>) */
+    .container[data-loading="true"] #profileHeader,
+    .container[data-loading="true"] #highlightsWrap,
+    .container[data-loading="true"] .gridWrap {
+      visibility: hidden;
+    }
+
     .topBar {
       display: flex;
       justify-content: space-between;
@@ -425,7 +432,7 @@
 </head>
 <body>
   <div class="widgetWrap">
-   <div class="container" data-loading="true">
+    <div class="container" data-loading="true">
 
       <div class="header">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -530,13 +537,6 @@
   </div>
 
 <script>
-/* hide until data loads */
-.container[data-loading="true"] .profile,
-.container[data-loading="true"] .highlights,
-.container[data-loading="true"] .gridWrap {
-  visibility: hidden;
-}
-
 function getSlug() {
   const params = new URLSearchParams(window.location.search);
   return params.get("slug");
@@ -657,13 +657,12 @@ async function loadPosts(btn) {
     const stats = computeStatsFromGrid(visible);
 
     document.getElementById("statPosts").innerText = stats.total;
-document.getElementById("statScheduled").innerText = stats.scheduled;
-document.getElementById("statPublished").innerText = stats.published;
+    document.getElementById("statScheduled").innerText = stats.scheduled;
+    document.getElementById("statPublished").innerText = stats.published;
 
-/* ✅ SHOW UI ONLY NOW */
-document.querySelector(".container")
-  .removeAttribute("data-loading");
-  
+    /* ✅ SHOW UI ONLY AFTER DATA IS READY */
+    document.querySelector(".container").removeAttribute("data-loading");
+
   } catch (e) {
     console.error("loadPosts failed:", e);
   }
@@ -766,7 +765,7 @@ function updateViewerImage() {
   const wrap = document.getElementById("viewerMedia");
   wrap.innerHTML = "";
   const src = currentMedia[currentSlide];
-  if (!src) return; 
+  if (!src) return;
 
   const el = src.match(/\.(mp4|webm|ogg)/i)
     ? Object.assign(document.createElement("video"), { src, controls: true })
@@ -774,6 +773,7 @@ function updateViewerImage() {
 
   wrap.appendChild(el);
 }
+
 async function checkAccess() {
   return true;
 }
@@ -811,7 +811,6 @@ document.querySelector(".refreshBtn").onclick = function () {
 };
 
 window.addEventListener("load", startGrid);
-
 </script>
 </body>
 </html>
