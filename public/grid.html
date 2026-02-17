@@ -234,16 +234,31 @@ body[data-theme="dark"] {
 .toggle::before {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;          /* ↓ from 16 */
-  height: 12px;         /* ↓ from 16 */
+  top: 1.5px;
+  left: 1.5px;
+  width: 15px;
+  height: 15px;
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-  transition: transform 0.3s cubic-bezier(0.68,-0.55,0.265,1.55);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.25s ease;
 }
+
+.toggle::after {
+  content: "🌙";
+  position: absolute;
+  top: 50%;
+  left: 9px;
+  transform: translate(-50%, -50%);
+  font-size: 9px;
+  pointer-events: none;
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s ease;
+}
+
 .menuLabel {
   font-size: 13px;
   color: var(--text-main);
@@ -254,7 +269,19 @@ body[data-theme="dark"] {
 }
 
 .toggleItem input:checked + .toggle::before {
-  transform: translateX(16px);   /* adjusted for new width */
+  transform: translateX(16px);
+}
+
+.toggleItem input:checked + .toggle::after {
+  content: "☀️";
+  transform: translate(8px, -50%);
+}
+body[data-theme="dark"] .toggle::after {
+  filter: brightness(1.2);
+}
+
+.toggleItem:active .toggle::before {
+  transform: scale(0.92);
 }
 
 
