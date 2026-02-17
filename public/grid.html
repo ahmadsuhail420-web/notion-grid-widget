@@ -574,7 +574,6 @@
   </div>
 
 </div>
-      <div class="contentArea">
       <div id="profileHeader" class="profile">
         <div class="profileRow">
           <div class="profilePic">
@@ -608,6 +607,7 @@
       </div>
 
       <!-- TABS -->
+      <div class="contentArea">
         <div class="tabs">
           <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
             <img src="/icons/post-dark.png">
@@ -900,6 +900,7 @@ function openViewer(post) {
 function updateViewerImage() {
   const wrap = document.getElementById("viewerMedia");
   wrap.innerHTML = "";
+
   const src = currentMedia[currentSlide];
   if (!src) return;
 
@@ -908,7 +909,28 @@ function updateViewerImage() {
     : Object.assign(document.createElement("img"), { src });
 
   wrap.appendChild(el);
+
+  const showNav = currentMedia.length > 1;
+  document.querySelector(".nav.prev").style.display = showNav ? "flex" : "none";
+  document.querySelector(".nav.next").style.display = showNav ? "flex" : "none";
 }
+  function nextImage() {
+  if (!currentMedia.length) return;
+
+  currentSlide = (currentSlide + 1) % currentMedia.length;
+  updateViewerImage();
+}
+
+function prevImage() {
+  if (!currentMedia.length) return;
+
+  currentSlide =
+    (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+  updateViewerImage();
+}
+
+window.nextImage = nextImage;
+window.prevImage = prevImage;
 
 async function checkAccess() {
   return true;
