@@ -775,6 +775,8 @@ function toggleSection(section, checkbox) {
     : document.getElementById("highlightsWrap");
 
   el.style.display = checkbox.checked ? "block" : "none";
+
+  document.getElementById("menu").classList.add("hidden");
 }
 window.toggleSection = toggleSection;
 
