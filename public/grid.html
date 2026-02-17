@@ -16,7 +16,7 @@
   --text-main: #111111;
   --text-muted: #777777;
 
-  --border-color: rgba(255,255,255,0.25);
+  --border-color: rgba(255,255,255,0.15);
   --shadow: 0 10px 30px rgba(0,0,0,0.12);
 
   --toggle-off: #ddd;
@@ -850,6 +850,16 @@ let FILTER = "Post";
 let currentSlide = 0;
 let currentMedia = [];
 
+let LAST_POSTS = null;
+
+if (LAST_POSTS) {
+  ALL_POSTS = LAST_POSTS;
+  renderGrid();
+}
+
+const res = await fetch(...);
+LAST_POSTS = posts;
+
 /* -------------------- HELPERS -------------------- */
 
 function hasMedia(post) {
@@ -984,9 +994,12 @@ window.setFilter = setFilter;
 async function loadPosts(btn) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
+  
 
-document.querySelector(".container").setAttribute("data-loading","true");
-  document.getElementById("skeleton").style.display="block";
+if (!btn) {
+  // initial load only
+  document.querySelector(".container").setAttribute("data-loading","true");
+}
   
   try {
     const slug = getSlug();
