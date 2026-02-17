@@ -565,6 +565,35 @@ body[data-theme="dark"] .tabItem.active img {
       font-size: 13px;
       color: var(--text-muted);
     }
+    
+    /* ---------- PROFILE AVATAR OFF MODE ---------- */
+
+.profile.no-avatar .profilePic {
+  display: none;
+}
+
+.profile.no-avatar .profileRow {
+  justify-content: center;
+}
+
+.profile.no-avatar .profileRight {
+  align-items: center;
+  text-align: center;
+}
+
+/* slightly increase size when avatar is hidden */
+.profile.no-avatar .profileTitle {
+  font-size: clamp(14px, 5vw, 24px);
+}
+
+.profile.no-avatar .profileStats {
+  column-gap: clamp(18px, 8vw, 48px);
+}
+
+.profile.no-avatar .stat strong {
+  font-size: clamp(13px, 4.5vw, 20px);
+}
+
     /* ---------- SKELETON ---------- */
 
 #skeleton {
@@ -670,6 +699,11 @@ body[data-theme="dark"] .tabItem.active img {
     <input type="checkbox" checked onchange="toggleSection('highlights', this)">
     <span class="toggle"></span>
   </label>
+  <label class="menuItem toggleItem">
+  <span class="menuLabel">Show avatar</span>
+  <input type="checkbox" checked onchange="toggleAvatar(this)">
+  <span class="toggle"></span>
+</label>
           <label class="menuItem toggleItem">
   <span class="menuLabel">Dark mode</span>
 
@@ -874,6 +908,17 @@ function toggleTheme(checkbox) {
     localStorage.setItem("theme", "light");
   }
 }
+
+function toggleAvatar(checkbox) {
+  const profile = document.getElementById("profileHeader");
+  if (!profile) return;
+
+  profile.classList.toggle("no-avatar", !checkbox.checked);
+  localStorage.setItem("showAvatar", checkbox.checked);
+
+  document.getElementById("menu").classList.add("hidden");
+}
+
 
 /* -------------------- TABS -------------------- */
 
@@ -1107,6 +1152,18 @@ async function startGrid() {
     if (darkToggle) darkToggle.checked = true;
   }
 })();
+
+const showAvatar = localStorage.getItem("showAvatar");
+if (showAvatar === "false") {
+  const avatarToggle = document.querySelector(
+    'input[onchange="toggleAvatar(this)"]'
+  );
+  if (avatarToggle) {
+    avatarToggle.checked = false;
+    document.getElementById("profileHeader")
+      .classList.add("no-avatar");
+  }
+}
 
     await checkAccess();
     await loadPosts();
