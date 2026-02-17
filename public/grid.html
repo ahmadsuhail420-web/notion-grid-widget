@@ -533,7 +533,15 @@
 
 const params = new URLSearchParams(window.location.search);
 const SLUG = params.get("slug");
-if (!SLUG) alert("Missing widget slug");
+if (!SLUG) {
+  document.body.innerHTML = `
+    <div style="padding:40px;text-align:center;font-family:sans-serif">
+      <h3>Widget not initialized</h3>
+      <p>Missing slug parameter</p>
+    </div>
+  `;
+  throw new Error("Missing slug");
+}
 
 let HAS_LOADED_ONCE = false;
 let ALL_POSTS = [];
@@ -756,7 +764,7 @@ function updateViewerImage() {
   const wrap = document.getElementById("viewerMedia");
   wrap.innerHTML = "";
   const src = currentMedia[currentSlide];
-  if (!src) return;
+  if (!src) return; 
 
   const el = src.match(/\.(mp4|webm|ogg)/i)
     ? Object.assign(document.createElement("video"), { src, controls: true })
