@@ -54,6 +54,7 @@ body[data-theme="dark"] {
       padding: 15px 20px 0;
       border-radius: 24px;
       border: 3px solid var(--border-color);
+  --border-color: #e2e2e2;
 }
 
     .widgetWrap {
@@ -81,6 +82,10 @@ body[data-theme="dark"] {
       padding: 8px 12px;
       position: relative;
     }
+    
+    .hidden-section {
+  display: none !important;
+}
 
     /* PROFILE */
     .profile {
@@ -111,12 +116,6 @@ body[data-theme="dark"] {
       height: 100%;
       object-fit: cover;
     }
-  
-      .profileNoteWrap.hidden-section {
-  margin: 0;
-  padding: 0;
-  border: none;
-}
 
     .profileRight {
       display: flex;
@@ -124,29 +123,6 @@ body[data-theme="dark"] {
       align-items: flex-start;
       padding: 2px 6px;
     }
-
-.profileNoteWrap {
-  display: flex;
-  justify-content: center;
-  padding: 6px 16px 12px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.profileNote {
-  font-size: clamp(11px, 3.4vw, 14px);
-  color: var(--text-muted);
-  font-weight: 500;
-  text-align: center;
-  max-width: 520px;
-}
-
-.profile.no-avatar .profileRight {
-  justify-content: center;
-}
-
-.profile.no-avatar .profileText {
-  align-items: center;
-}
 
     .profileTitle {
      font-size: clamp(12px, 4.5vw, 20px);
@@ -177,10 +153,6 @@ body[data-theme="dark"] {
       font-size: clamp(9px, 3.2vw, 13px);
       color: var(--text-muted);
     }
-    
-    .hidden-section {
-  display: none !important;
-}
 
     /* ---------- CONTAINER ---------- */
     .container {
@@ -732,12 +704,6 @@ body[data-theme="dark"] .tabItem.active img {
   <input type="checkbox" checked onchange="toggleAvatar(this)">
   <span class="toggle"></span>
 </label>
-
-<label class="menuItem toggleItem">
-  <span class="menuLabel">Show subtitle</span>
-  <input type="checkbox" checked onchange="toggleProfileNote(this)">
-  <span class="toggle"></span>
-</label>
           <label class="menuItem toggleItem">
   <span class="menuLabel">Dark mode</span>
 
@@ -772,45 +738,37 @@ body[data-theme="dark"] .tabItem.active img {
   </div>
 
 </div>
-   <!-- PROFILE -->
-<div id="profileHeader" class="profile">
-  <div class="profileRow">
+      <div id="profileHeader" class="profile">
+        <div class="profileRow">
+          <div class="profilePic">
+            <img id="profileImage" src="/icons/profile-placeholder.png" />
+          </div>
 
-    <div class="profilePic">
-      <img id="profileImage" src="/icons/profile-placeholder.png" />
-    </div>
+          <div class="profileRight">
+            <div id="profileName" class="profileTitle">Grid Planner</div>
 
-    <div class="profileText">
-      <div id="profileName" class="profileTitle">Grid Planner</div>
-    </div>
-
-    <div class="profileStats">
-      <div class="stat">
-        <strong id="statPosts">0</strong>
-        <span>Posts</span>
+            <div class="profileStats">
+              <div class="stat">
+                <strong id="statPosts">0</strong>
+                <span>Posts</span>
+              </div>
+              <div class="stat">
+                <strong id="statScheduled">0</strong>
+                <span>Scheduled</span>
+              </div>
+              <div class="stat">
+                <strong id="statPublished">0</strong>
+                <span>Published</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="stat">
-        <strong id="statScheduled">0</strong>
-        <span>Scheduled</span>
+
+      <!-- HIGHLIGHTS -->
+      <div id="highlightsWrap" class="highlights">
+        <div id="highlights" class="highlightsRow"></div>
       </div>
-      <div class="stat">
-        <strong id="statPublished">0</strong>
-        <span>Published</span>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ✅ PROFILE NOTE (NEW ROW) -->
-<div id="profileNoteWrap" class="profileNoteWrap">
-  <div id="profileNote" class="profileNote">Content Planner</div>
-</div>
-
-<!-- HIGHLIGHTS -->
-<div id="highlightsWrap" class="highlights">
-  <div id="highlights" class="highlightsRow"></div>
-</div>
 
       <!-- TABS -->
       <div class="contentArea">
@@ -961,7 +919,6 @@ function toggleAvatar(checkbox) {
   document.getElementById("menu").classList.add("hidden");
 }
 
-
 /* -------------------- TABS -------------------- */
 
 function moveUnderline(tab) {
@@ -989,16 +946,6 @@ function setFilter(type, el) {
   renderGrid();
 }
 window.setFilter = setFilter;
-
-function toggleProfileNote(checkbox) {
-  const wrap = document.getElementById("profileNoteWrap");
-  if (!wrap) return;
-
-  wrap.classList.toggle("hidden-section", !checkbox.checked);
-  localStorage.setItem("showProfileNote", checkbox.checked);
-  document.getElementById("menu").classList.add("hidden");
-}
-
 
 /* -------------------- DATA LOAD -------------------- */
 
@@ -1215,17 +1162,6 @@ if (showAvatar === "false") {
     document.getElementById("profileHeader")
       .classList.add("no-avatar");
   }
-}
-
-const showNote = localStorage.getItem("showProfileNote");
-if (showNote === "false") {
-  document.getElementById("profileNoteWrap")
-    ?.classList.add("hidden-section");
-
-  const noteToggle = document.querySelector(
-    'input[onchange="toggleProfileNote(this)"]'
-  );
-  if (noteToggle) noteToggle.checked = false;
 }
 
     await checkAccess();
