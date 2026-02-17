@@ -198,32 +198,35 @@
 
     /* HIGHLIGHTS */
     .highlights {
-      padding: 8px 16px 0;
-    }
+  padding: 8px 0 0;
+  display: flex;
+  justify-content: center;
+}
 
-    .highlightsRow {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
+.highlightsRow {
+  width: 100%;
+  max-width: 520px;   /* SAME as profileRow */
+  display: flex;
+  gap: 12px;
+  padding-left: 92px; /* aligns under avatar */
+}
     .highlightsRow::-webkit-scrollbar {
       display: none;
     }
 
     .highlightItem {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      overflow: hidden;
-      flex-shrink: 0;
-      border: 2px solid #ddd;
-    }
-
-    .highlightItem img {
-  width: 90%;               /* creates gap */
-  height: 90%;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+ .highlightItem img {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
 }
