@@ -149,6 +149,10 @@ body[data-theme="dark"] {
       font-size: clamp(9px, 3.2vw, 13px);
       color: var(--text-muted);
     }
+    
+    .hidden-section {
+  display: none !important;
+}
 
     /* ---------- CONTAINER ---------- */
     .container {
@@ -840,6 +844,22 @@ function toggleMenu() {
   menu.classList.toggle("hidden");
 }
 window.toggleMenu = toggleMenu;
+
+function toggleSection(section, checkbox) {
+  const el =
+    section === "header"
+      ? document.getElementById("profileHeader")
+      : document.getElementById("highlightsWrap");
+
+  if (!el) return;
+
+  el.classList.toggle("hidden-section", !checkbox.checked);
+
+  // close menu after toggle
+  document.getElementById("menu").classList.add("hidden");
+}
+
+window.toggleSection = toggleSection;
 
 function toggleTheme(checkbox) {
   if (checkbox.checked) {
