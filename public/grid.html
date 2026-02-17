@@ -637,6 +637,7 @@ async function loadPosts(btn) {
 
 if (!slug) {
   console.warn("Slug not ready yet, retrying...");
+  setTimeout(() => loadPosts(btn), 200);
   return;
 }
 
