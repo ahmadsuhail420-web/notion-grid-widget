@@ -131,7 +131,6 @@
       font-size: 22px;
       color: #000;
       cursor: pointer;
-      padding: 4px 6px;
     }
 
     .menu {
@@ -166,7 +165,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 16px;
       position: relative;
     }
 
@@ -516,8 +514,24 @@
         <button class="refreshBtn">
           <span class="material-icons refreshIcon">refresh</span>
         </button>
-        <!-- SKELETON -->
-<div id="skeleton">
+        
+
+        <button class="menuBtn" onclick="toggleMenu()">⋯</button>
+
+        <div id="menu" class="menu hidden">
+          <label class="menuItem">
+            <input type="checkbox" checked onchange="toggleSection('header', this)">
+            Show header
+          </label>
+          <label class="menuItem">
+            <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+            Show highlights
+          </label>
+        </div>
+      </div>
+      
+<!-- SKELETON -->
+      <div id="skeleton">
 
   <div class="sk-profile">
     <div class="sk-avatar"></div>
@@ -540,21 +554,6 @@
   </div>
 
 </div>
-
-        <button class="menuBtn" onclick="toggleMenu()">⋯</button>
-
-        <div id="menu" class="menu hidden">
-          <label class="menuItem">
-            <input type="checkbox" checked onchange="toggleSection('header', this)">
-            Show header
-          </label>
-          <label class="menuItem">
-            <input type="checkbox" checked onchange="toggleSection('highlights', this)">
-            Show highlights
-          </label>
-        </div>
-      </div>
-
       <div id="profileHeader" class="profile">
         <div class="profileRow">
           <div class="profilePic">
