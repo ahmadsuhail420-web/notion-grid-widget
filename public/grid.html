@@ -917,17 +917,8 @@ function toggleSection(section, checkbox) {
 window.toggleSection = toggleSection;
 
 function toggleTheme(checkbox) {
-  if (checkbox.checked) {
-    document.body.setAttribute("data-theme", "dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.body.removeAttribute("data-theme");
-
-    // 🔑 force reset to light variables
-    document.documentElement.style.removeProperty("--border-color");
-
-    localStorage.setItem("theme", "light");
-  }
+  document.body.toggleAttribute("data-theme", checkbox.checked);
+  localStorage.setItem("theme", checkbox.checked ? "dark" : "light");
 }
 
 function toggleAvatar(checkbox) {
@@ -986,20 +977,18 @@ window.setFilter = setFilter;
 async function loadPosts(btn) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
-  
 
-if (!btn) {
-  document.querySelector(".container").setAttribute("data-loading","true");
-  document.getElementById("skeleton").style.display = "block";
-}
-  
+  if (!btn) {
+    document.querySelector(".container").setAttribute("data-loading", "true");
+    document.getElementById("skeleton").style.display = "block";
+  }
+
   try {
     const slug = getSlug();
     const res = await fetch(`/api/get-posts?slug=${slug}`);
     const { profile: apiProfile, posts, plan } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
-    
     sessionStorage.setItem("cachedPosts", JSON.stringify(ALL_POSTS));
 
     const derivedProfile = extractProfileFromPosts(ALL_POSTS);
@@ -1008,12 +997,19 @@ if (!btn) {
     document.getElementById("profileName").innerText = finalProfile.name;
     document.getElementById("profileImage").src = finalProfile.picture;
 
+    // ✅ PROFILE NOTE (MUST be inside try)
+    const noteEl = document.getElementById("profileNote");
+    if (apiProfile?.note) {
+      noteEl.textContent = apiProfile.note;
+      noteEl.classList.remove("hidden-section");
+    } else {
+      noteEl.classList.add("hidden-section");
+    }
+
     renderHighlights(ALL_POSTS);
     renderGrid();
 
-    const visible = getVisibleGridPosts();
-    const stats = computeStatsFromGrid(visible);
-
+    const stats = computeStatsFromGrid(getVisibleGridPosts());
     document.getElementById("statPosts").innerText = stats.total;
     document.getElementById("statScheduled").innerText = stats.scheduled;
     document.getElementById("statPublished").innerText = stats.published;
@@ -1021,20 +1017,11 @@ if (!btn) {
   } catch (e) {
     console.error("loadPosts failed:", e);
   }
-  
-  if (apiProfile?.note) {
-  const noteEl = document.getElementById("profileNote");
-  noteEl.textContent = apiProfile.note;
-  noteEl.classList.remove("hidden-section");
-}
-  if (!apiProfile?.note) {
-  document.getElementById("profileNote")?.classList.add("hidden-section");
-}
 
-if (!btn) {
-document.getElementById("skeleton").style.display = "none";
-document.querySelector(".container").removeAttribute("data-loading");
-}
+  if (!btn) {
+    document.getElementById("skeleton").style.display = "none";
+    document.querySelector(".container").removeAttribute("data-loading");
+  }
 
   if (icon) icon.classList.remove("spin");
 }
