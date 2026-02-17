@@ -167,6 +167,16 @@
       align-items: center;
       position: relative;
     }
+   
+    .headerTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  pointer-events: none; /* prevents blocking clicks */
+}
 
     .refreshBtn {
       background: transparent;
@@ -522,6 +532,7 @@
           <span class="material-icons refreshIcon">refresh</span>
         </button>
         
+        <div class="headerTitle">Grid Widget</div>
 
         <button class="menuBtn" onclick="toggleMenu()">⋯</button>
 
