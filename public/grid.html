@@ -830,27 +830,36 @@ function renderHighlights(posts) {
   row.innerHTML = "";
   wrap.style.display = "block";
 
-  const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
+  const items = posts.filter(
+    p => p.highlight && hasMedia(p) && !p.hide
+  );
 
+  // 👉 IF NO HIGHLIGHTS → SHOW PLACEHOLDERS (Instagram style)
   if (!items.length) {
-    const add = document.createElement("div");
-    add.className = "highlightItem";
-    add.innerText = "+";
-    add.style.display = "flex";
-    add.style.alignItems = "center";
-    add.style.justifyContent = "center";
-    row.appendChild(add);
+    const PLACEHOLDER_COUNT = 4;
+
+    for (let i = 0; i < PLACEHOLDER_COUNT; i++) {
+      const placeholder = document.createElement("div");
+      placeholder.className = "highlightItem";
+      placeholder.style.borderColor = "#333";
+      placeholder.style.background = "#1c1c1c";
+
+      row.appendChild(placeholder);
+    }
     return;
   }
 
+  // 👉 NORMAL HIGHLIGHTS
   items.forEach(post => {
+    const wrapItem = document.createElement("div");
+    wrapItem.className = "highlightItem";
+
     const img = document.createElement("img");
     img.src = post.attachment?.[0] || post.thumbnail;
-    const wrap = document.createElement("div");
-    wrap.className = "highlightItem";
-    wrap.appendChild(img);
-    wrap.onclick = () => openViewer(post);
-    row.appendChild(wrap);
+
+    wrapItem.appendChild(img);
+    wrapItem.onclick = () => openViewer(post);
+    row.appendChild(wrapItem);
   });
 }
 
