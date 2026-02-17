@@ -361,7 +361,12 @@ body[data-theme="dark"] {
 .highlightPlaceholder {
   background: #fafafa;
 }
-    
+    #highlightsWrap {
+  margin-bottom: 12px; /* adjust: 8px / 12px / 16px */
+}
+#highlightsWrap:not(.hidden-section) {
+  margin-bottom: 12px;
+}
     /* ---------- TABS ---------- */
     .tabs {
       display: grid;
