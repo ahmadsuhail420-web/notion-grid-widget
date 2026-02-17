@@ -1,200 +1,449 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8" />
 
-<style>
-/* ---------- BASE ---------- */
-body {
-  font-family: sans-serif;
-  max-width: 640px;
-  min-height: 640px;
-  margin: auto;
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 20px 0;
-  border-radius: 24px;
-  border: 3px solid #e2e2e2;
-}
+  <style>
+    /* ---------- BASE ---------- */
+    body {
+      font-family: sans-serif;
+      max-width: 640px;
+      min-height: 640px;
+      margin: auto;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px 20px 0;
+      border-radius: 24px;
+      border: 3px solid #e2e2e2;
+    }
 
-.widgetWrap {
-  width: 100%;
-  max-width: 640px;
-  height: 640px;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  border-radius: 24px;
-}
+    .widgetWrap {
+      width: 100%;
+      max-width: 640px;
+      height: 640px;
+      background: #ffffff;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-radius: 24px;
+    }
 
-.container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
+    /* ✅ HIDE CONTENT UNTIL DATA LOADS (CSS MUST BE HERE, NOT IN <script>) */
+    .container[data-loading="true"] #profileHeader,
+    .container[data-loading="true"] #highlightsWrap,
+    .container[data-loading="true"] .gridWrap {
+      visibility: hidden;
+    }
 
-.container[data-loading="true"] .profile,
+    .topBar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      position: relative;
+    }
+
+    /* PROFILE */
+    .profile {
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .profileRow {
+      display: flex;
+      width: 100%;
+      max-width: 520px;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .profilePic {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #eee;
+      flex-shrink: 0;
+    }
+
+    .profilePic img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profileRight {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 2px 6px;
+    }
+
+    .profileTitle {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .profileStats {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      column-gap: 28px;
+      margin-top: 10px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat strong {
+      font-size: 16px;
+      font-weight: 700;
+      display: block;
+    }
+
+    .stat span {
+      font-size: 12px;
+      color: #777;
+    }
+
+    /* ---------- CONTAINER ---------- */
+    .container {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .container.popup-open .gridWrap {
+      opacity: 0.4;
+    }
+    .container[data-loading="true"] .profile,
 .container[data-loading="true"] .highlights,
 .container[data-loading="true"] .contentArea {
   display: none;
 }
 
-/* ---------- HEADER ---------- */
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 16px;
-}
+    .menuBtn {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      color: #000;
+      cursor: pointer;
+      padding: 4px 6px;
+    }
 
-.refreshBtn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
+    .menu {
+      position: absolute;
+      top: 44px;
+      right: 12px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 20;
+    }
 
-.refreshIcon.spin {
-  animation: spin 1s linear infinite;
-}
+    .menu.hidden {
+      display: none;
+    }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+    .menuItem {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
 
-/* ---------- PROFILE ---------- */
-.profile {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-}
+    /* ---------- HEADER ---------- */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      position: relative;
+    }
 
-.profileRow {
-  display: flex;
-  max-width: 520px;
-  gap: 20px;
-}
+    .refreshBtn {
+      background: transparent;
+      color: #000;
+      border: none;
+      padding: 6px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-.profilePic {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #eee;
-}
+    .refreshIcon {
+      font-size: 18px;
+      color: #000;
+    }
 
-.profilePic img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .refreshIcon.spin {
+      animation: spin 1s linear infinite;
+    }
 
-.profileStats {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  gap: 28px;
-  margin-top: 8px;
-}
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
 
-/* ---------- HIGHLIGHTS ---------- */
-.highlights {
-  padding: 8px 16px 0;
-}
+    /* HIGHLIGHTS */
+    .highlights {
+      padding: 8px 16px 0;
+    }
 
-.highlightsRow {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-}
+    .highlightsRow {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
 
-.highlightItem {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  border: 2px solid #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    .highlightsRow::-webkit-scrollbar {
+      display: none;
+    }
 
-/* ---------- TABS ---------- */
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  padding: 10px 0;
-  position: relative;
-}
+    .highlightItem {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 2px solid #ddd;
+    }
 
-.tabItem {
-  display: flex;
-  justify-content: center;
-  cursor: pointer;
-}
+    .highlightItem img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-.slidingUnderline {
-  position: absolute;
-  bottom: 0;
-  width: 18px;
-  height: 2px;
-  background: black;
-  transition: transform .3s ease;
-}
+    /* ---------- TABS ---------- */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      padding: 10px 0 8px;
+      position: relative;
+    }
 
-/* ---------- GRID ---------- */
-.gridWrap {
-  flex: 1;
-  overflow-y: auto;
-}
+    .tabItem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 3px;
-  padding: 4px;
-}
+    .tabItem img {
+      width: 22px;
+      height: 22px;
+      opacity: 0.45;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
 
-.card {
-  aspect-ratio: 4/5;
-  background: #efefef;
-  position: relative;
-}
+    .tabItem.active img {
+      opacity: 1;
+      transform: translateY(-2px) scale(1.05);
+    }
 
-.card img,
-.card video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+    .slidingUnderline {
+      position: absolute;
+      bottom: 0;
+      height: 2px;
+      width: 18px;
+      background: black;
+      border-radius: 2px;
+      transform: translateX(0);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-.badge {
-  position: absolute;
-  top: 4%;
-  right: 6%;
-  width: 16%;
-}
+    /* ---------- GRID ---------- */
+    .gridWrap {
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: none;
+      transition: opacity 0.2s ease;
+    }
 
-/* ---------- VIEWER ---------- */
-.viewer {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,.35);
-  display: none;
-}
+    .gridWrap::-webkit-scrollbar {
+      display: none;
+    }
 
-.viewer.show { display: flex; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      padding: 4px;
+    }
 
-/* ---------- FOOTER ---------- */
-.footer {
-  text-align: center;
-  padding: 8px;
-  font-size: 13px;
-  color: #777;
-}
+    .card {
+      aspect-ratio: 4 / 5;
+      background: #efefef;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-/* ---------- SKELETON ---------- */
+    .card img,
+    .card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card img {
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .card video {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .card:hover video {
+      opacity: 1;
+    }
+
+    .card .badge {
+      position: absolute;
+      top: 4%;
+      right: 6%;
+      width: 16%;
+      height: 16%;
+      object-fit: contain;
+      z-index: 5;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    /* ---------- VIEWER ---------- */
+    .viewer {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .viewer.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .viewer.hidden {
+      display: none;
+    }
+
+    .viewerInner {
+      width: min(360px, 85%);
+      position: relative;
+      transform: scale(0.96);
+      transition: transform 0.25s ease;
+    }
+
+    .viewer.show .viewerInner {
+      transform: scale(1);
+    }
+
+    .viewerCard {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+
+    .viewerImage {
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+    }
+
+    .viewerImage img,
+    .viewerImage video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .viewerFooter {
+      padding: 14px 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .viewerClose,
+    .nav {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+    }
+
+    .viewerClose {
+      top: -14px;
+      right: -14px;
+      font-size: 16px;
+    }
+
+    .nav {
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+    }
+
+    .nav.prev { left: -14px; }
+    .nav.next { right: -14px; }
+
+    .footer {
+      text-align: center;
+      padding: 8px 0;
+      font-size: 13px;
+      color: #777;
+    }
+    /* ---------- SKELETON ---------- */
+
 #skeleton {
   padding: 16px;
+}
+
+.sk-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .sk-avatar {
@@ -204,27 +453,55 @@ body {
   background: #eee;
 }
 
+.sk-lines {
+  flex: 1;
+}
+
 .sk-line {
   height: 12px;
   background: #eee;
   border-radius: 6px;
-  margin: 8px 0;
+  margin-bottom: 8px;
+}
+
+.sk-line.short {
+  width: 40%;
+}
+
+.sk-highlights {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.sk-circle {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #eee;
 }
 
 .sk-grid {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 3px;
 }
 
 .sk-grid div {
-  aspect-ratio: 4/5;
+  aspect-ratio: 4 / 5;
   background: #eee;
+  border-radius: 2px;
 }
 
+/* shimmer */
 #skeleton * {
   animation: shimmer 1.2s infinite linear;
-  background: linear-gradient(90deg,#eee,#f5f5f5,#eee);
+  background: linear-gradient(
+    90deg,
+    #eee 25%,
+    #f5f5f5 37%,
+    #eee 63%
+  );
   background-size: 400% 100%;
 }
 
@@ -232,157 +509,420 @@ body {
   0% { background-position: 100% 0; }
   100% { background-position: -100% 0; }
 }
-</style>
+
+  </style>
 </head>
-
 <body>
-<div class="widgetWrap">
-<div class="container" data-loading="true">
+  <div class="widgetWrap">
+    <div class="container" data-loading="true">
 
-<!-- HEADER -->
-<div class="header">
-<button class="refreshBtn"><span class="refreshIcon">⟳</span></button>
-</div>
-
-<!-- SKELETON -->
+      <div class="header">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <button class="refreshBtn">
+          <span class="material-icons refreshIcon">refresh</span>
+        </button>
+        <!-- SKELETON -->
 <div id="skeleton">
-  <div class="sk-avatar"></div>
-  <div class="sk-line"></div>
-  <div class="sk-line"></div>
+
+  <div class="sk-profile">
+    <div class="sk-avatar"></div>
+    <div class="sk-lines">
+      <div class="sk-line short"></div>
+      <div class="sk-line"></div>
+    </div>
+  </div>
+
+  <div class="sk-highlights">
+    <div class="sk-circle"></div>
+    <div class="sk-circle"></div>
+    <div class="sk-circle"></div>
+    <div class="sk-circle"></div>
+  </div>
+
   <div class="sk-grid">
     <div></div><div></div><div></div>
     <div></div><div></div><div></div>
   </div>
+
 </div>
 
-<!-- PROFILE -->
-<div class="profile">
-  <div class="profileRow">
-    <div class="profilePic"><img id="profileImage"></div>
-    <div>
-      <div id="profileName"></div>
-      <div class="profileStats">
-        <div><strong id="statPosts">0</strong><br>Posts</div>
-        <div><strong id="statScheduled">0</strong><br>Scheduled</div>
-        <div><strong id="statPublished">0</strong><br>Published</div>
+        <button class="menuBtn" onclick="toggleMenu()">⋯</button>
+
+        <div id="menu" class="menu hidden">
+          <label class="menuItem">
+            <input type="checkbox" checked onchange="toggleSection('header', this)">
+            Show header
+          </label>
+          <label class="menuItem">
+            <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+            Show highlights
+          </label>
+        </div>
       </div>
+
+      <div id="profileHeader" class="profile">
+        <div class="profileRow">
+          <div class="profilePic">
+            <img id="profileImage" src="/icons/profile-placeholder.png" />
+          </div>
+
+          <div class="profileRight">
+            <div id="profileName" class="profileTitle">Grid Planner</div>
+
+            <div class="profileStats">
+              <div class="stat">
+                <strong id="statPosts">0</strong>
+                <span>Posts</span>
+              </div>
+              <div class="stat">
+                <strong id="statScheduled">0</strong>
+                <span>Scheduled</span>
+              </div>
+              <div class="stat">
+                <strong id="statPublished">0</strong>
+                <span>Published</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HIGHLIGHTS -->
+      <div id="highlightsWrap" class="highlights">
+        <div id="highlights" class="highlightsRow"></div>
+      </div>
+
+      <!-- TABS -->
+      <div class="contentArea">
+        <div class="tabs">
+          <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
+            <img src="/icons/post-dark.png">
+          </div>
+
+          <div class="tabItem" data-type="reel" onclick="setFilter('Reels', this)">
+            <img src="/icons/reel-light.png">
+          </div>
+
+          <div class="tabItem" data-type="story" onclick="setFilter('Story', this)">
+            <img src="/icons/story-light.png">
+          </div>
+
+          <div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok', this)">
+            <img src="/icons/tiktok-light.png">
+          </div>
+
+          <div class="slidingUnderline" id="slidingUnderline"></div>
+        </div>
+
+        <div class="gridWrap">
+          <div id="grid" class="grid"></div>
+        </div>
+      </div>
+
+      <!-- MEDIA VIEWER -->
+      <div id="viewer" class="viewer hidden">
+        <div class="viewerInner">
+          <button class="viewerClose" onclick="closeViewer()">✕</button>
+          <button class="nav prev" onclick="prevImage()">‹</button>
+          <button class="nav next" onclick="nextImage()">›</button>
+
+          <div class="viewerCard">
+            <div class="viewerImage" id="viewerMedia"></div>
+
+            <div class="viewerFooter">
+              <div id="viewerTitle"></div>
+              <div id="viewerDate"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
+
+    <div class="footer">Alif Designs</div>
   </div>
-</div>
-
-<!-- HIGHLIGHTS -->
-<div class="highlights">
-  <div id="highlights" class="highlightsRow"></div>
-</div>
-
-<!-- CONTENT -->
-<div class="contentArea">
-  <div class="tabs">
-    <div class="tabItem active" onclick="setFilter('Post',this)">▦</div>
-    <div class="tabItem" onclick="setFilter('Reels',this)">▶</div>
-    <div class="tabItem" onclick="setFilter('Story',this)">◯</div>
-    <div class="tabItem" onclick="setFilter('Tiktok',this)">♪</div>
-    <div id="slidingUnderline" class="slidingUnderline"></div>
-  </div>
-
-  <div class="gridWrap">
-    <div id="grid" class="grid"></div>
-  </div>
-</div>
-
-</div>
-<div class="footer">Alif Designs</div>
-</div>
 
 <script>
-let ALL_POSTS=[], FILTER="Post";
-
-/* ---------- LOAD ---------- */
-async function loadPosts(btn){
-  const icon = btn?.querySelector(".refreshIcon");
-  if(icon) icon.classList.add("spin");
-
-  document.querySelector(".container").setAttribute("data-loading","true");
-  document.getElementById("skeleton").style.display="block";
-
-  const slug = new URLSearchParams(location.search).get("slug");
-  const res = await fetch(`/api/get-posts?slug=${slug}`);
-  const data = await res.json();
-
-  ALL_POSTS = data.posts || [];
-
-  document.getElementById("profileName").innerText = data.profile?.name || "Grid Planner";
-  document.getElementById("profileImage").src = data.profile?.picture || "";
-
-  renderHighlights();
-  renderGrid();
-  updateStats();
-
-  document.getElementById("skeleton").style.display="none";
-  document.querySelector(".container").removeAttribute("data-loading");
-
-  if(icon) icon.classList.remove("spin");
+function getSlug() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("slug");
 }
 
-/* ---------- GRID ---------- */
-function renderGrid(){
-  const grid=document.getElementById("grid");
-  grid.innerHTML="";
-  getVisiblePosts().forEach(p=>{
-    const c=document.createElement("div");
-    c.className="card";
-    const src=p.attachment?.[0]||p.thumbnail||p.video;
-    if(src){
-      const el=src.match(/mp4|webm/)
-        ? Object.assign(document.createElement("video"),{src,muted:true})
-        : Object.assign(document.createElement("img"),{src});
-      c.appendChild(el);
+let ALL_POSTS = [];
+let FILTER = "Post";
+let currentSlide = 0;
+let currentMedia = [];
+
+/* -------------------- HELPERS -------------------- */
+
+function hasMedia(post) {
+  return (
+    (Array.isArray(post.attachment) && post.attachment.length > 0) ||
+    post.thumbnail ||
+    post.video
+  );
+}
+
+function getVisibleGridPosts() {
+  return ALL_POSTS
+    .filter(post => {
+      if (post.hide) return false;
+      if (!hasMedia(post)) return false;
+
+      if (!Array.isArray(post.type) || post.type.length === 0) return true;
+      return post.type.includes(FILTER);
+    })
+    .sort((a, b) => (b.pinned === true) - (a.pinned === true));
+}
+
+function computeStatsFromGrid(posts) {
+  const today = new Date().toISOString().split("T")[0];
+  return {
+    total: posts.length,
+    scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
+    published: posts.filter(p => p.publishDate && p.publishDate <= today).length
+  };
+}
+
+function extractProfileFromPosts(posts) {
+  const rowWithName = posts.find(p => p.profileName);
+  const rowWithPic = posts.find(p => p.profilePicture);
+  return {
+    name: rowWithName?.profileName || "Grid Planner",
+    picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png"
+  };
+}
+
+/* -------------------- MENU -------------------- */
+
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("hidden");
+}
+window.toggleMenu = toggleMenu;
+
+function toggleSection(section, checkbox) {
+  const el = section === "header"
+    ? document.getElementById("profileHeader")
+    : document.getElementById("highlightsWrap");
+
+  el.style.display = checkbox.checked ? "block" : "none";
+}
+window.toggleSection = toggleSection;
+
+/* -------------------- TABS -------------------- */
+
+function moveUnderline(tab) {
+  const underline = document.getElementById("slidingUnderline");
+  const tabs = document.querySelector(".tabs");
+  if (!underline || !tabs || !tab) return;
+
+  const tabRect = tab.getBoundingClientRect();
+  const tabsRect = tabs.getBoundingClientRect();
+  const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underline.offsetWidth / 2;
+  underline.style.transform = `translateX(${x}px)`;
+}
+
+function setFilter(type, el) {
+  FILTER = type;
+
+  document.querySelectorAll(".tabItem").forEach(tab => {
+    tab.classList.remove("active");
+    const img = tab.querySelector("img");
+    img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+  });
+
+  el.classList.add("active");
+  moveUnderline(el);
+  renderGrid();
+}
+window.setFilter = setFilter;
+
+/* -------------------- DATA LOAD -------------------- */
+
+async function loadPosts(btn) {
+  const icon = btn?.querySelector(".refreshIcon");
+  if (icon) icon.classList.add("spin");
+
+document.querySelector(".container").setAttribute("data-loading","true");
+  document.getElementById("skeleton").style.display="block";
+  
+  try {
+    const slug = getSlug();
+    const res = await fetch(`/api/get-posts?slug=${slug}`);
+    const { profile: apiProfile, posts } = await res.json();
+
+    ALL_POSTS = Array.isArray(posts) ? posts : [];
+
+    const derivedProfile = extractProfileFromPosts(ALL_POSTS);
+    const finalProfile = apiProfile || derivedProfile;
+
+    document.getElementById("profileName").innerText = finalProfile.name;
+    document.getElementById("profileImage").src = finalProfile.picture;
+
+    renderHighlights(ALL_POSTS);
+    renderGrid();
+
+    const visible = getVisibleGridPosts();
+    const stats = computeStatsFromGrid(visible);
+
+    document.getElementById("statPosts").innerText = stats.total;
+    document.getElementById("statScheduled").innerText = stats.scheduled;
+    document.getElementById("statPublished").innerText = stats.published;
+
+    /* ✅ SHOW UI ONLY AFTER DATA IS READY */
+    document.querySelector(".container").removeAttribute("data-loading");
+
+  } catch (e) {
+    console.error("loadPosts failed:", e);
+  }
+  
+document.getElementById("skeleton").style.display = "none";
+document.querySelector(".container").removeAttribute("data-loading");
+
+  if (icon) icon.classList.remove("spin");
+}
+
+/* -------------------- GRID -------------------- */
+
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  getVisibleGridPosts().forEach(post => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const src =
+      (Array.isArray(post.attachment) && post.attachment[0]) ||
+      post.thumbnail ||
+      post.video;
+
+    if (src) {
+      if (src.match(/\.(mp4|webm|ogg)/i)) {
+        const v = document.createElement("video");
+        v.src = src;
+        v.muted = true;
+        v.playsInline = true;
+        card.appendChild(v);
+      } else {
+        const img = document.createElement("img");
+        img.src = src;
+        card.appendChild(img);
+      }
     }
-    grid.appendChild(c);
+
+    if (post.pinned) addBadge(card, "/icons/pin.png");
+    card.onclick = () => openViewer(post);
+    grid.appendChild(card);
   });
 }
 
-function renderHighlights(){
-  const row=document.getElementById("highlights");
-  row.innerHTML="";
-  const items=ALL_POSTS.filter(p=>p.highlight && p.attachment?.length);
-  if(!items.length){
-    row.innerHTML='<div class="highlightItem">+</div>';
+function addBadge(card, src) {
+  const img = document.createElement("img");
+  img.src = src;
+  img.className = "badge";
+  card.appendChild(img);
+}
+
+/* -------------------- HIGHLIGHTS -------------------- */
+
+function renderHighlights(posts) {
+  const wrap = document.getElementById("highlightsWrap");
+  const row = document.getElementById("highlights");
+
+  row.innerHTML = "";
+  wrap.style.display = "block";
+
+  const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
+
+  if (!items.length) {
+    const add = document.createElement("div");
+    add.className = "highlightItem";
+    add.innerText = "+";
+    add.style.display = "flex";
+    add.style.alignItems = "center";
+    add.style.justifyContent = "center";
+    row.appendChild(add);
     return;
   }
-  items.forEach(p=>{
-    const d=document.createElement("div");
-    d.className="highlightItem";
-    d.innerHTML=`<img src="${p.attachment[0]}">`;
-    row.appendChild(d);
+
+  items.forEach(post => {
+    const img = document.createElement("img");
+    img.src = post.attachment?.[0] || post.thumbnail;
+    const wrap = document.createElement("div");
+    wrap.className = "highlightItem";
+    wrap.appendChild(img);
+    wrap.onclick = () => openViewer(post);
+    row.appendChild(wrap);
   });
 }
 
-function getVisiblePosts(){
-  return ALL_POSTS.filter(p=>{
-    if(p.hide) return false;
-    if(!p.attachment?.length && !p.thumbnail && !p.video) return false;
-    return !p.type?.length || p.type.includes(FILTER);
-  });
+/* -------------------- VIEWER -------------------- */
+
+function openViewer(post) {
+  currentMedia =
+    post.attachment?.length ? post.attachment :
+    post.video ? [post.video] :
+    post.thumbnail ? [post.thumbnail] : [];
+
+  currentSlide = 0;
+  updateViewerImage();
+
+  document.getElementById("viewerTitle").innerText = post.name || "";
+  document.getElementById("viewer").classList.remove("hidden");
+  requestAnimationFrame(() => document.getElementById("viewer").classList.add("show"));
 }
 
-function updateStats(){
-  const v=getVisiblePosts();
-  const today=new Date().toISOString().split("T")[0];
-  document.getElementById("statPosts").innerText=v.length;
-  document.getElementById("statScheduled").innerText=v.filter(p=>p.publishDate>today).length;
-  document.getElementById("statPublished").innerText=v.filter(p=>p.publishDate<=today).length;
+function updateViewerImage() {
+  const wrap = document.getElementById("viewerMedia");
+  wrap.innerHTML = "";
+  const src = currentMedia[currentSlide];
+  if (!src) return;
+
+  const el = src.match(/\.(mp4|webm|ogg)/i)
+    ? Object.assign(document.createElement("video"), { src, controls: true })
+    : Object.assign(document.createElement("img"), { src });
+
+  wrap.appendChild(el);
 }
 
-function setFilter(t,el){
-  FILTER=t;
-  document.querySelectorAll(".tabItem").forEach(x=>x.classList.remove("active"));
-  el.classList.add("active");
-  renderGrid();
+async function checkAccess() {
+  return true;
 }
 
-document.querySelector(".refreshBtn").onclick=function(){loadPosts(this)};
-window.addEventListener("load",()=>loadPosts());
+async function startGrid() {
+  try {
+    if (!getSlug()) {
+      setTimeout(startGrid, 300);
+      return;
+    }
+
+    await checkAccess();
+    await loadPosts();
+
+    requestAnimationFrame(() => {
+      const activeTab = document.querySelector(".tabItem.active");
+      if (activeTab) moveUnderline(activeTab);
+    });
+  } catch (e) {
+    console.error("Grid init failed", e);
+  }
+}
+
+function closeViewer() {
+  const v = document.getElementById("viewer");
+  v.classList.remove("show");
+  setTimeout(() => v.classList.add("hidden"), 250);
+}
+window.closeViewer = closeViewer;
+
+/* -------------------- INIT -------------------- */
+
+document.querySelector(".refreshBtn").onclick = function () {
+  loadPosts(this);
+};
+
+window.addEventListener("load", startGrid);
 </script>
 </body>
 </html>
