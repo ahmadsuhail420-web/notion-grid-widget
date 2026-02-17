@@ -531,8 +531,11 @@
 
 <script>
 
-const params = new URLSearchParams(window.location.search);
-const SLUG = params.get("slug");
+function getSlug() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("slug");
+}
+
 if (!SLUG) {
   document.body.innerHTML = `
     <div style="padding:40px;text-align:center;font-family:sans-serif">
@@ -640,7 +643,14 @@ async function loadPosts(btn) {
   if (icon) icon.classList.add("spin");
 
   try {
-    const res = await fetch(`/api/get-posts?slug=${SLUG}`);
+    const slug = getSlug();
+
+if (!slug) {
+  console.warn("Slug not ready yet, retrying...");
+  return;
+}
+
+const res = await fetch(`/api/get-posts?slug=${slug}`);
     const { profile: apiProfile, posts } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
@@ -775,8 +785,18 @@ function updateViewerImage() {
 
 async function startGrid() {
   try {
+    if (!getSlug()) {
+      setTimeout(startGrid, 300);
+      return;
+    }
+
     await checkAccess();
-    await loadPosts(); // ← this is enough
+    await loadPosts();
+
+    requestAnimationFrame(() => {
+      const activeTab = document.querySelector(".tabItem.active");
+      if (activeTab) moveUnderline(activeTab);
+    });
   } catch (e) {
     console.error("Grid init failed", e);
   }
