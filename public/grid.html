@@ -840,24 +840,16 @@ function toggleMenu() {
 }
 window.toggleMenu = toggleMenu;
 
-function toggleSection(section, checkbox) {
-  const el = section === "header"
-    ? document.getElementById("profileHeader")
-    : document.getElementById("highlightsWrap");
-
-  el.style.display = checkbox.checked ? "block" : "none";
-
-  document.getElementById("menu").classList.add("hidden");
-}
-window.toggleSection = toggleSection;
-  function toggleTheme(checkbox) {
-  const widget = document.querySelector(".widgetWrap");
-
+function toggleTheme(checkbox) {
   if (checkbox.checked) {
     document.body.setAttribute("data-theme", "dark");
     localStorage.setItem("theme", "dark");
   } else {
     document.body.removeAttribute("data-theme");
+
+    // 🔑 force reset to light variables
+    document.documentElement.style.removeProperty("--border-color");
+
     localStorage.setItem("theme", "light");
   }
 }
