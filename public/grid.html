@@ -58,12 +58,12 @@
       display: flex;
       max-width: 520px;
       align-items: center;
-      gap: 20px;
+      gap: clamp(12px, 4vw, 20px);
     }
 
     .profilePic {
-      width: 80px;
-      height: 80px;
+      width: clamp(56px, 18vw, 92px);
+      aspect-ratio: 1 / 1;
       border-radius: 50%;
       overflow: hidden;
       background: #eee;
@@ -84,7 +84,7 @@
     }
 
     .profileTitle {
-      font-size: 18px;
+      font-size: clamp(14px, 4vw, 18px);
       font-weight: 700;
       line-height: 1.2;
     }
@@ -92,7 +92,7 @@
     .profileStats {
       display: grid;
       grid-template-columns: repeat(3, auto);
-      column-gap: 28px;
+      column-gap: clamp(16px, 6vw, 28px);
       margin-top: 10px;
     }
 
@@ -101,13 +101,13 @@
     }
 
     .stat strong {
-      font-size: 18px;
+      font-size: clamp(13px, 3.5vw, 16px);
       font-weight: 700;
       display: block;
     }
 
     .stat span {
-      font-size: 12px;
+      font-size: clamp(10px, 3vw, 12px);
       color: #777;
     }
 
@@ -227,8 +227,8 @@
     }
 
     .highlightItem {
-  width: 58px;
-  height: 58px;
+    width: clamp(44px, 14vw, 58px);
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: 2px solid #ddd;
   display: flex;
