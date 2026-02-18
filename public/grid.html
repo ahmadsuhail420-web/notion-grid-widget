@@ -257,11 +257,12 @@ body[data-theme="dark"] {
   overflow: hidden;
 }
 
-    .themeIndicator {
+ .themeIndicator {
   position: absolute;
-  top: 3px;
-  bottom: 3px;
-  width: calc(100% / 3);
+  left: 4px;
+  top: 4px;
+  height: 28px;              /* ✅ fixed height */
+  width: calc((100% - 8px) / 3);
   background: var(--bg-card);
   border-radius: 999px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
@@ -270,21 +271,28 @@ body[data-theme="dark"] {
 }
 
 .themeSegment button {
+  height: 28px;              /* ⬅️ SAME as pill */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
   border: none;
   background: transparent;
-  color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 5px 0;
-  border-radius: 999px;
+  line-height: 1;            /* ⬅️ prevents glyph drift */
+  padding: 0;
   cursor: pointer;
-  transition: all 0.25s ease;
-  display: flex;
-  align-items: center;     /* ⬅️ fixes baseline issue */
-  justify-content: center;
-  line-height: 1;
-   position: relative;
+
+  color: var(--text-muted);
+  position: relative;
   z-index: 1;
+}
+
+.themeSegment button span {
+  display: inline-flex;
+  align-items: center;
 }
 
 /* active state */
@@ -293,17 +301,24 @@ body[data-theme="dark"] {
   color: #ffffff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 }
+  
+  /* Light mode */
+body:not([data-theme="dark"]) .themeIndicator {
+  background: #000;
+}
 
-/* dark mode shadow tweak */
+body:not([data-theme="dark"]) .themeSegment button.active {
+  color: #fff;
+}
+
+/* Dark mode */
+body[data-theme="dark"] .themeIndicator {
+  background: #f5f5f7;
+}
+
 body[data-theme="dark"] .themeSegment button.active {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.45);
-  color: #111111;
+  color: #111;
 }
-    body[data-theme="dark"] .themeIndicator {
-  background: #f5f5f7; /* iOS-style light pill */
-}
-    body:not([data-theme="dark"]) .themeIndicator {
-  background: #000000;
 }
 
     /* ---------- COMPACT THEME PILLS ---------- */
@@ -862,9 +877,9 @@ body[data-theme="dark"] .tabItem.active img {
   <div class="themeSegment">
   <div class="themeIndicator"></div>
 
-  <button onclick="setTheme('light')" data-theme-btn="light">☀︎ Light</button>
-  <button onclick="setTheme('dark')" data-theme-btn="dark">⏾ Dark</button>
-  <button onclick="setTheme('default')" data-theme-btn="default">◑ Auto</button>
+<button data-theme-btn="light"><span>☀︎ Light</span></button>
+<button data-theme-btn="dark"><span>⏾ Dark</span></button>
+<button data-theme-btn="default"><span>◑ Auto</span></button>
 </div>
 
 </div>
