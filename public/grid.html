@@ -1085,20 +1085,6 @@ function setTheme(mode) {
   }
 
   localStorage.setItem("theme", mode);
-  
-
-  // pill indicator
-  const indicator = document.querySelector(".themeIndicator");
-  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-  const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
-
-  if (indicator && index >= 0) {
-    indicator.style.transform = `translateX(${index * 100}%)`;
-  }
-
-  buttons.forEach(btn =>
-    btn.classList.toggle("active", btn.dataset.themeBtn === mode)
-  );
   syncThemePill(mode);
 }
 
