@@ -233,6 +233,46 @@ body[data-theme="dark"] {
       gap: 8px;
       white-space: nowrap;
     }
+    /* ---------- iOS SEGMENTED CONTROL ---------- */
+
+.segmented {
+  position: relative;
+  display: inline-flex;
+  background: var(--bg-muted);
+  border-radius: 10px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.segmented button {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.2s ease;
+}
+
+.segmented button.active {
+  color: var(--text-main);
+}
+
+.segmentedIndicator {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 0;
+  background: var(--bg-card);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  transition: transform 0.25s ease, width 0.25s ease;
+}
+
     /* ---------- THEME MENU (COMPACT) ---------- */
 
 .menuSection {
@@ -857,12 +897,13 @@ body[data-theme="dark"] .tabItem.active img {
 </label>
           
         <div class="menuSection">
-  <div class="menuLabel themeTitle">Theme</div>
+  <div class="menuLabel style="opacity:.6">Theme</div>
 
   <div class="themeSegment">
-    <button onclick="setTheme('light')" data-theme-btn="light">☀︎ Light</button>
-    <button onclick="setTheme('dark')" data-theme-btn="dark">⏾ Dark</button>
-    <button onclick="setTheme('default')" data-theme-btn="default">◑ Default</button>
+    <button data-theme="light" onclick="selectTheme(this)">☀︎ Light</button>
+    <button data-theme="dark" onclick="selectTheme(this)">⏾ Dark</button>
+    <button data-theme="default" onclick="selectTheme(this)">◑ Auto</button>
+    <span class="segmentedIndicator"></span>
   </div>
 </div>
 </div>
@@ -1101,6 +1142,25 @@ function setTheme(mode) {
   document.getElementById("menu").classList.add("hidden");
 }
 }
+
+  function selectTheme(btn) {
+  const container = btn.parentElement;
+  const buttons = container.querySelectorAll("button");
+  const indicator = container.querySelector(".segmentedIndicator");
+
+  buttons.forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  const rect = btn.getBoundingClientRect();
+  const parentRect = container.getBoundingClientRect();
+
+  indicator.style.width = `${rect.width}px`;
+  indicator.style.transform = `translateX(${rect.left - parentRect.left}px)`;
+
+  const mode = btn.dataset.theme;
+  setTheme(mode);
+}
+
 
 /* -------------------- TABS -------------------- */
 
@@ -1344,6 +1404,12 @@ if (cached) {
 }
     const savedTheme = localStorage.getItem("theme") || "default";
 setTheme(savedTheme);
+
+    const segmented = document.querySelector(".segmented");
+if (segmented) {
+  const btn = segmented.querySelector(`[data-theme="${savedTheme}"]`);
+  if (btn) selectTheme(btn);
+}
 
 const showAvatar = localStorage.getItem("showAvatar");
 if (showAvatar === "false") {
