@@ -204,8 +204,6 @@ body[data-theme="dark"] {
 
     .menu {
       position: absolute;
-      width: 240px;
-  max-width: 240px;
       top: 44px;
       right: 12px;
       background: var(--bg-card);
@@ -235,38 +233,6 @@ body[data-theme="dark"] {
       gap: 8px;
       white-space: nowrap;
     }
-    
-    /* ---------- THEME MENU (COMPACT) ---------- */
-
-.menuSection {
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid var(--border-color);
-}
-
-.menuSection .menuLabel {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .2px;
-  margin-bottom: 4px;
-}
-
-/* compact radio rows */
-.menuSection .menuItem {
-  font-size: 13px;
-  padding: 4px 0;
-  gap: 6px;
-}
-    .menuSection input[type="radio"] {
-  accent-color: var(--text-main);
-}
-
-
-/* radio button size */
-.menuSection input[type="radio"] {
-  transform: scale(0.85);
-  margin-right: 6px;
-}
     
     /* ---------- THEME SEGMENT ---------- */
 
@@ -859,14 +825,13 @@ body[data-theme="dark"] .tabItem.active img {
   <span class="toggle"></span>
 </label>
           
-        <div class="menuSection">
-  <div class="menuLabel style="opacity:.6">Theme</div>
+ <div class="menuSection">
+  <div class="menuLabel themeTitle">Theme</div>
 
   <div class="themeSegment">
-    <button data-theme="light" onclick="selectTheme(this)">☀︎ Light</button>
-    <button data-theme="dark" onclick="selectTheme(this)">⏾ Dark</button>
-    <button data-theme="default" onclick="selectTheme(this)">◑ Auto</button>
-    <span class="segmentedIndicator"></span>
+    <button onclick="setTheme('light')" data-theme-btn="light">☀︎ Light</button>
+    <button onclick="setTheme('dark')" data-theme-btn="dark">⏾ Dark</button>
+    <button onclick="setTheme('default')" data-theme-btn="default">◑ Default</button>
   </div>
 </div>
 </div>
@@ -1105,25 +1070,6 @@ function setTheme(mode) {
   document.getElementById("menu").classList.add("hidden");
 }
 }
-
-  function selectTheme(btn) {
-  const container = btn.parentElement;
-  const buttons = container.querySelectorAll("button");
-  const indicator = container.querySelector(".segmentedIndicator");
-
-  buttons.forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-
-  const rect = btn.getBoundingClientRect();
-  const parentRect = container.getBoundingClientRect();
-
-  indicator.style.width = `${rect.width}px`;
-  indicator.style.transform = `translateX(${rect.left - parentRect.left}px)`;
-
-  const mode = btn.dataset.theme;
-  setTheme(mode);
-}
-
 
 /* -------------------- TABS -------------------- */
 
@@ -1367,12 +1313,6 @@ if (cached) {
 }
     const savedTheme = localStorage.getItem("theme") || "default";
 setTheme(savedTheme);
-
-    const segmented = document.querySelector(".segmented");
-if (segmented) {
-  const btn = segmented.querySelector(`[data-theme="${savedTheme}"]`);
-  if (btn) selectTheme(btn);
-}
 
 const showAvatar = localStorage.getItem("showAvatar");
 if (showAvatar === "false") {
