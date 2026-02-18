@@ -268,6 +268,7 @@ body[data-theme="dark"] {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 0;
+  transform: translateX(0);
 }
 
 .themeSegment button {
@@ -318,7 +319,6 @@ body[data-theme="dark"] .themeIndicator {
 
 body[data-theme="dark"] .themeSegment button.active {
   color: #111;
-}
 }
 
     /* ---------- COMPACT THEME PILLS ---------- */
@@ -545,8 +545,11 @@ body[data-theme="dark"] .highlightPlaceholder {
   background: var(--text-main);
       border-radius: 2px;
       transform: translateX(0);
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      transition: filter 0.25s ease, opacity 0.25s ease, color 0.25s ease;
+      transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.25s ease,
+    opacity 0.25s ease,
+    color 0.25s ease;
     }
 
     /* ---------- GRID ---------- */
