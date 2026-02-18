@@ -753,8 +753,24 @@ body[data-theme="dark"] .tabItem.active img {
   <span class="toggle"></span>
 </label>
           
-          <label class="menuItem toggleItem">
-  <span class="menuLabel">Dark mode</span>
+          <div class="menuSection">
+  <div class="menuTitle">Theme</div>
+
+  <label class="menuItem">
+    <input type="radio" name="theme" onclick="setThemeMode('light')">
+    Light
+  </label>
+
+  <label class="menuItem">
+    <input type="radio" name="theme" onclick="setThemeMode('dark')">
+    Dark
+  </label>
+
+  <label class="menuItem">
+    <input type="radio" name="theme" onclick="setThemeMode('auto')">
+   Default
+  </label>
+</div>
 
   <input type="checkbox" onchange="toggleTheme(this)" />
 
@@ -1221,6 +1237,41 @@ if (cached) {
   document.querySelector(".container")
     .removeAttribute("data-loading");
 }
+(function themeEngine() {
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+  function applyTheme(mode) {
+    if (mode === "dark") {
+      document.body.setAttribute("data-theme", "dark");
+    } else if (mode === "light") {
+      document.body.removeAttribute("data-theme");
+    } else {
+      // auto
+      document.body.toggleAttribute("data-theme", media.matches);
+    }
+  }
+
+  function getMode() {
+    return localStorage.getItem("themeMode") || "auto";
+  }
+
+  function setMode(mode) {
+    localStorage.setItem("themeMode", mode);
+    applyTheme(mode);
+  }
+
+  // initial load
+  applyTheme(getMode());
+
+  // react to system change (only in auto)
+  media.addEventListener("change", () => {
+    if (getMode() === "auto") applyTheme("auto");
+  });
+
+  // expose API
+  window.setThemeMode = setMode;
+  window.getThemeMode = getMode;
+})();
 
 (function applySavedTheme() {
   const saved = localStorage.getItem("theme");
@@ -1254,6 +1305,14 @@ if (showNote === "false") {
   );
   if (noteToggle) noteToggle.checked = false;
 }
+    (function syncThemeUI() {
+  const mode = getThemeMode();
+  document.querySelectorAll('input[name="theme"]').forEach(r => {
+    r.checked = r.nextSibling.textContent.trim().toLowerCase().includes(mode);
+    localStorage.setItem("themeMode", "auto");
+  });
+})();
+
 
     await checkAccess();
     await loadPosts();
