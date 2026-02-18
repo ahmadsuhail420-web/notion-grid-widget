@@ -924,6 +924,12 @@ function extractProfileFromPosts(posts) {
   };
 }
 
+  function clearLoading() {
+  document.getElementById("skeleton").style.display = "none";
+  document.querySelector(".container").removeAttribute("data-loading");
+}
+
+
 /* -------------------- MENU -------------------- */
 
 function toggleMenu() {
@@ -1056,9 +1062,10 @@ async function loadPosts(btn) {
     console.error("loadPosts failed:", e);
   }
 
-  if (!btn) {
-    document.getElementById("skeleton").style.display = "none";
-    document.querySelector(".container").removeAttribute("data-loading");
+  finally {
+  clearLoading();
+  if (icon) icon.classList.remove("spin");
+}
   }
 
   if (icon) icon.classList.remove("spin");
@@ -1218,6 +1225,8 @@ if (cached) {
 
   renderHighlights(ALL_POSTS);
   renderGrid();
+  
+  clearLoading();
 
   document.querySelector(".container")
     .removeAttribute("data-loading");
