@@ -1312,12 +1312,19 @@ async function checkAccess() {
 }
 
 async function startGrid() {
-  try {
-    if (!getSlug()) {
-  document.querySelector(".container")
-    .removeAttribute("data-loading");
-  document.getElementById("skeleton").style.display = "none";
-  return;
+  let slugRetries = window.__slugRetries || 0;
+window.__slugRetries = slugRetries + 1;
+
+if (!getSlug()) {
+  if (slugRetries < 20) {           // ~6 seconds max
+    setTimeout(startGrid, 300);
+    return;
+  } else {
+    // ⛑️ FAILSAFE: stop skeleton
+    document.getElementById("skeleton").style.display = "none";
+    document.querySelector(".container").removeAttribute("data-loading");
+    return;
+  }
 }
     
     const cached = sessionStorage.getItem("cachedPosts");
