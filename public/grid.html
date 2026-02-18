@@ -1059,6 +1059,7 @@ async function loadPosts(btn) {
 
   } catch (e) {
     console.error("loadPosts failed:", e);
+    clearLoading();
   } finally {
     clearLoading();
     if (icon) icon.classList.remove("spin");
@@ -1210,8 +1211,8 @@ async function startGrid() {
   
   const slug = getSlug();
 if (!slug) {
-  console.warn("No slug found");
-  clearLoading();
+  console.warn("No slug found yet, retrying...");
+  setTimeout(startGrid, 300);
   return;
 }
   
