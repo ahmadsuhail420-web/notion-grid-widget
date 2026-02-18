@@ -1293,15 +1293,6 @@ if (showNote === "false") {
   );
   if (noteToggle) noteToggle.checked = false;
 }
-    (function syncThemeUI() {
-  const mode = getThemeMode();
-  document.querySelectorAll('input[name="theme"]').forEach(r => {
-    r.checked = r.nextSibling.textContent.trim().toLowerCase().includes(mode);
-    localStorage.setItem("themeMode", "auto");
-  });
-})();
-
-
     await checkAccess();
     await loadPosts();
 
