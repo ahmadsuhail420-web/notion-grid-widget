@@ -304,6 +304,11 @@ min-width: 110px;            /* safety */
   transform: scale(0.96);
 }
 
+.themeSegment .material-icons {
+  font-size: 16px;   /* 🔥 perfect for 26px pill height */
+  line-height: 1;
+}
+
 /* dark mode pill colors */
 body[data-theme="dark"] .themeIndicator {
   background: #ffffff;
@@ -849,15 +854,15 @@ body[data-theme="dark"] .tabItem.active img {
   <div class="themeSegment">
     <div class="themeIndicator"></div>
 
-  <button data-theme-btn="light" title="Light">
+ <button data-theme-btn="light" title="Light" onclick="setTheme('light')">
   <span class="material-icons">light_mode</span>
 </button>
 
-<button data-theme-btn="dark" title="Dark">
+<button data-theme-btn="dark" title="Dark" onclick="setTheme('dark')">
   <span class="material-icons">dark_mode</span>
 </button>
 
-<button data-theme-btn="default" title="Auto">
+<button data-theme-btn="default" title="Auto" onclick="setTheme('default')">
   <span class="material-icons">hdr_auto</span>
 </button>
   </div>
