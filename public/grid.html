@@ -932,8 +932,13 @@ function toggleSection(section, checkbox) {
 window.toggleSection = toggleSection;
 
 function toggleTheme(checkbox) {
-  document.body.toggleAttribute("data-theme", checkbox.checked);
-  localStorage.setItem("theme", checkbox.checked ? "dark" : "light");
+  if (checkbox.checked) {
+    document.body.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.body.removeAttribute("data-theme");
+    localStorage.setItem("theme", "light");
+  }
 }
 
 function toggleAvatar(checkbox) {
@@ -1202,14 +1207,12 @@ if (cached) {
 
 (function applySavedTheme() {
   const saved = localStorage.getItem("theme");
-
   if (saved === "dark") {
     document.body.setAttribute("data-theme", "dark");
-
-    const darkToggle = document.querySelector(
+    const toggle = document.querySelector(
       'input[onchange="toggleTheme(this)"]'
     );
-    if (darkToggle) darkToggle.checked = true;
+    if (toggle) toggle.checked = true;
   }
 })();
 
