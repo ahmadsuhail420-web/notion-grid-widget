@@ -332,7 +332,8 @@ body[data-theme="dark"] {
       to { transform: rotate(360deg); }
     }
 
-    ---------------/* HIGHLIGHTS */-----------
+   /* ---------- HIGHLIGHTS ---------- */
+
     .highlights {
   display: flex;
   justify-content: center;
@@ -1066,6 +1067,16 @@ async function loadPosts(btn) {
   }
 }
 
+  function clearLoading() {
+  const container = document.querySelector(".container");
+  if (!container) return;
+
+  container.removeAttribute("data-loading");
+
+  const sk = document.getElementById("skeleton");
+  if (sk) sk.style.display = "none";
+}
+
 /* -------------------- GRID -------------------- */
 
 function renderGrid() {
@@ -1290,9 +1301,13 @@ window.closeViewer = closeViewer;
 document.querySelector(".refreshBtn").onclick = function () {
   loadPosts(this);
 };
-  document.addEventListener("click", () => {
+ document.addEventListener("click", (e) => {
   const menu = document.getElementById("menu");
-  if (!menu.classList.contains("hidden")) {
+  const btn = document.querySelector(".menuBtn");
+
+  if (!menu || !btn) return;
+
+  if (!menu.contains(e.target) && !btn.contains(e.target)) {
     menu.classList.add("hidden");
   }
 });
