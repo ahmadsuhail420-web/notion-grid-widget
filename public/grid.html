@@ -1312,68 +1312,54 @@ async function checkAccess() {
 }
 
 async function startGrid() {
-  let slugRetries = window.__slugRetries || 0;
-window.__slugRetries = slugRetries + 1;
+  try {
+    let slugRetries = window.__slugRetries || 0;
+    window.__slugRetries = slugRetries + 1;
 
-if (!getSlug()) {
-  if (slugRetries < 20) {           // ~6 seconds max
-    setTimeout(startGrid, 300);
-    return;
-  } else {
-    // ⛑️ FAILSAFE: stop skeleton
-    document.getElementById("skeleton").style.display = "none";
-    document.querySelector(".container").removeAttribute("data-loading");
-    return;
-  }
-}
-    
+    if (!getSlug()) {
+      if (slugRetries < 20) {
+        setTimeout(startGrid, 300);
+        return;
+      } else {
+        document.getElementById("skeleton").style.display = "none";
+        document.querySelector(".container").removeAttribute("data-loading");
+        return;
+      }
+    }
+
     const cached = sessionStorage.getItem("cachedPosts");
-if (cached) {
-  ALL_POSTS = JSON.parse(cached);
+    if (cached) {
+      ALL_POSTS = JSON.parse(cached);
+      renderHighlights(ALL_POSTS);
+      renderGrid();
+      document.querySelector(".container").removeAttribute("data-loading");
+    }
 
-  renderHighlights(ALL_POSTS);
-  renderGrid();
-
-  document.querySelector(".container")
-    .removeAttribute("data-loading");
-}
     const savedTheme = localStorage.getItem("theme") || "default";
-setTsheme(savedTheme);
+    setTheme(savedTheme); // ✅ fixed typo
 
-requestAnimationFrame(() => {
-  const indicator = document.querySelector(".themeIndicator");
-  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-  const index = buttons.findIndex(b => b.dataset.themeBtn === savedTheme);
-  if (indicator && index >= 0) {
-    indicator.style.transform = `translateX(${index * 100}%)`;
-  }
-});
+    requestAnimationFrame(() => {
+      const indicator = document.querySelector(".themeIndicator");
+      const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+      const index = buttons.findIndex(b => b.dataset.themeBtn === savedTheme);
+      if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
+    });
 
-document
-  .querySelector(`input[name="theme"][value="${savedTheme}"]`)
-  ?.setAttribute("checked", true);
+    const showAvatar = localStorage.getItem("showAvatar");
+    if (showAvatar === "false") {
+      const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
+      if (avatarToggle) {
+        avatarToggle.checked = false;
+        document.getElementById("profileHeader").classList.add("no-avatar");
+      }
+    }
 
-const showAvatar = localStorage.getItem("showAvatar");
-if (showAvatar === "false") {
-  const avatarToggle = document.querySelector(
-    'input[onchange="toggleAvatar(this)"]'
-  );
-  if (avatarToggle) {
-    avatarToggle.checked = false;
-    document.getElementById("profileHeader")
-      .classList.add("no-avatar");
-  }
-}
-
-const showNote = localStorage.getItem("showProfileNote");
-if (showNote === "false") {
-  document.getElementById("profileNote")?.classList.add("hidden-section");
-
-  const noteToggle = document.querySelector(
-    'input[onchange="toggleProfileNote(this)"]'
-  );
-  if (noteToggle) noteToggle.checked = false;
-}
+    const showNote = localStorage.getItem("showProfileNote");
+    if (showNote === "false") {
+      document.getElementById("profileNote")?.classList.add("hidden-section");
+      const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
+      if (noteToggle) noteToggle.checked = false;
+    }
 
     await checkAccess();
     await loadPosts();
