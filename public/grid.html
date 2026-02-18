@@ -330,7 +330,7 @@ body[data-theme="dark"] {
       to { transform: rotate(360deg); }
     }
 
-    ---------------/* HIGHLIGHTS */-----------
+    /*--------------- HIGHLIGHTS -----------*/
     .highlights {
   display: flex;
   justify-content: center;
@@ -1101,11 +1101,10 @@ async function loadPosts(btn) {
   } catch (e) {
     console.error("loadPosts failed:", e);
   }
-
-  if (!btn) {
-    document.getElementById("skeleton").style.display = "none";
-    document.querySelector(".container").removeAttribute("data-loading");
-  }
+  finally {
+  document.getElementById("skeleton").style.display = "none";
+  document.querySelector(".container")?.removeAttribute("data-loading");
+}
 
   if (icon) icon.classList.remove("spin");
 }
