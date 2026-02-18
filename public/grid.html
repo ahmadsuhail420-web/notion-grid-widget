@@ -26,18 +26,19 @@
     /* ---------- DARK MODE ---------- */
     
 body[data-theme="dark"] {
-  --bg-main: #0f0f0f;
-  --bg-card: #1a1a1a;
-  --bg-muted: #222222;
+  /* Notion-like dark mode */
+  --bg-main: #191919;
+  --bg-card: #202020;
+  --bg-muted: #262626;
 
-  --text-main: #f2f2f2;
-  --text-muted: #9a9a9a;
+  --text-main: #ededed;
+  --text-muted: #9b9b9b;
 
-  --border-color: rgba(255, 255, 255, .35);
-  --shadow: 0 10px 30px rgba(0,0,0,0.25);
+  --border-color: #2f2f2f;
+  --shadow: 0 10px 30px rgba(0,0,0,0.4);
 
-  --toggle-off: #555;
-  --toggle-on: #fff;
+  --toggle-off: #3a3a3a;
+  --toggle-on: #ffffff;
 }
 
     /* ---------- BASE ---------- */
@@ -203,6 +204,7 @@ body[data-theme="dark"] {
     }
 
     .menu {
+      width: 120px;
       position: absolute;
       top: 44px;
       right: 12px;
@@ -233,6 +235,12 @@ body[data-theme="dark"] {
       gap: 8px;
       white-space: nowrap;
     }
+    .menuSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* ✅ centers pill + title */
+  gap: 6px;
+}
     
     /* ---------- THEME SEGMENT (PILL) ---------- */
 
@@ -246,12 +254,14 @@ body[data-theme="dark"] {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0;
   padding: 4px;
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  width: 180px;               /* compact width */
+  width: auto;            /* instead of 100% */
+  margin: 0 auto;        /* ✅ hard-center safety */
+min-width: 110px;            /* safety */
+  max-width: 100%;
 }
 
 .themeIndicator {
@@ -294,9 +304,14 @@ body[data-theme="dark"] {
   transform: scale(0.96);
 }
 
+.themeSegment .material-icons {
+  font-size: 16px;   /* 🔥 perfect for 26px pill height */
+  line-height: 1;
+}
+
 /* dark mode pill colors */
 body[data-theme="dark"] .themeIndicator {
-  background: #f5f5f7;
+  background: #ffffff;
   box-shadow: 0 2px 8px rgba(255,255,255,0.25);
 }
 
@@ -839,17 +854,17 @@ body[data-theme="dark"] .tabItem.active img {
   <div class="themeSegment">
     <div class="themeIndicator"></div>
 
-    <button data-theme-btn="light" onclick="setTheme('light')">
-      <span>Light</span>
-    </button>
+ <button data-theme-btn="light" title="Light" onclick="setTheme('light')">
+  <span class="material-icons">light_mode</span>
+</button>
 
-    <button data-theme-btn="dark" onclick="setTheme('dark')">
-      <span>Dark</span>
-    </button>
+<button data-theme-btn="dark" title="Dark" onclick="setTheme('dark')">
+  <span class="material-icons">dark_mode</span>
+</button>
 
-    <button data-theme-btn="default" onclick="setTheme('default')">
-      <span>Auto</span>
-    </button>
+<button data-theme-btn="default" title="Auto" onclick="setTheme('default')">
+  <span class="material-icons">hdr_auto</span>
+</button>
   </div>
 </div>
 </div>
@@ -1016,6 +1031,20 @@ function extractProfileFromPosts(posts) {
   };
 }
 
+function syncThemePill(mode) {
+  const indicator = document.querySelector(".themeIndicator");
+  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+  const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
+
+  if (indicator && index >= 0) {
+    indicator.style.transform = `translateX(${index * 100}%)`;
+  }
+
+  buttons.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.themeBtn === mode);
+  });
+}
+
 /* -------------------- MENU -------------------- */
 
 function toggleMenu() {
@@ -1033,9 +1062,6 @@ function toggleSection(section, checkbox) {
   if (!el) return;
 
   el.classList.toggle("hidden-section", !checkbox.checked);
-
-  // close menu after toggle
-  document.getElementById("menu").classList.add("hidden");
 }
 
 window.toggleSection = toggleSection;
@@ -1046,8 +1072,6 @@ function toggleAvatar(checkbox) {
 
   profile.classList.toggle("no-avatar", !checkbox.checked);
   localStorage.setItem("showAvatar", checkbox.checked);
-
-  document.getElementById("menu").classList.add("hidden");
 }
 
 function toggleProfileNote(checkbox) {
@@ -1058,9 +1082,6 @@ function toggleProfileNote(checkbox) {
 
   // optional: remember choice
   localStorage.setItem("showProfileNote", checkbox.checked);
-
-  // close menu
-  document.getElementById("menu").classList.add("hidden");
 }
 
 function setTheme(mode) {
@@ -1078,21 +1099,7 @@ function setTheme(mode) {
   }
 
   localStorage.setItem("theme", mode);
-
-  // pill indicator
-  const indicator = document.querySelector(".themeIndicator");
-  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-  const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
-
-  if (indicator && index >= 0) {
-    indicator.style.transform = `translateX(${index * 100}%)`;
-  }
-
-  buttons.forEach(btn =>
-    btn.classList.toggle("active", btn.dataset.themeBtn === mode)
-  );
-
-  document.getElementById("menu")?.classList.add("hidden");
+  syncThemePill(mode);
 }
 
 /* -------------------- TABS -------------------- */
@@ -1345,13 +1352,6 @@ async function startGrid() {
     const savedTheme = localStorage.getItem("theme") || "default";
     setTheme(savedTheme); // ✅ fixed typo
 
-    requestAnimationFrame(() => {
-      const indicator = document.querySelector(".themeIndicator");
-      const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-      const index = buttons.findIndex(b => b.dataset.themeBtn === savedTheme);
-      if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
-    });
-
     const showAvatar = localStorage.getItem("showAvatar");
     if (showAvatar === "false") {
       const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
@@ -1400,6 +1400,20 @@ document.querySelector(".refreshBtn").onclick = function () {
   const menu = document.getElementById("menu");
   if (!menu.classList.contains("hidden")) {
     menu.classList.add("hidden");
+  }
+});
+/* ---------- AUTO THEME LISTENER ---------- */
+
+const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+media.addEventListener("change", e => {
+  const savedTheme = localStorage.getItem("theme");
+
+  // only react when user selected Auto (default)
+  if (savedTheme === "default") {
+    e.matches
+      ? document.body.setAttribute("data-theme", "dark")
+      : document.body.removeAttribute("data-theme");
   }
 });
 
