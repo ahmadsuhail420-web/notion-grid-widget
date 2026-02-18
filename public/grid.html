@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
 
   <style>
+    
     /* ---------- THEME VARIABLES ---------- */
+    
 :root {
   /* light mode */
   --bg-main: #ffffff;
@@ -24,18 +26,18 @@
     /* ---------- DARK MODE ---------- */
     
 body[data-theme="dark"] {
-  --bg-main: #191919;
-  --bg-card: #202020;
-  --bg-muted: #2A2A2A;
+  --bg-main: #0f0f0f;
+  --bg-card: #1a1a1a;
+  --bg-muted: #222222;
 
-  --text-main: #EDEDED;
-  --text-muted: #9B9B9B;
+  --text-main: #f2f2f2;
+  --text-muted: #9a9a9a;
 
-  --border-color: rgba(255,255,255,0.14);
-  --shadow: 0 10px 30px rgba(0,0,0,0.45);
+  --border-color: rgba(255, 255, 255, .35);
+  --shadow: 0 10px 30px rgba(0,0,0,0.25);
 
-  --toggle-off: #3A3A3A;
-  --toggle-on: #EDEDED;
+  --toggle-off: #555;
+  --toggle-on: #fff;
 }
 
     /* ---------- BASE ---------- */
@@ -52,7 +54,7 @@ body[data-theme="dark"] {
       padding: 15px 20px 0;
       border-radius: 24px;
       border: 3px solid var(--border-color);
-    transition: 
+      transition: 
     background-color 0.25s ease,
     color 0.25s ease,
     border-color 0.25s ease;
@@ -330,7 +332,7 @@ body[data-theme="dark"] {
       to { transform: rotate(360deg); }
     }
 
-    /*--------------- HIGHLIGHTS -----------*/
+    ---------------/* HIGHLIGHTS */-----------
     .highlights {
   display: flex;
   justify-content: center;
@@ -359,11 +361,11 @@ body[data-theme="dark"] {
   justify-content: center;
   background: var(--bg-card);
   border: 2px solid var(--border-color);
-  flex-shrink: 0;            /* ✅ KEEP SIZE */
-transition: 
+  transition: 
     background-color 0.25s ease,
     color 0.25s ease,
     border-color 0.25s ease;
+  flex-shrink: 0;            /* ✅ KEEP SIZE */
 }
 
  .highlightItem img {
@@ -728,49 +730,36 @@ body[data-theme="dark"] .tabItem.active img {
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
   <label class="menuItem toggleItem">
-    <span class="menuLabel">Header</span>
+    <span class="menuLabel">Show header</span>
     <input type="checkbox" checked onchange="toggleSection('header', this)">
     <span class="toggle"></span>
   </label>
 
   <label class="menuItem toggleItem">
-    <span class="menuLabel">Highlights</span>
+    <span class="menuLabel">Show highlights</span>
     <input type="checkbox" checked onchange="toggleSection('highlights', this)">
     <span class="toggle"></span>
   </label>
   
   <label class="menuItem toggleItem">
-  <span class="menuLabel">Profile</span>
+  <span class="menuLabel">Show avatar</span>
   <input type="checkbox" checked onchange="toggleAvatar(this)">
   <span class="toggle"></span>
 </label>
 
 <label class="menuItem toggleItem">
-  <span class="menuLabel">Note</span>
+  <span class="menuLabel">Show profile note</span>
   <input type="checkbox" checked onchange="toggleProfileNote(this)">
   <span class="toggle"></span>
 </label>
           
-          <div class="menuSection">
-  <div class="menuTitle">Theme</div>
+          <label class="menuItem toggleItem">
+  <span class="menuLabel">Dark mode</span>
 
-  <label class="menuItem">
-    <input type="radio" name="theme" data-mode="light"
-           onclick="setThemeMode('light')">
-    Light
-  </label>
+  <input type="checkbox" onchange="toggleTheme(this)" />
 
-  <label class="menuItem">
-    <input type="radio" name="theme" data-mode="dark"
-           onclick="setThemeMode('dark')">
-    Dark
-  </label>
-
-  <label class="menuItem">
-    <input type="radio" name="theme" data-mode="auto"
-           onclick="setThemeMode('auto')">
-    Default (Notion)
-  </label>
+  <span class="toggle"></span>
+</label>
 </div>
       </div>
       
@@ -894,51 +883,6 @@ let ALL_POSTS = [];
 let FILTER = "Post";
 let currentSlide = 0;
 let currentMedia = [];
-  (function themeEngine() {
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-  function applyTheme(mode) {
-    if (mode === "dark") {
-      document.body.setAttribute("data-theme", "dark");
-    } else if (mode === "light") {
-      document.body.removeAttribute("data-theme");
-    } else {
-      // auto
-      document.body.toggleAttribute("data-theme", media.matches);
-    }
-  }
-
-  function getMode() {
-    return localStorage.getItem("themeMode") || "auto";
-  }
-
-  function setMode(mode) {
-    localStorage.setItem("themeMode", mode);
-    applyTheme(mode);
-    syncThemeUI();
-  }
-
-  function syncThemeUI() {
-    const mode = getMode();
-    document.querySelectorAll('input[name="theme"]').forEach(r => {
-      r.checked = r.dataset.mode === mode;
-    });
-  }
-
-  // initial apply
-  applyTheme(getMode());
-
-  // react to system change (auto only)
-  media.addEventListener("change", () => {
-    if (getMode() === "auto") applyTheme("auto");
-  });
-
-  // expose globally
-  window.setThemeMode = setMode;
-  window.getThemeMode = getMode;
-  window.syncThemeUI = syncThemeUI;
-})();
-
 
 /* -------------------- HELPERS -------------------- */
 
@@ -1003,6 +947,16 @@ function toggleSection(section, checkbox) {
 }
 
 window.toggleSection = toggleSection;
+
+  function toggleTheme(checkbox) {
+  if (checkbox.checked) {
+    document.body.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.body.removeAttribute("data-theme");
+    localStorage.setItem("theme", "light");
+  }
+}
 
 
 function toggleAvatar(checkbox) {
@@ -1101,10 +1055,11 @@ async function loadPosts(btn) {
   } catch (e) {
     console.error("loadPosts failed:", e);
   }
-  finally {
-  document.getElementById("skeleton").style.display = "none";
-  document.querySelector(".container")?.removeAttribute("data-loading");
-}
+
+  if (!btn) {
+    document.getElementById("skeleton").style.display = "none";
+    document.querySelector(".container").removeAttribute("data-loading");
+  }
 
   if (icon) icon.classList.remove("spin");
 }
@@ -1256,33 +1211,50 @@ async function startGrid() {
       setTimeout(startGrid, 300);
       return;
     }
-
-    // ✅ delay UI sync until DOM is ready
-    requestAnimationFrame(() => {
-      syncThemeUI();
-    });
-
+    
     const cached = sessionStorage.getItem("cachedPosts");
-    if (cached) {
-      ALL_POSTS = JSON.parse(cached);
-      renderHighlights(ALL_POSTS);
-      renderGrid();
-      document.querySelector(".container")
-        .removeAttribute("data-loading");
-    }
+if (cached) {
+  ALL_POSTS = JSON.parse(cached);
 
-    // avatar + note restore (correct)
-    const showAvatar = localStorage.getItem("showAvatar");
-    if (showAvatar === "false") {
-      document.getElementById("profileHeader")
-        ?.classList.add("no-avatar");
-    }
+  renderHighlights(ALL_POSTS);
+  renderGrid();
 
-    const showNote = localStorage.getItem("showProfileNote");
-    if (showNote === "false") {
-      document.getElementById("profileNote")
-        ?.classList.add("hidden-section");
-    }
+  document.querySelector(".container")
+    .removeAttribute("data-loading");
+}
+
+(function applySavedTheme() {
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark") {
+    document.body.setAttribute("data-theme", "dark");
+    const toggle = document.querySelector(
+      'input[onchange="toggleTheme(this)"]'
+    );
+    if (toggle) toggle.checked = true;
+  }
+})();
+
+const showAvatar = localStorage.getItem("showAvatar");
+if (showAvatar === "false") {
+  const avatarToggle = document.querySelector(
+    'input[onchange="toggleAvatar(this)"]'
+  );
+  if (avatarToggle) {
+    avatarToggle.checked = false;
+    document.getElementById("profileHeader")
+      .classList.add("no-avatar");
+  }
+}
+
+const showNote = localStorage.getItem("showProfileNote");
+if (showNote === "false") {
+  document.getElementById("profileNote")?.classList.add("hidden-section");
+
+  const noteToggle = document.querySelector(
+    'input[onchange="toggleProfileNote(this)"]'
+  );
+  if (noteToggle) noteToggle.checked = false;
+}
 
     await checkAccess();
     await loadPosts();
@@ -1291,7 +1263,6 @@ async function startGrid() {
       const activeTab = document.querySelector(".tabItem.active");
       if (activeTab) moveUnderline(activeTab);
     });
-
   } catch (e) {
     console.error("Grid init failed", e);
   }
@@ -1324,3 +1295,4 @@ window.addEventListener("load", startGrid);
 </script>
 </body>
 </html>
+Why dark mode not working.
