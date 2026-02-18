@@ -234,114 +234,76 @@ body[data-theme="dark"] {
       white-space: nowrap;
     }
     
-    /* ---------- THEME SEGMENT ---------- */
+    /* ---------- THEME SEGMENT (PILL) ---------- */
 
 .themeTitle {
   font-size: 12px;
   font-weight: 600;
   opacity: 0.6;
-  margin-bottom: 6px;
 }
 
 .themeSegment {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 4px;
   background: var(--bg-muted);
+  border-radius: 999px;
   border: 1px solid var(--border-color);
-  border-radius: 999px;
- max-width: 200px;     /* ⬅️ shorter overall length */
-  width: 100%;
-  margin: 0 auto;
-  padding: 4px;        /* tighter outer padding */
-   position: relative;
-  overflow: hidden;
+  width: 180px;               /* compact width */
 }
 
- .themeIndicator {
+.themeIndicator {
   position: absolute;
-  left: 4px;
   top: 4px;
-  height: 28px;              /* ✅ fixed height */
+  left: 4px;
+  height: 26px;
   width: calc((100% - 8px) / 3);
-  background: var(--bg-card);
   border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #000;
   z-index: 0;
-  transform: translateX(0);
+
+  /* ✨ animation */
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1),
+    background-color 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
+/* buttons */
 .themeSegment button {
-  height: 28px;              /* ⬅️ SAME as pill */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-
+  height: 26px;
   border: none;
   background: transparent;
   font-size: 11px;
   font-weight: 600;
-  line-height: 1;            /* ⬅️ prevents glyph drift */
-  padding: 0;
-  cursor: pointer;
-
   color: var(--text-muted);
-  position: relative;
+  cursor: pointer;
   z-index: 1;
-}
-
-.themeSegment button span {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: color 0.25s ease;
 }
 
-/* active state */
+/* active text */
 .themeSegment button.active {
-  background: transparent;   /* ⬅️ important */
-  color: #ffffff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-}
-  
-  /* Light mode */
-body:not([data-theme="dark"]) .themeIndicator {
-  background: #000;
-}
-
-body:not([data-theme="dark"]) .themeSegment button.active {
   color: #fff;
+  transform: scale(0.96);
 }
 
-/* Dark mode */
+/* dark mode pill colors */
 body[data-theme="dark"] .themeIndicator {
   background: #f5f5f7;
+  box-shadow: 0 2px 8px rgba(255,255,255,0.25);
 }
 
 body[data-theme="dark"] .themeSegment button.active {
   color: #111;
 }
-
-    /* ---------- COMPACT THEME PILLS ---------- */
-
-.menuSection .menuItem {
-  width: fit-content;        /* ⬅️ key */
-  padding: 4px 8px;          /* tighter pill */
-  border-radius: 8px;
-}
-
-/* keep radio + text close */
-.menuSection .menuItem input[type="radio"] {
-  margin-right: 6px;
-}
-
-/* optional: align pills nicely */
-.menuSection {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-
+    
 .toggleItem input {
   position: absolute;
   opacity: 0;
@@ -545,11 +507,8 @@ body[data-theme="dark"] .highlightPlaceholder {
   background: var(--text-main);
       border-radius: 2px;
       transform: translateX(0);
-      transition:
-    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-    filter 0.25s ease,
-    opacity 0.25s ease,
-    color 0.25s ease;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: filter 0.25s ease, opacity 0.25s ease, color 0.25s ease;
     }
 
     /* ---------- GRID ---------- */
@@ -874,24 +833,24 @@ body[data-theme="dark"] .tabItem.active img {
   <span class="toggle"></span>
 </label>
           
- <div class="menuSection">
+       <div class="menuSection">
   <div class="menuLabel themeTitle">Theme</div>
 
   <div class="themeSegment">
-  <div class="themeIndicator"></div>
+    <div class="themeIndicator"></div>
 
-<button data-theme-btn="light" onclick="setTheme('light')">
-  <span>☀︎ Light</span>
-</button>
+    <button data-theme-btn="light" onclick="setTheme('light')">
+      <span>Light</span>
+    </button>
 
-<button data-theme-btn="dark" onclick="setTheme('dark')">
-  <span>⏾ Dark</span>
-</button>
+    <button data-theme-btn="dark" onclick="setTheme('dark')">
+      <span>Dark</span>
+    </button>
 
-<button data-theme-btn="default" onclick="setTheme('default')">
-  <span>◑ Auto</span>
-</button>
-
+    <button data-theme-btn="default" onclick="setTheme('default')">
+      <span>Auto</span>
+    </button>
+  </div>
 </div>
 </div>
       </div>
@@ -1099,33 +1058,31 @@ function toggleProfileNote(checkbox) {
 function setTheme(mode) {
   if (mode === "dark") {
     document.body.setAttribute("data-theme", "dark");
-  } else if (mode === "light") {
+  } 
+  else if (mode === "light") {
     document.body.removeAttribute("data-theme");
-  } else {
+  } 
+  else {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     prefersDark
       ? document.body.setAttribute("data-theme", "dark")
       : document.body.removeAttribute("data-theme");
   }
-  // slide indicator
-const indicator = document.querySelector(".themeIndicator");
-const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-const index = buttons.findIndex(
-  btn => btn.dataset.themeBtn === mode
-);
-
-if (indicator && index >= 0) {
-  indicator.style.transform = `translateX(${index * 100}%)`;
-}
-  // ✅ active pill
-  document.querySelectorAll("[data-theme-btn]").forEach(btn => {
-    btn.classList.toggle(
-      "active",
-      btn.dataset.themeBtn === mode
-    );
-  });
 
   localStorage.setItem("theme", mode);
+
+  // pill indicator
+  const indicator = document.querySelector(".themeIndicator");
+  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+  const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
+
+  if (indicator && index >= 0) {
+    indicator.style.transform = `translateX(${index * 100}%)`;
+  }
+
+  buttons.forEach(btn =>
+    btn.classList.toggle("active", btn.dataset.themeBtn === mode)
+  );
 }
 
 /* -------------------- TABS -------------------- */
@@ -1353,57 +1310,54 @@ async function checkAccess() {
 
 async function startGrid() {
   try {
+    let slugRetries = window.__slugRetries || 0;
+    window.__slugRetries = slugRetries + 1;
+
     if (!getSlug()) {
-      setTimeout(startGrid, 300);
-      return;
+      if (slugRetries < 20) {
+        setTimeout(startGrid, 300);
+        return;
+      } else {
+        document.getElementById("skeleton").style.display = "none";
+        document.querySelector(".container").removeAttribute("data-loading");
+        return;
+      }
     }
-    
+
     const cached = sessionStorage.getItem("cachedPosts");
-if (cached) {
-  ALL_POSTS = JSON.parse(cached);
+    if (cached) {
+      ALL_POSTS = JSON.parse(cached);
+      renderHighlights(ALL_POSTS);
+      renderGrid();
+      document.querySelector(".container").removeAttribute("data-loading");
+    }
 
-  renderHighlights(ALL_POSTS);
-  renderGrid();
-
-  document.querySelector(".container")
-    .removeAttribute("data-loading");
-}
     const savedTheme = localStorage.getItem("theme") || "default";
-setTheme(savedTheme);
+    setTheme(savedTheme); // ✅ fixed typo
+
     requestAnimationFrame(() => {
-  const indicator = document.querySelector(".themeIndicator");
-  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-  const index = buttons.findIndex(
-    btn => btn.dataset.themeBtn === savedTheme
-  );
+      const indicator = document.querySelector(".themeIndicator");
+      const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+      const index = buttons.findIndex(b => b.dataset.themeBtn === savedTheme);
+      if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
+    });
 
-  if (indicator && index >= 0) {
-    indicator.style.transform = `translateX(${index * 100}%)`;
-  }
-});
+    const showAvatar = localStorage.getItem("showAvatar");
+    if (showAvatar === "false") {
+      const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
+      if (avatarToggle) {
+        avatarToggle.checked = false;
+        document.getElementById("profileHeader").classList.add("no-avatar");
+      }
+    }
 
-const showAvatar = localStorage.getItem("showAvatar");
-if (showAvatar === "false") {
-  const avatarToggle = document.querySelector(
-    'input[onchange="toggleAvatar(this)"]'
-  );
-  if (avatarToggle) {
-    avatarToggle.checked = false;
-    document.getElementById("profileHeader")
-      .classList.add("no-avatar");
-  }
-}
+    const showNote = localStorage.getItem("showProfileNote");
+    if (showNote === "false") {
+      document.getElementById("profileNote")?.classList.add("hidden-section");
+      const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
+      if (noteToggle) noteToggle.checked = false;
+    }
 
-const showNote = localStorage.getItem("showProfileNote");
-if (showNote === "false") {
-  document.getElementById("profileNote")?.classList.add("hidden-section");
-
-  const noteToggle = document.querySelector(
-    'input[onchange="toggleProfileNote(this)"]'
-  );
-  if (noteToggle) noteToggle.checked = false;
-}
-  
     await checkAccess();
     await loadPosts();
 
