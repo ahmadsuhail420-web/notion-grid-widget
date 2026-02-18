@@ -258,9 +258,10 @@ body[data-theme="dark"] {
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  width: 90%;            /* instead of 100% */
+  width: auto;            /* instead of 100% */
   margin: 0 auto;        /* ✅ hard-center safety */
-
+min-width: 110px;            /* safety */
+  max-width: 100%;
 }
 
 .themeIndicator {
