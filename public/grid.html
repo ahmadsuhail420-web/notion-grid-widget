@@ -306,6 +306,26 @@ body[data-theme="dark"] {
 body[data-theme="dark"] .themeSegment button.active {
   box-shadow: 0 2px 8px rgba(0,0,0,0.45);
 }
+    /* ---------- COMPACT THEME PILLS ---------- */
+
+.menuSection .menuItem {
+  width: fit-content;        /* ⬅️ key */
+  padding: 4px 8px;          /* tighter pill */
+  border-radius: 8px;
+}
+
+/* keep radio + text close */
+.menuSection .menuItem input[type="radio"] {
+  margin-right: 6px;
+}
+
+/* optional: align pills nicely */
+.menuSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 
 .toggleItem input {
   position: absolute;
