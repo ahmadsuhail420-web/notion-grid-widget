@@ -924,12 +924,6 @@ function extractProfileFromPosts(posts) {
   };
 }
 
-  function clearLoading() {
-  document.getElementById("skeleton").style.display = "none";
-  document.querySelector(".container").removeAttribute("data-loading");
-}
-
-
 /* -------------------- MENU -------------------- */
 
 function toggleMenu() {
@@ -954,7 +948,7 @@ function toggleSection(section, checkbox) {
 
 window.toggleSection = toggleSection;
 
-  function toggleTheme(checkbox) {
+function toggleTheme(checkbox) {
   if (checkbox.checked) {
     document.body.setAttribute("data-theme", "dark");
     localStorage.setItem("theme", "dark");
@@ -963,7 +957,6 @@ window.toggleSection = toggleSection;
     localStorage.setItem("theme", "light");
   }
 }
-
 
 function toggleAvatar(checkbox) {
   const profile = document.getElementById("profileHeader");
@@ -1030,7 +1023,7 @@ async function loadPosts(btn) {
   try {
     const slug = getSlug();
     const res = await fetch(`/api/get-posts?slug=${slug}`);
-    const { profile: apiProfile, posts } = await res.json();
+    const { profile: apiProfile, posts, plan } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
     sessionStorage.setItem("cachedPosts", JSON.stringify(ALL_POSTS));
@@ -1041,6 +1034,7 @@ async function loadPosts(btn) {
     document.getElementById("profileName").innerText = finalProfile.name;
     document.getElementById("profileImage").src = finalProfile.picture;
 
+    // ✅ PROFILE NOTE (MUST be inside try)
     const noteEl = document.getElementById("profileNote");
     if (apiProfile?.note) {
       noteEl.textContent = apiProfile.note;
@@ -1059,10 +1053,14 @@ async function loadPosts(btn) {
 
   } catch (e) {
     console.error("loadPosts failed:", e);
-  } finally {
-    clearLoading();
-    if (icon) icon.classList.remove("spin");
   }
+
+  if (!btn) {
+    document.getElementById("skeleton").style.display = "none";
+    document.querySelector(".container").removeAttribute("data-loading");
+  }
+
+  if (icon) icon.classList.remove("spin");
 }
 
 /* -------------------- GRID -------------------- */
@@ -1207,22 +1205,18 @@ async function checkAccess() {
 }
 
 async function startGrid() {
-  
-  const slug = getSlug();
-if (!slug) {
-  console.warn("No slug found");
-  clearLoading();
-  return;
-}
-  
+  try {
+    if (!getSlug()) {
+      setTimeout(startGrid, 300);
+      return;
+    }
+    
     const cached = sessionStorage.getItem("cachedPosts");
 if (cached) {
   ALL_POSTS = JSON.parse(cached);
 
   renderHighlights(ALL_POSTS);
   renderGrid();
-  
-  clearLoading();
 
   document.querySelector(".container")
     .removeAttribute("data-loading");
