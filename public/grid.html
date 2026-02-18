@@ -1028,9 +1028,6 @@ function toggleSection(section, checkbox) {
   if (!el) return;
 
   el.classList.toggle("hidden-section", !checkbox.checked);
-
-  // close menu after toggle
-  document.getElementById("menu").classList.add("hidden");
 }
 
 window.toggleSection = toggleSection;
@@ -1041,8 +1038,6 @@ function toggleAvatar(checkbox) {
 
   profile.classList.toggle("no-avatar", !checkbox.checked);
   localStorage.setItem("showAvatar", checkbox.checked);
-
-  document.getElementById("menu").classList.add("hidden");
 }
 
 function toggleProfileNote(checkbox) {
@@ -1053,9 +1048,6 @@ function toggleProfileNote(checkbox) {
 
   // optional: remember choice
   localStorage.setItem("showProfileNote", checkbox.checked);
-
-  // close menu
-  document.getElementById("menu").classList.add("hidden");
 }
 
 function setTheme(mode) {
@@ -1079,9 +1071,6 @@ function setTheme(mode) {
   });
 
   localStorage.setItem("theme", mode);
-  if (document.getElementById("menu")?.classList.contains("hidden") === false) {
-  document.getElementById("menu").classList.add("hidden");
-}
 }
 
 /* -------------------- TABS -------------------- */
