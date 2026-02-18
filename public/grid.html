@@ -234,6 +234,69 @@ body[data-theme="dark"] {
       white-space: nowrap;
     }
     
+    /* ---------- THEME SEGMENT (PILL) ---------- */
+
+.themeTitle {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+.themeSegment {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 4px;
+  background: var(--bg-muted);
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  width: 180px;               /* compact width */
+}
+
+.themeIndicator {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  height: 26px;
+  width: calc((100% - 8px) / 3);
+  border-radius: 999px;
+  background: #000;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 0.25s ease;
+  z-index: 0;
+}
+
+/* buttons */
+.themeSegment button {
+  height: 26px;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* active text */
+.themeSegment button.active {
+  color: #fff;
+}
+
+/* dark mode pill colors */
+body[data-theme="dark"] .themeIndicator {
+  background: #f5f5f7;
+}
+
+body[data-theme="dark"] .themeSegment button.active {
+  color: #111;
+}
+    
 .toggleItem input {
   position: absolute;
   opacity: 0;
@@ -763,23 +826,24 @@ body[data-theme="dark"] .tabItem.active img {
   <span class="toggle"></span>
 </label>
           
-        <div class="menuSection">
-  <div class="menuLabel" style="opacity:.6">Theme</div>
+       <div class="menuSection">
+  <div class="menuLabel themeTitle">Theme</div>
 
-  <label class="menuItem">
-    <input type="radio" name="theme" value="light" onclick="setTheme('light')">
-    Light
-  </label>
+  <div class="themeSegment">
+    <div class="themeIndicator"></div>
 
-  <label class="menuItem">
-    <input type="radio" name="theme" value="dark" onclick="setTheme('dark')">
-    Dark
-  </label>
+    <button data-theme-btn="light" onclick="setTheme('light')">
+      <span>Light</span>
+    </button>
 
-  <label class="menuItem">
-    <input type="radio" name="theme" value="default" onclick="setTheme('default')">
-    Default
-  </label>
+    <button data-theme-btn="dark" onclick="setTheme('dark')">
+      <span>Dark</span>
+    </button>
+
+    <button data-theme-btn="default" onclick="setTheme('default')">
+      <span>Auto</span>
+    </button>
+  </div>
 </div>
 </div>
       </div>
@@ -995,22 +1059,32 @@ function toggleProfileNote(checkbox) {
 function setTheme(mode) {
   if (mode === "dark") {
     document.body.setAttribute("data-theme", "dark");
-  }
+  } 
   else if (mode === "light") {
     document.body.removeAttribute("data-theme");
-  }
+  } 
   else {
-    // DEFAULT = Notion / system auto-match
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    if (prefersDark) {
-      document.body.setAttribute("data-theme", "dark");
-    } else {
-      document.body.removeAttribute("data-theme");
-    }
+    prefersDark
+      ? document.body.setAttribute("data-theme", "dark")
+      : document.body.removeAttribute("data-theme");
   }
 
   localStorage.setItem("theme", mode);
+
+  // pill indicator
+  const indicator = document.querySelector(".themeIndicator");
+  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+  const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
+
+  if (indicator && index >= 0) {
+    indicator.style.transform = `translateX(${index * 100}%)`;
+  }
+
+  buttons.forEach(btn =>
+    btn.classList.toggle("active", btn.dataset.themeBtn === mode)
+  );
+
   document.getElementById("menu")?.classList.add("hidden");
 }
 
@@ -1240,9 +1314,11 @@ async function checkAccess() {
 async function startGrid() {
   try {
     if (!getSlug()) {
-      setTimeout(startGrid, 300);
-      return;
-    }
+  document.querySelector(".container")
+    .removeAttribute("data-loading");
+  document.getElementById("skeleton").style.display = "none";
+  return;
+}
     
     const cached = sessionStorage.getItem("cachedPosts");
 if (cached) {
@@ -1255,7 +1331,16 @@ if (cached) {
     .removeAttribute("data-loading");
 }
     const savedTheme = localStorage.getItem("theme") || "default";
-setTheme(savedTheme);
+setTsheme(savedTheme);
+
+requestAnimationFrame(() => {
+  const indicator = document.querySelector(".themeIndicator");
+  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+  const index = buttons.findIndex(b => b.dataset.themeBtn === savedTheme);
+  if (indicator && index >= 0) {
+    indicator.style.transform = `translateX(${index * 100}%)`;
+  }
+});
 
 document
   .querySelector(`input[name="theme"][value="${savedTheme}"]`)
