@@ -43,7 +43,16 @@ body[data-theme="dark"] {
     /* ---------- BASE ---------- */
     
     body {
-      font-family: sans-serif;
+      font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    "SF Pro Display",
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
       max-width: 500px;
       max-height: 700px;
       margin: auto;
@@ -225,6 +234,48 @@ body[data-theme="dark"] {
       white-space: nowrap;
     }
     
+    /* ---------- THEME SEGMENT ---------- */
+
+.themeTitle {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.themeSegment {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.themeSegment button {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* active state */
+.themeSegment button.active {
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* dark mode shadow tweak */
+body[data-theme="dark"] .themeSegment button.active {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+}
+
 .toggleItem input {
   position: absolute;
   opacity: 0;
@@ -331,8 +382,9 @@ body[data-theme="dark"] {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    
+/* ---------- HIGHLIGHTS ---------- */
 
-    ---------------/* HIGHLIGHTS */-----------
     .highlights {
   display: flex;
   justify-content: center;
@@ -730,36 +782,38 @@ body[data-theme="dark"] .tabItem.active img {
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
   <label class="menuItem toggleItem">
-    <span class="menuLabel">Show header</span>
+    <span class="menuLabel">Header</span>
     <input type="checkbox" checked onchange="toggleSection('header', this)">
     <span class="toggle"></span>
   </label>
 
   <label class="menuItem toggleItem">
-    <span class="menuLabel">Show highlights</span>
+    <span class="menuLabel">Highlights</span>
     <input type="checkbox" checked onchange="toggleSection('highlights', this)">
     <span class="toggle"></span>
   </label>
   
   <label class="menuItem toggleItem">
-  <span class="menuLabel">Show avatar</span>
+  <span class="menuLabel">Profile</span>
   <input type="checkbox" checked onchange="toggleAvatar(this)">
   <span class="toggle"></span>
 </label>
 
 <label class="menuItem toggleItem">
-  <span class="menuLabel">Show profile note</span>
+  <span class="menuLabel">Note</span>
   <input type="checkbox" checked onchange="toggleProfileNote(this)">
   <span class="toggle"></span>
 </label>
           
-          <label class="menuItem toggleItem">
-  <span class="menuLabel">Dark mode</span>
+        <div class="menuSection">
+  <div class="menuLabel themeTitle">Theme</div>
 
-  <input type="checkbox" onchange="toggleTheme(this)" />
-
-  <span class="toggle"></span>
-</label>
+  <div class="themeSegment">
+    <button onclick="setTheme('light')" data-theme-btn="light">☀︎ Light</button>
+    <button onclick="setTheme('dark')" data-theme-btn="dark">⏾ Dark</button>
+    <button onclick="setTheme('default')" data-theme-btn="default">◑ Default</button>
+  </div>
+</div>
 </div>
       </div>
       
@@ -948,16 +1002,6 @@ function toggleSection(section, checkbox) {
 
 window.toggleSection = toggleSection;
 
-function toggleTheme(checkbox) {
-  if (checkbox.checked) {
-    document.body.setAttribute("data-theme", "dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.body.removeAttribute("data-theme");
-    localStorage.setItem("theme", "light");
-  }
-}
-
 function toggleAvatar(checkbox) {
   const profile = document.getElementById("profileHeader");
   if (!profile) return;
@@ -979,6 +1023,32 @@ function toggleProfileNote(checkbox) {
 
   // close menu
   document.getElementById("menu").classList.add("hidden");
+}
+
+function setTheme(mode) {
+  if (mode === "dark") {
+    document.body.setAttribute("data-theme", "dark");
+  } else if (mode === "light") {
+    document.body.removeAttribute("data-theme");
+  } else {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    prefersDark
+      ? document.body.setAttribute("data-theme", "dark")
+      : document.body.removeAttribute("data-theme");
+  }
+
+  // ✅ active pill
+  document.querySelectorAll("[data-theme-btn]").forEach(btn => {
+    btn.classList.toggle(
+      "active",
+      btn.dataset.themeBtn === mode
+    );
+  });
+
+  localStorage.setItem("theme", mode);
+  if (document.getElementById("menu")?.classList.contains("hidden") === false) {
+  document.getElementById("menu").classList.add("hidden");
+}
 }
 
 /* -------------------- TABS -------------------- */
@@ -1221,17 +1291,8 @@ if (cached) {
   document.querySelector(".container")
     .removeAttribute("data-loading");
 }
-
-(function applySavedTheme() {
-  const saved = localStorage.getItem("theme");
-  if (saved === "dark") {
-    document.body.setAttribute("data-theme", "dark");
-    const toggle = document.querySelector(
-      'input[onchange="toggleTheme(this)"]'
-    );
-    if (toggle) toggle.checked = true;
-  }
-})();
+    const savedTheme = localStorage.getItem("theme") || "default";
+setTheme(savedTheme);
 
 const showAvatar = localStorage.getItem("showAvatar");
 if (showAvatar === "false") {
@@ -1254,7 +1315,7 @@ if (showNote === "false") {
   );
   if (noteToggle) noteToggle.checked = false;
 }
-
+  
     await checkAccess();
     await loadPosts();
 
