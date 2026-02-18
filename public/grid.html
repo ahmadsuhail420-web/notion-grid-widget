@@ -996,11 +996,9 @@ function setTheme(mode) {
   if (mode === "dark") {
     document.body.setAttribute("data-theme", "dark");
   }
-
   else if (mode === "light") {
     document.body.removeAttribute("data-theme");
   }
-
   else {
     // DEFAULT = Notion / system auto-match
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -1013,11 +1011,7 @@ function setTheme(mode) {
   }
 
   localStorage.setItem("theme", mode);
-}
-
-
-  localStorage.setItem("theme", mode);
-    document.getElementById("menu")?.classList.add("hidden");
+  document.getElementById("menu")?.classList.add("hidden");
 }
 
 /* -------------------- TABS -------------------- */
