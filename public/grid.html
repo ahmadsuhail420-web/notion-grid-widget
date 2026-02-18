@@ -43,7 +43,16 @@ body[data-theme="dark"] {
     /* ---------- BASE ---------- */
     
     body {
-      font-family: sans-serif;
+      font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    "SF Pro Display",
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
       max-width: 500px;
       max-height: 700px;
       margin: auto;
@@ -331,8 +340,9 @@ body[data-theme="dark"] {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    
+/* ---------- HIGHLIGHTS ---------- */
 
-    ---------------/* HIGHLIGHTS */-----------
     .highlights {
   display: flex;
   justify-content: center;
@@ -730,36 +740,47 @@ body[data-theme="dark"] .tabItem.active img {
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
   <label class="menuItem toggleItem">
-    <span class="menuLabel">Show header</span>
+    <span class="menuLabel">Header</span>
     <input type="checkbox" checked onchange="toggleSection('header', this)">
     <span class="toggle"></span>
   </label>
 
   <label class="menuItem toggleItem">
-    <span class="menuLabel">Show highlights</span>
+    <span class="menuLabel">Highlights</span>
     <input type="checkbox" checked onchange="toggleSection('highlights', this)">
     <span class="toggle"></span>
   </label>
   
   <label class="menuItem toggleItem">
-  <span class="menuLabel">Show avatar</span>
+  <span class="menuLabel">Profile</span>
   <input type="checkbox" checked onchange="toggleAvatar(this)">
   <span class="toggle"></span>
 </label>
 
 <label class="menuItem toggleItem">
-  <span class="menuLabel">Show profile note</span>
+  <span class="menuLabel">Note</span>
   <input type="checkbox" checked onchange="toggleProfileNote(this)">
   <span class="toggle"></span>
 </label>
           
-          <label class="menuItem toggleItem">
-  <span class="menuLabel">Dark mode</span>
+        <div class="menuSection">
+  <div class="menuLabel" style="opacity:.6">Theme</div>
 
-  <input type="checkbox" onchange="toggleTheme(this)" />
+  <label class="menuItem">
+    <input type="radio" name="theme" value="light" onclick="setTheme('light')">
+    Light
+  </label>
 
-  <span class="toggle"></span>
-</label>
+  <label class="menuItem">
+    <input type="radio" name="theme" value="dark" onclick="setTheme('dark')">
+    Dark
+  </label>
+
+  <label class="menuItem">
+    <input type="radio" name="theme" value="default" onclick="setTheme('default')">
+    Default
+  </label>
+</div>
 </div>
       </div>
       
@@ -948,16 +969,6 @@ function toggleSection(section, checkbox) {
 
 window.toggleSection = toggleSection;
 
-function toggleTheme(checkbox) {
-  if (checkbox.checked) {
-    document.body.setAttribute("data-theme", "dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.body.removeAttribute("data-theme");
-    localStorage.setItem("theme", "light");
-  }
-}
-
 function toggleAvatar(checkbox) {
   const profile = document.getElementById("profileHeader");
   if (!profile) return;
@@ -979,6 +990,34 @@ function toggleProfileNote(checkbox) {
 
   // close menu
   document.getElementById("menu").classList.add("hidden");
+}
+
+function setTheme(mode) {
+  if (mode === "dark") {
+    document.body.setAttribute("data-theme", "dark");
+  }
+
+  else if (mode === "light") {
+    document.body.removeAttribute("data-theme");
+  }
+
+  else {
+    // DEFAULT = Notion / system auto-match
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    if (prefersDark) {
+      document.body.setAttribute("data-theme", "dark");
+    } else {
+      document.body.removeAttribute("data-theme");
+    }
+  }
+
+  localStorage.setItem("theme", mode);
+}
+
+
+  localStorage.setItem("theme", mode);
+    document.getElementById("menu")?.classList.add("hidden");
 }
 
 /* -------------------- TABS -------------------- */
@@ -1221,17 +1260,12 @@ if (cached) {
   document.querySelector(".container")
     .removeAttribute("data-loading");
 }
+    const savedTheme = localStorage.getItem("theme") || "default";
+setTheme(savedTheme);
 
-(function applySavedTheme() {
-  const saved = localStorage.getItem("theme");
-  if (saved === "dark") {
-    document.body.setAttribute("data-theme", "dark");
-    const toggle = document.querySelector(
-      'input[onchange="toggleTheme(this)"]'
-    );
-    if (toggle) toggle.checked = true;
-  }
-})();
+document
+  .querySelector(`input[name="theme"][value="${savedTheme}"]`)
+  ?.setAttribute("checked", true);
 
 const showAvatar = localStorage.getItem("showAvatar");
 if (showAvatar === "false") {
