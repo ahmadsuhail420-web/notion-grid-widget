@@ -204,6 +204,8 @@ body[data-theme="dark"] {
 
     .menu {
       position: absolute;
+      width: 240px;
+  max-width: 240px;
       top: 44px;
       right: 12px;
       background: var(--bg-card);
@@ -237,11 +239,12 @@ body[data-theme="dark"] {
 
 .segmented {
   position: relative;
-  display: inline-flex;
+  display: flex;
   background: var(--bg-muted);
   border-radius: 10px;
   padding: 2px;
   gap: 2px;
+  width: 100%;
 }
 
 .segmented button {
@@ -256,6 +259,8 @@ body[data-theme="dark"] {
   cursor: pointer;
   border-radius: 8px;
   transition: color 0.2s ease;
+  flex: 1;
+  text-align: center;
 }
 
 .segmented button.active {
