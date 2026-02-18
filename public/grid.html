@@ -1393,6 +1393,20 @@ document.querySelector(".refreshBtn").onclick = function () {
     menu.classList.add("hidden");
   }
 });
+/* ---------- AUTO THEME LISTENER ---------- */
+
+const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+media.addEventListener("change", e => {
+  const savedTheme = localStorage.getItem("theme");
+
+  // only react when user selected Auto (default)
+  if (savedTheme === "default") {
+    e.matches
+      ? document.body.setAttribute("data-theme", "dark")
+      : document.body.removeAttribute("data-theme");
+  }
+});
 
 window.addEventListener("load", startGrid);
 </script>
