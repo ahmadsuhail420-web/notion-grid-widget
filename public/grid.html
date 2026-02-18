@@ -247,12 +247,15 @@ body[data-theme="dark"] {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0;
   padding: 4px;
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  width: 180px;               /* compact width */
+  width: 180px;
+
+  /* ✅ scale whole control */
+  transform: scale(0.85);
+  transform-origin: center;
 }
 
 .themeIndicator {
