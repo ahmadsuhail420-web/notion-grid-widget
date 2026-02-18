@@ -1259,40 +1259,34 @@ async function startGrid() {
       setTimeout(startGrid, 300);
       return;
     }
-    syncThemeUI();
-    
+
+    // ✅ delay UI sync until DOM is ready
+    requestAnimationFrame(() => {
+      syncThemeUI();
+    });
+
     const cached = sessionStorage.getItem("cachedPosts");
-if (cached) {
-  ALL_POSTS = JSON.parse(cached);
+    if (cached) {
+      ALL_POSTS = JSON.parse(cached);
+      renderHighlights(ALL_POSTS);
+      renderGrid();
+      document.querySelector(".container")
+        .removeAttribute("data-loading");
+    }
 
-  renderHighlights(ALL_POSTS);
-  renderGrid();
+    // avatar + note restore (correct)
+    const showAvatar = localStorage.getItem("showAvatar");
+    if (showAvatar === "false") {
+      document.getElementById("profileHeader")
+        ?.classList.add("no-avatar");
+    }
 
-  document.querySelector(".container")
-    .removeAttribute("data-loading");
-}
+    const showNote = localStorage.getItem("showProfileNote");
+    if (showNote === "false") {
+      document.getElementById("profileNote")
+        ?.classList.add("hidden-section");
+    }
 
-const showAvatar = localStorage.getItem("showAvatar");
-if (showAvatar === "false") {
-  const avatarToggle = document.querySelector(
-    'input[onchange="toggleAvatar(this)"]'
-  );
-  if (avatarToggle) {
-    avatarToggle.checked = false;
-    document.getElementById("profileHeader")
-      .classList.add("no-avatar");
-  }
-}
-
-const showNote = localStorage.getItem("showProfileNote");
-if (showNote === "false") {
-  document.getElementById("profileNote")?.classList.add("hidden-section");
-
-  const noteToggle = document.querySelector(
-    'input[onchange="toggleProfileNote(this)"]'
-  );
-  if (noteToggle) noteToggle.checked = false;
-}
     await checkAccess();
     await loadPosts();
 
@@ -1300,6 +1294,7 @@ if (showNote === "false") {
       const activeTab = document.querySelector(".tabItem.active");
       if (activeTab) moveUnderline(activeTab);
     });
+
   } catch (e) {
     console.error("Grid init failed", e);
   }
