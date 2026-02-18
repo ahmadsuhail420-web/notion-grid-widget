@@ -757,25 +757,22 @@ body[data-theme="dark"] .tabItem.active img {
   <div class="menuTitle">Theme</div>
 
   <label class="menuItem">
-    <input type="radio" name="theme" onclick="setThemeMode('light')">
+    <input type="radio" name="theme" data-mode="light"
+           onclick="setThemeMode('light')">
     Light
   </label>
 
   <label class="menuItem">
-    <input type="radio" name="theme" onclick="setThemeMode('dark')">
+    <input type="radio" name="theme" data-mode="dark"
+           onclick="setThemeMode('dark')">
     Dark
   </label>
 
   <label class="menuItem">
-    <input type="radio" name="theme" onclick="setThemeMode('auto')">
-   Default
+    <input type="radio" name="theme" data-mode="auto"
+           onclick="setThemeMode('auto')">
+    Default (Notion)
   </label>
-</div>
-
-  <input type="checkbox" onchange="toggleTheme(this)" />
-
-  <span class="toggle"></span>
-</label>
 </div>
       </div>
       
@@ -899,6 +896,51 @@ let ALL_POSTS = [];
 let FILTER = "Post";
 let currentSlide = 0;
 let currentMedia = [];
+  (function themeEngine() {
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+  function applyTheme(mode) {
+    if (mode === "dark") {
+      document.body.setAttribute("data-theme", "dark");
+    } else if (mode === "light") {
+      document.body.removeAttribute("data-theme");
+    } else {
+      // auto
+      document.body.toggleAttribute("data-theme", media.matches);
+    }
+  }
+
+  function getMode() {
+    return localStorage.getItem("themeMode") || "auto";
+  }
+
+  function setMode(mode) {
+    localStorage.setItem("themeMode", mode);
+    applyTheme(mode);
+    syncThemeUI();
+  }
+
+  function syncThemeUI() {
+    const mode = getMode();
+    document.querySelectorAll('input[name="theme"]').forEach(r => {
+      r.checked = r.dataset.mode === mode;
+    });
+  }
+
+  // initial apply
+  applyTheme(getMode());
+
+  // react to system change (auto only)
+  media.addEventListener("change", () => {
+    if (getMode() === "auto") applyTheme("auto");
+  });
+
+  // expose globally
+  window.setThemeMode = setMode;
+  window.getThemeMode = getMode;
+  window.syncThemeUI = syncThemeUI;
+})();
+
 
 /* -------------------- HELPERS -------------------- */
 
@@ -964,15 +1006,6 @@ function toggleSection(section, checkbox) {
 
 window.toggleSection = toggleSection;
 
-function toggleTheme(checkbox) {
-  if (checkbox.checked) {
-    document.body.setAttribute("data-theme", "dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.body.removeAttribute("data-theme");
-    localStorage.setItem("theme", "light");
-  }
-}
 
 function toggleAvatar(checkbox) {
   const profile = document.getElementById("profileHeader");
@@ -1226,6 +1259,7 @@ async function startGrid() {
       setTimeout(startGrid, 300);
       return;
     }
+    syncThemeUI();
     
     const cached = sessionStorage.getItem("cachedPosts");
 if (cached) {
@@ -1237,52 +1271,6 @@ if (cached) {
   document.querySelector(".container")
     .removeAttribute("data-loading");
 }
-(function themeEngine() {
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-  function applyTheme(mode) {
-    if (mode === "dark") {
-      document.body.setAttribute("data-theme", "dark");
-    } else if (mode === "light") {
-      document.body.removeAttribute("data-theme");
-    } else {
-      // auto
-      document.body.toggleAttribute("data-theme", media.matches);
-    }
-  }
-
-  function getMode() {
-    return localStorage.getItem("themeMode") || "auto";
-  }
-
-  function setMode(mode) {
-    localStorage.setItem("themeMode", mode);
-    applyTheme(mode);
-  }
-
-  // initial load
-  applyTheme(getMode());
-
-  // react to system change (only in auto)
-  media.addEventListener("change", () => {
-    if (getMode() === "auto") applyTheme("auto");
-  });
-
-  // expose API
-  window.setThemeMode = setMode;
-  window.getThemeMode = getMode;
-})();
-
-(function applySavedTheme() {
-  const saved = localStorage.getItem("theme");
-  if (saved === "dark") {
-    document.body.setAttribute("data-theme", "dark");
-    const toggle = document.querySelector(
-      'input[onchange="toggleTheme(this)"]'
-    );
-    if (toggle) toggle.checked = true;
-  }
-})();
 
 const showAvatar = localStorage.getItem("showAvatar");
 if (showAvatar === "false") {
