@@ -235,6 +235,12 @@ body[data-theme="dark"] {
       gap: 8px;
       white-space: nowrap;
     }
+    .menuSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* ✅ centers pill + title */
+  gap: 6px;
+}
     
     /* ---------- THEME SEGMENT (PILL) ---------- */
 
@@ -248,11 +254,12 @@ body[data-theme="dark"] {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  padding: 2px 2px 4px;
+  padding: 4px;
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  width: 100%;
+  width: 90%;            /* instead of 100% */
+  margin: 0 auto;        /* ✅ hard-center safety */
 
 }
 
