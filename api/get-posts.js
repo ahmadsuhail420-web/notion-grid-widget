@@ -1,48 +1,78 @@
 export default async function handler(req, res) {
   try {
     const { slug, db } = req.query;
-    if (!slug) return res.json({ profile: null, posts: [] });
+    if (!slug) {
+      return res.status(400).json({ profile: null, posts: [] });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     const headers = {
-      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
     };
 
-    /* 1️⃣ Get customer */
+    /* --------------------------------------------------
+       1️⃣ Get customer
+    -------------------------------------------------- */
     const customerRes = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id`,
+      `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id`,
       { headers }
     );
     const [customer] = await customerRes.json();
-    if (!customer) return res.json({ profile: null, posts: [] });
 
-    /* 2️⃣ Get Notion token */
+    if (!customer) {
+      return res.json({ profile: null, posts: [] });
+    }
+
+    /* --------------------------------------------------
+       2️⃣ Get Notion OAuth token (workspace-level)
+    -------------------------------------------------- */
     const connRes = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=access_token`,
+      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=access_token`,
       { headers }
     );
-    const [conn] = await connRes.json();
-    if (!conn) return res.json({ profile: null, posts: [] });
+    const [connection] = await connRes.json();
 
-    /* 3️⃣ Get database (primary OR override) */
-    const dbFilter = db
-      ? `id=eq.${db}`
-      : `is_primary=eq.true`;
+    if (!connection?.access_token) {
+      return res.json({ profile: null, posts: [] });
+    }
+
+    /* --------------------------------------------------
+       3️⃣ Resolve database (explicit OR primary)
+    -------------------------------------------------- */
+    let dbQuery;
+
+    if (db) {
+      // explicit database via query param
+      dbQuery = `database_id=eq.${db}`;
+    } else {
+      // fallback to primary database
+      dbQuery = `is_primary=eq.true`;
+    }
 
     const dbRes = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/notion_databases?customer_id=eq.${customer.id}&${dbFilter}&select=notion_database_id`,
+      `${supabaseUrl}/rest/v1/notion_databases?customer_id=eq.${customer.id}&${dbQuery}&select=database_id`,
       { headers }
     );
-    const [database] = await dbRes.json();
-    if (!database) return res.json({ profile: null, posts: [] });
+    const [dbRow] = await dbRes.json();
 
-    /* 4️⃣ Query Notion */
+    if (!dbRow?.database_id) {
+      return res.json({ profile: null, posts: [] });
+    }
+
+    const databaseId = dbRow.database_id;
+
+    /* --------------------------------------------------
+       4️⃣ Query Notion database
+    -------------------------------------------------- */
     const notionRes = await fetch(
-      `https://api.notion.com/v1/databases/${database.notion_database_id}/query`,
+      `https://api.notion.com/v1/databases/${databaseId}/query`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${conn.access_token}`,
+          Authorization: `Bearer ${connection.access_token}`,
           "Content-Type": "application/json",
           "Notion-Version": "2022-06-28",
         },
@@ -50,11 +80,18 @@ export default async function handler(req, res) {
     );
 
     const notionData = await notionRes.json();
+    if (!Array.isArray(notionData.results)) {
+      return res.json({ profile: null, posts: [] });
+    }
 
+    /* --------------------------------------------------
+       5️⃣ Parse rows
+    -------------------------------------------------- */
     let profile = null;
     const posts = [];
 
     for (const page of notionData.results) {
+      // ---------- PROFILE ROW ----------
       const profileName =
         page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
 
@@ -68,40 +105,65 @@ export default async function handler(req, res) {
           ?.map(t => t.plain_text)
           .join("") || null;
 
-      if (profileName || profilePicture) {
+      if (profileName || profilePicture || profileNote) {
         profile = {
           name: profileName || "Grid Planner",
-          picture: profilePicture || null,
-          note: profileNote || null,
+          picture: profilePicture,
+          note: profileNote,
         };
         continue;
       }
 
+      // ---------- POST ROW ----------
+      const name =
+        page.properties?.Name?.title?.[0]?.plain_text || "";
+
+      const publishDate =
+        page.properties?.["Publish Date"]?.date?.start || null;
+
+      const attachment =
+        page.properties?.Attachment?.files?.map(f =>
+          f.file?.url || f.external?.url
+        ) || [];
+
+      const video =
+        page.properties?.["Media/Video"]?.files?.[0]?.file?.url ||
+        page.properties?.["Media/Video"]?.files?.[0]?.external?.url ||
+        null;
+
+      const thumbnail =
+        page.properties?.Thumbnail?.files?.[0]?.file?.url ||
+        page.properties?.Thumbnail?.files?.[0]?.external?.url ||
+        null;
+
+      const type =
+        page.properties?.Type?.multi_select?.map(t => t.name) || [];
+
       posts.push({
         id: page.id,
-        name: page.properties?.Name?.title?.[0]?.plain_text || "",
-        publishDate: page.properties?.["Publish Date"]?.date?.start || null,
-        attachment: page.properties?.Attachment?.files?.map(f =>
-          f.file?.url || f.external?.url
-        ) || null,
-        video:
-          page.properties?.["Media/Video"]?.files?.[0]?.file?.url ||
-          page.properties?.["Media/Video"]?.files?.[0]?.external?.url ||
-          null,
-        thumbnail:
-          page.properties?.Thumbnail?.files?.[0]?.file?.url ||
-          page.properties?.Thumbnail?.files?.[0]?.external?.url ||
-          null,
-        type:
-          page.properties?.Type?.multi_select?.map(t => t.name) || [],
+        name,
+        publishDate,
+        attachment,
+        video,
+        thumbnail,
+        type,
         pinned: page.properties?.Pin?.checkbox || false,
         hide: page.properties?.Hide?.checkbox || false,
         highlight: page.properties?.Highlight?.checkbox || false,
       });
     }
 
-    res.json({ profile, posts, plan: "pro" });
+    /* --------------------------------------------------
+       6️⃣ Done
+    -------------------------------------------------- */
+    res.json({
+      profile,
+      posts,
+      plan: "pro",
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("get-posts error:", err);
+    res.status(500).json({ error: "Failed to load posts" });
   }
 }
