@@ -991,6 +991,19 @@ body[data-theme="dark"] .tabItem.active img {
   </div>
 
 <script>
+  
+  (function () {
+    const savedTheme = localStorage.getItem("theme") || "default";
+
+    if (savedTheme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else if (savedTheme === "default") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    }
+  })();
+
 function getSlug() {
   const params = new URLSearchParams(window.location.search);
   return params.get("slug");
