@@ -1,43 +1,39 @@
-import { Client } from "@notionhq/client";
-
 export default async function handler(req, res) {
-  const { slug } = req.query;
+  try {
+    const { slug } = req.query;
+    if (!slug) return res.status(400).json({ error: "Missing slug" });
 
-  if (!slug) return res.status(400).json({ error: "Missing slug" });
+    const headers = {
+      apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+    };
 
-  // 1️⃣ Get token from Supabase
-  const dbRes = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/workspaces?slug=eq.${slug}`,
-    {
-      headers: {
-        apikey: process.env.SUPABASE_SERVICE_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
-      },
+    /* 1️⃣ Get customer */
+    const customerRes = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/customers?slug=eq.${slug}&select=id`,
+      { headers }
+    );
+    const [customer] = await customerRes.json();
+
+    if (!customer) {
+      return res.status(404).json({ error: "Customer not found" });
     }
-  );
 
-  const [workspace] = await dbRes.json();
+    /* 2️⃣ Get databases */
+    const dbRes = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/notion_databases?customer_id=eq.${customer.id}&select=id,notion_database_id,title,is_primary&order=created_at.asc`,
+      { headers }
+    );
 
-  if (!workspace?.notion_access_token) {
-    return res.status(401).json({ error: "Not connected to Notion" });
+    const databases = await dbRes.json();
+
+    const primary = databases.find(db => db.is_primary) || null;
+
+    res.json({
+      primary,
+      databases,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  // 2️⃣ Search databases
-  const notion = new Client({
-    auth: workspace.notion_access_token,
-  });
-
-  const result = await notion.search({
-    filter: {
-      property: "object",
-      value: "database",
-    },
-  });
-
-  res.json(
-    result.results.map(db => ({
-      id: db.id,
-      title: db.title?.[0]?.plain_text || "Untitled"
-    }))
-  );
 }
