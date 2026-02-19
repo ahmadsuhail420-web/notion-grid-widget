@@ -4,9 +4,9 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { slug, databaseUrl, label } = req.body;
-    if (!slug || !databaseUrl) {
-      return res.status(400).json({ error: "Missing slug or databaseUrl" });
+    const { token, databaseId, label } = req.body;
+    if (!token || !databaseId) {
+      return res.status(400).json({ error: "Missing token or databaseId" });
     }
 
     const supabaseUrl = process.env.SUPABASE_URL;
@@ -18,36 +18,33 @@ export default async function handler(req, res) {
       "Content-Type": "application/json",
     };
 
-    /* ------------------ 1. Find customer ------------------ */
+    /* ------------------ 1. Find customer by token ------------------ */
     const customerRes = await fetch(
-      `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id`,
+      `${supabaseUrl}/rest/v1/customers?setup_token=eq.${token}&setup_used=eq.false&select=id`,
       { headers }
     );
-    const customers = await customerRes.json();
-    if (!customers.length) {
-      return res.status(404).json({ error: "Customer not found" });
-    }
-    const customerId = customers[0].id;
 
-    /* ------------------ 2. Get Notion token ------------------ */
+    const [customer] = await customerRes.json();
+    if (!customer) {
+      return res.status(401).json({ error: "Invalid or expired token" });
+    }
+
+    const customerId = customer.id;
+
+    /* ------------------ 2. Get Notion access token ------------------ */
     const connRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customerId}&select=access_token`,
       { headers }
     );
-    const conns = await connRes.json();
-    if (!conns.length || !conns[0].access_token) {
+
+    const [conn] = await connRes.json();
+    if (!conn?.access_token) {
       return res.status(400).json({ error: "Notion not connected" });
     }
-    const accessToken = conns[0].access_token;
 
-    /* ------------------ 3. Extract database_id ------------------ */
-    const match = databaseUrl.match(/[a-f0-9]{32}/i);
-    if (!match) {
-      return res.status(400).json({ error: "Invalid Notion database URL" });
-    }
-    const databaseId = match[0];
+    const accessToken = conn.access_token;
 
-    /* ------------------ 4. Validate database via Notion ------------------ */
+    /* ------------------ 3. Validate database with Notion ------------------ */
     const notionCheck = await fetch(
       `https://api.notion.com/v1/databases/${databaseId}`,
       {
@@ -63,17 +60,19 @@ export default async function handler(req, res) {
     }
 
     const notionDb = await notionCheck.json();
-    const dbLabel = label || notionDb.title?.[0]?.plain_text || "Untitled";
+    const dbLabel =
+      label || notionDb.title?.[0]?.plain_text || "Untitled";
 
-    /* ------------------ 5. Check existing DBs ------------------ */
+    /* ------------------ 4. Check if this is first database ------------------ */
     const dbListRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_databases?customer_id=eq.${customerId}&select=id`,
       { headers }
     );
-    const existingDbs = await dbListRes.json();
-    const isFirst = existingDbs.length === 0;
 
-    /* ------------------ 6. Insert database ------------------ */
+    const existing = await dbListRes.json();
+    const isFirst = existing.length === 0;
+
+    /* ------------------ 5. Insert database ------------------ */
     const insertRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_databases`,
       {
