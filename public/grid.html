@@ -998,13 +998,17 @@ body[data-theme="dark"] .tabItem.active img {
   </div>
 
 <script>
-  
-  (function () {
-  if (!localStorage.getItem("theme")) {
-    localStorage.setItem("theme", "default");
+(function () {
+  const theme = localStorage.getItem("theme") || "default";
+
+  if (
+    theme === "dark" ||
+    (theme === "default" &&
+     window.matchMedia("(prefers-color-scheme: dark)").matches)
+  ) {
+    document.body.setAttribute("data-theme", "dark");
   }
 })();
-
 
 function getSlug() {
   const params = new URLSearchParams(window.location.search);
@@ -1368,15 +1372,6 @@ async function startGrid() {
     }
 
  const savedTheme = localStorage.getItem("theme") || "default";
-
-if (savedTheme === "default") {
-  // AUTO → ALWAYS recalc from system
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  document.body.toggleAttribute("data-theme", prefersDark);
-} else {
-  // USER CHOICE → respect exactly
-  document.body.toggleAttribute("data-theme", savedTheme === "dark");
-}
 
 syncThemePill(savedTheme);
 
