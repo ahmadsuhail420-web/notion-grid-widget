@@ -251,7 +251,6 @@
 
  <!-- STATUS -->
       <div id="status" style="margin-top:18px; font-size:14px;"></div>
-<div id="status" style="margin-top:18px; font-size:14px;"></div>
 
 <div id="embedWrap" style="margin-top:20px; display:none;"></div>
 
@@ -300,9 +299,6 @@
   </div>
 
 </div>
-
-<div id="embedWrap" style="display:none; margin-top:18px;"></div>
-<div id="dbList" style="margin-top:18px;"></div>
 
   <!-- SCRIPT -->
 <script>
@@ -462,42 +458,42 @@
     await loadDatabases();
   }
 
-  document.getElementById("save").onclick = async () => {
-    const raw = document.getElementById("db").value.trim();
-    if (!raw) return alert("Enter Notion database ID or URL");
+document.getElementById("save").onclick = async () => {
+  const raw = document.getElementById("db").value.trim();
+  if (!raw) return alert("Enter Notion database ID or URL");
 
-    const databaseId = extractDatabaseId(raw);
-    if (!databaseId) return alert("Invalid Notion database ID or URL");
+  const databaseId = extractDatabaseId(raw);
+  if (!databaseId) return alert("Invalid Notion database ID or URL");
 
-    status.innerText = "Adding database…";
+  status.innerText = "Adding database…";
 
-    try {
-      const res = await fetch("/api/add-database", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token,
-          databaseId,
-          label: "Instagram", // later: input field
-        }),
-      });
+  try {
+    const res = await fetch("/api/add-database", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token,
+        databaseUrl: raw, // IMPORTANT: must match backend
+        label: "Instagram",
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        status.innerText = data.error || "Error adding database";
-        return;
-      }
-
-      status.innerText = "Database added successfully ✅";
-      renderEmbedUrl(data.url || getEmbedUrlFromLocation());
-      document.getElementById("db").value = "";
-
-      await loadDatabases();
-    } catch (e) {
-      status.innerText = "Something went wrong. Please try again.";
+    if (!res.ok) {
+      status.innerText = data.error || "Error adding database";
+      return;
     }
-  };
+
+    status.innerText = "Database added successfully ✅";
+    renderEmbedUrl(data.embed_url);
+    document.getElementById("db").value = "";
+
+    await loadDatabases();
+  } catch (e) {
+    status.innerText = "Something went wrong. Please try again.";
+  }
+};
 
   // Help modal stays same (your code is fine)
   const helpModal = document.getElementById("helpModal");
@@ -520,11 +516,11 @@
 
   // Load on first visit
   if (token) {
-    renderEmbedUrl(data.embed_url);
-    loadDatabases();
-  } else {
-    status.innerText = "Missing token in URL";
-  }
+  loadDatabases();
+} else {
+  status.innerText = "Missing token in URL";
+}
+
 </script>
 
 </body>
