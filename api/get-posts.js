@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   try {
-    const { slug } = req.query;
+    const { slug, db } = req.query;
     if (!slug) return res.json({ profile: null, posts: [] });
 
     const supabaseUrl = process.env.SUPABASE_URL;
@@ -15,10 +15,17 @@ export default async function handler(req, res) {
     if (!customers.length) return res.json({ profile: null, posts: [] });
 
     // 2. Notion connection
-    const connRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customers[0].id}&select=access_token,database_id`,
-      { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` } }
-    );
+    const dbKey = db || "db1"; // default fallback
+
+const connRes = await fetch(
+  `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customers[0].id}&database_key=eq.${dbKey}&select=access_token,database_id`,
+  {
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`
+    }
+  }
+);
     const conns = await connRes.json();
     if (!conns.length) return res.json({ profile: null, posts: [] });
 
@@ -103,7 +110,8 @@ export default async function handler(req, res) {
       });
     }
 
-    res.json({ profile, posts });
+   res.json({ profile, posts, plan: "pro" });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
