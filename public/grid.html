@@ -1116,8 +1116,14 @@ function toggleProfileNote(checkbox) {
 function setTheme(mode) {
   if (mode === "dark") {
     document.body.setAttribute("data-theme", "dark");
-  } else if (mode === "light") {
+  } 
+  else if (mode === "light") {
     document.body.removeAttribute("data-theme");
+  } 
+  else if (mode === "default") {
+    // 👇 THIS IS THE FIX
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.body.toggleAttribute("data-theme", prefersDark);
   }
 
   localStorage.setItem("theme", mode);
