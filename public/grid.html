@@ -1112,15 +1112,8 @@ function toggleProfileNote(checkbox) {
 function setTheme(mode) {
   if (mode === "dark") {
     document.body.setAttribute("data-theme", "dark");
-  } 
-  else if (mode === "light") {
+  } else if (mode === "light") {
     document.body.removeAttribute("data-theme");
-  } 
-  else {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    prefersDark
-      ? document.body.setAttribute("data-theme", "dark")
-      : document.body.removeAttribute("data-theme");
   }
 
   localStorage.setItem("theme", mode);
@@ -1374,13 +1367,15 @@ async function startGrid() {
       document.querySelector(".container").removeAttribute("data-loading");
     }
 
-  const savedTheme = localStorage.getItem("theme") || "default";
+ const savedTheme = localStorage.getItem("theme") || "default";
 
 if (savedTheme === "default") {
+  // AUTO → ALWAYS recalc from system
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   document.body.toggleAttribute("data-theme", prefersDark);
 } else {
-  setTheme(savedTheme);
+  // USER CHOICE → respect exactly
+  document.body.toggleAttribute("data-theme", savedTheme === "dark");
 }
 
 syncThemePill(savedTheme);
