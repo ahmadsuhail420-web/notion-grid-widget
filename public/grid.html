@@ -318,6 +318,16 @@ body[data-theme="dark"] .themeIndicator {
 body[data-theme="dark"] .themeSegment button.active {
   color: #111;
 }
+    /* LIGHT MODE – active pill */
+body:not([data-theme="dark"])
+  .themeSegment button.active {
+  color: #fff;
+}
+
+body:not([data-theme="dark"])
+  .themeIndicator {
+  background: #000;
+}
     
 .toggleItem input {
   position: absolute;
