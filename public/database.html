@@ -316,13 +316,6 @@
     return match ? match[0] : null;
   }
 
-  function getEmbedUrlFromLocation() {
-    // Your embed URL should be ONE URL per workspace (slug inside token on backend)
-    // If you already generate embed url server-side, use that.
-    // Otherwise, you can show a generic placeholder, or return from /api/list-database.
-    return `${location.origin}/widget?token=${token}`;
-  }
-
   function renderEmbedUrl(url) {
     embedWrap.style.display = "block";
     embedWrap.innerHTML = `
@@ -527,7 +520,7 @@
 
   // Load on first visit
   if (token) {
-    renderEmbedUrl(getEmbedUrlFromLocation());
+    renderEmbedUrl(data.embed_url);
     loadDatabases();
   } else {
     status.innerText = "Missing token in URL";
