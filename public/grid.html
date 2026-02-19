@@ -12,6 +12,9 @@
   --bg-main: #ffffff;
   --bg-card: #ffffff;
   --bg-muted: #f5f5f5;
+  
+    --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   --text-main: #111111;
   --text-muted: #777777;
@@ -44,16 +47,7 @@ body[data-theme="dark"] {
     /* ---------- BASE ---------- */
     
     body {
-      font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "SF Pro Text",
-    "SF Pro Display",
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+      font-family: var(--font-main);
       max-width: 500px;
       max-height: 700px;
       margin: auto;
@@ -864,7 +858,21 @@ body[data-theme="dark"] .tabItem.active img {
   <input type="checkbox" checked onchange="toggleProfileNote(this)">
   <span class="toggle"></span>
 </label>
-          
+
+<select onchange="setFont(this.value)">
+  <option value="system">System</option>
+  <option value="inter">Inter</option>
+  <option value="poppins">Poppins</option>
+</select>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+ 
+   <select onchange="switchDatabase(this.value)">
+  <option value="db1">Instagram</option>
+  <option value="db2">TikTok</option>
+</select>
+                  
        <div class="menuSection">
   <div class="menuLabel themeTitle">Theme</div>
 
@@ -1020,6 +1028,23 @@ let FILTER = "Post";
 let currentSlide = 0;
 let currentMedia = [];
 
+/* -------------------- FONTS -------------------- */
+
+function setFont(font) {
+  let value;
+
+  if (font === "inter") {
+    value = "'Inter', -apple-system, sans-serif";
+  } else if (font === "poppins") {
+    value = "'Poppins', -apple-system, sans-serif";
+  } else {
+    value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+  }
+
+  document.documentElement.style.setProperty("--font-main", value);
+  localStorage.setItem("font", font);
+}
+
 /* -------------------- HELPERS -------------------- */
 
 function hasMedia(post) {
@@ -1072,6 +1097,11 @@ function syncThemePill(mode) {
   buttons.forEach(btn => {
     btn.classList.toggle("active", btn.dataset.themeBtn === mode);
   });
+}
+
+function switchDatabase(dbId) {
+  localStorage.setItem("activeDatabase", dbId);
+  loadPosts(); // reload grid
 }
 
 /* -------------------- MENU -------------------- */
@@ -1171,7 +1201,9 @@ async function loadPosts(btn) {
 
   try {
     const slug = getSlug();
-    const res = await fetch(`/api/get-posts?slug=${slug}`);
+    const dbId = localStorage.getItem("activeDatabase");
+const dbId = localStorage.getItem("activeDatabase");
+const res = await fetch(`/api/get-posts?slug=${slug}&db=${dbId}`);
     const { profile: apiProfile, posts, plan } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
@@ -1381,6 +1413,17 @@ async function startGrid() {
 
 syncThemePill(savedTheme);
 
+// ✅ RESTORE SELECTED DATABASE ON LOAD
+const savedDb = localStorage.getItem("activeDatabase");
+if (savedDb) {
+  const dbSelect = document.querySelector(
+    'select[onchange="switchDatabase(this.value)"]'
+  );
+  if (dbSelect) {
+    dbSelect.value = savedDb;
+  }
+}
+
     const showAvatar = localStorage.getItem("showAvatar");
     if (showAvatar === "false") {
       const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
@@ -1396,6 +1439,14 @@ syncThemePill(savedTheme);
       const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
       if (noteToggle) noteToggle.checked = false;
     }
+    
+    const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
+if (fontSelect && savedFont) {
+  fontSelect.value = savedFont;
+}
+
+const savedFont = localStorage.getItem("font");
+if (savedFont) setFont(savedFont);
 
     await checkAccess();
     await loadPosts();
