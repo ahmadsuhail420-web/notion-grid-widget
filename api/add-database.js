@@ -8,7 +8,6 @@ export default async function handler(req, res) {
     if (!token || !databaseId) {
       return res.status(400).json({ error: "Missing token or databaseId" });
     }
-
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
