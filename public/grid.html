@@ -204,7 +204,7 @@ body[data-theme="dark"] {
     }
 
     .menu {
-      width: 120px;
+      width: 110px;
       position: absolute;
       top: 44px;
       right: 12px;
@@ -240,6 +240,7 @@ body[data-theme="dark"] {
   flex-direction: column;
   align-items: center;   /* ✅ centers pill + title */
   gap: 6px;
+  margin-left: -2px;
 }
     
     /* ---------- THEME SEGMENT (PILL) ---------- */
@@ -259,8 +260,8 @@ body[data-theme="dark"] {
   border-radius: 999px;
   border: 1px solid var(--border-color);
   width: auto;            /* instead of 100% */
-  margin: 0 auto;        /* ✅ hard-center safety */
-min-width: 110px;            /* safety */
+  margin: auto;        /* ✅ hard-center safety */
+min-width: 107px;            /* safety */
   max-width: 100%;
 }
 
@@ -318,6 +319,22 @@ body[data-theme="dark"] .themeIndicator {
 body[data-theme="dark"] .themeSegment button.active {
   color: #111;
 }
+    /* LIGHT MODE – active pill */
+body:not([data-theme="dark"])
+  .themeSegment button.active {
+  color: #fff;
+}
+
+body:not([data-theme="dark"])
+  .themeIndicator {
+  background: #000;
+}
+    .themeSegment button[data-theme-btn="light"].active,
+.themeSegment button[data-theme-btn="dark"].active,
+.themeSegment button[data-theme-btn="default"].active {
+  color: #fff;
+}
+
     
 .toggleItem input {
   position: absolute;
@@ -981,6 +998,14 @@ body[data-theme="dark"] .tabItem.active img {
   </div>
 
 <script>
+  
+  (function () {
+  if (!localStorage.getItem("theme")) {
+    localStorage.setItem("theme", "default");
+  }
+})();
+
+
 function getSlug() {
   const params = new URLSearchParams(window.location.search);
   return params.get("slug");
@@ -1349,8 +1374,16 @@ async function startGrid() {
       document.querySelector(".container").removeAttribute("data-loading");
     }
 
-    const savedTheme = localStorage.getItem("theme") || "default";
-    setTheme(savedTheme); // ✅ fixed typo
+  const savedTheme = localStorage.getItem("theme") || "default";
+
+if (savedTheme === "default") {
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  document.body.toggleAttribute("data-theme", prefersDark);
+} else {
+  setTheme(savedTheme);
+}
+
+syncThemePill(savedTheme);
 
     const showAvatar = localStorage.getItem("showAvatar");
     if (showAvatar === "false") {
