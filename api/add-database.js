@@ -128,14 +128,12 @@ export default async function handler(req, res) {
        7. Respond
     ------------------------------------------------- */
     return res.json({
-      success: true,
-      database: {
-        database_id: databaseId,
-        label: finalLabel,
-        is_primary: isFirst,
-      },
-      url: `${process.env.PUBLIC_WIDGET_URL}?token=${token}`,
-    });
+  success: true,
+  database_id,
+  label: dbLabel,
+  is_primary: isFirst,
+  embed_url: `${process.env.PUBLIC_BASE_URL}/widget?token=${slug}`
+});
   } catch (err) {
     console.error("add-database error:", err);
     return res.status(500).json({
