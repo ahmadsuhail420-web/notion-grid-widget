@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
     /* ------------------ 1. Find customer by token ------------------ */
     const customerRes = await fetch(
-      `${supabaseUrl}/rest/v1/customers?setup_token=eq.${token}&setup_used=eq.false&select=id`,
+     `${supabaseUrl}/rest/v1/customers?setup_token=eq.${token}&select=id`
       { headers }
     );
 
