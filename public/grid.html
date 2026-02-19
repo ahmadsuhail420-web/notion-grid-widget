@@ -329,6 +329,12 @@ body:not([data-theme="dark"])
   .themeIndicator {
   background: #000;
 }
+    .themeSegment button[data-theme-btn="light"].active,
+.themeSegment button[data-theme-btn="dark"].active,
+.themeSegment button[data-theme-btn="default"].active {
+  color: #fff;
+}
+
     
 .toggleItem input {
   position: absolute;
@@ -994,16 +1000,11 @@ body[data-theme="dark"] .tabItem.active img {
 <script>
   
   (function () {
-    const savedTheme = localStorage.getItem("theme") || "default";
+  if (!localStorage.getItem("theme")) {
+    localStorage.setItem("theme", "default");
+  }
+})();
 
-    if (savedTheme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else if (savedTheme === "default") {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.setAttribute("data-theme", "dark");
-      }
-    }
-  })();
 
 function getSlug() {
   const params = new URLSearchParams(window.location.search);
@@ -1375,7 +1376,13 @@ async function startGrid() {
 
   const savedTheme = localStorage.getItem("theme") || "default";
 
-setTheme(savedTheme);
+if (savedTheme === "default") {
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  document.body.toggleAttribute("data-theme", prefersDark);
+} else {
+  setTheme(savedTheme);
+}
+
 syncThemePill(savedTheme);
 
     const showAvatar = localStorage.getItem("showAvatar");
