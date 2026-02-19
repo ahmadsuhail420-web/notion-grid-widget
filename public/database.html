@@ -299,102 +299,212 @@
 
   <!-- SCRIPT -->
 <script>
-    const token = new URLSearchParams(location.search).get("token");
-    const status = document.getElementById("status");
+  const token = new URLSearchParams(location.search).get("token");
+  const status = document.getElementById("status");
+  const embedWrap = document.getElementById("embedWrap");
+  const dbList = document.getElementById("dbList");
 
-    function extractDatabaseId(input) {
-      const match = input.match(/[a-f0-9]{32}/i);
-      return match ? match[0] : null;
+  function extractDatabaseId(input) {
+    const match = input.match(/[a-f0-9]{32}/i);
+    return match ? match[0] : null;
+  }
+
+  function getEmbedUrlFromLocation() {
+    // Your embed URL should be ONE URL per workspace (slug inside token on backend)
+    // If you already generate embed url server-side, use that.
+    // Otherwise, you can show a generic placeholder, or return from /api/list-database.
+    return `${location.origin}/widget?token=${token}`;
+  }
+
+  function renderEmbedUrl(url) {
+    embedWrap.style.display = "block";
+    embedWrap.innerHTML = `
+      <strong>Embed this URL in Notion:</strong>
+      <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <input
+          id="embedUrl"
+          value="${url}"
+          readonly
+          style="
+            flex:1;
+            padding:10px 12px;
+            font-size:14px;
+            border-radius:8px;
+            border:1px solid var(--border);
+            background:#f9fafb;
+            min-width:240px;
+          "
+        />
+        <button
+          id="copyUrl"
+          style="
+            padding:10px 14px;
+            font-size:14px;
+            border-radius:8px;
+            border:none;
+            background:#3b82f6;
+            color:#fff;
+            font-weight:600;
+            cursor:pointer;
+          "
+        >
+          Copy
+        </button>
+      </div>
+    `;
+
+    document.getElementById("copyUrl").onclick = () => {
+      const input = document.getElementById("embedUrl");
+      navigator.clipboard.writeText(input.value);
+      const btn = document.getElementById("copyUrl");
+      btn.innerText = "Copied";
+      setTimeout(() => (btn.innerText = "Copy"), 1200);
+    };
+  }
+
+  async function loadDatabases() {
+    dbList.innerHTML = `<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div>Loading databases…</div>`;
+
+    const res = await fetch(`/api/list-database?token=${encodeURIComponent(token)}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
+      return;
     }
 
-    document.getElementById("save").onclick = async () => {
-      const raw = document.getElementById("db").value.trim();
-      if (!raw) return alert("Enter Notion database ID or URL");
+    const databases = Array.isArray(data.databases) ? data.databases : data;
 
-      const databaseId = extractDatabaseId(raw);
-      if (!databaseId) {
-        alert("Invalid Notion database ID or URL");
+    if (!databases.length) {
+      dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
+      return;
+    }
+
+    dbList.innerHTML = `
+      <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
+      ${databases
+        .map(
+          (db) => `
+          <div style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:10px 12px;
+            border:1px solid var(--border);
+            border-radius:10px;
+            margin-bottom:10px;
+            gap:12px;
+          ">
+            <div style="display:flex; flex-direction:column;">
+              <div style="font-weight:600;">${db.label || "Untitled"}</div>
+              <div style="font-size:12px; color:var(--text-muted);">
+                ${db.database_id ? db.database_id : ""}
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center;">
+              ${db.is_primary ? `
+                <span style="
+                  font-size:12px;
+                  font-weight:700;
+                  color:#16a34a;
+                  border:1px solid rgba(22,163,74,.35);
+                  padding:6px 10px;
+                  border-radius:999px;
+                ">Primary</span>
+              ` : `
+                <button
+                  data-primary-btn="${db.id}"
+                  style="
+                    padding:8px 10px;
+                    font-size:13px;
+                    border-radius:10px;
+                    border:1px solid var(--border);
+                    background:#fff;
+                    cursor:pointer;
+                    font-weight:600;
+                  "
+                >Make primary</button>
+              `}
+            </div>
+          </div>
+        `
+        )
+        .join("")}
+    `;
+
+    // Attach click handlers AFTER render
+    databases.forEach((db) => {
+      if (db.is_primary) return;
+      const btn = document.querySelector(`[data-primary-btn="${db.id}"]`);
+      if (!btn) return;
+      btn.onclick = () => setPrimary(db.id);
+    });
+  }
+
+  async function setPrimary(id) {
+    status.innerText = "Setting primary database…";
+
+    const res = await fetch("/api/set-primary-db", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, databaseId: id }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      status.innerText = data.error || "Failed to set primary";
+      return;
+    }
+
+    status.innerText = "Primary database updated ✅";
+    await loadDatabases();
+  }
+
+  document.getElementById("save").onclick = async () => {
+    const raw = document.getElementById("db").value.trim();
+    if (!raw) return alert("Enter Notion database ID or URL");
+
+    const databaseId = extractDatabaseId(raw);
+    if (!databaseId) return alert("Invalid Notion database ID or URL");
+
+    status.innerText = "Adding database…";
+
+    try {
+      const res = await fetch("/api/add-database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          databaseId,
+          label: "Instagram", // later: input field
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        status.innerText = data.error || "Error adding database";
         return;
       }
 
-      status.innerText = "Saving database…";
+      status.innerText = "Database added successfully ✅";
+      renderEmbedUrl(data.url || getEmbedUrlFromLocation());
+      document.getElementById("db").value = "";
 
-      try {
-        const res = await fetch("/api/save-database", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, databaseId }),
-        });
-
-        const data = await res.json();
-
-        if (data.url) {
-          status.innerHTML = `
-  <strong>Database connected</strong><br><br>
-  Embed this URL in Notion:
-  <div style="
-    margin-top:10px;
-    display:flex;
-    gap:8px;
-    align-items:center;
-    flex-wrap:wrap;
-  ">
-    <input
-      id="embedUrl"
-      value="${data.url}"
-      readonly
-      style="
-        flex:1;
-        padding:10px 12px;
-        font-size:14px;
-        border-radius:8px;
-        border:1px solid var(--border);
-        background:#f9fafb;
-      "
-    />
-    <button
-      id="copyUrl"
-      style="
-        padding:10px 14px;
-        font-size:14px;
-        border-radius:8px;
-        border:none;
-        background:#3b82f6;
-        color:#fff;
-        font-weight:600;
-        cursor:pointer;
-      "
-    >
-      Copy
-    </button>
-  </div>
-`;
-          setTimeout(() => {
-  const copyBtn = document.getElementById("copyUrl");
-  const input = document.getElementById("embedUrl");
-
-  copyBtn.onclick = () => {
-    navigator.clipboard.writeText(input.value);
-    copyBtn.innerText = "Copied";
-    setTimeout(() => {
-      copyBtn.innerText = "Copy";
-    }, 1500);
+      await loadDatabases();
+    } catch (e) {
+      status.innerText = "Something went wrong. Please try again.";
+    }
   };
-}, 0);
-        } else {
-          status.innerText = data.error || "Error saving database";
-        }
-      } catch (e) {
-        status.innerText = "Something went wrong. Please try again.";
-      }
-    };
-  
-  
+
+  // Help modal stays same (your code is fine)
   const helpModal = document.getElementById("helpModal");
   const helpModalImg = document.getElementById("helpModalImg");
   const closeHelpModal = document.getElementById("closeHelpModal");
 
-  document.querySelectorAll(".helpLink").forEach(link => {
+  document.querySelectorAll(".helpLink").forEach((link) => {
     link.onclick = (e) => {
       e.preventDefault();
       const img = link.getAttribute("data-img");
@@ -403,17 +513,19 @@
     };
   });
 
-  closeHelpModal.onclick = () => {
-    helpModal.style.display = "none";
-  };
-
+  closeHelpModal.onclick = () => (helpModal.style.display = "none");
   helpModal.onclick = (e) => {
-    if (e.target === helpModal) {
-      helpModal.style.display = "none";
-    }
+    if (e.target === helpModal) helpModal.style.display = "none";
   };
 
-  </script>
+  // Load on first visit
+  if (token) {
+    renderEmbedUrl(getEmbedUrlFromLocation());
+    loadDatabases();
+  } else {
+    status.innerText = "Missing token in URL";
+  }
+</script>
 
 </body>
 </html>
