@@ -2,8 +2,8 @@ import { Client } from "@notionhq/client";
 
 export default async function handler(req, res) {
   try {
-    const { slug } = req.query;
-    if (!slug) return res.status(400).json({ error: "Missing slug" });
+    const { token } = req.query;
+if (!token) return res.status(400).json({ error: "Missing token" });
 
     const headers = {
       apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
     /* 1️⃣ Get customer */
     const customerRes = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/customers?slug=eq.${slug}&select=id`,
+      `${process.env.SUPABASE_URL}/rest/v1/customers?setup_token=eq.${token}&select=id`,
       { headers }
     );
 
