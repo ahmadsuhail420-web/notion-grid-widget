@@ -45,7 +45,7 @@ export default async function handler(req, res) {
        3️⃣ Get selected databases
     -------------------------------------------------- */
     const dbRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary`,
+      `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=notion_database_id,is_primary`,
       { headers }
     );
 
@@ -60,7 +60,7 @@ export default async function handler(req, res) {
     /* ---------- FREE PLAN ---------- */
     if (plan === "free") {
       const primary = databases.find(d => d.is_primary);
-      if (primary) databaseIds = [primary.database_id];
+if (primary) databaseIds = [primary.notion_database_id];
     }
 
     /* ---------- ADVANCED PLAN ---------- */
@@ -76,7 +76,7 @@ export default async function handler(req, res) {
     /* ---------- PRO PLAN ---------- */
     else if (plan === "pro") {
       if (db === "merge") {
-        databaseIds = databases.map(d => d.database_id);
+        databaseIds = databases.map(d => d.notion_database_id);
       } else if (db) {
         databaseIds = [db];
       } else {
