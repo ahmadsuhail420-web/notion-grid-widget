@@ -1,9 +1,7 @@
 export default async function handler(req, res) {
   try {
     const { slug, db } = req.query;
-    if (!slug) {
-      return res.status(400).json({ profile: null, posts: [] });
-    }
+    if (!slug) return res.status(400).json({ profile: null, posts: [] });
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -13,132 +11,98 @@ export default async function handler(req, res) {
       Authorization: `Bearer ${serviceKey}`,
     };
 
-    /* --------------------------------------------------
-       1️⃣ Get customer (WITH PLAN)
-    -------------------------------------------------- */
+    // 1) Get customer (WITH PLAN)
     const customerRes = await fetch(
       `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id,plan`,
       { headers }
     );
     const [customer] = await customerRes.json();
-
-    if (!customer) {
-      return res.json({ profile: null, posts: [] });
-    }
+    if (!customer) return res.json({ profile: null, posts: [] });
 
     const plan = customer.plan || "free";
 
-    /* --------------------------------------------------
-       2️⃣ Get Notion connection
-    -------------------------------------------------- */
+    // 2) Get Notion connection
     const connRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id,access_token`,
       { headers }
     );
     const [connection] = await connRes.json();
+    if (!connection?.access_token) return res.json({ profile: null, posts: [] });
 
-    if (!connection?.access_token) {
-      return res.json({ profile: null, posts: [] });
-    }
-
-    /* --------------------------------------------------
-       3️⃣ Get selected databases
-    -------------------------------------------------- */
+    // 3) Get selected databases (✅ use database_id)
     const dbRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=notion_database_id,is_primary`,
+      `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary`,
       { headers }
     );
-
     const databases = await dbRes.json();
 
     if (!Array.isArray(databases) || databases.length === 0) {
-      return res.json({ profile: null, posts: [] });
+      return res.json({ profile: null, posts: [], plan });
     }
+
+    const primary = databases.find(d => d.is_primary) || null;
 
     let databaseIds = [];
 
-    /* ---------- FREE PLAN ---------- */
+    // FREE: primary only
     if (plan === "free") {
-      const primary = databases.find(d => d.is_primary);
-if (primary) databaseIds = [primary.notion_database_id];
+      if (primary?.database_id) databaseIds = [primary.database_id];
     }
 
-    /* ---------- ADVANCED PLAN ---------- */
+    // ADVANCED: allow choose 1 OR fallback primary
     else if (plan === "advanced") {
-      if (db) {
-        databaseIds = [db];
-      } else {
-        const primary = databases.find(d => d.is_primary);
-        if (primary) databaseIds = [primary.database_id];
-      }
+      if (db) databaseIds = [db];
+      else if (primary?.database_id) databaseIds = [primary.database_id];
     }
 
-    /* ---------- PRO PLAN ---------- */
+    // PRO: allow merge OR choose 1 OR fallback primary
     else if (plan === "pro") {
-      if (db === "merge") {
-        databaseIds = databases.map(d => d.notion_database_id);
-      } else if (db) {
-        databaseIds = [db];
-      } else {
-        const primary = databases.find(d => d.is_primary);
-        if (primary) databaseIds = [primary.database_id];
-      }
+      if (db === "merge") databaseIds = databases.map(d => d.database_id);
+      else if (db) databaseIds = [db];
+      else if (primary?.database_id) databaseIds = [primary.database_id];
     }
 
     if (databaseIds.length === 0) {
       return res.json({ profile: null, posts: [], plan });
     }
 
-    /* --------------------------------------------------
-   4️⃣ Query Notion (WITH PAGINATION)
--------------------------------------------------- */
+    // 4) Query Notion (WITH PAGINATION)
+    let allPages = [];
 
-let allPages = [];
+    for (const databaseId of databaseIds) {
+      let hasMore = true;
+      let cursor = undefined;
 
-for (const databaseId of databaseIds) {
+      while (hasMore) {
+        const body = cursor ? { start_cursor: cursor } : {};
 
-  let hasMore = true;
-  let cursor = undefined;
+        const notionRes = await fetch(
+          `https://api.notion.com/v1/databases/${databaseId}/query`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${connection.access_token}`,
+              "Content-Type": "application/json",
+              "Notion-Version": "2022-06-28",
+            },
+            body: JSON.stringify(body),
+          }
+        );
 
-  while (hasMore) {
+        const notionData = await notionRes.json();
+        if (!Array.isArray(notionData.results)) break;
 
-    const body = cursor
-      ? { start_cursor: cursor }
-      : {};
-
-    const notionRes = await fetch(
-      `https://api.notion.com/v1/databases/${databaseId}/query`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${connection.access_token}`,
-          "Content-Type": "application/json",
-          "Notion-Version": "2022-06-28",
-        },
-        body: JSON.stringify(body),
+        allPages = allPages.concat(notionData.results);
+        hasMore = notionData.has_more;
+        cursor = notionData.next_cursor;
       }
-    );
+    }
 
-    const notionData = await notionRes.json();
-
-    if (!Array.isArray(notionData.results)) break;
-
-    allPages = allPages.concat(notionData.results);
-
-    hasMore = notionData.has_more;
-    cursor = notionData.next_cursor;
-  }
-}
-
-    /* --------------------------------------------------
-       5️⃣ Parse rows (UNCHANGED LOGIC)
-    -------------------------------------------------- */
-
+    // 5) Parse rows (UNCHANGED LOGIC)
     let profile = null;
     const posts = [];
 
     for (const page of allPages) {
-
       const profileName =
         page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
 
@@ -148,9 +112,7 @@ for (const databaseId of databaseIds) {
         null;
 
       const profileNote =
-        page.properties?.["Profile Note"]?.rich_text
-          ?.map(t => t.plain_text)
-          .join("") || null;
+        page.properties?.["Profile Note"]?.rich_text?.map(t => t.plain_text).join("") || null;
 
       if (profileName || profilePicture || profileNote) {
         profile = {
@@ -161,16 +123,11 @@ for (const databaseId of databaseIds) {
         continue;
       }
 
-      const name =
-        page.properties?.Name?.title?.[0]?.plain_text || "";
-
-      const publishDate =
-        page.properties?.["Publish Date"]?.date?.start || null;
+      const name = page.properties?.Name?.title?.[0]?.plain_text || "";
+      const publishDate = page.properties?.["Publish Date"]?.date?.start || null;
 
       const attachment =
-        page.properties?.Attachment?.files?.map(f =>
-          f.file?.url || f.external?.url
-        ) || [];
+        page.properties?.Attachment?.files?.map(f => f.file?.url || f.external?.url) || [];
 
       const video =
         page.properties?.["Media/Video"]?.files?.[0]?.file?.url ||
@@ -182,8 +139,7 @@ for (const databaseId of databaseIds) {
         page.properties?.Thumbnail?.files?.[0]?.external?.url ||
         null;
 
-      const type =
-        page.properties?.Type?.multi_select?.map(t => t.name) || [];
+      const type = page.properties?.Type?.multi_select?.map(t => t.name) || [];
 
       posts.push({
         id: page.id,
@@ -199,18 +155,10 @@ for (const databaseId of databaseIds) {
       });
     }
 
-    /* --------------------------------------------------
-       6️⃣ Return
-    -------------------------------------------------- */
-
-    res.json({
-      profile,
-      posts,
-      plan,
-    });
-
+    // 6) Return
+    return res.json({ profile, posts, plan });
   } catch (err) {
     console.error("get-posts error:", err);
-    res.status(500).json({ error: "Failed to load posts" });
+    return res.status(500).json({ error: "Failed to load posts" });
   }
 }
