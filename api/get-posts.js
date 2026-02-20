@@ -90,30 +90,45 @@ export default async function handler(req, res) {
     }
 
     /* --------------------------------------------------
-       4️⃣ Query Notion (single OR multiple)
-    -------------------------------------------------- */
+   4️⃣ Query Notion (WITH PAGINATION)
+-------------------------------------------------- */
 
-    let allPages = [];
+let allPages = [];
 
-    for (const databaseId of databaseIds) {
-      const notionRes = await fetch(
-        `https://api.notion.com/v1/databases/${databaseId}/query`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${connection.access_token}`,
-            "Content-Type": "application/json",
-            "Notion-Version": "2022-06-28",
-          },
-        }
-      );
+for (const databaseId of databaseIds) {
 
-      const notionData = await notionRes.json();
+  let hasMore = true;
+  let cursor = undefined;
 
-      if (Array.isArray(notionData.results)) {
-        allPages = allPages.concat(notionData.results);
+  while (hasMore) {
+
+    const body = cursor
+      ? { start_cursor: cursor }
+      : {};
+
+    const notionRes = await fetch(
+      `https://api.notion.com/v1/databases/${databaseId}/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${connection.access_token}`,
+          "Content-Type": "application/json",
+          "Notion-Version": "2022-06-28",
+        },
+        body: JSON.stringify(body),
       }
-    }
+    );
+
+    const notionData = await notionRes.json();
+
+    if (!Array.isArray(notionData.results)) break;
+
+    allPages = allPages.concat(notionData.results);
+
+    hasMore = notionData.has_more;
+    cursor = notionData.next_cursor;
+  }
+}
 
     /* --------------------------------------------------
        5️⃣ Parse rows (UNCHANGED LOGIC)
