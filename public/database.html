@@ -473,7 +473,7 @@ document.getElementById("save").onclick = async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         token,
-        databaseUrl: raw, // IMPORTANT: must match backend
+        databaseId,   // ✅ correct key
         label: "Instagram",
       }),
     });
