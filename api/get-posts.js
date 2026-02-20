@@ -14,10 +14,10 @@ export default async function handler(req, res) {
     };
 
     /* --------------------------------------------------
-       1️⃣ Get customer
+       1️⃣ Get customer (WITH PLAN)
     -------------------------------------------------- */
     const customerRes = await fetch(
-      `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id`,
+      `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id,plan`,
       { headers }
     );
     const [customer] = await customerRes.json();
@@ -26,11 +26,13 @@ export default async function handler(req, res) {
       return res.json({ profile: null, posts: [] });
     }
 
+    const plan = customer.plan || "free";
+
     /* --------------------------------------------------
-       2️⃣ Get Notion OAuth token (workspace-level)
+       2️⃣ Get Notion connection
     -------------------------------------------------- */
     const connRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=access_token`,
+      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id,access_token`,
       { headers }
     );
     const [connection] = await connRes.json();
@@ -40,58 +42,88 @@ export default async function handler(req, res) {
     }
 
     /* --------------------------------------------------
-       3️⃣ Resolve database (explicit OR primary)
+       3️⃣ Get selected databases
     -------------------------------------------------- */
-    let dbQuery;
-
-    if (db) {
-      // explicit database via query param
-      dbQuery = `database_id=eq.${db}`;
-    } else {
-      // fallback to primary database
-      dbQuery = `is_primary=eq.true`;
-    }
-
     const dbRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases?customer_id=eq.${customer.id}&${dbQuery}&select=database_id`,
+      `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary`,
       { headers }
     );
-    const [dbRow] = await dbRes.json();
 
-    if (!dbRow?.database_id) {
+    const databases = await dbRes.json();
+
+    if (!Array.isArray(databases) || databases.length === 0) {
       return res.json({ profile: null, posts: [] });
     }
 
-    const databaseId = dbRow.database_id;
+    let databaseIds = [];
 
-    /* --------------------------------------------------
-       4️⃣ Query Notion database
-    -------------------------------------------------- */
-    const notionRes = await fetch(
-      `https://api.notion.com/v1/databases/${databaseId}/query`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${connection.access_token}`,
-          "Content-Type": "application/json",
-          "Notion-Version": "2022-06-28",
-        },
+    /* ---------- FREE PLAN ---------- */
+    if (plan === "free") {
+      const primary = databases.find(d => d.is_primary);
+      if (primary) databaseIds = [primary.database_id];
+    }
+
+    /* ---------- ADVANCED PLAN ---------- */
+    else if (plan === "advanced") {
+      if (db) {
+        databaseIds = [db];
+      } else {
+        const primary = databases.find(d => d.is_primary);
+        if (primary) databaseIds = [primary.database_id];
       }
-    );
+    }
 
-    const notionData = await notionRes.json();
-    if (!Array.isArray(notionData.results)) {
-      return res.json({ profile: null, posts: [] });
+    /* ---------- PRO PLAN ---------- */
+    else if (plan === "pro") {
+      if (db === "merge") {
+        databaseIds = databases.map(d => d.database_id);
+      } else if (db) {
+        databaseIds = [db];
+      } else {
+        const primary = databases.find(d => d.is_primary);
+        if (primary) databaseIds = [primary.database_id];
+      }
+    }
+
+    if (databaseIds.length === 0) {
+      return res.json({ profile: null, posts: [], plan });
     }
 
     /* --------------------------------------------------
-       5️⃣ Parse rows
+       4️⃣ Query Notion (single OR multiple)
     -------------------------------------------------- */
+
+    let allPages = [];
+
+    for (const databaseId of databaseIds) {
+      const notionRes = await fetch(
+        `https://api.notion.com/v1/databases/${databaseId}/query`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${connection.access_token}`,
+            "Content-Type": "application/json",
+            "Notion-Version": "2022-06-28",
+          },
+        }
+      );
+
+      const notionData = await notionRes.json();
+
+      if (Array.isArray(notionData.results)) {
+        allPages = allPages.concat(notionData.results);
+      }
+    }
+
+    /* --------------------------------------------------
+       5️⃣ Parse rows (UNCHANGED LOGIC)
+    -------------------------------------------------- */
+
     let profile = null;
     const posts = [];
 
-    for (const page of notionData.results) {
-      // ---------- PROFILE ROW ----------
+    for (const page of allPages) {
+
       const profileName =
         page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
 
@@ -114,7 +146,6 @@ export default async function handler(req, res) {
         continue;
       }
 
-      // ---------- POST ROW ----------
       const name =
         page.properties?.Name?.title?.[0]?.plain_text || "";
 
@@ -154,12 +185,13 @@ export default async function handler(req, res) {
     }
 
     /* --------------------------------------------------
-       6️⃣ Done
+       6️⃣ Return
     -------------------------------------------------- */
+
     res.json({
       profile,
       posts,
-      plan: "pro",
+      plan,
     });
 
   } catch (err) {
