@@ -19,16 +19,26 @@ export default async function handler(req, res) {
     );
 
     // 1️⃣ Validate setup token
-    const { data: customer, error: customerError } = await supabase
-      .from("customers")
-      .select("*")
-      .eq("setup_token", setupToken)
-      .eq("setup_used", false)
-      .single();
+    const { data: customers, error: customerError } = await supabase
+  .from("customers")
+  .select("*")
+  .eq("setup_token", setupToken);
 
-    if (customerError || !customer) {
-      return res.redirect("/error.html?reason=invalid_setup_token");
-    }
+if (customerError) {
+  console.error("Customer query error:", customerError);
+  return res.redirect("/error.html?reason=db_error");
+}
+
+if (!customers || customers.length === 0) {
+  return res.redirect("/error.html?reason=invalid_setup_token");
+}
+
+const customer = customers[0];
+
+// If already connected, just redirect forward
+if (customer.setup_used) {
+  return res.redirect(`/database.html?token=${setupToken}`);
+}
 
     // 2️⃣ Exchange code for Notion access token
     const tokenRes = await fetch("https://api.notion.com/v1/oauth/token", {
