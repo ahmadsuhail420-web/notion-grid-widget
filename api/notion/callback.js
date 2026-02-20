@@ -10,7 +10,7 @@ export default async function handler(req, res) {
       return res.redirect("/error.html?reason=missing_code");
     }
 
-    const setupToken = state;
+    const setupToken = state.split(":")[0];
 
     // Initialize Supabase (SERVICE ROLE)
     const supabase = createClient(
