@@ -10,7 +10,11 @@ export default async function handler(req, res) {
       return res.redirect("/error.html?reason=missing_code");
     }
 
-    const setupToken = state.split("__");
+    const [setupToken, slug] = state.split("__");
+
+if (!setupToken) {
+  return res.redirect("/error.html?reason=invalid_state");
+}
 
     // Initialize Supabase (SERVICE ROLE)
     const supabase = createClient(
