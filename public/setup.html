@@ -179,19 +179,8 @@
       `;
       throw new Error("No token");
     }
-
-    fetch(`/api/verify-token?token=${token}`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data.valid) {
-  status.innerText = "This setup link has already been used or expired.";
-  document.getElementById("support").style.display = "block";
-  return;
-}
-
         status.style.display = "none";
         content.style.display = "block";
-      });
 
     connectBtn.onclick = () => {
       const name = document.getElementById("name").value;
