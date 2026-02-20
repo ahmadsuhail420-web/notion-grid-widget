@@ -1,143 +1,78 @@
-import { Client } from "@notionhq/client";
+import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
-  try {
-    if (req.method !== "POST") {
-      return res.status(405).json({ error: "Method not allowed" });
-    }
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
+  try {
     const { token, databaseId, label } = req.body;
 
     if (!token || !databaseId) {
       return res.status(400).json({ error: "Missing token or databaseId" });
     }
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    const headers = {
-      apikey: serviceKey,
-      Authorization: `Bearer ${serviceKey}`,
-      "Content-Type": "application/json",
-    };
-
-    /* -------------------------------------------------
-       1. Find customer by setup_token
-    ------------------------------------------------- */
-    const customerRes = await fetch(
-      `${supabaseUrl}/rest/v1/customers?setup_token=eq.${token}&select=id,status`,
-      { headers }
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    const customers = await customerRes.json();
+    // 1) Find customer by setup token
+    const { data: customer, error: customerError } = await supabase
+      .from("customers")
+      .select("id, slug")
+      .eq("setup_token", token)
+      .single();
 
-    if (!customers.length) {
-      return res.status(404).json({ error: "Invalid or expired token" });
+    if (customerError || !customer) {
+      return res.status(400).json({ error: "Invalid setup token" });
     }
 
-    const customer = customers[0];
+    // 2) Find notion connection for that customer
+    const { data: conn, error: connError } = await supabase
+      .from("notion_connections")
+      .select("id")
+      .eq("customer_id", customer.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
 
-    if (customer.status !== "active") {
-      return res.status(403).json({ error: "Customer not active" });
+    if (connError || !conn) {
+      return res.status(400).json({ error: "Notion connection not found" });
     }
 
-    const customerId = customer.id;
+    // 3) If no databases exist yet, make this one primary
+    const { data: existing } = await supabase
+      .from("notion_databases")
+      .select("id")
+      .eq("connection_id", conn.id)
+      .limit(1);
 
-    /* -------------------------------------------------
-       2. Get Notion access token
-    ------------------------------------------------- */
-    const connRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customerId}&select=access_token`,
-      { headers }
-    );
+    const shouldBePrimary = !existing || existing.length === 0;
 
-    const connections = await connRes.json();
-
-    if (!connections.length || !connections[0].access_token) {
-      return res.status(400).json({ error: "Notion not connected" });
-    }
-
-    const notion = new Client({
-      auth: connections[0].access_token,
-    });
-
-    /* -------------------------------------------------
-       3. Validate database access in Notion
-    ------------------------------------------------- */
-    let notionDb;
-    try {
-      notionDb = await notion.databases.retrieve({
+    // 4) Insert DB row WITH connection_id
+    const { data: inserted, error: insertError } = await supabase
+      .from("notion_databases")
+      .insert({
+        customer_id: customer.id,
+        connection_id: conn.id,
         database_id: databaseId,
-      });
-    } catch (err) {
-      return res
-        .status(400)
-        .json({ error: "Notion database not accessible" });
+        label: label || "Database",
+        is_primary: shouldBePrimary,
+      })
+      .select("id, database_id, label, is_primary")
+      .single();
+
+    if (insertError) {
+      return res.status(500).json({ error: insertError.message });
     }
 
-    const finalLabel =
-      label || notionDb.title?.[0]?.plain_text || "Untitled";
+    const embed_url = `${process.env.APP_URL}/grid.html?slug=${encodeURIComponent(customer.slug)}`;
 
-    /* -------------------------------------------------
-       4. Check existing databases
-    ------------------------------------------------- */
-    const dbListRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases?customer_id=eq.${customerId}&select=id`,
-      { headers }
-    );
-
-    const existingDbs = await dbListRes.json();
-    const isFirst = existingDbs.length === 0;
-
-    /* -------------------------------------------------
-       5. Prevent duplicate database
-    ------------------------------------------------- */
-    const duplicateRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases?customer_id=eq.${customerId}&database_id=eq.${databaseId}`,
-      { headers }
-    );
-
-    const duplicates = await duplicateRes.json();
-    if (duplicates.length) {
-      return res.status(409).json({ error: "Database already added" });
-    }
-
-    /* -------------------------------------------------
-       6. Insert database
-    ------------------------------------------------- */
-    const insertRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          customer_id: customerId,
-          database_id: databaseId,
-          label: finalLabel,
-          is_primary: isFirst,
-        }),
-      }
-    );
-
-    if (!insertRes.ok) {
-      const errText = await insertRes.text();
-      throw new Error(errText);
-    }
-
-    /* -------------------------------------------------
-       7. Respond
-    ------------------------------------------------- */
     return res.json({
-  success: true,
-  database_id,
-  label: dbLabel,
-  is_primary: isFirst,
-  embed_url: `${process.env.PUBLIC_BASE_URL}/widget?token=${slug}`
-});
-  } catch (err) {
-    console.error("add-database error:", err);
-    return res.status(500).json({
-      error: "Internal server error",
+      ok: true,
+      embed_url,
+      database: inserted,
     });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 }
