@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       return res.redirect("/error.html?reason=missing_code");
     }
 
-    const [setupToken, slug] = state.split(":");
+    const setupToken = state;
 
     const tokenRes = await fetch("https://api.notion.com/v1/oauth/token", {
       method: "POST",
@@ -34,7 +34,9 @@ export default async function handler(req, res) {
       return res.redirect("/error.html?reason=notion_auth_failed");
     }
 
-    // continue saving to supabase...
+    // 🔥 NEXT STEP: find customer by setupToken
+    // 🔥 save tokenData.access_token to notion_connections
+    // 🔥 mark setup_used = true
 
     return res.redirect(`/database.html?token=${setupToken}`);
   } catch (err) {
