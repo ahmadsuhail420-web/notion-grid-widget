@@ -1,8 +1,8 @@
 export default async function handler(req, res) {
-  const { token, slug } = req.query;
+  const { token } = req.query;
 
-  if (!token || !slug) {
-    return res.status(400).send("Missing token or slug");
+  if (!token) {
+    return res.status(400).send("Missing token");
   }
 
   const notionAuthUrl =
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     `&response_type=code` +
     `&owner=user` +
     `&redirect_uri=${encodeURIComponent(process.env.NOTION_REDIRECT_URI)}` +
-   `&state=${encodeURIComponent(token)}`
+    `&state=${encodeURIComponent(token)}`;
 
   res.redirect(notionAuthUrl);
 }
