@@ -19,20 +19,32 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: "Customer not found" });
     }
 
-    /* 2️⃣ Get databases */
-    const dbRes = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/notion_databases?customer_id=eq.${customer.id}&select=id,notion_database_id,title,is_primary&order=created_at.asc`,
-      { headers }
-    );
+/* 2️⃣ Get Notion connection */
+const connRes = await fetch(
+  `${process.env.SUPABASE_URL}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id`,
+  { headers }
+);
 
-    const databases = await dbRes.json();
+const [connection] = await connRes.json();
 
-    const primary = databases.find(db => db.is_primary) || null;
+if (!connection) {
+  return res.status(404).json({ error: "No Notion connection found" });
+}
 
-    res.json({
-      primary,
-      databases,
-    });
+/* 3️⃣ Get databases */
+const dbRes = await fetch(
+  `${process.env.SUPABASE_URL}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=id,notion_database_id,label,is_primary&order=created_at.asc`,
+  { headers }
+);
+
+const databases = await dbRes.json();
+
+const primary = databases.find(db => db.is_primary) || null;
+
+res.json({
+  primary,
+  databases,
+});
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
