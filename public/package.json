@@ -1,8 +1,9 @@
 {
   "name": "notion-grid-widget",
   "version": "1.0.0",
+  "private": true,
   "dependencies": {
-    "@notionhq/client": "^2.2.14"
+    "@notionhq/client": "^2.2.14",
     "@supabase/supabase-js": "^2.39.0"
   }
 }
