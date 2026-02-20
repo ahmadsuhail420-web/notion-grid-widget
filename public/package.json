@@ -3,5 +3,6 @@
   "version": "1.0.0",
   "dependencies": {
     "@notionhq/client": "^2.2.14"
+    "@supabase/supabase-js": "^2.39.0"
   }
 }
