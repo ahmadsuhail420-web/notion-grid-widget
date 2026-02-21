@@ -300,12 +300,14 @@
 
 </div>
 
-  <!-- SCRIPT -->
-<script>
+  <script>
   const token = new URLSearchParams(location.search).get("token");
   const status = document.getElementById("status");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
+
+  let CURRENT_PLAN = "free";
+  let DATABASES = [];
 
   function extractDatabaseId(input) {
     const match = input.match(/[a-f0-9]{32}/i);
@@ -350,16 +352,28 @@
     `;
 
     document.getElementById("copyUrl").onclick = () => {
-      const input = document.getElementById("embedUrl");
-      navigator.clipboard.writeText(input.value);
+      navigator.clipboard.writeText(url);
       const btn = document.getElementById("copyUrl");
       btn.innerText = "Copied";
       setTimeout(() => (btn.innerText = "Copy"), 1200);
     };
   }
 
+  function getPlanLimit(plan) {
+    if (plan === "free") return 1;
+    if (plan === "advanced") return 3;
+    return Infinity; // pro
+  }
+
   async function loadDatabases() {
-    dbList.innerHTML = `<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div>Loading databases…</div>`;
+    dbList.innerHTML = `
+      <div class="loader">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        Loading databases…
+      </div>
+    `;
 
     const res = await fetch(`/api/list-database?token=${encodeURIComponent(token)}`);
     const data = await res.json();
@@ -369,72 +383,67 @@
       return;
     }
 
-    const databases = Array.isArray(data.databases) ? data.databases : data;
+    DATABASES = Array.isArray(data.databases) ? data.databases : data;
+    CURRENT_PLAN = data.plan || "free";
 
-    if (!databases.length) {
+    if (!DATABASES.length) {
       dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
       return;
     }
 
     dbList.innerHTML = `
       <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
-      ${databases
-        .map(
-          (db) => `
-          <div style="
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:10px 12px;
-            border:1px solid var(--border);
-            border-radius:10px;
-            margin-bottom:10px;
-            gap:12px;
-          ">
-            <div style="display:flex; flex-direction:column;">
-              <div style="font-weight:600;">${db.label || "Untitled"}</div>
-              <div style="font-size:12px; color:var(--text-muted);">
-                ${db.database_id ? db.database_id : ""}
-              </div>
-            </div>
-
-            <div style="display:flex; gap:8px; align-items:center;">
-              ${db.is_primary ? `
-                <span style="
-                  font-size:12px;
-                  font-weight:700;
-                  color:#16a34a;
-                  border:1px solid rgba(22,163,74,.35);
-                  padding:6px 10px;
-                  border-radius:999px;
-                ">Primary</span>
-              ` : `
-                <button
-                  data-primary-btn="${db.id}"
-                  style="
-                    padding:8px 10px;
-                    font-size:13px;
-                    border-radius:10px;
-                    border:1px solid var(--border);
-                    background:#fff;
-                    cursor:pointer;
-                    font-weight:600;
-                  "
-                >Make primary</button>
-              `}
+      ${DATABASES.map(db => `
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          padding:10px 12px;
+          border:1px solid var(--border);
+          border-radius:10px;
+          margin-bottom:10px;
+          gap:12px;
+        ">
+          <div style="display:flex; flex-direction:column;">
+            <div style="font-weight:600;">${db.label || "Untitled"}</div>
+            <div style="font-size:12px; color:var(--text-muted);">
+              ${db.database_id || ""}
             </div>
           </div>
-        `
-        )
-        .join("")}
+
+          <div style="display:flex; gap:8px; align-items:center;">
+            ${db.is_primary ? `
+              <span style="
+                font-size:12px;
+                font-weight:700;
+                color:#16a34a;
+                border:1px solid rgba(22,163,74,.35);
+                padding:6px 10px;
+                border-radius:999px;
+              ">Primary</span>
+            ` : `
+              <button
+                data-primary-btn="${db.id}"
+                style="
+                  padding:8px 10px;
+                  font-size:13px;
+                  border-radius:10px;
+                  border:1px solid var(--border);
+                  background:#fff;
+                  cursor:pointer;
+                  font-weight:600;
+                "
+              >Make primary</button>
+            `}
+          </div>
+        </div>
+      `).join("")}
     `;
 
-    // Attach click handlers AFTER render
-    databases.forEach((db) => {
+    DATABASES.forEach(db => {
       if (db.is_primary) return;
       const btn = document.querySelector(`[data-primary-btn="${db.id}"]`);
-      if (!btn) return;
-      btn.onclick = () => setPrimary(db.id);
+      if (btn) btn.onclick = () => setPrimary(db.id);
     });
   }
 
@@ -458,70 +467,59 @@
     await loadDatabases();
   }
 
-document.getElementById("save").onclick = async () => {
-  const raw = document.getElementById("db").value.trim();
-  if (!raw) return alert("Enter Notion database ID or URL");
+  document.getElementById("save").onclick = async () => {
+    const raw = document.getElementById("db").value.trim();
+    if (!raw) return alert("Enter Notion database ID or URL");
 
-  const databaseId = extractDatabaseId(raw);
-  if (!databaseId) return alert("Invalid Notion database ID or URL");
+    const databaseId = extractDatabaseId(raw);
+    if (!databaseId) return alert("Invalid Notion database ID or URL");
 
-  status.innerText = "Adding database…";
+    const limit = getPlanLimit(CURRENT_PLAN);
 
-  try {
-    const res = await fetch("/api/add-database", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token,
-        databaseId,   // ✅ correct key
-        label: "Instagram",
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      status.innerText = data.error || "Error adding database";
-      return;
+    if (DATABASES.length >= limit) {
+      if (CURRENT_PLAN === "free") {
+        return alert("Free plan allows only 1 database.");
+      }
+      if (CURRENT_PLAN === "advanced") {
+        return alert("Advanced plan allows up to 3 databases.");
+      }
     }
 
-    status.innerText = "Database added successfully ✅";
-    renderEmbedUrl(data.embed_url);
-    document.getElementById("db").value = "";
+    status.innerText = "Adding database…";
 
-    await loadDatabases();
-  } catch (e) {
-    status.innerText = "Something went wrong. Please try again.";
-  }
-};
+    try {
+      const res = await fetch("/api/add-database", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          databaseId,
+          label: "Instagram",
+        }),
+      });
 
-  // Help modal stays same (your code is fine)
-  const helpModal = document.getElementById("helpModal");
-  const helpModalImg = document.getElementById("helpModalImg");
-  const closeHelpModal = document.getElementById("closeHelpModal");
+      const data = await res.json();
 
-  document.querySelectorAll(".helpLink").forEach((link) => {
-    link.onclick = (e) => {
-      e.preventDefault();
-      const img = link.getAttribute("data-img");
-      helpModalImg.src = img;
-      helpModal.style.display = "flex";
-    };
-  });
+      if (!res.ok) {
+        status.innerText = data.error || "Error adding database";
+        return;
+      }
 
-  closeHelpModal.onclick = () => (helpModal.style.display = "none");
-  helpModal.onclick = (e) => {
-    if (e.target === helpModal) helpModal.style.display = "none";
+      status.innerText = "Database added successfully ✅";
+      renderEmbedUrl(data.embed_url);
+      document.getElementById("db").value = "";
+
+      await loadDatabases();
+    } catch (e) {
+      status.innerText = "Something went wrong. Please try again.";
+    }
   };
 
-  // Load on first visit
   if (token) {
-  loadDatabases();
-} else {
-  status.innerText = "Missing token in URL";
-}
-
+    loadDatabases();
+  } else {
+    status.innerText = "Missing token in URL";
+  }
 </script>
-
 </body>
 </html>
