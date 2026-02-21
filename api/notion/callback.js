@@ -10,8 +10,7 @@ export default async function handler(req, res) {
       return res.redirect("/error.html?reason=missing_code");
     }
 
-    const [rawToken] = state.split("__");
-const setupToken = rawToken?.trim();
+    const setupToken = state;
 
 if (!setupToken) {
   return res.redirect("/error.html?reason=invalid_state");
