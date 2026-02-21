@@ -467,53 +467,58 @@
     await loadDatabases();
   }
 
-  document.getElementById("save").onclick = async () => {
-    const raw = document.getElementById("db").value.trim();
-    if (!raw) return alert("Enter Notion database ID or URL");
+document.getElementById("save").onclick = async () => {
+  const raw = document.getElementById("db").value.trim();
+  if (!raw) return alert("Enter Notion database ID or URL");
 
-    const databaseId = extractDatabaseId(raw);
-    if (!databaseId) return alert("Invalid Notion database ID or URL");
+  const databaseId = extractDatabaseId(raw);
+  if (!databaseId) return alert("Invalid Notion database ID or URL");
 
-    const limit = getPlanLimit(CURRENT_PLAN);
+  const label = document.getElementById("label").value.trim();
+  if (!label) return alert("Enter a label name");
 
-    if (DATABASES.length >= limit) {
-      if (CURRENT_PLAN === "free") {
-        return alert("Free plan allows only 1 database.");
-      }
-      if (CURRENT_PLAN === "advanced") {
-        return alert("Advanced plan allows up to 3 databases.");
-      }
+  const limit = getPlanLimit(CURRENT_PLAN);
+
+  if (DATABASES.length >= limit) {
+    if (CURRENT_PLAN === "free") {
+      return alert("Free plan allows only 1 database.");
+    }
+    if (CURRENT_PLAN === "advanced") {
+      return alert("Advanced plan allows up to 3 databases.");
+    }
+  }
+
+  status.innerText = "Adding database…";
+
+  try {
+    const res = await fetch("/api/add-database", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token,
+        databaseId,
+        label
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      status.innerText = data.error || "Error adding database";
+      return;
     }
 
-    status.innerText = "Adding database…";
+    status.innerText = "Database added successfully ✅";
+    renderEmbedUrl(data.embed_url);
 
-    try {
-      const res = await fetch("/api/add-database", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token,
-          databaseId,
-          label: "Instagram",
-        }),
-      });
+    document.getElementById("db").value = "";
+    document.getElementById("label").value = "";
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        status.innerText = data.error || "Error adding database";
-        return;
-      }
-
-      status.innerText = "Database added successfully ✅";
-      renderEmbedUrl(data.embed_url);
-      document.getElementById("db").value = "";
-
-      await loadDatabases();
-    } catch (e) {
-      status.innerText = "Something went wrong. Please try again.";
-    }
-  };
+    await loadDatabases();
+  } catch (e) {
+    status.innerText = "Something went wrong. Please try again.";
+  }
+};
 
   if (token) {
     loadDatabases();
