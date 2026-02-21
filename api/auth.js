@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   const { token, slug } = req.query;
 
-  if (!token || !slug) {
+  if (!token) {
     return res.status(400).send("Missing token or slug");
   }
 
