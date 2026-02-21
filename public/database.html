@@ -478,7 +478,6 @@ document.getElementById("save").onclick = async () => {
   if (!label) return alert("Enter a label name");
 
   const limit = getPlanLimit(CURRENT_PLAN);
-
   if (DATABASES.length >= limit) {
     if (CURRENT_PLAN === "free") {
       return alert("Free plan allows only 1 database.");
@@ -497,7 +496,7 @@ document.getElementById("save").onclick = async () => {
       body: JSON.stringify({
         token,
         databaseId,
-        label
+        label,
       }),
     });
 
@@ -519,7 +518,7 @@ document.getElementById("save").onclick = async () => {
     status.innerText = "Something went wrong. Please try again.";
   }
 };
-
+    
   if (token) {
     loadDatabases();
   } else {
