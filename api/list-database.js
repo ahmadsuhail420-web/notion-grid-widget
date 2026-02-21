@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req, res) {
   try {
-    const { token } = req.query;
+    const { slug } = req.query;
     if (!token) return res.status(400).json({ error: "Missing token" });
 
     const supabase = createClient(
