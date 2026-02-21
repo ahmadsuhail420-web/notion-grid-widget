@@ -422,7 +422,7 @@ const token = params.get("token");
             </div>
           </div>
 
-          <div style="display:flex; gap:8px; align-items:center;">
+      <div style="display:flex; gap:8px; align-items:center;">
   ${db.is_primary ? `
     <span style="
       font-size:12px;
@@ -432,32 +432,31 @@ const token = params.get("token");
       padding:6px 10px;
       border-radius:999px;
     ">Primary</span>
-  ` : ""}
-
-  <button
-    data-primary-btn="${db.id}"
-    style="
-      padding:8px 10px;
-      font-size:13px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background:#fff;
-      cursor:pointer;
-      font-weight:600;
-    "
-  >
-    ${db.is_primary ? "Current" : "Make primary"}
-  </button>
+  ` : `
+    <button
+      data-primary-btn="${db.id}"
+      style="
+        padding:8px 10px;
+        font-size:13px;
+        border-radius:10px;
+        border:1px solid var(--border);
+        background:#fff;
+        cursor:pointer;
+        font-weight:600;
+      "
+    >Make primary</button>
+  `}
 </div>
         </div>
       `).join("")}
     `;
 
     DATABASES.forEach(db => {
-      if (db.is_primary) return;
-      const btn = document.querySelector(`[data-primary-btn="${db.id}"]`);
-      if (btn) btn.onclick = () => setPrimary(db.id);
-    });
+  const btn = document.querySelector(`[data-primary-btn="${db.id}"]`);
+  if (btn) {
+    btn.onclick = () => setPrimary(db.id);
+  }
+});
   }
 
   async function setPrimary(id) {
