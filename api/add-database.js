@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     const { slug, databaseId, label } = req.body;
 
     if (!slug || !databaseId) {
-      return res.status(400).json({ error: "Missing token or databaseId" });
+      return res.status(400).json({ error: "Missing slug or databaseId" });
     }
 
     const supabase = createClient(
@@ -23,18 +23,18 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // 1) Find customer by setup token (include plan for limits)
+    // 1️⃣ Find customer by slug
     const { data: customer, error: customerError } = await supabase
       .from("customers")
-      .select("id, slug, plan")
+      .select("id, plan")
       .eq("slug", slug)
       .single();
 
     if (customerError || !customer) {
-      return res.status(400).json({ error: "Invalid setup token" });
+      return res.status(400).json({ error: "Customer not found" });
     }
 
-    // 2) Find notion connection
+    // 2️⃣ Find notion connection
     const { data: conn, error: connError } = await supabase
       .from("notion_connections")
       .select("id")
@@ -47,12 +47,11 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Notion connection not found" });
     }
 
-    // 3) Load existing databases for this connection
+    // 3️⃣ Load existing databases
     const { data: existingDbs, error: existingErr } = await supabase
       .from("notion_databases")
-      .select("id, database_id, is_primary")
-      .eq("connection_id", conn.id)
-      .order("created_at", { ascending: true });
+      .select("id, database_id")
+      .eq("connection_id", conn.id);
 
     if (existingErr) {
       return res.status(500).json({ error: existingErr.message });
@@ -61,41 +60,30 @@ export default async function handler(req, res) {
     const plan = customer.plan || "free";
     const limit = getPlanLimit(plan);
 
-    // ✅ Plan limit enforcement
     if ((existingDbs?.length || 0) >= limit) {
       return res.status(403).json({
         error:
           plan === "free"
             ? "Free plan allows only 1 database."
             : plan === "advanced"
-              ? "Advanced plan allows up to 3 databases."
-              : "Database limit reached.",
+            ? "Advanced plan allows up to 3 databases."
+            : "Database limit reached.",
       });
     }
 
-    // ✅ Duplicate prevention (same Notion database already added)
-    const already = (existingDbs || []).some((d) => d.database_id === databaseId);
+    // Prevent duplicates
+    const already = (existingDbs || []).some(
+      (d) => d.database_id === databaseId
+    );
+
     if (already) {
-      return res.status(409).json({ error: "This database is already connected." });
+      return res.status(409).json({
+        error: "This database is already connected.",
+      });
     }
 
-    // 4) Decide primary (if first DB, make primary)
+    // First DB becomes primary
     const shouldBePrimary = !existingDbs || existingDbs.length === 0;
-
-    // 5) If it will be primary, first unset all primaries (guarantee single primary)
-    if (shouldBePrimary) {
-      const { error: unsetErr } = await supabase
-        .from("notion_databases")
-        .update({ is_primary: false })
-        .eq("connection_id", conn.id);
-
-      if (unsetErr) {
-        return res.status(500).json({ error: unsetErr.message });
-      }
-    }
-
-    // 6) Insert DB row
-    const cleanLabel = (label || "").trim() || "Database";
 
     const { data: inserted, error: insertError } = await supabase
       .from("notion_databases")
@@ -103,7 +91,7 @@ export default async function handler(req, res) {
         customer_id: customer.id,
         connection_id: conn.id,
         database_id: databaseId,
-        label: cleanLabel,
+        label: label?.trim() || "Database",
         is_primary: shouldBePrimary,
       })
       .select("id, database_id, label, is_primary")
@@ -113,10 +101,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: insertError.message });
     }
 
-    // 7) Embed URL stays the same (widget uses slug)
-    const embed_url = `${process.env.APP_URL}/grid.html?slug=${encodeURIComponent(
-      customer.slug
-    )}`;
+    const embed_url = `${process.env.APP_URL}/grid.html?slug=${slug}`;
 
     return res.json({
       ok: true,
@@ -124,6 +109,7 @@ export default async function handler(req, res) {
       embed_url,
       database: inserted,
     });
+
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
