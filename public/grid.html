@@ -1438,6 +1438,7 @@ async function startGrid() {
       ALL_POSTS = JSON.parse(cached);
       renderHighlights(ALL_POSTS);
       renderGrid();
+      document.getElementById("skeleton").style.display = "none"; 
       document.querySelector(".container").removeAttribute("data-loading");
     }
 
