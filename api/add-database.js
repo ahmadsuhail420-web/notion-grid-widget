@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   try {
     const { slug, databaseId, label } = req.body;
 
-    if (!token || !databaseId) {
+    if (!slug || !databaseId) {
       return res.status(400).json({ error: "Missing token or databaseId" });
     }
 
