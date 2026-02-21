@@ -310,7 +310,7 @@
 </div>
 
   <script>
-  const token = new URLSearchParams(location.search).get("token");
+  const slug = new URLSearchParams(location.search).get("slug");
   const status = document.getElementById("status");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
@@ -457,14 +457,17 @@
   }
 
   async function setPrimary(id) {
-    status.innerText = "Setting primary database…";
+  status.innerText = "Setting primary database…";
 
-    const res = await fetch("/api/set-primary-db", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, databaseId: id }),
-    });
-
+  const res = await fetch("/api/set-primary-db", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      slug,
+      databaseRowId: id
+    }),
+  });
+  
     const data = await res.json();
 
     if (!res.ok) {
