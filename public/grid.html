@@ -1130,6 +1130,14 @@ async function loadDatabases() {
   }
 }
 
+  function updateStats() {
+  const stats = computeStatsFromGrid(getVisibleGridPosts());
+
+  document.getElementById("statPosts").innerText = stats.total;
+  document.getElementById("statScheduled").innerText = stats.scheduled;
+  document.getElementById("statPublished").innerText = stats.published;
+}
+
 /* -------------------- MENU -------------------- */
 
 function toggleMenu() {
@@ -1259,10 +1267,7 @@ const res = await fetch(url);
     renderHighlights(ALL_POSTS);
     renderGrid();
 
-    const stats = computeStatsFromGrid(getVisibleGridPosts());
-    document.getElementById("statPosts").innerText = stats.total;
-    document.getElementById("statScheduled").innerText = stats.scheduled;
-    document.getElementById("statPublished").innerText = stats.published;
+    updateStats();
 
   } catch (e) {
     console.error("loadPosts failed:", e);
@@ -1456,6 +1461,7 @@ if (cached) {
 
   renderHighlights(ALL_POSTS);
   renderGrid();
+  updateStats();
 
   document.getElementById("skeleton").style.display = "none";
   document.querySelector(".container").removeAttribute("data-loading");
