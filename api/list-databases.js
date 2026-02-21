@@ -1,71 +1,52 @@
+import { createClient } from "@supabase/supabase-js";
+
 export default async function handler(req, res) {
   try {
-    const { slug, token } = req.query;
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ error: "Missing token" });
 
-    if (!slug && !token) {
-      return res.status(400).json({ error: "Missing slug or token" });
-    }
-
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    const headers = {
-      apikey: serviceKey,
-      Authorization: `Bearer ${serviceKey}`,
-    };
-
-    let customer;
-
-    // 🔹 If dashboard (token)
-    if (token) {
-      const customerRes = await fetch(
-        `${supabaseUrl}/rest/v1/customers?setup_token=eq.${token}&select=id,plan`,
-        { headers }
-      );
-      const result = await customerRes.json();
-      customer = result[0];
-    }
-
-    // 🔹 If widget (slug)
-    if (slug) {
-      const customerRes = await fetch(
-        `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&select=id,plan`,
-        { headers }
-      );
-      const result = await customerRes.json();
-      customer = result[0];
-    }
-
-    if (!customer) {
-      return res.status(404).json({ error: "Customer not found" });
-    }
-
-    // 🔹 Get connection
-    const connRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id`,
-      { headers }
+    const supabase = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
-    const connections = await connRes.json();
-    const connection = connections[0];
 
-    if (!connection) {
+    // 1) Find customer by setup token
+    const { data: customer, error: customerError } = await supabase
+      .from("customers")
+      .select("id, slug, plan")
+      .eq("setup_token", token)
+      .single();
+
+    if (customerError || !customer) {
+      return res.status(404).json({ error: "Customer not found (invalid token)" });
+    }
+
+    // 2) Latest notion connection
+    const { data: conn, error: connError } = await supabase
+      .from("notion_connections")
+      .select("id")
+      .eq("customer_id", customer.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (connError || !conn) {
       return res.status(404).json({ error: "No Notion connection found" });
     }
 
-    // 🔹 Get ALL databases
-    const dbRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=id,database_id,label,is_primary&order=created_at.asc`,
-      { headers }
-    );
+    // 3) Databases
+    const { data: databases, error: dbError } = await supabase
+      .from("notion_databases")
+      .select("id, database_id, label, is_primary, created_at")
+      .eq("connection_id", conn.id)
+      .order("created_at", { ascending: true });
 
-    const databases = await dbRes.json();
+    if (dbError) return res.status(500).json({ error: dbError.message });
 
-    // 🔥 Return plan also (needed for limits)
     return res.json({
       plan: customer.plan || "free",
-      databases
+      databases: databases || [],
     });
-
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
