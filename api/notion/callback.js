@@ -36,7 +36,7 @@ if (customerError || !customer) {
 
 // If already connected, just redirect forward
 if (customer.setup_used) {
-  return res.redirect(`/database.html?token=${setupToken}`);
+  return res.redirect(`/database.html?slug=${customer.slug}`);
 }
 
     // 2️⃣ Exchange code for Notion access token
