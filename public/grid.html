@@ -1237,13 +1237,15 @@ const res = await fetch(url);
     const { profile: apiProfile, posts, plan } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
-    sessionStorage.setItem("cachedPosts", JSON.stringify(ALL_POSTS));
+    sessionStorage.setItem(
+  "cachedData",
+  JSON.stringify({ profile: apiProfile, posts })
+);
 
     const derivedProfile = extractProfileFromPosts(ALL_POSTS);
     const finalProfile = apiProfile || derivedProfile;
 
-    document.getElementById("profileName").innerText = finalProfile.name;
-    document.getElementById("profileImage").src = finalProfile.picture;
+   renderProfile(finalProfile);
 
     // ✅ PROFILE NOTE (MUST be inside try)
     const noteEl = document.getElementById("profileNote");
@@ -1433,14 +1435,31 @@ async function startGrid() {
       }
     }
 
-    const cached = sessionStorage.getItem("cachedPosts");
-    if (cached) {
-      ALL_POSTS = JSON.parse(cached);
-      renderHighlights(ALL_POSTS);
-      renderGrid();
-      document.getElementById("skeleton").style.display = "none"; 
-      document.querySelector(".container").removeAttribute("data-loading");
+    const cached = sessionStorage.getItem("cachedData");
+if (cached) {
+  const { profile, posts } = JSON.parse(cached);
+
+  ALL_POSTS = posts || [];
+  renderProfile(profile);
+
+  // ✅ Restore profile immediately
+  if (profile) {
+    document.getElementById("profileName").innerText = profile.name;
+    document.getElementById("profileImage").src = profile.picture;
+
+    const noteEl = document.getElementById("profileNote");
+    if (profile.note) {
+      noteEl.textContent = profile.note;
+      noteEl.classList.remove("hidden-section");
     }
+  }
+
+  renderHighlights(ALL_POSTS);
+  renderGrid();
+
+  document.getElementById("skeleton").style.display = "none";
+  document.querySelector(".container").removeAttribute("data-loading");
+}
 
  const savedTheme = localStorage.getItem("theme") || "default";
 
@@ -1480,7 +1499,7 @@ const fontSelect = document.querySelector('select[onchange="setFont(this.value)"
 if (fontSelect && savedFont) {
   fontSelect.value = savedFont;
 }
-
+    
     await checkAccess();
     await loadDatabases();
 await loadPosts();
@@ -1491,6 +1510,20 @@ await loadPosts();
     });
   } catch (e) {
     console.error("Grid init failed", e);
+  }
+}
+  function renderProfile(profile) {
+  if (!profile) return;
+
+  document.getElementById("profileName").innerText = profile.name;
+  document.getElementById("profileImage").src = profile.picture;
+
+  const noteEl = document.getElementById("profileNote");
+  if (profile.note) {
+    noteEl.textContent = profile.note;
+    noteEl.classList.remove("hidden-section");
+  } else {
+    noteEl.classList.add("hidden-section");
   }
 }
 
