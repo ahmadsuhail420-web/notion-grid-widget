@@ -187,7 +187,7 @@
       if (!name) return alert("Enter workspace name");
 
       const slug = slugify(name);
-      window.location.href = `/api/auth?token=${token}&slug=${slug}`;
+      window.location.href = `/api/auth?token=${token}`;
     };
   </script>
 
