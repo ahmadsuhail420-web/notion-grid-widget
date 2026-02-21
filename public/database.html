@@ -301,7 +301,7 @@
 </div>
 
   <script>
-  const token = new URLSearchParams(location.search).get("token");
+  const slug = new URLSearchParams(location.search).get("slug");
   const status = document.getElementById("status");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
@@ -375,7 +375,7 @@
       </div>
     `;
 
-    const res = await fetch(`/api/list-database?token=${encodeURIComponent(token)}`);
+    const res = await fetch(`/api/list-database?slug=${encodeURIComponent(slug)}`);
     const data = await res.json();
 
     if (!res.ok) {
