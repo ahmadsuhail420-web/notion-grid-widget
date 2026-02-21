@@ -507,14 +507,14 @@ document.getElementById("save").onclick = async () => {
 
   try {
     const res = await fetch("/api/add-database", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        token,
-        databaseId,
-        label,
-      }),
-    });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    slug,
+    databaseId,
+    label,
+  }),
+});
 
     const data = await res.json();
 
