@@ -87,7 +87,7 @@ if (customer.setup_used) {
       .eq("id", customer.id);
 
     // 5️⃣ Redirect to next step
-    return res.redirect(`/database.html?token=${setupToken}`);
+    return res.redirect(`/database.html?slug=${customer.slug}`);
 
   } catch (err) {
     console.error("Server error:", err);
