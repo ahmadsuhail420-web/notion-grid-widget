@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { token, databaseId, label } = req.body;
+    const { slug, databaseId, label } = req.body;
 
     if (!token || !databaseId) {
       return res.status(400).json({ error: "Missing token or databaseId" });
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     const { data: customer, error: customerError } = await supabase
       .from("customers")
       .select("id, slug, plan")
-      .eq("setup_token", token)
+      .eq("slug", slug)
       .single();
 
     if (customerError || !customer) {
