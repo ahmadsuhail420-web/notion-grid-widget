@@ -310,7 +310,9 @@
 </div>
 
   <script>
-  const slug = new URLSearchParams(location.search).get("slug");
+  const params = new URLSearchParams(location.search);
+const slug = params.get("slug");
+const token = params.get("token");
   const status = document.getElementById("status");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
@@ -384,7 +386,7 @@
       </div>
     `;
 
-    const res = await fetch(`/api/list-database?token=${encodeURIComponent(token)}`);
+    const res = await fetch(`/api/list-database?slug=${encodeURIComponent(slug)}`);
     const data = await res.json();
 
     if (!res.ok) {
@@ -533,11 +535,12 @@ document.getElementById("save").onclick = async () => {
   }
 };
     
-  if (token) {
-    loadDatabases();
-  } else {
-    status.innerText = "Missing token in URL";
-  }
+  if (slug) {
+  loadDatabases();
+} else {
+  status.innerText = "Missing slug in URL";
+}
+
 </script>
 </body>
 </html>
