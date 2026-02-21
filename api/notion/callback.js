@@ -10,7 +10,8 @@ export default async function handler(req, res) {
       return res.redirect("/error.html?reason=missing_code");
     }
 
-    const [setupToken, slug] = state.split("__");
+    const [rawToken] = state.split("__");
+const setupToken = rawToken?.trim();
 
 if (!setupToken) {
   return res.redirect("/error.html?reason=invalid_state");
@@ -23,21 +24,16 @@ if (!setupToken) {
     );
 
     // 1️⃣ Validate setup token
-    const { data: customers, error: customerError } = await supabase
+    const { data: customer, error: customerError } = await supabase
   .from("customers")
   .select("*")
-  .eq("setup_token", setupToken);
+  .eq("setup_token", setupToken)
+  .single();
 
-if (customerError) {
-  console.error("Customer query error:", customerError);
-  return res.redirect("/error.html?reason=db_error");
-}
-
-if (!customers || customers.length === 0) {
+if (customerError || !customer) {
+  console.error("Token lookup failed:", setupToken);
   return res.redirect("/error.html?reason=invalid_setup_token");
 }
-
-const customer = customers[0];
 
 // If already connected, just redirect forward
 if (customer.setup_used) {
