@@ -1098,7 +1098,7 @@ function syncThemePill(mode) {
 
 function switchDatabase(dbId) {
   localStorage.setItem("activeDatabase", dbId);
-  loadPosts(); // reload grid
+  loadPosts(dbId); // ✅ pass selected database
 }
 
 async function loadDatabases() {
@@ -1224,7 +1224,7 @@ window.setFilter = setFilter;
 
 /* -------------------- DATA LOAD -------------------- */
 
-async function loadPosts(btn) {
+async function loadPosts(selectedDb = null) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
 
@@ -1235,13 +1235,16 @@ async function loadPosts(btn) {
 
   try {
     const slug = getSlug();
-const dbId = null;
+let url = `/api/get-posts?slug=${slug}`;
 
-const url = dbId
-  ? `/api/get-posts?slug=${slug}&db=${dbId}`
-  : `/api/get-posts?slug=${slug}`;
+const activeDb = selectedDb || localStorage.getItem("activeDatabase");
+
+if (activeDb) {
+  url += `&db=${activeDb}`;
+}
 
 const res = await fetch(url);
+
     const { profile: apiProfile, posts, plan } = await res.json();
 
     ALL_POSTS = Array.isArray(posts) ? posts : [];
@@ -1508,7 +1511,9 @@ if (fontSelect && savedFont) {
     
     await checkAccess();
     await loadDatabases();
-await loadPosts();
+    
+const savedDb = localStorage.getItem("activeDatabase");
+await loadPosts(savedDb);
 
     requestAnimationFrame(() => {
       const activeTab = document.querySelector(".tabItem.active");
