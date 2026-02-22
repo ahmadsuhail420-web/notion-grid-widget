@@ -443,6 +443,56 @@ body:not([data-theme="dark"])
       to { transform: rotate(360deg); }
     }
     
+    .dbSwitcher {
+  display: flex;
+  position: relative;
+  gap: 6px;
+  padding: 4px;
+  background: var(--bg-muted);
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
+
+.dbSwitcher.hidden {
+  display: none;
+}
+
+.dbBtn {
+  position: relative;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 999px;
+  cursor: pointer;
+  z-index: 1;
+  transition: color 0.3s ease;
+  color: var(--text-muted);
+}
+
+.dbBtn.active {
+  color: #fff;
+}
+
+.dbIndicator {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  height: calc(100% - 8px);
+  background: #000;
+  border-radius: 999px;
+  transition: transform 0.4s cubic-bezier(0.22, 1.2, 0.36, 1),
+              width 0.3s ease;
+  z-index: 0;
+}
+
+body[data-theme="dark"] .dbIndicator {
+  background: #fff;
+}
+
+body[data-theme="dark"] .dbBtn.active {
+  color: #111;
+}
+    
 /* ---------- HIGHLIGHTS ---------- */
 
     .highlights {
@@ -837,18 +887,7 @@ body[data-theme="dark"] .tabItem.active img {
         </button>
         
         <div class="headerTitle">
-  <select id="dbSelectHeader" style="
-    background: transparent;
-    border: none;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-main);
-    text-align: center;
-    appearance: none;
-    outline: none;
-    cursor: pointer;
-  ">
-  </select>
+<div id="dbSwitcherHeader" class="dbSwitcher hidden"></div>
 </div>
 
        <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
@@ -1120,34 +1159,59 @@ async function loadDatabaseSwitcher() {
   const res = await fetch(`/api/list-database?slug=${slug}`);
   const databases = await res.json();
 
-  if (!Array.isArray(databases) || databases.length === 0) return;
-
-  const select = document.getElementById("dbSelectHeader");
-  if (!select) return;
-
-  select.innerHTML = "";
-
-  databases.forEach(db => {
-    const opt = document.createElement("option");
-    opt.value = db.database_id;
-    opt.textContent = db.label || "Untitled";
-    opt.selected = db.is_primary;
-    select.appendChild(opt);
-  });
-
-  // ✅ Add Merge for PRO (if more than 1 DB)
-  if (databases.length > 1) {
-    const merge = document.createElement("option");
-    merge.value = "merge";
-    merge.textContent = "Merge All";
-    select.appendChild(merge);
+  if (!Array.isArray(databases) || databases.length <= 1) {
+    return; // hide if only 1 DB
   }
 
-  select.onchange = (e) => {
-    const value = e.target.value;
-    localStorage.setItem("activeDatabase", value);
-    loadPosts(value);
-  };
+  const wrap = document.getElementById("dbSwitcherHeader");
+  wrap.classList.remove("hidden");
+  wrap.innerHTML = `<div class="dbIndicator"></div>`;
+
+  const activeDb = localStorage.getItem("activeDatabase") 
+    || databases.find(d => d.is_primary)?.database_id;
+
+  databases.forEach((db, index) => {
+    const btn = document.createElement("div");
+    btn.className = "dbBtn";
+    btn.textContent = db.label;
+
+    if (db.database_id === activeDb) {
+      btn.classList.add("active");
+      moveIndicator(index);
+    }
+
+    btn.onclick = () => {
+      document.querySelectorAll(".dbBtn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      localStorage.setItem("activeDatabase", db.database_id);
+      moveIndicator(index);
+      animateDatabaseChange(db.database_id);
+    };
+
+    wrap.appendChild(btn);
+  });
+
+  function moveIndicator(index) {
+    const indicator = wrap.querySelector(".dbIndicator");
+    const btn = wrap.querySelectorAll(".dbBtn")[index];
+    indicator.style.width = btn.offsetWidth + "px";
+    indicator.style.transform = `translateX(${btn.offsetLeft}px)`;
+  }
+}
+
+async function animateDatabaseChange(dbId) {
+  const container = document.querySelector(".gridWrap");
+
+  container.style.opacity = 0;
+  container.style.transform = "translateY(10px)";
+  container.style.transition = "all 0.3s ease";
+
+  await loadPosts(dbId);
+
+  setTimeout(() => {
+    container.style.opacity = 1;
+    container.style.transform = "translateY(0)";
+  }, 50);
 }
 
 function switchDatabase(dbId) {
