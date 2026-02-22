@@ -1229,14 +1229,6 @@ async function loadDatabaseSwitcher() {
   }
 }
 
-  function moveIndicator(index) {
-    const indicator = wrap.querySelector(".dbIndicator");
-    const btn = wrap.querySelectorAll(".dbBtn")[index];
-    indicator.style.width = btn.offsetWidth + "px";
-    indicator.style.transform = `translateX(${btn.offsetLeft}px)`;
-  }
-}
-
 async function animateDatabaseChange(dbId) {
   const container = document.querySelector(".gridWrap");
 
