@@ -1224,7 +1224,7 @@ window.setFilter = setFilter;
 
 /* -------------------- DATA LOAD -------------------- */
 
-async function loadPosts(selectedDb = null) {
+async function loadPosts(selectedDb = null, btn = null) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
 
@@ -1474,17 +1474,6 @@ if (cached) {
 
 syncThemePill(savedTheme);
 
-// ✅ RESTORE SELECTED DATABASE ON LOAD
-const savedDb = localStorage.getItem("activeDatabase");
-if (savedDb) {
-  const dbSelect = document.querySelector(
-    'select[onchange="switchDatabase(this.value)"]'
-  );
-  if (dbSelect) {
-    dbSelect.value = savedDb;
-  }
-}
-
     const showAvatar = localStorage.getItem("showAvatar");
     if (showAvatar === "false") {
       const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
@@ -1552,8 +1541,10 @@ window.closeViewer = closeViewer;
 /* -------------------- INIT -------------------- */
 
 document.querySelector(".refreshBtn").onclick = function () {
-  loadPosts(this);
+  const selectedDb = localStorage.getItem("activeDatabase");
+  loadPosts(selectedDb, this);
 };
+
   document.addEventListener("click", () => {
   const menu = document.getElementById("menu");
   if (!menu.classList.contains("hidden")) {
