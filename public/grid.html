@@ -393,16 +393,24 @@ body:not([data-theme="dark"])
     /* ---------- HEADER ---------- */
     .header {
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
       align-items: center;
       position: relative;
       padding: 8px 12px;
+      gap: 8px;
     }
 
 .headerCenter {
   flex: 1;
   display: flex;
   justify-content: center;
+}
+
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .headerTitle select {
@@ -440,9 +448,16 @@ body:not([data-theme="dark"])
       to { transform: rotate(360deg); }
     }
     
+.headerDivider {
+  height: 1px;
+  background: var(--border-color);
+  width: 100%;
+}
+    
     .dbSwitcher {
   display: flex;
   position: relative;
+  justify-content: center;
   gap: 6px;
   padding: 4px;
   background: var(--bg-muted);
@@ -454,16 +469,24 @@ body:not([data-theme="dark"])
   display: none;
 }
 
-.dbBtn {
+.dbPill {
   position: relative;
-  padding: 4px 12px;
+  display: flex;
+  background: var(--bg-muted);
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.dbBtn {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
   font-size: 13px;
   font-weight: 600;
-  border-radius: 999px;
   cursor: pointer;
-  z-index: 1;
-  transition: color 0.3s ease;
   color: var(--text-muted);
+  z-index: 1;
+  transition: color 0.25s ease;
 }
 
 .dbBtn.active {
@@ -475,10 +498,10 @@ body:not([data-theme="dark"])
   top: 4px;
   left: 4px;
   height: calc(100% - 8px);
+  width: 80px;
   background: #000;
   border-radius: 999px;
-  transition: transform 0.4s cubic-bezier(0.22, 1.2, 0.36, 1),
-              width 0.3s ease;
+  transition: transform 0.4s cubic-bezier(.22,1,.36,1);
   z-index: 0;
 }
 
@@ -878,14 +901,18 @@ body[data-theme="dark"] .tabItem.active img {
     <div class="container" data-loading="true">
 
       <div class="header">
+        
+         <!-- DATABASE SWITCHER -->
+  <div id="dbSwitcherHeader" class="dbSwitcher"></div>
+  
+   <!-- DIVIDER -->
+  <div class="headerDivider"></div>
+  
+  <div class="headerActions">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <button class="refreshBtn">
           <span class="material-icons refreshIcon">refresh</span>
         </button>
-        
-        <div class="headerCenter">
-  <div id="dbSwitcherHeader" class="dbSwitcher hidden"></div>
-</div>
 
        <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
 
@@ -1156,37 +1183,51 @@ async function loadDatabaseSwitcher() {
   const res = await fetch(`/api/list-database?slug=${slug}`);
   const databases = await res.json();
 
-  if (!Array.isArray(databases) || databases.length <= 1) {
-    return; // hide if only 1 DB
-  }
+  if (!Array.isArray(databases) || databases.length === 0) return;
 
   const wrap = document.getElementById("dbSwitcherHeader");
-  wrap.classList.remove("hidden");
-  wrap.innerHTML = `<div class="dbIndicator"></div>`;
+  if (!wrap) return;
 
-  const activeDb = localStorage.getItem("activeDatabase") 
-    || databases.find(d => d.is_primary)?.database_id;
+  wrap.innerHTML = `
+    <div class="dbPill">
+      ${databases.map(db => `
+        <button class="dbBtn ${db.is_primary ? "active" : ""}" 
+                data-id="${db.database_id}">
+          ${db.label}
+        </button>
+      `).join("")}
+      <div class="dbIndicator"></div>
+    </div>
+  `;
 
-  databases.forEach((db, index) => {
-    const btn = document.createElement("div");
-    btn.className = "dbBtn";
-    btn.textContent = db.label;
+  const buttons = wrap.querySelectorAll(".dbBtn");
+  const indicator = wrap.querySelector(".dbIndicator");
 
-    if (db.database_id === activeDb) {
-      btn.classList.add("active");
-      moveIndicator(index);
-    }
+  function updateIndicator(index) {
+    const btnWidth = buttons[0].offsetWidth;
+    indicator.style.width = btnWidth + "px";
+    indicator.style.transform = `translateX(${index * btnWidth}px)`;
+  }
 
+  buttons.forEach((btn, index) => {
     btn.onclick = () => {
-      document.querySelectorAll(".dbBtn").forEach(b => b.classList.remove("active"));
+      buttons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      localStorage.setItem("activeDatabase", db.database_id);
-      moveIndicator(index);
-      animateDatabaseChange(db.database_id);
-    };
 
-    wrap.appendChild(btn);
+      updateIndicator(index);
+
+      const dbId = btn.dataset.id;
+      localStorage.setItem("activeDatabase", dbId);
+
+      animateGridChange(() => loadPosts(dbId));
+    };
   });
+
+  const activeIndex = [...buttons].findIndex(b => b.classList.contains("active"));
+  if (activeIndex >= 0) {
+    setTimeout(() => updateIndicator(activeIndex), 50);
+  }
+}
 
   function moveIndicator(index) {
     const indicator = wrap.querySelector(".dbIndicator");
@@ -1209,6 +1250,20 @@ async function animateDatabaseChange(dbId) {
     container.style.opacity = 1;
     container.style.transform = "translateY(0)";
   }, 50);
+}
+
+function animateGridChange(callback) {
+  const grid = document.querySelector(".gridWrap");
+
+  grid.style.opacity = "0";
+  grid.style.transform = "translateY(10px)";
+  grid.style.transition = "all 0.25s ease";
+
+  setTimeout(async () => {
+    await callback();
+    grid.style.opacity = "1";
+    grid.style.transform = "translateY(0)";
+  }, 200);
 }
 
 function switchDatabase(dbId) {
