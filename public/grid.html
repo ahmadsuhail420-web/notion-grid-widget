@@ -78,12 +78,20 @@ body[data-theme="dark"] {
     color 0.25s ease,
     border-color 0.25s ease;
     }
+    
+    .contentArea {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
 
-    /* ✅ HIDE CONTENT UNTIL DATA LOADS (CSS MUST BE HERE, NOT IN <script>) */
- .container[data-loading="true"] #profileHeader,
+
+/* keep layout stable, just hide */
+.container[data-loading="true"] #profileHeader,
 .container[data-loading="true"] #highlightsWrap,
 .container[data-loading="true"] .gridWrap {
-  opacity: 0;
+  visibility: hidden;
 }
 
     .topBar {
@@ -398,7 +406,7 @@ body:not([data-theme="dark"])
       align-items: center;
       position: relative;
       padding: 8px 12px;
-      gap: 8px;
+      gap: 1px;
       width: 100%;
   box-sizing: border-box;
     }
