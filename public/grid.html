@@ -457,18 +457,12 @@ body:not([data-theme="dark"])
   width: 100%;
 }
     
-    .dbSwitcher {
+.dbSwitcher {
   display: flex;
-  position: relative;
   justify-content: center;
-  gap: 6px;
-  padding: 2px;
-  background: var(--bg-muted);
-  border-radius: 999px;
-  border: 1px solid var(--border-color);
-  width: 90%;
-  justify-content: center;
-  overflow: hidden;
+  align-items: center;
+  gap: 14px;
+  padding: 2px 0;
 }
 
 .dbSwitcher.hidden {
@@ -488,29 +482,28 @@ body:not([data-theme="dark"])
 .dbBtn {
   border: none;
   background: transparent;
-  padding: 4px 12px;
-  font-size: 12px;
+  padding: 2px 4px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   color: var(--text-muted);
-  z-index: 1;
-  transition: color 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .dbBtn.active {
-  color: #fff;
+  color: var(--text-main);
+  position: relative;
 }
 
-.dbIndicator {
+.dbBtn.active::after {
+  content: "";
   position: absolute;
-  top: 2px;
-  left: 4px;
-  height: calc(100% - 4px);
-  width: 80px;
-  background: #000;
-  border-radius: 999px;
-  transition: transform 0.4s cubic-bezier(.22,1,.36,1);
-  z-index: 0;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 2px;
 }
 
 body[data-theme="dark"] .dbIndicator {
@@ -1206,18 +1199,11 @@ if (!Array.isArray(databases) || databases.length === 0) return;
           ${db.label}
         </button>
       `).join("")}
-      <div class="dbIndicator"></div>
     </div>
   `;
 
   const buttons = wrap.querySelectorAll(".dbBtn");
   const indicator = wrap.querySelector(".dbIndicator");
-
-  function updateIndicator(index) {
-    const btnWidth = buttons[0].offsetWidth;
-    indicator.style.width = btnWidth + "px";
-    indicator.style.transform = `translateX(${index * btnWidth}px)`;
-  }
 
   buttons.forEach((btn, index) => {
     btn.onclick = () => {
