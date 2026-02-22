@@ -80,11 +80,11 @@ body[data-theme="dark"] {
     }
 
     /* ✅ HIDE CONTENT UNTIL DATA LOADS (CSS MUST BE HERE, NOT IN <script>) */
-    .container[data-loading="true"] #profileHeader,
-    .container[data-loading="true"] #highlightsWrap,
-    .container[data-loading="true"] .gridWrap {
-      visibility: hidden;
-    }
+ .container[data-loading="true"] #profileHeader,
+.container[data-loading="true"] #highlightsWrap,
+.container[data-loading="true"] .gridWrap {
+  opacity: 0;
+}
 
     .topBar {
       display: flex;
@@ -399,6 +399,7 @@ body:not([data-theme="dark"])
       position: relative;
       padding: 8px 12px;
       gap: 8px;
+      width: 100%;
     }
 
 .headerCenter {
@@ -411,6 +412,7 @@ body:not([data-theme="dark"])
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;   /* 🔥 important */
 }
 
 .headerTitle select {
@@ -463,6 +465,8 @@ body:not([data-theme="dark"])
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-color);
+  width: 100%;
+  justify-content: center;
 }
 
 .dbSwitcher.hidden {
