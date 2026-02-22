@@ -396,16 +396,13 @@ body:not([data-theme="dark"])
       justify-content: space-between;
       align-items: center;
       position: relative;
+      padding: 8px 12px;
     }
-   
-    .headerTitle {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-main);
-  pointer-events: none; /* prevents blocking clicks */
+
+.headerCenter {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .headerTitle select {
@@ -886,8 +883,8 @@ body[data-theme="dark"] .tabItem.active img {
           <span class="material-icons refreshIcon">refresh</span>
         </button>
         
-        <div class="headerTitle">
-<div id="dbSwitcherHeader" class="dbSwitcher hidden"></div>
+        <<div class="headerCenter">
+  <div id="dbSwitcherHeader" class="dbSwitcher hidden"></div>
 </div>
 
        <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
