@@ -400,6 +400,7 @@ body:not([data-theme="dark"])
       padding: 8px 12px;
       gap: 8px;
       width: 100%;
+  box-sizing: border-box;
     }
 
 .headerCenter {
@@ -461,12 +462,13 @@ body:not([data-theme="dark"])
   position: relative;
   justify-content: center;
   gap: 6px;
-  padding: 4px;
+  padding: 2px;
   background: var(--bg-muted);
   border-radius: 999px;
   border: 1px solid var(--border-color);
-  width: 100%;
+  width: 90%;
   justify-content: center;
+  overflow: hidden;
 }
 
 .dbSwitcher.hidden {
@@ -479,13 +481,15 @@ body:not([data-theme="dark"])
   background: var(--bg-muted);
   border-radius: 999px;
   padding: 4px;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .dbBtn {
   border: none;
   background: transparent;
-  padding: 6px 14px;
-  font-size: 13px;
+  padding: 4px 12px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   color: var(--text-muted);
@@ -499,9 +503,9 @@ body:not([data-theme="dark"])
 
 .dbIndicator {
   position: absolute;
-  top: 4px;
+  top: 2px;
   left: 4px;
-  height: calc(100% - 8px);
+  height: calc(100% - 4px);
   width: 80px;
   background: #000;
   border-radius: 999px;
@@ -1396,10 +1400,10 @@ async function loadPosts(selectedDb = null, btn = null) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
 
-  if (!btn) {
-    document.querySelector(".container").setAttribute("data-loading", "true");
-    document.getElementById("skeleton").style.display = "block";
-  }
+  if (!btn && !selectedDb) {
+  document.querySelector(".container").setAttribute("data-loading", "true");
+  document.getElementById("skeleton").style.display = "block";
+}
 
   try {
     const slug = getSlug();
@@ -1670,7 +1674,9 @@ if (fontSelect && savedFont) {
     await loadDatabaseSwitcher();
     
 const savedDb = localStorage.getItem("activeDatabase");
-await loadPosts(savedDb);
+if (!sessionStorage.getItem("cachedData")) {
+  await loadPosts(savedDb);
+}
 
     requestAnimationFrame(() => {
       const activeTab = document.querySelector(".tabItem.active");
@@ -1708,9 +1714,9 @@ window.closeViewer = closeViewer;
 
 /* -------------------- INIT -------------------- */
 
-document.querySelector(".refreshBtn").onclick = function () {
+document.querySelector(".refreshBtn").onclick = async function () {
   const selectedDb = localStorage.getItem("activeDatabase");
-  loadPosts(selectedDb, this);
+  await loadPosts(selectedDb, this);
 };
 
   document.addEventListener("click", () => {
