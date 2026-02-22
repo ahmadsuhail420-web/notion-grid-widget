@@ -408,6 +408,12 @@ body:not([data-theme="dark"])
   pointer-events: none; /* prevents blocking clicks */
 }
 
+.headerTitle select {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
     .refreshBtn {
       background: transparent;
       color: var(--text-main);
@@ -830,7 +836,20 @@ body[data-theme="dark"] .tabItem.active img {
           <span class="material-icons refreshIcon">refresh</span>
         </button>
         
-        <div class="headerTitle">Grid Widget</div>
+        <div class="headerTitle">
+  <select id="dbSelectHeader" style="
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    text-align: center;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+  ">
+  </select>
+</div>
 
        <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
 
@@ -1100,32 +1119,35 @@ async function loadDatabaseSwitcher() {
   if (!slug) return;
 
   const res = await fetch(`/api/list-database?slug=${slug}`);
-  const data = await res.json();
-  const databases = data.databases || [];
+  const databases = await res.json();
 
-  if (databases.length <= 1) return;
+  if (!Array.isArray(databases) || databases.length === 0) return;
 
-  const wrap = document.getElementById("dbSwitcher");
+  const select = document.getElementById("dbSelectHeader");
+  if (!select) return;
 
-  wrap.innerHTML = `
-    <select id="dbSelect" style="
-      padding:8px 12px;
-      border-radius:8px;
-      border:1px solid #ddd;
-      font-size:14px;
-      width:100%;
-    ">
-      ${databases.map(db => `
-        <option value="${db.database_id}" ${db.is_primary ? "selected" : ""}>
-          ${db.label}
-        </option>
-      `).join("")}
-    </select>
-  `;
+  select.innerHTML = "";
 
-  document.getElementById("dbSelect").onchange = (e) => {
-    localStorage.setItem("activeDatabase", e.target.value);
-    loadPosts(e.target.value);
+  databases.forEach(db => {
+    const opt = document.createElement("option");
+    opt.value = db.database_id;
+    opt.textContent = db.label || "Untitled";
+    opt.selected = db.is_primary;
+    select.appendChild(opt);
+  });
+
+  // ✅ Add Merge for PRO (if more than 1 DB)
+  if (databases.length > 1) {
+    const merge = document.createElement("option");
+    merge.value = "merge";
+    merge.textContent = "Merge All";
+    select.appendChild(merge);
+  }
+
+  select.onchange = (e) => {
+    const value = e.target.value;
+    localStorage.setItem("activeDatabase", value);
+    loadPosts(value);
   };
 }
 
