@@ -1096,10 +1096,14 @@ function syncThemePill(mode) {
 }
 
 async function loadDatabaseSwitcher() {
-  const res = await fetch(`/api/widget-databases?slug=${slug}`);
-  const data = await res.json();
+  const slug = getSlug();
+  if (!slug) return;
 
-  if (!data.databases || data.databases.length <= 1) return;
+  const res = await fetch(`/api/list-database?slug=${slug}`);
+  const data = await res.json();
+  const databases = data.databases || [];
+
+  if (databases.length <= 1) return;
 
   const wrap = document.getElementById("dbSwitcher");
 
@@ -1109,17 +1113,18 @@ async function loadDatabaseSwitcher() {
       border-radius:8px;
       border:1px solid #ddd;
       font-size:14px;
+      width:100%;
     ">
-      ${data.databases.map(db => `
+      ${databases.map(db => `
         <option value="${db.database_id}" ${db.is_primary ? "selected" : ""}>
           ${db.label}
         </option>
       `).join("")}
-      ${data.plan === "pro" ? `<option value="merge">Merge All</option>` : ""}
     </select>
   `;
 
   document.getElementById("dbSelect").onchange = (e) => {
+    localStorage.setItem("activeDatabase", e.target.value);
     loadPosts(e.target.value);
   };
 }
@@ -1527,7 +1532,7 @@ if (fontSelect && savedFont) {
 }
     
     await checkAccess();
-    await loadDatabases();
+    await loadDatabaseSwitcher();
     
 const savedDb = localStorage.getItem("activeDatabase");
 await loadPosts(savedDb);
