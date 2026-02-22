@@ -867,8 +867,6 @@ body[data-theme="dark"] .tabItem.active img {
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
- 
- <select id="dbSelect" onchange="switchDatabase(this.value)"></select>
                   
        <div class="menuSection">
   <div class="menuLabel themeTitle">Theme</div>
@@ -954,6 +952,7 @@ body[data-theme="dark"] .tabItem.active img {
 
       <!-- TABS -->
       <div class="contentArea">
+        <div id="dbSwitcher" style="margin-bottom:16px;"></div>
         <div class="tabs">
           <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
             <img src="/icons/post-dark.png">
@@ -1094,6 +1093,35 @@ function syncThemePill(mode) {
   buttons.forEach(btn => {
     btn.classList.toggle("active", btn.dataset.themeBtn === mode);
   });
+}
+
+async function loadDatabaseSwitcher() {
+  const res = await fetch(`/api/widget-databases?slug=${slug}`);
+  const data = await res.json();
+
+  if (!data.databases || data.databases.length <= 1) return;
+
+  const wrap = document.getElementById("dbSwitcher");
+
+  wrap.innerHTML = `
+    <select id="dbSelect" style="
+      padding:8px 12px;
+      border-radius:8px;
+      border:1px solid #ddd;
+      font-size:14px;
+    ">
+      ${data.databases.map(db => `
+        <option value="${db.database_id}" ${db.is_primary ? "selected" : ""}>
+          ${db.label}
+        </option>
+      `).join("")}
+      ${data.plan === "pro" ? `<option value="merge">Merge All</option>` : ""}
+    </select>
+  `;
+
+  document.getElementById("dbSelect").onchange = (e) => {
+    loadPosts(e.target.value);
+  };
 }
 
 function switchDatabase(dbId) {
