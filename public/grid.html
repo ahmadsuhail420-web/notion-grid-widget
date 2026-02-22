@@ -1374,7 +1374,7 @@ async function loadPosts(selectedDb = null, btn = null) {
   const icon = btn?.querySelector(".refreshIcon");
   if (icon) icon.classList.add("spin");
 
-  if (!btn && !selectedDb) {
+  if (!btn) {
   document.querySelector(".container").setAttribute("data-loading", "true");
   document.getElementById("skeleton").style.display = "block";
 }
