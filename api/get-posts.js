@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
   try {
     const { slug, db } = req.query;
     if (!slug) return res.status(400).json({ profile: null, posts: [] });
