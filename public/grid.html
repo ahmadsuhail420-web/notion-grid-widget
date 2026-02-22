@@ -1185,9 +1185,11 @@ async function loadDatabaseSwitcher() {
   if (!slug) return;
 
   const res = await fetch(`/api/list-database?slug=${slug}`);
-  const databases = await res.json();
+const data = await res.json();
 
-  if (!Array.isArray(databases) || databases.length === 0) return;
+const databases = data.databases || data;
+
+if (!Array.isArray(databases) || databases.length === 0) return;
 
   const wrap = document.getElementById("dbSwitcherHeader");
   if (!wrap) return;
