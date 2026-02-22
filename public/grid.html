@@ -46,6 +46,11 @@ body[data-theme="dark"] {
 
     /* ---------- BASE ---------- */
     
+    html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
     body {
       font-family: var(--font-main);
       max-width: 500px;
@@ -55,9 +60,6 @@ body[data-theme="dark"] {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 5px 20px 5px;
-      border-radius: 24px;
-      border: 3px solid var(--border-color);
       transition: 
     background-color 0.25s ease,
     color 0.25s ease,
@@ -72,11 +74,13 @@ body[data-theme="dark"] {
       position: relative;
       display: flex;
       flex-direction: column;
-      border-radius: 24px;
       transition: 
     background-color 0.25s ease,
     color 0.25s ease,
     border-color 0.25s ease;
+      padding: 5px 20px 5px;
+      border-radius: 24px;
+      border: 3px solid var(--border-color);
     }
 
 
@@ -182,7 +186,6 @@ body[data-theme="dark"] {
       flex: 1;
       min-height: 0;
       width: 100%;
-      height: 100%;
     }
 
     .container.popup-open .gridWrap {
@@ -520,7 +523,7 @@ body[data-theme="dark"] .dbBtn.active {
   max-width: 520px;
   display: flex;
   gap: 12px;
-  padding-left: 14px;
+  padding: 0 14px;
   overflow-x: auto;          /* ✅ allow scroll */
   flex-wrap: nowrap;         /* ✅ prevent wrapping */
 }
