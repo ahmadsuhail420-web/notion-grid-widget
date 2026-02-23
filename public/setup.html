@@ -91,6 +91,35 @@
       0%, 80%, 100% { opacity: .2; }
       40% { opacity: 1; }
     }
+
+    /* Status messages */
+    .status-verifying {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-error {
+      color: #b91c1c;
+      text-align: center;
+      padding: 20px;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .status-success {
+      color: #166534;
+      text-align: center;
+      padding: 20px;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 
@@ -126,22 +155,38 @@
     One step ahead to connect your grid to Notion
   </h2>
 
-  <div id="status" style="text-align:center;">
-  <div style="font-size:14px; color:var(--text-muted);">
-    Verifying your setup link
+  <!-- STATUS: VERIFYING -->
+  <div id="status" style="text-align:center; display: none;">
+    <div class="status-verifying">
+      <div style="font-size:14px; color:var(--text-muted);">
+        Verifying your setup link
+      </div>
+      <div class="loader">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
   </div>
-  <div class="verify-bar">
-  <div class="verify-bar-inner"></div>
-</div>
-</div>
 
+  <!-- STATUS: ERROR -->
+  <div id="statusError" style="display: none;">
+    <div class="status-error" id="errorMessage"></div>
+    <div style="margin-top: 20px;">
+      <a href="mailto:support@alifdesigns.com" style="font-size:14px; font-weight:500; color:#3b82f6; text-decoration:none;">
+        Contact support
+      </a>
+    </div>
+  </div>
+
+  <!-- CONTENT: SETUP FORM -->
   <div id="content" style="display:none; margin-top:20px; text-align:left;">
     <label>
       Workspace name
       <input id="name" placeholder="Ex: My Content Planner" style="margin-top:8px;"/>
     </label>
 
-    <div class="helper"style="margin-top:8px;">
+    <div class="helper" style="margin-top:8px;">
       This is only for your reference.
     </div>
 
@@ -150,14 +195,7 @@
     </button>
   </div>
 
-  <div id="support" style="margin-top:24px; display:none;">
-    <a href="mailto:support@alifdesigns.com"
-       style="font-size:14px; font-weight:500; color:#3b82f6; text-decoration:none;">
-      Contact support
-    </a>
-  </div>
-
-</div>
+ </div>
 
   <!-- SCRIPT -->
   <script>
@@ -168,27 +206,65 @@
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
-    const content = document.getElementById("content");
     const status = document.getElementById("status");
+    const statusError = document.getElementById("statusError");
+    const errorMessage = document.getElementById("errorMessage");
+    const content = document.getElementById("content");
     const connectBtn = document.getElementById("connect");
 
-    if (!token) {
-      status.innerHTML = `
-        <strong>Setup link unavailable</strong><br>
-        Please contact support.
-      `;
-      throw new Error("No token");
-    }
+    // ==================== VALIDATE TOKEN ====================
+    async function validateToken() {
+      if (!token) {
+        showError("Setup link is missing token. Please contact support.");
+        return false;
+      }
+
+      try {
+        status.style.display = "block";
+
+        const res = await fetch(`/api/validate-token?token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+
+        if (!data.valid) {
+          if (data.already_used) {
+            // Token already used, redirect to database page
+            window.location.href = `/database.html?slug=${data.slug}`;
+            return false;
+          }
+          showError("Setup link is invalid or expired. Please contact support.");
+          return false;
+        }
+
+        // Token is valid ✅
         status.style.display = "none";
         content.style.display = "block";
+        return true;
 
+      } catch (err) {
+        console.error("Token validation error:", err);
+        showError("Failed to verify setup link. Please try again.");
+        return false;
+      }
+    }
+
+    // ==================== SHOW ERROR ====================
+    function showError(message) {
+      status.style.display = "none";
+      statusError.style.display = "block";
+      errorMessage.textContent = message;
+    }
+
+    // ==================== CONNECT NOTION ====================
     connectBtn.onclick = () => {
       const name = document.getElementById("name").value;
       if (!name) return alert("Enter workspace name");
 
-      const slug = slugify(name);
+      // Redirect to OAuth
       window.location.href = `/api/auth?token=${token}`;
     };
+
+    // ==================== INITIALIZE ====================
+    window.addEventListener("load", validateToken);
   </script>
 
 </body>
