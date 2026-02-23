@@ -8,6 +8,43 @@
   <link rel="stylesheet" href="/styles.css">
 
   <style>
+  
+  /* --- Force database action buttons visible (mobile-friendly) --- */
+.db-actions button,
+.database-actions button,
+.actions button,
+button.switch-btn,
+button.primary-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  background: #2563eb !important; /* blue */
+  color: #ffffff !important;
+  border: none !important;
+
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+}
+
+/* If your UI uses link-style buttons/icons */
+.db-actions a,
+.database-actions a {
+  color: #2563eb !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Avoid "only visible on hover" patterns that break on mobile */
+.db-actions button:hover,
+.database-actions button:hover {
+  filter: brightness(0.95);
+}
+
     #save {
   background: #3b82f6; /* blue */
 }
