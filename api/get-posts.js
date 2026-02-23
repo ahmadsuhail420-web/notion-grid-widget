@@ -14,9 +14,15 @@ export default async function handler(req, res) {
 
     // 1) Get customer (WITH PLAN)
     const customerRes = await fetch(
-      `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&status=eq.active&select=id,plan`,
+      `${supabaseUrl}/rest/v1/customers?slug=eq.${encodeURIComponent(slug)}&status=eq.active&select=id,plan`,
       { headers }
     );
+    
+    if (!customerRes.ok) {
+      console.error("Customer fetch failed:", customerRes.status);
+      return res.json({ profile: null, posts: [] });
+    }
+    
     const [customer] = await customerRes.json();
     if (!customer) return res.json({ profile: null, posts: [] });
 
@@ -27,6 +33,12 @@ export default async function handler(req, res) {
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id,access_token`,
       { headers }
     );
+    
+    if (!connRes.ok) {
+      console.error("Connection fetch failed:", connRes.status);
+      return res.json({ profile: null, posts: [] });
+    }
+    
     const [connection] = await connRes.json();
     if (!connection?.access_token) return res.json({ profile: null, posts: [] });
 
@@ -35,6 +47,12 @@ export default async function handler(req, res) {
       `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary`,
       { headers }
     );
+    
+    if (!dbRes.ok) {
+      console.error("Database fetch failed:", dbRes.status);
+      return res.json({ profile: null, posts: [], plan });
+    }
+    
     const databases = await dbRes.json();
 
     if (!Array.isArray(databases) || databases.length === 0) {
@@ -89,6 +107,11 @@ export default async function handler(req, res) {
             body: JSON.stringify(body),
           }
         );
+
+        if (!notionRes.ok) {
+          console.error(`Notion API error for ${databaseId}:`, notionRes.status);
+          break;
+        }
 
         const notionData = await notionRes.json();
         if (!Array.isArray(notionData.results)) break;
