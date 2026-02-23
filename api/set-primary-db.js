@@ -20,9 +20,14 @@ export default async function handler(req, res) {
 
     /* ------------------ 1. Find customer ------------------ */
     const customerRes = await fetch(
-      `${supabaseUrl}/rest/v1/customers?slug=eq.${slug}&select=id`,
+      `${supabaseUrl}/rest/v1/customers?slug=eq.${encodeURIComponent(slug)}&select=id`,
       { headers }
     );
+    
+    if (!customerRes.ok) {
+      return res.status(customerRes.status).json({ error: "Failed to fetch customer" });
+    }
+    
     const customers = await customerRes.json();
     if (!customers.length) {
       return res.status(404).json({ error: "Customer not found" });
@@ -30,7 +35,7 @@ export default async function handler(req, res) {
     const customerId = customers[0].id;
 
     /* ------------------ 2. Unset all primaries ------------------ */
-    await fetch(
+    const unsetRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_databases?customer_id=eq.${customerId}`,
       {
         method: "PATCH",
@@ -38,6 +43,11 @@ export default async function handler(req, res) {
         body: JSON.stringify({ is_primary: false }),
       }
     );
+    
+    if (!unsetRes.ok) {
+      console.error("Failed to unset primaries:", unsetRes.status);
+      return res.status(500).json({ error: "Failed to unset primary databases" });
+    }
 
     /* ------------------ 3. Set selected DB as primary ------------------ */
     const setRes = await fetch(
@@ -51,13 +61,14 @@ export default async function handler(req, res) {
 
     if (!setRes.ok) {
       const err = await setRes.text();
-      throw new Error(err);
+      console.error("Failed to set primary:", err);
+      return res.status(setRes.status).json({ error: "Failed to set primary database" });
     }
 
     return res.json({ success: true });
 
   } catch (err) {
     console.error("set-primary-db error:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
