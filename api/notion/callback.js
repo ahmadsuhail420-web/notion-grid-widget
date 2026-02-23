@@ -61,10 +61,10 @@ export default async function handler(req, res) {
     const tokenData = await tokenRes.json();
 
     if (!tokenRes.ok || !tokenData.access_token) {
-      console.error("OAuth error:", tokenData);
-      const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-      return res.redirect(`${appUrl}/error.html?reason=notion_auth_failed`);
-    }
+  console.error("OAuth error:", tokenData);
+  const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  return res.redirect(`${appUrl}/error.html?reason=notion_auth_failed`);
+}
 
     // 3️⃣ Store Notion connection
     const { error: insertError } = await supabase
@@ -78,10 +78,10 @@ export default async function handler(req, res) {
       });
 
     if (insertError) {
-      console.error("Insert error:", insertError);
-      const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-      return res.redirect(`${appUrl}/error.html?reason=db_insert_failed`);
-    }
+  console.error("Insert error:", insertError);
+  const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  return res.redirect(`${appUrl}/error.html?reason=db_insert_failed`);
+}
 
     // 4️⃣ Mark setup token as used
     await supabase
