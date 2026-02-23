@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="/styles.css">
 
   <style>
+  /* Ensure Make primary button text is visible (don’t change design) */
+.make-primary-btn {
+  color: #111 !important;
+}
   
   /* Fix invisible Switch button (mobile + light background) */
 button.switch-btn,
@@ -621,19 +625,21 @@ const token = params.get("token");
       border-radius:999px;
     ">Primary</span>
   ` : `
-    <button
-      data-primary-btn="${db.id}"
-      style="
-        padding:8px 10px;
-        font-size:13px;
-        border-radius:10px;
-        border:1px solid var(--border);
-        background:#fff;
-        cursor:pointer;
-        font-weight:600;
-      "
-    >Make primary</button>
+  <button
+  class="make-primary-btn"
+  data-primary-btn="${db.id}"
+  style="
+    padding:8px 10px;
+    font-size:13px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#fff;
+    cursor:pointer;
+    font-weight:600;
+  "
+>Make primary</button>
   `}
+  
   <button
     class="edit-btn"
     data-edit-btn="${db.id}"
