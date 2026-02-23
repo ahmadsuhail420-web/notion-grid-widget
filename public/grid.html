@@ -2,57 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    
     /* ---------- THEME VARIABLES ---------- */
-    
-:root {
-  /* light mode */
-  --bg-main: #ffffff;
-  --bg-card: #ffffff;
-  --bg-muted: #f5f5f5;
-  
-    --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    :root {
+      /* light mode */
+      --bg-main: #ffffff;
+      --bg-card: #ffffff;
+      --bg-muted: #f5f5f5;
+      
+      --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  --text-main: #111111;
-  --text-muted: #777777;
+      --text-main: #111111;
+      --text-muted: #777777;
 
-  --border-color: #e2e2e2;
-  --shadow: 0 10px 30px rgba(0,0,0,0.12);
+      --border-color: #e2e2e2;
+      --shadow: 0 10px 30px rgba(0,0,0,0.12);
 
-  --toggle-off: #ddd;
-  --toggle-on: #000;
-}
+      --toggle-off: #ddd;
+      --toggle-on: #000;
+    }
 
     /* ---------- DARK MODE ---------- */
-    
-body[data-theme="dark"] {
-  /* Notion-like dark mode */
-  --bg-main: #191919;
-  --bg-card: #202020;
-  --bg-muted: #262626;
+    body[data-theme="dark"] {
+      /* Notion-like dark mode */
+      --bg-main: #191919;
+      --bg-card: #202020;
+      --bg-muted: #262626;
 
-  --text-main: #ededed;
-  --text-muted: #9b9b9b;
+      --text-main: #ededed;
+      --text-muted: #9b9b9b;
 
-  --border-color: #2f2f2f;
-  --shadow: 0 10px 30px rgba(0,0,0,0.4);
+      --border-color: #2f2f2f;
+      --shadow: 0 10px 30px rgba(0,0,0,0.4);
 
-  --toggle-off: #3a3a3a;
-  --toggle-on: #ffffff;
-}
+      --toggle-off: #3a3a3a;
+      --toggle-on: #ffffff;
+    }
 
     /* ---------- BASE ---------- */
-    
-    html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
     body {
-      font-family: var(--font-main);
+      font-family: sans-serif;
       max-width: 500px;
       max-height: 700px;
       margin: auto;
@@ -60,14 +54,10 @@ body[data-theme="dark"] {
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: 
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease;
-    padding: 5px 20px 5px;
-      border: 3px solid var(--border-color);
+      padding: 15px 20px 0;
       border-radius: 24px;
-}
+      border: 3px solid var(--border-color);
+    }
 
     .widgetWrap {
       width: 100%;
@@ -77,20 +67,15 @@ body[data-theme="dark"] {
       position: relative;
       display: flex;
       flex-direction: column;
-      transition: 
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease;
       border-radius: 24px;
     }
-
-
-/* keep layout stable, just hide */
-.container[data-loading="true"] #profileHeader,
-.container[data-loading="true"] #highlightsWrap,
-.container[data-loading="true"] .gridWrap {
-  visibility: hidden;
-}
+  
+    /* keep layout stable, just hide */
+    .container[data-loading="true"] #profileHeader,
+    .container[data-loading="true"] #highlightsWrap,
+    .container[data-loading="true"] .contentArea {
+      visibility: hidden;
+    }
 
     .topBar {
       display: flex;
@@ -101,15 +86,15 @@ body[data-theme="dark"] {
     }
     
     .hidden-section {
-  display: none !important;
-}
+      display: none !important;
+    }
 
     /* PROFILE */
     .profile {
       padding: 20px 16px;
       display: flex;
       justify-content: center;
-      flex: 0 1 auto;
+      flex: 0 0 auto;
     }
 
     .profileRow {
@@ -120,7 +105,7 @@ body[data-theme="dark"] {
     }
 
     .profilePic {
-     width: clamp(44px, 20vw, 108px);
+      width: clamp(44px, 20vw, 108px);
       aspect-ratio: 1 / 1;
       border-radius: 50%;
       overflow: hidden;
@@ -142,18 +127,19 @@ body[data-theme="dark"] {
     }
 
     .profileTitle {
-     font-size: clamp(12px, 4.5vw, 20px);
+      font-size: clamp(12px, 4.5vw, 20px);
       font-weight: 700;
       line-height: 1.2;
       color: var(--text-main);
     }
     
     .profileNote {
-  text-align: center;
-  font-size: clamp(10px, 3.5vw, 24px);
-  color: var(--text-muted);
-  padding: 6px 16px 10px;
-}
+      text-align: center;
+      font-size: clamp(10px, 3.5vw, 24px);
+      color: var(--text-muted);
+      padding: 6px 16px 10px;
+      flex: 0 0 auto;
+    }
 
     .profileStats {
       display: grid;
@@ -180,12 +166,12 @@ body[data-theme="dark"] {
 
     /* ---------- CONTAINER ---------- */
     .container {
+      flex: 1;
+      min-height: 0;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      flex: 1;
-      min-height: 0;
       width: 100%;
     }
 
@@ -211,16 +197,12 @@ body[data-theme="dark"] {
       border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 10px 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
       gap: 10px;
       z-index: 20;
-      transition: 
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease;
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
 
     .menu.hidden {
@@ -234,166 +216,155 @@ body[data-theme="dark"] {
       gap: 8px;
       white-space: nowrap;
     }
+
     .menuSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* ✅ centers pill + title */
-  gap: 6px;
-  margin-left: -2px;
-}
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-left: -2px;
+    }
     
     /* ---------- THEME SEGMENT (PILL) ---------- */
+    .themeTitle {
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.6;
+    }
 
-.themeTitle {
-  font-size: 12px;
-  font-weight: 600;
-  opacity: 0.6;
-}
+    .themeSegment {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 4px;
+      background: var(--bg-muted);
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      width: auto;
+      margin: auto;
+      min-width: 107px;
+      max-width: 100%;
+    }
 
-.themeSegment {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding: 4px;
-  background: var(--bg-muted);
-  border-radius: 999px;
-  border: 1px solid var(--border-color);
-  width: auto;            /* instead of 100% */
-  margin: auto;        /* ✅ hard-center safety */
-min-width: 107px;            /* safety */
-  max-width: 100%;
-}
-
-.themeIndicator {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  height: 26px;
-  width: calc((100% - 8px) / 3);
-  border-radius: 999px;
-  background: #000;
-  z-index: 0;
-
-  /* ✨ animation */
-  transition:
-    transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1),
-    background-color 0.25s ease;
+    .themeIndicator {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      height: 26px;
+      width: calc((100% - 8px) / 3);
+      border-radius: 999px;
+      background: #000;
+      z-index: 0;
+      transition: transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1), background-color 0.25s ease;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-}
+    }
 
-/* buttons */
-.themeSegment button {
-  height: 26px;
-  border: none;
-  background: transparent;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  transition: color 0.25s ease;
-}
+    /* buttons */
+    .themeSegment button {
+      height: 26px;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: color 0.25s ease;
+    }
 
-/* active text */
-.themeSegment button.active {
-  color: #fff;
-  transform: scale(0.96);
-}
+    /* active text */
+    .themeSegment button.active {
+      color: #fff;
+      transform: scale(0.96);
+    }
 
-.themeSegment .material-icons {
-  font-size: 16px;   /* 🔥 perfect for 26px pill height */
-  line-height: 1;
-}
+    .themeSegment .material-icons {
+      font-size: 16px;
+      line-height: 1;
+    }
 
-/* dark mode pill colors */
-body[data-theme="dark"] .themeIndicator {
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(255,255,255,0.25);
-}
+    /* dark mode pill colors */
+    body[data-theme="dark"] .themeIndicator {
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.25);
+    }
 
-body[data-theme="dark"] .themeSegment button.active {
-  color: #111;
-}
+    body[data-theme="dark"] .themeSegment button.active {
+      color: #111;
+    }
+
     /* LIGHT MODE – active pill */
-body:not([data-theme="dark"])
-  .themeSegment button.active {
-  color: #fff;
-}
+    body:not([data-theme="dark"]) .themeSegment button.active {
+      color: #fff;
+    }
 
-body:not([data-theme="dark"])
-  .themeIndicator {
-  background: #000;
-}
+    body:not([data-theme="dark"]) .themeIndicator {
+      background: #000;
+    }
+
     .themeSegment button[data-theme-btn="light"].active,
-.themeSegment button[data-theme-btn="dark"].active,
-.themeSegment button[data-theme-btn="default"].active {
-  color: #fff;
-}
+    .themeSegment button[data-theme-btn="dark"].active,
+    .themeSegment button[data-theme-btn="default"].active {
+      color: #fff;
+    }
 
-    
-.toggleItem input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
+    .toggleItem input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .toggleItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  cursor: pointer;
-}
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+    }
 
-.menuLabel {
-  font-size: 13px;
-}
+    .menuLabel {
+      font-size: 13px;
+      color: var(--text-main);
+    }
 
-/* switch background */
-.toggle {
-  width: 34px;
-  height: 18px;
-  background: var(--toggle-off);
-  border-radius: 999px;
-  position: relative;
-  transition: background 0.25s ease;
-}
+    /* switch background */
+    .toggle {
+      width: 34px;
+      height: 18px;
+      background: var(--toggle-off);
+      border-radius: 999px;
+      position: relative;
+      transition: background 0.25s ease;
+    }
 
-.toggle::before {
-  content: "";
-  position: absolute;
-  top: 1.5px;
-  left: 1.5px;
-  width: 15px;
-  height: 15px;
-  background: var(--bg-card);
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-  transition:
-    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    background 0.25s ease;
-}
+    .toggle::before {
+      content: "";
+      position: absolute;
+      top: 1.5px;
+      left: 1.5px;
+      width: 15px;
+      height: 15px;
+      background: var(--bg-card);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s ease;
+    }
 
-.toggleItem input:checked + .toggle {
-  background: var(--toggle-on);
-}
+    .toggleItem input:checked + .toggle {
+      background: var(--toggle-on);
+    }
 
-.toggleItem input:checked + .toggle::before {
-  transform: translateX(16px);
-}
+    .toggleItem input:checked + .toggle::before {
+      transform: translateX(16px);
+    }
 
-
-.menuLabel {
-  font-size: 13px;
-  color: var(--text-main);
-}
-
-.toggleItem:active .toggle::before {
-  transform: scale(0.92);
-}
+    .toggleItem:active .toggle::before {
+      transform: scale(0.92);
+    }
 
     /* ---------- HEADER ---------- */
     .header {
@@ -405,27 +376,28 @@ body:not([data-theme="dark"])
       padding: 4px 12px 6px;
       gap: 1px;
       width: 100%;
-  box-sizing: border-box;
+      box-sizing: border-box;
+      flex: 0 0 auto;
     }
 
-.headerCenter {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
+    .headerCenter {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
 
-.headerActions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;   /* 🔥 important */
-}
+    .headerActions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
 
-.headerTitle select {
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+    .headerTitle select {
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .refreshBtn {
       background: transparent;
@@ -456,120 +428,126 @@ body:not([data-theme="dark"])
       to { transform: rotate(360deg); }
     }
     
-.headerDivider {
-  height: 1px;
-  background: var(--border-color);
-  width: 100%;
-  margin-top: 2px;
-}
+    .headerDivider {
+      height: 1px;
+      background: var(--border-color);
+      width: 100%;
+      margin-top: 2px;
+    }
     
-.dbSwitcher {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  padding: 0;
-  margin: 0;
-}
+    .dbSwitcher {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+      margin: 0;
+    }
 
-.dbSwitcher.hidden {
-  display: none;
-}
+    .dbSwitcher.hidden {
+      display: none;
+    }
 
-.dbBtn {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--text-muted);
-  transition: color 0.2s ease;
-}
+    .dbBtn {
+      border: none;
+      background: none;
+      padding: 0;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+    }
 
-.dbBtn.active {
-  color: var(--text-main);
-  position: relative;
-}
+    .dbBtn.active {
+      color: var(--text-main);
+      position: relative;
+    }
 
-.dbBtn.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -3px;
-  width: 100%;
-  height: 2px;
-  background: var(--text-main);
-  border-radius: 2px;
-}
+    .dbBtn.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 2px;
+      background: var(--text-main);
+      border-radius: 2px;
+    }
 
-body[data-theme="dark"] .dbIndicator {
-  background: #fff;
-}
-
-body[data-theme="dark"] .dbBtn.active {
-  color: #111;
-}
+    body[data-theme="dark"] .dbBtn.active {
+      color: #fff;
+    }
     
-/* ---------- HIGHLIGHTS ---------- */
-
+    /* ---------- HIGHLIGHTS ---------- */
     .highlights {
-  display: flex;
-  justify-content: center;
-  flex: 0 1 auto;
-}
+      width: 100%;
+      padding-left: 16px;
+      box-sizing: border-box;
+      flex: 0 0 auto;
+    }
 
-.highlightsRow {
-  width: 100%;
-  max-width: 520px;
-  display: flex;
-  gap: 12px;
-  padding: 0 14px;
-  overflow-x: auto;          /* ✅ allow scroll */
-  flex-wrap: nowrap;         /* ✅ prevent wrapping */
-}
+    .highlightsRow {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+    }
+
     .highlightsRow::-webkit-scrollbar {
       display: none;
     }
 
-.highlightItem {
-  width: clamp(36px, 16vw, 76px);
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-card);
-  border: 2px solid var(--border-color);
-  transition: 
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease;
-  flex-shrink: 0;            /* ✅ KEEP SIZE */
-}
+    .highlightItem {
+      width: clamp(36px, 16vw, 76px);
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+      flex-shrink: 0;
+    }
 
- .highlightItem img {
-  width: 92%;
-  height: 92%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-/* empty placeholder */
-.highlightPlaceholder {
-  background: var(--bg-muted);
-  border-color: rgba(0, 0, 0, 0.08);
-}
+    .highlightItem img {
+      width: 92%;
+      height: 92%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
 
-body[data-theme="dark"] .highlightPlaceholder {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.15);
-}
+    /* empty placeholder */
+    .highlightPlaceholder {
+      background: var(--bg-muted);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    body[data-theme="dark"] .highlightPlaceholder {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.15);
+    }
+
     #highlightsWrap {
-  margin-bottom: 12px; /* adjust: 8px / 12px / 16px */
-}
-#highlightsWrap:not(.hidden-section) {
-  margin-bottom: 12px;
-}
+      margin-bottom: 12px;
+    }
+
+    #highlightsWrap:not(.hidden-section) {
+      margin-bottom: 12px;
+    }
+
+    /* ---------- CONTENT AREA (TABS + GRID) ---------- */
+    .contentArea {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
     /* ---------- TABS ---------- */
     .tabs {
       display: grid;
@@ -577,6 +555,7 @@ body[data-theme="dark"] .highlightPlaceholder {
       align-items: center;
       padding: 10px 0 8px;
       position: relative;
+      flex: 0 0 auto;
     }
 
     .tabItem {
@@ -604,19 +583,18 @@ body[data-theme="dark"] .highlightPlaceholder {
       bottom: 0;
       height: 2px;
       width: 18px;
-  background: var(--text-main);
+      background: var(--text-main);
       border-radius: 2px;
       transform: translateX(0);
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      transition: filter 0.25s ease, opacity 0.25s ease, color 0.25s ease;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), filter 0.25s ease, opacity 0.25s ease, color 0.25s ease;
     }
 
     /* ---------- GRID ---------- */
     .gridWrap {
       flex: 1;
       overflow-y: auto;
-      scrollbar-width: none;
-      transition: opacity 0.2s ease;
+      overflow-x: hidden;
+      min-height: 0;
     }
 
     .gridWrap::-webkit-scrollbar {
@@ -627,7 +605,7 @@ body[data-theme="dark"] .highlightPlaceholder {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 3px;
-      padding: 4px;
+      padding: 0;
     }
 
     .card {
@@ -638,10 +616,7 @@ body[data-theme="dark"] .highlightPlaceholder {
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: 
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease;
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
 
     .card img,
@@ -677,6 +652,20 @@ body[data-theme="dark"] .highlightPlaceholder {
       z-index: 5;
       opacity: 0.8;
       pointer-events: none;
+    }
+
+    body[data-theme="dark"] .card video {
+      opacity: 0.85;
+    }
+
+    /* ---------- DARK MODE TAB ICONS ---------- */
+    body[data-theme="dark"] .tabItem img {
+      filter: invert(1) brightness(1.1);
+      opacity: 0.75;
+    }
+
+    body[data-theme="dark"] .tabItem.active img {
+      opacity: 1;
     }
 
     /* ---------- VIEWER ---------- */
@@ -735,7 +724,7 @@ body[data-theme="dark"] .highlightPlaceholder {
     .viewerFooter {
       padding: 14px 16px;
       border-top: 1px solid var(--border-color);
-  color: var(--text-main);
+      color: var(--text-main);
     }
 
     .viewerClose,
@@ -759,17 +748,6 @@ body[data-theme="dark"] .highlightPlaceholder {
       right: -14px;
       font-size: 16px;
     }
-    body[data-theme="dark"] .card video {
-  opacity: 0.85;
-}
-/* ---------- DARK MODE TAB ICONS ---------- */
-body[data-theme="dark"] .tabItem img {
-  filter: invert(1) brightness(1.1);
-  opacity: 0.75;
-}
-body[data-theme="dark"] .tabItem.active img {
-  opacity: 1;
-}
 
     .nav {
       top: 50%;
@@ -785,113 +763,111 @@ body[data-theme="dark"] .tabItem.active img {
       padding: 8px 0;
       font-size: 13px;
       color: var(--text-muted);
+      flex-shrink: 0;
     }
     
     /* ---------- PROFILE AVATAR OFF MODE ---------- */
+    .profile.no-avatar .profilePic {
+      display: none;
+    }
 
-.profile.no-avatar .profilePic {
-  display: none;
-}
+    .profile.no-avatar .profileRow {
+      justify-content: center;
+    }
 
-.profile.no-avatar .profileRow {
-  justify-content: center;
-}
+    .profile.no-avatar .profileRight {
+      align-items: center;
+      text-align: center;
+    }
 
-.profile.no-avatar .profileRight {
-  align-items: center;
-  text-align: center;
-}
+    /* slightly increase size when avatar is hidden */
+    .profile.no-avatar .profileTitle {
+      font-size: clamp(14px, 5vw, 24px);
+    }
 
-/* slightly increase size when avatar is hidden */
-.profile.no-avatar .profileTitle {
-  font-size: clamp(14px, 5vw, 24px);
-}
+    .profile.no-avatar .profileStats {
+      column-gap: clamp(18px, 8vw, 48px);
+    }
 
-.profile.no-avatar .profileStats {
-  column-gap: clamp(18px, 8vw, 48px);
-}
-
-.profile.no-avatar .stat strong {
-  font-size: clamp(13px, 4.5vw, 20px);
-}
+    .profile.no-avatar .stat strong {
+      font-size: clamp(13px, 4.5vw, 20px);
+    }
 
     /* ---------- SKELETON ---------- */
+    #skeleton {
+      padding: 16px;
+    }
 
-#skeleton {
-  padding: 16px;
-}
+    .sk-profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
 
-.sk-profile {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
-}
+    .sk-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--bg-muted);
+    }
 
-.sk-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: var(--bg-muted);
-}
+    .sk-lines {
+      flex: 1;
+    }
 
-.sk-lines {
-  flex: 1;
-}
+    .sk-line {
+      height: 12px;
+      background: var(--bg-muted);
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
 
-.sk-line {
-  height: 12px;
-  background: var(--bg-muted);
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
+    .sk-line.short {
+      width: 40%;
+    }
 
-.sk-line.short {
-  width: 40%;
-}
+    .sk-highlights {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
 
-.sk-highlights {
-  display: flex;
-  gap: 12px;
-  margin: 16px 0;
-}
+    .sk-circle {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: var(--bg-muted);
+    }
 
-.sk-circle {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background: var(--bg-muted);
-}
+    .sk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
 
-.sk-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
-}
+    .sk-grid div {
+      aspect-ratio: 4 / 5;
+      background: var(--bg-muted);
+      border-radius: 2px;
+    }
 
-.sk-grid div {
-  aspect-ratio: 4 / 5;
-  background: var(--bg-muted);
-  border-radius: 2px;
-}
+    /* shimmer */
+    #skeleton * {
+      animation: shimmer 1.2s infinite linear;
+      background: linear-gradient(
+        90deg,
+        #eee 25%,
+        #f5f5f5 37%,
+        #eee 63%
+      );
+      background-size: 400% 100%;
+    }
 
-/* shimmer */
-#skeleton * {
-  animation: shimmer 1.2s infinite linear;
-  background: linear-gradient(
-    90deg,
-    #eee 25%,
-    #f5f5f5 37%,
-    #eee 63%
-  );
-  background-size: 400% 100%;
-}
-
-@keyframes shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
-
+    @keyframes shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
   </style>
 </head>
 <body>
@@ -899,101 +875,97 @@ body[data-theme="dark"] .tabItem.active img {
     <div class="container" data-loading="true">
 
       <div class="header">
+        <!-- DATABASE SWITCHER -->
+        <div id="dbSwitcherHeader" class="dbSwitcher"></div>
         
-         <!-- DATABASE SWITCHER -->
-  <div id="dbSwitcherHeader" class="dbSwitcher"></div>
-  
-   <!-- DIVIDER -->
-  <div class="headerDivider"></div>
-  
-  <div class="headerActions">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <button class="refreshBtn">
-          <span class="material-icons refreshIcon">refresh</span>
-        </button>
+        <!-- DIVIDER -->
+        <div class="headerDivider"></div>
+        
+        <div class="headerActions">
+          <button class="refreshBtn">
+            <span class="material-icons refreshIcon">refresh</span>
+          </button>
 
-       <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
+          <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
 
-        <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
-  <label class="menuItem toggleItem">
-    <span class="menuLabel">Header</span>
-    <input type="checkbox" checked onchange="toggleSection('header', this)">
-    <span class="toggle"></span>
-  </label>
+          <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Header</span>
+              <input type="checkbox" checked onchange="toggleSection('header', this)">
+              <span class="toggle"></span>
+            </label>
 
-  <label class="menuItem toggleItem">
-    <span class="menuLabel">Highlights</span>
-    <input type="checkbox" checked onchange="toggleSection('highlights', this)">
-    <span class="toggle"></span>
-  </label>
-  
-  <label class="menuItem toggleItem">
-  <span class="menuLabel">Profile</span>
-  <input type="checkbox" checked onchange="toggleAvatar(this)">
-  <span class="toggle"></span>
-</label>
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Highlights</span>
+              <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+              <span class="toggle"></span>
+            </label>
+            
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Profile</span>
+              <input type="checkbox" checked onchange="toggleAvatar(this)">
+              <span class="toggle"></span>
+            </label>
 
-<label class="menuItem toggleItem">
-  <span class="menuLabel">Note</span>
-  <input type="checkbox" checked onchange="toggleProfileNote(this)">
-  <span class="toggle"></span>
-</label>
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Note</span>
+              <input type="checkbox" checked onchange="toggleProfileNote(this)">
+              <span class="toggle"></span>
+            </label>
 
-<select onchange="setFont(this.value)">
-  <option value="system">System</option>
-  <option value="inter">Inter</option>
-  <option value="poppins">Poppins</option>
-</select>
+            <select onchange="setFont(this.value)">
+              <option value="system">System</option>
+              <option value="inter">Inter</option>
+              <option value="poppins">Poppins</option>
+            </select>
+                      
+            <div class="menuSection">
+              <div class="menuLabel themeTitle">Theme</div>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-                  
-       <div class="menuSection">
-  <div class="menuLabel themeTitle">Theme</div>
+              <div class="themeSegment">
+                <div class="themeIndicator"></div>
 
-  <div class="themeSegment">
-    <div class="themeIndicator"></div>
+                <button data-theme-btn="light" title="Light" onclick="setTheme('light')">
+                  <span class="material-icons">light_mode</span>
+                </button>
 
- <button data-theme-btn="light" title="Light" onclick="setTheme('light')">
-  <span class="material-icons">light_mode</span>
-</button>
+                <button data-theme-btn="dark" title="Dark" onclick="setTheme('dark')">
+                  <span class="material-icons">dark_mode</span>
+                </button>
 
-<button data-theme-btn="dark" title="Dark" onclick="setTheme('dark')">
-  <span class="material-icons">dark_mode</span>
-</button>
-
-<button data-theme-btn="default" title="Auto" onclick="setTheme('default')">
-  <span class="material-icons">hdr_auto</span>
-</button>
-  </div>
-</div>
-</div>
+                <button data-theme-btn="default" title="Auto" onclick="setTheme('default')">
+                  <span class="material-icons">hdr_auto</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       
-<!-- SKELETON -->
+      <!-- SKELETON -->
       <div id="skeleton">
+        <div class="sk-profile">
+          <div class="sk-avatar"></div>
+          <div class="sk-lines">
+            <div class="sk-line short"></div>
+            <div class="sk-line"></div>
+          </div>
+        </div>
 
-  <div class="sk-profile">
-    <div class="sk-avatar"></div>
-    <div class="sk-lines">
-      <div class="sk-line short"></div>
-      <div class="sk-line"></div>
-    </div>
-  </div>
+        <div class="sk-highlights">
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+        </div>
 
-  <div class="sk-highlights">
-    <div class="sk-circle"></div>
-    <div class="sk-circle"></div>
-    <div class="sk-circle"></div>
-    <div class="sk-circle"></div>
-  </div>
+        <div class="sk-grid">
+          <div></div><div></div><div></div>
+          <div></div><div></div><div></div>
+        </div>
+      </div>
 
-  <div class="sk-grid">
-    <div></div><div></div><div></div>
-    <div></div><div></div><div></div>
-  </div>
-
-</div>
+      <!-- PROFILE HEADER -->
       <div id="profileHeader" class="profile">
         <div class="profileRow">
           <div class="profilePic">
@@ -1021,16 +993,17 @@ body[data-theme="dark"] .tabItem.active img {
         </div>
       </div>
       
+      <!-- PROFILE NOTE -->
       <div id="profileNote" class="profileNote">
-  Content Planner
-</div>
+        Content Planner
+      </div>
 
       <!-- HIGHLIGHTS -->
       <div id="highlightsWrap" class="highlights">
         <div id="highlights" class="highlightsRow"></div>
       </div>
 
-      <!-- TABS -->
+      <!-- TABS AND GRID -->
       <div class="contentArea">
         <div class="tabs">
           <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
@@ -1059,7 +1032,7 @@ body[data-theme="dark"] .tabItem.active img {
 
       <!-- MEDIA VIEWER -->
       <div id="viewer" class="viewer hidden" onclick="closeViewer()">
-  <div class="viewerInner" onclick="event.stopPropagation()">
+        <div class="viewerInner" onclick="event.stopPropagation()">
           <button class="viewerClose" onclick="closeViewer()">✕</button>
           <button class="nav prev" onclick="prevImage()">‹</button>
           <button class="nav next" onclick="nextImage()">›</button>
@@ -1074,654 +1047,658 @@ body[data-theme="dark"] .tabItem.active img {
           </div>
         </div>
       </div>
-
     </div>
-
+    
     <div class="footer">Alif Designs</div>
   </div>
 
-<script>
-(function () {
-  const theme = localStorage.getItem("theme") || "default";
-
-  if (
-    theme === "dark" ||
-    (theme === "default" &&
-     window.matchMedia("(prefers-color-scheme: dark)").matches)
-  ) {
-    document.body.setAttribute("data-theme", "dark");
-  }
-})();
-
-function getSlug() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("slug");
-}
-
-let ALL_POSTS = [];
-let FILTER = "Post";
-let currentSlide = 0;
-let currentMedia = [];
-
-/* -------------------- FONTS -------------------- */
-
-function setFont(font) {
-  let value;
-
-  if (font === "inter") {
-    value = "'Inter', -apple-system, sans-serif";
-  } else if (font === "poppins") {
-    value = "'Poppins', -apple-system, sans-serif";
-  } else {
-    value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
-  }
-
-  document.documentElement.style.setProperty("--font-main", value);
-  localStorage.setItem("font", font);
-}
-
-/* -------------------- HELPERS -------------------- */
-
-function hasMedia(post) {
-  return (
-    (Array.isArray(post.attachment) && post.attachment.length > 0) ||
-    post.thumbnail ||
-    post.video
-  );
-}
-
-function getVisibleGridPosts() {
-  return ALL_POSTS
-    .filter(post => {
-      if (post.hide) return false;
-      if (!hasMedia(post)) return false;
-
-      if (!Array.isArray(post.type) || post.type.length === 0) return true;
-      return post.type.includes(FILTER);
-    })
-    .sort((a, b) => (b.pinned === true) - (a.pinned === true));
-}
-
-function computeStatsFromGrid(posts) {
-  const today = new Date().toISOString().split("T")[0];
-  return {
-    total: posts.length,
-    scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
-    published: posts.filter(p => p.publishDate && p.publishDate <= today).length
-  };
-}
-
-function extractProfileFromPosts(posts) {
-  const rowWithName = posts.find(p => p.profileName);
-  const rowWithPic = posts.find(p => p.profilePicture);
-  return {
-    name: rowWithName?.profileName || "Grid Planner",
-    picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png"
-  };
-}
-
-function syncThemePill(mode) {
-  const indicator = document.querySelector(".themeIndicator");
-  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-  const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
-
-  if (indicator && index >= 0) {
-    indicator.style.transform = `translateX(${index * 100}%)`;
-  }
-
-  buttons.forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.themeBtn === mode);
-  });
-}
-
-async function loadDatabaseSwitcher() {
-  const slug = getSlug();
-  if (!slug) return;
-
-  const res = await fetch(`/api/list-database?slug=${slug}`);
-const data = await res.json();
-
-const databases = data.databases || data;
-
-if (!Array.isArray(databases) || databases.length === 0) return;
-
-  const wrap = document.getElementById("dbSwitcherHeader");
-  if (!wrap) return;
-
-  wrap.innerHTML = `
-    <div class="dbPill">
-      ${databases.map(db => `
-        <button class="dbBtn ${db.is_primary ? "active" : ""}" 
-                data-id="${db.database_id}">
-          ${db.label}
-        </button>
-      `).join("")}
-    </div>
-  `;
-
-  const buttons = wrap.querySelectorAll(".dbBtn");
-  const indicator = wrap.querySelector(".dbIndicator");
-
-  buttons.forEach((btn) => {
-  btn.onclick = async () => {
-    buttons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    const dbId = btn.dataset.id;
-    localStorage.setItem("activeDatabase", dbId);
-
-    await loadPosts(dbId);
-  };
-});
-
-  const activeIndex = [...buttons].findIndex(b => b.classList.contains("active"));
-  if (activeIndex >= 0) {
-    setTimeout(() => updateIndicator(activeIndex), 50);
-  }
-}
-
-async function animateDatabaseChange(dbId) {
-  const container = document.querySelector(".gridWrap");
-
-  container.style.opacity = 0;
-  container.style.transform = "translateY(10px)";
-  container.style.transition = "all 0.3s ease";
-
-  await loadPosts(dbId);
-
-  setTimeout(() => {
-    container.style.opacity = 1;
-    container.style.transform = "translateY(0)";
-  }, 50);
-}
-
-function animateGridChange(callback) {
-  const grid = document.querySelector(".gridWrap");
-
-  grid.style.opacity = "0";
-  grid.style.transform = "translateY(10px)";
-  grid.style.transition = "all 0.25s ease";
-
-  setTimeout(async () => {
-    await callback();
-    grid.style.opacity = "1";
-    grid.style.transform = "translateY(0)";
-  }, 200);
-}
-
-function switchDatabase(dbId) {
-  localStorage.setItem("activeDatabase", dbId);
-  loadPosts(dbId); // ✅ pass selected database
-}
-
-async function loadDatabases() {
-  const slug = getSlug();
-  if (!slug) return;
-
-  const res = await fetch(`/api/list-database?slug=${slug}`);
-  const databases = await res.json();
-
-  const select = document.getElementById("dbSelect");
-  if (!select) return;
-
-  select.innerHTML = "";
-
-  databases.forEach(db => {
-    const opt = document.createElement("option");
-    opt.value = db.database_id;
-    opt.textContent = db.label || "Untitled";
-    opt.selected = db.is_primary;
-    select.appendChild(opt);
-  });
-
-  // save primary if nothing selected
-  if (!localStorage.getItem("activeDatabase")) {
-    const primary = databases.find(d => d.is_primary);
-    if (primary) {
-      localStorage.setItem("activeDatabase", primary.database_id);
-    }
-  }
-}
-
-  function updateStats() {
-  const stats = computeStatsFromGrid(getVisibleGridPosts());
-
-  document.getElementById("statPosts").innerText = stats.total;
-  document.getElementById("statScheduled").innerText = stats.scheduled;
-  document.getElementById("statPublished").innerText = stats.published;
-}
-
-/* -------------------- MENU -------------------- */
-
-function toggleMenu() {
-  const menu = document.getElementById("menu");
-  menu.classList.toggle("hidden");
-}
-window.toggleMenu = toggleMenu;
-
-function toggleSection(section, checkbox) {
-  const el =
-    section === "header"
-      ? document.getElementById("profileHeader")
-      : document.getElementById("highlightsWrap");
-
-  if (!el) return;
-
-  el.classList.toggle("hidden-section", !checkbox.checked);
-}
-
-window.toggleSection = toggleSection;
-
-function toggleAvatar(checkbox) {
-  const profile = document.getElementById("profileHeader");
-  if (!profile) return;
-
-  profile.classList.toggle("no-avatar", !checkbox.checked);
-  localStorage.setItem("showAvatar", checkbox.checked);
-}
-
-function toggleProfileNote(checkbox) {
-  const note = document.getElementById("profileNote");
-  if (!note) return;
-
-  note.classList.toggle("hidden-section", !checkbox.checked);
-
-  // optional: remember choice
-  localStorage.setItem("showProfileNote", checkbox.checked);
-}
-
-function setTheme(mode) {
-  if (mode === "dark") {
-    document.body.setAttribute("data-theme", "dark");
-  } 
-  else if (mode === "light") {
-    document.body.removeAttribute("data-theme");
-  } 
-  else if (mode === "default") {
-    // 👇 THIS IS THE FIX
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.body.toggleAttribute("data-theme", prefersDark);
-  }
-
-  localStorage.setItem("theme", mode);
-  syncThemePill(mode);
-}
-
-/* -------------------- TABS -------------------- */
-
-function moveUnderline(tab) {
-  const underline = document.getElementById("slidingUnderline");
-  const tabs = document.querySelector(".tabs");
-  if (!underline || !tabs || !tab) return;
-
-  const tabRect = tab.getBoundingClientRect();
-  const tabsRect = tabs.getBoundingClientRect();
-  const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underline.offsetWidth / 2;
-  underline.style.transform = `translateX(${x}px)`;
-}
-
-function setFilter(type, el) {
-  FILTER = type;
-
-  document.querySelectorAll(".tabItem").forEach(tab => {
-    tab.classList.remove("active");
-    const img = tab.querySelector("img");
-    img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
-  });
-
-  el.classList.add("active");
-  moveUnderline(el);
-  renderGrid();
-}
-window.setFilter = setFilter;
-
-/* -------------------- DATA LOAD -------------------- */
-
-async function loadPosts(selectedDb = null, btn = null) {
-  const icon = btn?.querySelector(".refreshIcon");
-  if (icon) icon.classList.add("spin");
-
-  if (!btn) {
-  document.querySelector(".container").setAttribute("data-loading", "true");
-  document.getElementById("skeleton").style.display = "block";
-}
-
-  try {
-    const slug = getSlug();
-let url = `/api/get-posts?slug=${slug}`;
-
-const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-
-if (activeDb) {
-  url += `&db=${activeDb}`;
-}
-
-const res = await fetch(url);
-
-    const { profile: apiProfile, posts, plan } = await res.json();
-
-    ALL_POSTS = Array.isArray(posts) ? posts : [];
-    sessionStorage.setItem(
-  "cachedData",
-  JSON.stringify({ profile: apiProfile, posts })
-);
-
-    const derivedProfile = extractProfileFromPosts(ALL_POSTS);
-    const finalProfile = apiProfile || derivedProfile;
-
-   renderProfile(finalProfile);
-
-    // ✅ PROFILE NOTE (MUST be inside try)
-    const noteEl = document.getElementById("profileNote");
-    if (apiProfile?.note) {
-      noteEl.textContent = apiProfile.note;
-      noteEl.classList.remove("hidden-section");
-    } else {
-      noteEl.classList.add("hidden-section");
+  <script>
+    /* -------------------- THEME INITIALIZATION -------------------- */
+    (function () {
+      const theme = localStorage.getItem("theme") || "default";
+
+      if (
+        theme === "dark" ||
+        (theme === "default" &&
+         window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.body.setAttribute("data-theme", "dark");
+      }
+    })();
+
+    /* -------------------- GLOBAL VARIABLES -------------------- */
+    let ALL_POSTS = [];
+    let FILTER = "Post";
+    let currentSlide = 0;
+    let currentMedia = [];
+
+    /* -------------------- UTILITIES -------------------- */
+    function getSlug() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("slug");
     }
 
-    renderHighlights(ALL_POSTS);
-    renderGrid();
+    function hasMedia(post) {
+      return (
+        (Array.isArray(post.attachment) && post.attachment.length > 0) ||
+        post.thumbnail ||
+        post.video
+      );
+    }
 
-    updateStats();
+    function isMultiMedia(post) {
+      return Array.isArray(post.attachment) && post.attachment.length > 1;
+    }
 
-  } catch (e) {
-    console.error("loadPosts failed:", e);
-  }
+    /* -------------------- FONTS -------------------- */
+    function setFont(font) {
+      let value;
 
-  if (!btn) {
-    document.getElementById("skeleton").style.display = "none";
-    document.querySelector(".container").removeAttribute("data-loading");
-  }
-
-  if (icon) icon.classList.remove("spin");
-}
-
-/* -------------------- GRID -------------------- */
-
-function renderGrid() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-
-  getVisibleGridPosts().forEach(post => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const src =
-      (Array.isArray(post.attachment) && post.attachment[0]) ||
-      post.thumbnail ||
-      post.video;
-
-    if (src) {
-      if (src.match(/\.(mp4|webm|ogg)/i)) {
-        const v = document.createElement("video");
-        v.src = src;
-        v.muted = true;
-        v.playsInline = true;
-        card.appendChild(v);
+      if (font === "inter") {
+        value = "'Inter', -apple-system, sans-serif";
+      } else if (font === "poppins") {
+        value = "'Poppins', -apple-system, sans-serif";
       } else {
-        const img = document.createElement("img");
-        img.src = src;
-        card.appendChild(img);
+        value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+      }
+
+      document.documentElement.style.setProperty("--font-main", value);
+      localStorage.setItem("font", font);
+    }
+
+    window.setFont = setFont;
+
+    /* -------------------- HELPERS -------------------- */
+    function getVisibleGridPosts() {
+      return ALL_POSTS
+        .filter(post => {
+          if (post.hide) return false;
+          if (!hasMedia(post)) return false;
+
+          if (!Array.isArray(post.type) || post.type.length === 0) return true;
+          return post.type.includes(FILTER);
+        })
+        .sort((a, b) => (b.pinned === true) - (a.pinned === true));
+    }
+
+    function computeStatsFromGrid(posts) {
+      const today = new Date().toISOString().split("T")[0];
+      return {
+        total: posts.length,
+        scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
+        published: posts.filter(p => p.publishDate && p.publishDate <= today).length
+      };
+    }
+
+    function extractProfileFromPosts(posts) {
+      const rowWithName = posts.find(p => p.profileName);
+      const rowWithPic = posts.find(p => p.profilePicture);
+      return {
+        name: rowWithName?.profileName || "Grid Planner",
+        picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png"
+      };
+    }
+
+    function updateStats() {
+      const stats = computeStatsFromGrid(getVisibleGridPosts());
+
+      document.getElementById("statPosts").innerText = stats.total;
+      document.getElementById("statScheduled").innerText = stats.scheduled;
+      document.getElementById("statPublished").innerText = stats.published;
+    }
+
+    /* -------------------- THEME FUNCTIONS -------------------- */
+    function syncThemePill(mode) {
+      const indicator = document.querySelector(".themeIndicator");
+      const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+      const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
+
+      if (indicator && index >= 0) {
+        indicator.style.transform = `translateX(${index * 100}%)`;
+      }
+
+      buttons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.themeBtn === mode);
+      });
+    }
+
+    function setTheme(mode) {
+      if (mode === "dark") {
+        document.body.setAttribute("data-theme", "dark");
+      } else if (mode === "light") {
+        document.body.removeAttribute("data-theme");
+      } else if (mode === "default") {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (prefersDark) {
+          document.body.setAttribute("data-theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+        }
+      }
+
+      localStorage.setItem("theme", mode);
+      syncThemePill(mode);
+    }
+
+    window.setTheme = setTheme;
+
+    /* -------------------- MENU FUNCTIONS -------------------- */
+    function toggleMenu() {
+      const menu = document.getElementById("menu");
+      menu.classList.toggle("hidden");
+    }
+
+    window.toggleMenu = toggleMenu;
+
+    function toggleSection(section, checkbox) {
+      const el =
+        section === "header"
+          ? document.getElementById("profileHeader")
+          : document.getElementById("highlightsWrap");
+
+      if (!el) return;
+
+      el.classList.toggle("hidden-section", !checkbox.checked);
+    }
+
+    window.toggleSection = toggleSection;
+
+    function toggleAvatar(checkbox) {
+      const profile = document.getElementById("profileHeader");
+      if (!profile) return;
+
+      profile.classList.toggle("no-avatar", !checkbox.checked);
+      localStorage.setItem("showAvatar", checkbox.checked);
+    }
+
+    window.toggleAvatar = toggleAvatar;
+
+    function toggleProfileNote(checkbox) {
+      const note = document.getElementById("profileNote");
+      if (!note) return;
+
+      note.classList.toggle("hidden-section", !checkbox.checked);
+      localStorage.setItem("showProfileNote", checkbox.checked);
+    }
+
+    window.toggleProfileNote = toggleProfileNote;
+
+    /* -------------------- TAB FUNCTIONS -------------------- */
+    function moveUnderline(tab) {
+      const underline = document.getElementById("slidingUnderline");
+      const tabs = document.querySelector(".tabs");
+      if (!underline || !tabs || !tab) return;
+
+      const tabRect = tab.getBoundingClientRect();
+      const tabsRect = tabs.getBoundingClientRect();
+      const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underline.offsetWidth / 2;
+      underline.style.transform = `translateX(${x}px)`;
+    }
+
+    function setFilter(type, el) {
+      FILTER = type;
+
+      document.querySelectorAll(".tabItem").forEach(tab => {
+        tab.classList.remove("active");
+        const img = tab.querySelector("img");
+        img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+      });
+
+      el.classList.add("active");
+      moveUnderline(el);
+      renderGrid();
+    }
+
+    window.setFilter = setFilter;
+
+    /* -------------------- DATABASE FUNCTIONS -------------------- */
+    async function loadDatabaseSwitcher() {
+      const slug = getSlug();
+      if (!slug) return;
+
+      try {
+        const res = await fetch(`/api/list-database?slug=${slug}`);
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
+
+        const data = await res.json();
+        const databases = data.databases || data;
+
+        if (!Array.isArray(databases) || databases.length === 0) return;
+
+        const wrap = document.getElementById("dbSwitcherHeader");
+        if (!wrap) return;
+
+        wrap.innerHTML = `
+          <div class="dbPill">
+            ${databases.map(db => `
+              <button class="dbBtn ${db.is_primary ? "active" : ""}" 
+                      data-id="${db.database_id}">
+                ${db.label}
+              </button>
+            `).join("")}
+          </div>
+        `;
+
+        const buttons = wrap.querySelectorAll(".dbBtn");
+
+        buttons.forEach((btn) => {
+          btn.onclick = async () => {
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const dbId = btn.dataset.id;
+            localStorage.setItem("activeDatabase", dbId);
+
+            await animateDatabaseChange(dbId);
+          };
+        });
+      } catch (e) {
+        console.error("loadDatabaseSwitcher failed:", e);
       }
     }
 
-    if (isMultiMedia(post)) {
-  addBadge(card, "/icons/multi.png");   // stacked icon
-}
-if (post.pinned) {
-  addBadge(card, "/icons/pin.png");     // pin on top
-}
-    card.onclick = () => openViewer(post);
-    grid.appendChild(card);
-    console.log("ALL_POSTS:", ALL_POSTS);
-console.log("Visible:", getVisibleGridPosts());
-  });
-}
+    async function animateDatabaseChange(dbId) {
+      const container = document.querySelector(".gridWrap");
 
-function addBadge(card, src, index = 0) {
-  const img = document.createElement("img");
-  img.src = src;
-  img.className = "badge";
-  img.style.top = `${6 + index * 18}px`;  // stack vertically
-  card.appendChild(img);
-}
-  function isMultiMedia(post) {
-  return Array.isArray(post.attachment) && post.attachment.length > 1;
-}
+      container.style.opacity = 0;
+      container.style.transform = "translateY(10px)";
+      container.style.transition = "all 0.3s ease";
 
+      await loadPosts(dbId);
 
-/* -------------------- HIGHLIGHTS -------------------- */
+      setTimeout(() => {
+        container.style.opacity = 1;
+        container.style.transform = "translateY(0)";
+      }, 50);
+    }
 
-function renderHighlights(posts) {
-  const row = document.getElementById("highlights");
-  row.innerHTML = "";
+    function switchDatabase(dbId) {
+      localStorage.setItem("activeDatabase", dbId);
+      loadPosts(dbId);
+    }
 
-  const MAX = 10;
+    /* -------------------- DATA LOAD -------------------- */
+    async function loadPosts(selectedDb = null, btn = null) {
+      const icon = btn?.querySelector(".refreshIcon");
+      if (icon) icon.classList.add("spin");
 
-  const items = posts.filter(
-    p => p.highlight && hasMedia(p) && !p.hide
-  );
+      if (!btn) {
+        document.querySelector(".container").setAttribute("data-loading", "true");
+        document.getElementById("skeleton").style.display = "block";
+      }
 
-  // 1️⃣ Render real highlights
-  items.slice(0, MAX).forEach(post => {
-    const wrap = document.createElement("div");
-    wrap.className = "highlightItem";
+      try {
+        const slug = getSlug();
+        let url = `/api/get-posts?slug=${slug}`;
 
-    const img = document.createElement("img");
-    img.src = post.attachment?.[0] || post.thumbnail;
+        const activeDb = selectedDb || localStorage.getItem("activeDatabase");
 
-    wrap.appendChild(img);
-    wrap.onclick = () => openViewer(post);
-    row.appendChild(wrap);
-  });
+        if (activeDb) {
+          url += `&db=${activeDb}`;
+        }
 
-  // 2️⃣ Render placeholders to fill up to MAX
-  const remaining = MAX - items.length;
+        const res = await fetch(url);
 
-  for (let i = 0; i < remaining; i++) {
-    const ph = document.createElement("div");
-    ph.className = "highlightItem highlightPlaceholder";
-    row.appendChild(ph);
-  }
-}
-/* -------------------- VIEWER -------------------- */
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
 
-function openViewer(post) {
-  currentMedia =
-    post.attachment?.length ? post.attachment :
-    post.video ? [post.video] :
-    post.thumbnail ? [post.thumbnail] : [];
+        const { profile: apiProfile, posts, plan } = await res.json();
 
-  currentSlide = 0;
-  updateViewerImage();
+        ALL_POSTS = Array.isArray(posts) ? posts : [];
+        sessionStorage.setItem(
+          "cachedData",
+          JSON.stringify({ profile: apiProfile, posts })
+        );
 
-  document.getElementById("viewerTitle").innerText = post.name || "";
-  document.getElementById("viewer").classList.remove("hidden");
-  requestAnimationFrame(() => document.getElementById("viewer").classList.add("show"));
-}
+        const derivedProfile = extractProfileFromPosts(ALL_POSTS);
+        const finalProfile = apiProfile || derivedProfile;
 
-function updateViewerImage() {
-  const wrap = document.getElementById("viewerMedia");
-  wrap.innerHTML = "";
+        renderProfile(finalProfile);
 
-  const src = currentMedia[currentSlide];
-  if (!src) return;
+        const noteEl = document.getElementById("profileNote");
+        if (apiProfile?.note) {
+          noteEl.textContent = apiProfile.note;
+          noteEl.classList.remove("hidden-section");
+        } else {
+          noteEl.classList.add("hidden-section");
+        }
 
-  const el = src.match(/\.(mp4|webm|ogg)/i)
-    ? Object.assign(document.createElement("video"), { src, controls: true })
-    : Object.assign(document.createElement("img"), { src });
+        renderHighlights(ALL_POSTS);
+        renderGrid();
 
-  wrap.appendChild(el);
+        updateStats();
 
-  const showNav = currentMedia.length > 1;
-  document.querySelector(".nav.prev").style.display = showNav ? "flex" : "none";
-  document.querySelector(".nav.next").style.display = showNav ? "flex" : "none";
-}
-  function nextImage() {
-  if (!currentMedia.length) return;
+      } catch (e) {
+        console.error("loadPosts failed:", e);
+      }
 
-  currentSlide = (currentSlide + 1) % currentMedia.length;
-  updateViewerImage();
-}
-
-function prevImage() {
-  if (!currentMedia.length) return;
-
-  currentSlide =
-    (currentSlide - 1 + currentMedia.length) % currentMedia.length;
-  updateViewerImage();
-}
-
-window.nextImage = nextImage;
-window.prevImage = prevImage;
-
-async function checkAccess() {
-  return true;
-}
-
-async function startGrid() {
-  try {
-    let slugRetries = window.__slugRetries || 0;
-    window.__slugRetries = slugRetries + 1;
-
-    if (!getSlug()) {
-      if (slugRetries < 20) {
-        setTimeout(startGrid, 300);
-        return;
-      } else {
+      if (!btn) {
         document.getElementById("skeleton").style.display = "none";
         document.querySelector(".container").removeAttribute("data-loading");
-        return;
+      }
+
+      if (icon) icon.classList.remove("spin");
+    }
+
+    /* -------------------- PROFILE FUNCTIONS -------------------- */
+    function renderProfile(profile) {
+      if (!profile) return;
+
+      document.getElementById("profileName").innerText = profile.name;
+      document.getElementById("profileImage").src = profile.picture;
+
+      const noteEl = document.getElementById("profileNote");
+      if (profile.note) {
+        noteEl.textContent = profile.note;
+        noteEl.classList.remove("hidden-section");
+      } else {
+        noteEl.classList.add("hidden-section");
       }
     }
 
-    const cached = sessionStorage.getItem("cachedData");
-if (cached) {
-  const { profile, posts } = JSON.parse(cached);
+    /* -------------------- HIGHLIGHTS -------------------- */
+    function renderHighlights(posts) {
+      const row = document.getElementById("highlights");
+      row.innerHTML = "";
 
-  ALL_POSTS = posts || [];
-  renderProfile(profile);
+      const MAX = 10;
 
-  // ✅ Restore profile immediately
-  if (profile) {
-    document.getElementById("profileName").innerText = profile.name;
-    document.getElementById("profileImage").src = profile.picture;
+      const items = posts.filter(
+        p => p.highlight && hasMedia(p) && !p.hide
+      );
 
-    const noteEl = document.getElementById("profileNote");
-    if (profile.note) {
-      noteEl.textContent = profile.note;
-      noteEl.classList.remove("hidden-section");
-    }
-  }
+      items.slice(0, MAX).forEach(post => {
+        const wrap = document.createElement("div");
+        wrap.className = "highlightItem";
 
-  renderHighlights(ALL_POSTS);
-  renderGrid();
-  updateStats();
+        const img = document.createElement("img");
+        img.src = post.attachment?.[0] || post.thumbnail;
 
-  document.getElementById("skeleton").style.display = "none";
-  document.querySelector(".container").removeAttribute("data-loading");
-}
+        wrap.appendChild(img);
+        wrap.onclick = () => openViewer(post);
+        row.appendChild(wrap);
+      });
 
- const savedTheme = localStorage.getItem("theme") || "default";
+      const remaining = MAX - items.length;
 
-syncThemePill(savedTheme);
-
-    const showAvatar = localStorage.getItem("showAvatar");
-    if (showAvatar === "false") {
-      const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
-      if (avatarToggle) {
-        avatarToggle.checked = false;
-        document.getElementById("profileHeader").classList.add("no-avatar");
+      for (let i = 0; i < remaining; i++) {
+        const ph = document.createElement("div");
+        ph.className = "highlightItem highlightPlaceholder";
+        row.appendChild(ph);
       }
     }
 
-    const showNote = localStorage.getItem("showProfileNote");
-    if (showNote === "false") {
-      document.getElementById("profileNote")?.classList.add("hidden-section");
-      const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
-      if (noteToggle) noteToggle.checked = false;
+    /* -------------------- GRID FUNCTIONS -------------------- */
+    function addBadge(card, src, index = 0) {
+      const img = document.createElement("img");
+      img.src = src;
+      img.className = "badge";
+      img.style.top = `${6 + index * 18}px`;
+      card.appendChild(img);
     }
-    
-    const savedFont = localStorage.getItem("font");
-if (savedFont) setFont(savedFont);
 
-const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
-if (fontSelect && savedFont) {
-  fontSelect.value = savedFont;
-}
-    
-    await checkAccess();
-    await loadDatabaseSwitcher();
-    
-const savedDb = localStorage.getItem("activeDatabase");
-if (!sessionStorage.getItem("cachedData")) {
-  await loadPosts(savedDb);
-}
+    function renderGrid() {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
 
-    requestAnimationFrame(() => {
-      const activeTab = document.querySelector(".tabItem.active");
-      if (activeTab) moveUnderline(activeTab);
+      getVisibleGridPosts().forEach(post => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const src =
+          (Array.isArray(post.attachment) && post.attachment[0]) ||
+          post.thumbnail ||
+          post.video;
+
+        if (src) {
+          if (src.match(/\.(mp4|webm|ogg)/i)) {
+            const v = document.createElement("video");
+            v.src = src;
+            v.muted = true;
+            v.playsInline = true;
+            card.appendChild(v);
+          } else {
+            const img = document.createElement("img");
+            img.src = src;
+            card.appendChild(img);
+          }
+        }
+
+        if (isMultiMedia(post)) {
+          addBadge(card, "/icons/multi.png");
+        }
+        if (post.pinned) {
+          addBadge(card, "/icons/pin.png");
+        }
+
+        card.onclick = () => openViewer(post);
+        grid.appendChild(card);
+      });
+    }
+
+    /* -------------------- VIEWER FUNCTIONS -------------------- */
+    function openViewer(post) {
+      currentMedia =
+        post.attachment?.length ? post.attachment :
+        post.video ? [post.video] :
+        post.thumbnail ? [post.thumbnail] : [];
+
+      currentSlide = 0;
+      updateViewerImage();
+
+      document.getElementById("viewerTitle").innerText = post.name || "";
+      document.getElementById("viewer").classList.remove("hidden");
+      requestAnimationFrame(() => document.getElementById("viewer").classList.add("show"));
+    }
+
+    function updateViewerImage() {
+      const wrap = document.getElementById("viewerMedia");
+      wrap.innerHTML = "";
+
+      const src = currentMedia[currentSlide];
+      if (!src) return;
+
+      const el = src.match(/\.(mp4|webm|ogg)/i)
+        ? Object.assign(document.createElement("video"), { src, controls: true })
+        : Object.assign(document.createElement("img"), { src });
+
+      wrap.appendChild(el);
+
+      const showNav = currentMedia.length > 1;
+      document.querySelector(".nav.prev").style.display = showNav ? "flex" : "none";
+      document.querySelector(".nav.next").style.display = showNav ? "flex" : "none";
+    }
+
+    function nextImage() {
+      if (!currentMedia.length) return;
+
+      currentSlide = (currentSlide + 1) % currentMedia.length;
+      updateViewerImage();
+    }
+
+    function prevImage() {
+      if (!currentMedia.length) return;
+
+      currentSlide =
+        (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+      updateViewerImage();
+    }
+
+    window.nextImage = nextImage;
+    window.prevImage = prevImage;
+
+    function closeViewer() {
+      const v = document.getElementById("viewer");
+      v.classList.remove("show");
+      setTimeout(() => v.classList.add("hidden"), 250);
+    }
+
+    window.closeViewer = closeViewer;
+
+    /* -------------------- ACCESS CHECK -------------------- */
+    async function checkAccess() {
+      return true;
+    }
+
+    /* -------------------- INITIALIZATION -------------------- */
+    async function startGrid() {
+      try {
+        let slugRetries = window.__slugRetries || 0;
+        window.__slugRetries = slugRetries + 1;
+
+        if (!getSlug()) {
+          if (slugRetries < 20) {
+            setTimeout(startGrid, 300);
+            return;
+          } else {
+            document.getElementById("skeleton").style.display = "none";
+            document.querySelector(".container").removeAttribute("data-loading");
+            return;
+          }
+        }
+
+        const cached = sessionStorage.getItem("cachedData");
+        if (cached) {
+          const { profile, posts } = JSON.parse(cached);
+
+          ALL_POSTS = posts || [];
+          renderProfile(profile);
+
+          if (profile) {
+            document.getElementById("profileName").innerText = profile.name;
+            document.getElementById("profileImage").src = profile.picture;
+
+            const noteEl = document.getElementById("profileNote");
+            if (profile.note) {
+              noteEl.textContent = profile.note;
+              noteEl.classList.remove("hidden-section");
+            }
+          }
+
+          renderHighlights(ALL_POSTS);
+          renderGrid();
+          updateStats();
+
+          document.getElementById("skeleton").style.display = "none";
+          document.querySelector(".container").removeAttribute("data-loading");
+
+          const savedTheme = localStorage.getItem("theme") || "default";
+          syncThemePill(savedTheme);
+
+          const showAvatar = localStorage.getItem("showAvatar");
+          if (showAvatar === "false") {
+            const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
+            if (avatarToggle) {
+              avatarToggle.checked = false;
+              document.getElementById("profileHeader").classList.add("no-avatar");
+            }
+          }
+
+          const showNote = localStorage.getItem("showProfileNote");
+          if (showNote === "false") {
+            document.getElementById("profileNote")?.classList.add("hidden-section");
+            const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
+            if (noteToggle) noteToggle.checked = false;
+          }
+
+          const savedFont = localStorage.getItem("font");
+          if (savedFont) setFont(savedFont);
+
+          const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
+          if (fontSelect && savedFont) {
+            fontSelect.value = savedFont;
+          }
+
+          await checkAccess();
+          await loadDatabaseSwitcher();
+
+          requestAnimationFrame(() => {
+            const activeTab = document.querySelector(".tabItem.active");
+            if (activeTab) moveUnderline(activeTab);
+          });
+
+          return;
+        }
+
+        const savedTheme = localStorage.getItem("theme") || "default";
+        syncThemePill(savedTheme);
+
+        const showAvatar = localStorage.getItem("showAvatar");
+        if (showAvatar === "false") {
+          const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
+          if (avatarToggle) {
+            avatarToggle.checked = false;
+            document.getElementById("profileHeader").classList.add("no-avatar");
+          }
+        }
+
+        const showNote = localStorage.getItem("showProfileNote");
+        if (showNote === "false") {
+          document.getElementById("profileNote")?.classList.add("hidden-section");
+          const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
+          if (noteToggle) noteToggle.checked = false;
+        }
+
+        const savedFont = localStorage.getItem("font");
+        if (savedFont) setFont(savedFont);
+
+        const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
+        if (fontSelect && savedFont) {
+          fontSelect.value = savedFont;
+        }
+
+        await checkAccess();
+        await loadDatabaseSwitcher();
+
+        const savedDb = localStorage.getItem("activeDatabase");
+        await loadPosts(savedDb);
+
+        requestAnimationFrame(() => {
+          const activeTab = document.querySelector(".tabItem.active");
+          if (activeTab) moveUnderline(activeTab);
+        });
+
+      } catch (e) {
+        console.error("Grid init failed", e);
+      }
+    }
+
+    /* -------------------- EVENT LISTENERS -------------------- */
+    document.querySelector(".refreshBtn").onclick = async function () {
+      const selectedDb = localStorage.getItem("activeDatabase");
+      await loadPosts(selectedDb, this);
+    };
+
+    document.addEventListener("click", () => {
+      const menu = document.getElementById("menu");
+      if (!menu.classList.contains("hidden")) {
+        menu.classList.add("hidden");
+      }
     });
-  } catch (e) {
-    console.error("Grid init failed", e);
-  }
-}
-  function renderProfile(profile) {
-  if (!profile) return;
 
-  document.getElementById("profileName").innerText = profile.name;
-  document.getElementById("profileImage").src = profile.picture;
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeViewer();
+    });
 
-  const noteEl = document.getElementById("profileNote");
-  if (profile.note) {
-    noteEl.textContent = profile.note;
-    noteEl.classList.remove("hidden-section");
-  } else {
-    noteEl.classList.add("hidden-section");
-  }
-}
+    /* ---------- AUTO THEME LISTENER ---------- */
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
 
-function closeViewer() {
-  const v = document.getElementById("viewer");
-  v.classList.remove("show");
-  setTimeout(() => v.classList.add("hidden"), 250);
-}
-window.closeViewer = closeViewer;
-  document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeViewer();
-});
+    media.addEventListener("change", e => {
+      const savedTheme = localStorage.getItem("theme");
 
+      if (savedTheme === "default") {
+        if (e.matches) {
+          document.body.setAttribute("data-theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+        }
+      }
+    });
 
-/* -------------------- INIT -------------------- */
-
-document.querySelector(".refreshBtn").onclick = async function () {
-  const selectedDb = localStorage.getItem("activeDatabase");
-  await loadPosts(selectedDb, this);
-};
-
-  document.addEventListener("click", () => {
-  const menu = document.getElementById("menu");
-  if (!menu.classList.contains("hidden")) {
-    menu.classList.add("hidden");
-  }
-});
-/* ---------- AUTO THEME LISTENER ---------- */
-
-const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-media.addEventListener("change", e => {
-  const savedTheme = localStorage.getItem("theme");
-
-  // only react when user selected Auto (default)
-  if (savedTheme === "default") {
-    e.matches
-      ? document.body.setAttribute("data-theme", "dark")
-      : document.body.removeAttribute("data-theme");
-  }
-});
-
-window.addEventListener("load", startGrid);
-</script>
+    window.addEventListener("load", startGrid);
+  </script>
 </body>
 </html>
