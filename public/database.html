@@ -105,6 +105,105 @@
       0%, 80%, 100% { opacity: .2; }
       40% { opacity: 1; }
     }
+
+    /* ---------- EDIT MODAL ---------- */
+    #editModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+    }
+
+    #editModal.active {
+      display: flex;
+    }
+
+    #editModal .modal-content {
+      background: #fff;
+      padding: 28px;
+      border-radius: 14px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+
+    #editModal .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #111;
+    }
+
+    #editModal .modal-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    #editModal .modal-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    #editModal .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    #editModal .modal-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    #editModal .modal-btn-save {
+      background: #3b82f6;
+      color: white;
+    }
+
+    #editModal .modal-btn-save:hover {
+      background: #2563eb;
+    }
+
+    #editModal .modal-btn-cancel {
+      background: #e5e7eb;
+      color: #111;
+    }
+
+    #editModal .modal-btn-cancel:hover {
+      background: #d1d5db;
+    }
+
+    /* Edit button styling */
+    .edit-btn {
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-main);
+      transition: all 0.2s;
+    }
+
+    .edit-btn:hover {
+      background: #f9fafb;
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
   </style>
 </head>
 
@@ -251,7 +350,7 @@
     </p>
 
     <p style="font-size:13px; color:#777;">
-  If something doesn’t appear in your grid, it’s usually because one of these
+  If something doesn't appear in your grid, it's usually because one of these
   properties is missing or named differently.
 </p>
 
@@ -309,6 +408,23 @@
 
 </div>
 
+<!-- EDIT LABEL MODAL -->
+<div id="editModal">
+  <div class="modal-content">
+    <div class="modal-title">Edit Database Label</div>
+    <input 
+      id="editLabelInput" 
+      type="text"
+      class="modal-input" 
+      placeholder="Enter new label"
+    />
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="saveEditLabel()">Save</button>
+    </div>
+  </div>
+</div>
+
   <script>
   const params = new URLSearchParams(location.search);
 const slug = params.get("slug");
@@ -319,6 +435,8 @@ const token = params.get("token");
 
   let CURRENT_PLAN = "free";
   let DATABASES = [];
+  let editingDatabaseId = null;
+  let editingDatabaseLabel = null;
 
   function extractDatabaseId(input) {
     const match = input.match(/[a-f0-9]{32}/i);
@@ -415,14 +533,14 @@ const token = params.get("token");
           margin-bottom:10px;
           gap:12px;
         ">
-          <div style="display:flex; flex-direction:column;">
+          <div style="display:flex; flex-direction:column; flex:1;">
             <div style="font-weight:600;">${db.label || "Untitled"}</div>
             <div style="font-size:12px; color:var(--text-muted);">
               ${db.database_id || ""}
             </div>
           </div>
 
-      <div style="display:flex; gap:8px; align-items:center;">
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
   ${db.is_primary ? `
     <span style="
       font-size:12px;
@@ -446,6 +564,11 @@ const token = params.get("token");
       "
     >Make primary</button>
   `}
+  <button
+    class="edit-btn"
+    data-edit-btn="${db.id}"
+    data-edit-label="${db.label || db.database_id}"
+  >Edit</button>
 </div>
         </div>
       `).join("")}
@@ -455,6 +578,11 @@ const token = params.get("token");
   const btn = document.querySelector(`[data-primary-btn="${db.id}"]`);
   if (btn) {
     btn.onclick = () => setPrimary(db.id);
+  }
+
+  const editBtn = document.querySelector(`[data-edit-btn="${db.id}"]`);
+  if (editBtn) {
+    editBtn.onclick = () => openEditModal(db.id, db.label || db.database_id);
   }
 });
   }
@@ -481,6 +609,69 @@ const token = params.get("token");
     status.innerText = "Primary database updated ✅";
     await loadDatabases();
   }
+
+  // Edit modal functions
+  function openEditModal(databaseId, currentLabel) {
+    editingDatabaseId = databaseId;
+    editingDatabaseLabel = currentLabel;
+    document.getElementById("editLabelInput").value = currentLabel;
+    document.getElementById("editModal").classList.add("active");
+    document.getElementById("editLabelInput").focus();
+  }
+
+  function closeEditModal() {
+    editingDatabaseId = null;
+    editingDatabaseLabel = null;
+    document.getElementById("editModal").classList.remove("active");
+  }
+
+  async function saveEditLabel() {
+    if (!editingDatabaseId) return;
+
+    const newLabel = document.getElementById("editLabelInput").value.trim();
+
+    if (!newLabel) {
+      alert("Label cannot be empty");
+      return;
+    }
+
+    if (newLabel === editingDatabaseLabel) {
+      closeEditModal();
+      return;
+    }
+
+    status.innerText = "Updating label…";
+
+    try {
+      const res = await fetch("/api/update-database-label", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug,
+          databaseId: editingDatabaseId,
+          newLabel
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        status.innerText = data.error || "Failed to update label";
+        return;
+      }
+
+      status.innerText = "Label updated ✅";
+      closeEditModal();
+      await loadDatabases();
+    } catch (e) {
+      status.innerText = "Something went wrong. Please try again.";
+    }
+  }
+
+  // Close modal on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeEditModal();
+  });
 
 document.getElementById("save").onclick = async () => {
   const raw = document.getElementById("db").value.trim();
