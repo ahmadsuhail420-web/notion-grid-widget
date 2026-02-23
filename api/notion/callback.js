@@ -12,9 +12,9 @@ export default async function handler(req, res) {
 
     const setupToken = state;
 
-if (!setupToken) {
-  return res.redirect("/error.html?reason=invalid_state");
-}
+    if (!setupToken) {
+      return res.redirect("/error.html?reason=invalid_state");
+    }
 
     // Initialize Supabase (SERVICE ROLE)
     const supabase = createClient(
@@ -24,20 +24,21 @@ if (!setupToken) {
 
     // 1️⃣ Validate setup token
     const { data: customer, error: customerError } = await supabase
-  .from("customers")
-  .select("*")
-  .eq("setup_token", setupToken)
-  .single();
+      .from("customers")
+      .select("*")
+      .eq("setup_token", setupToken)
+      .single();
 
-if (customerError || !customer) {
-  console.error("Token lookup failed:", setupToken);
-  return res.redirect("/error.html?reason=invalid_setup_token");
-}
+    if (customerError || !customer) {
+      console.error("Token lookup failed:", setupToken);
+      return res.redirect("/error.html?reason=invalid_setup_token");
+    }
 
-// If already connected, just redirect forward
-if (customer.setup_used) {
-  return res.redirect(`/database.html?slug=${customer.slug}`);
-}
+    // If already connected, just redirect forward
+    if (customer.setup_used) {
+      const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+      return res.redirect(`${appUrl}/database.html?slug=${customer.slug}`);
+    }
 
     // 2️⃣ Exchange code for Notion access token
     const tokenRes = await fetch("https://api.notion.com/v1/oauth/token", {
@@ -61,7 +62,8 @@ if (customer.setup_used) {
 
     if (!tokenRes.ok || !tokenData.access_token) {
       console.error("OAuth error:", tokenData);
-      return res.redirect("/error.html?reason=notion_auth_failed");
+      const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+      return res.redirect(`${appUrl}/error.html?reason=notion_auth_failed`);
     }
 
     // 3️⃣ Store Notion connection
@@ -77,7 +79,8 @@ if (customer.setup_used) {
 
     if (insertError) {
       console.error("Insert error:", insertError);
-      return res.redirect("/error.html?reason=db_insert_failed");
+      const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+      return res.redirect(`${appUrl}/error.html?reason=db_insert_failed`);
     }
 
     // 4️⃣ Mark setup token as used
@@ -86,11 +89,13 @@ if (customer.setup_used) {
       .update({ setup_used: true })
       .eq("id", customer.id);
 
-    // 5️⃣ Redirect to next step
-    return res.redirect(`/database.html?slug=${customer.slug}`);
+    // 5️⃣ Redirect to database page (✅ FIXED)
+    const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+    return res.redirect(`${appUrl}/database.html?slug=${customer.slug}`);
 
   } catch (err) {
     console.error("Server error:", err);
-    return res.redirect("/error.html?reason=server_error");
+    const appUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+    return res.redirect(`${appUrl}/error.html?reason=server_error`);
   }
 }
