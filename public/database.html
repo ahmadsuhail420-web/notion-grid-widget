@@ -9,6 +9,39 @@
 
   <style>
   
+  /* Fix invisible Switch button (mobile + light background) */
+button.switch-btn,
+button.switch,
+.switch-btn,
+.db-switch,
+[data-action="switch"],
+button[data-action="switch"] {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  background: #2563eb !important;   /* blue background */
+  color: #ffffff !important;        /* white text */
+  border: none !important;
+
+  padding: 8px 12px !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+
+/* If it was hidden via hover-only CSS, defeat it */
+@media (hover: none) {
+  .db-row:hover button.switch-btn,
+  .db-row:hover .switch-btn {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+  
   /* --- Force database action buttons visible (mobile-friendly) --- */
 .db-actions button,
 .database-actions button,
