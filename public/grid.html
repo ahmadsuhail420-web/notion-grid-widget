@@ -13,7 +13,7 @@
       --bg-main: #ffffff;
       --bg-card: #ffffff;
       --bg-muted: #f5f5f5;
-      
+
       --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Text",
                  "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
@@ -69,7 +69,7 @@
       flex-direction: column;
       border-radius: 24px;
     }
-  
+
     /* keep layout stable, just hide */
     .container[data-loading="true"] #profileHeader,
     .container[data-loading="true"] #highlightsWrap,
@@ -84,7 +84,7 @@
       padding: 8px 12px;
       position: relative;
     }
-    
+
     .hidden-section {
       display: none !important;
     }
@@ -132,7 +132,7 @@
       line-height: 1.2;
       color: var(--text-main);
     }
-    
+
     .profileNote {
       text-align: center;
       font-size: clamp(10px, 3.5vw, 24px);
@@ -224,7 +224,7 @@
       gap: 6px;
       margin-left: -2px;
     }
-    
+
     /* ---------- THEME SEGMENT (PILL) ---------- */
     .themeTitle {
       font-size: 12px;
@@ -427,14 +427,14 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-    
+
     .headerDivider {
       height: 1px;
       background: var(--border-color);
       width: 100%;
       margin-top: 2px;
     }
-    
+
     .dbSwitcher {
       display: flex;
       justify-content: center;
@@ -478,7 +478,7 @@
     body[data-theme="dark"] .dbBtn.active {
       color: #fff;
     }
-    
+
     /* ---------- HIGHLIGHTS ---------- */
     .highlights {
       width: 100%;
@@ -551,7 +551,7 @@
     /* ---------- TABS ---------- */
     .tabs {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr); /* UPDATED: 3 tabs */
       align-items: center;
       padding: 10px 0 8px;
       position: relative;
@@ -577,6 +577,29 @@
       opacity: 1;
       transform: translateY(-2px) scale(1.05);
     }
+    
+    /* Material icon in tab (Favorite) */
+.tabIcon {
+  font-size: 22px;
+  opacity: 0.45;
+  color: var(--text-main);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.tabItem.active .tabIcon {
+  opacity: 1;
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Dark mode: keep icon visible similar to images */
+body[data-theme="dark"] .tabIcon {
+  opacity: 0.75;
+  color: #fff;
+}
+
+body[data-theme="dark"] .tabItem.active .tabIcon {
+  opacity: 1;
+}
 
     .slidingUnderline {
       position: absolute;
@@ -765,7 +788,7 @@
       color: var(--text-muted);
       flex-shrink: 0;
     }
-    
+
     /* ---------- PROFILE AVATAR OFF MODE ---------- */
     .profile.no-avatar .profilePic {
       display: none;
@@ -877,16 +900,18 @@
       <div class="header">
         <!-- DATABASE SWITCHER -->
         <div id="dbSwitcherHeader" class="dbSwitcher"></div>
-        
+
         <!-- DIVIDER -->
         <div class="headerDivider"></div>
-        
+
         <div class="headerActions">
           <button class="refreshBtn">
             <span class="material-icons refreshIcon">refresh</span>
           </button>
 
-          <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()">⋯</button>
+          <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()" aria-label="Menu">
+  <span class="material-icons">more_horiz</span>
+</button>
 
           <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
             <label class="menuItem toggleItem">
@@ -900,7 +925,7 @@
               <input type="checkbox" checked onchange="toggleSection('highlights', this)">
               <span class="toggle"></span>
             </label>
-            
+
             <label class="menuItem toggleItem">
               <span class="menuLabel">Profile</span>
               <input type="checkbox" checked onchange="toggleAvatar(this)">
@@ -918,7 +943,7 @@
               <option value="inter">Inter</option>
               <option value="poppins">Poppins</option>
             </select>
-                      
+
             <div class="menuSection">
               <div class="menuLabel themeTitle">Theme</div>
 
@@ -941,7 +966,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- SKELETON -->
       <div id="skeleton">
         <div class="sk-profile">
@@ -992,7 +1017,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- PROFILE NOTE -->
       <div id="profileNote" class="profileNote">
         Content Planner
@@ -1005,25 +1030,21 @@
 
       <!-- TABS AND GRID -->
       <div class="contentArea">
-        <div class="tabs">
-          <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
-            <img src="/icons/post-dark.png">
-          </div>
+ <div class="tabs">
+  <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
+    <img src="/icons/post-dark.png">
+  </div>
 
-          <div class="tabItem" data-type="reel" onclick="setFilter('Reels', this)">
-            <img src="/icons/reel-light.png">
-          </div>
+  <div class="tabItem" data-type="reel" onclick="setFilter('Reel', this)">
+    <img src="/icons/reel-light.png">
+  </div>
 
-          <div class="tabItem" data-type="story" onclick="setFilter('Story', this)">
-            <img src="/icons/story-light.png">
-          </div>
+  <div class="tabItem" data-type="favorite" onclick="setFilter('__FAVORITE__', this)">
+    <span class="material-icons tabIcon">favorite</span>
+  </div>
 
-          <div class="tabItem" data-type="tiktok" onclick="setFilter('Tiktok', this)">
-            <img src="/icons/tiktok-light.png">
-          </div>
-
-          <div class="slidingUnderline" id="slidingUnderline"></div>
-        </div>
+  <div class="slidingUnderline" id="slidingUnderline"></div>
+</div>
 
         <div class="gridWrap">
           <div id="grid" class="grid"></div>
@@ -1048,7 +1069,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="footer">Alif Designs</div>
   </div>
 
@@ -1068,7 +1089,7 @@
 
     /* -------------------- GLOBAL VARIABLES -------------------- */
     let ALL_POSTS = [];
-    let FILTER = "Post";
+    let FILTER = "Post"; // Post | Reel | __TAG__
     let currentSlide = 0;
     let currentMedia = [];
 
@@ -1108,18 +1129,44 @@
 
     window.setFont = setFont;
 
-    /* -------------------- HELPERS -------------------- */
-    function getVisibleGridPosts() {
-      return ALL_POSTS
-        .filter(post => {
-          if (post.hide) return false;
-          if (!hasMedia(post)) return false;
+    /* -------------------- HELPERS (UPDATED FILTER LOGIC) -------------------- */
+   function normalizeTypes(typeArr) {
+  if (!Array.isArray(typeArr)) return [];
+  return typeArr.map(t => String(t || "").trim()).filter(Boolean);
+}
 
-          if (!Array.isArray(post.type) || post.type.length === 0) return true;
-          return post.type.includes(FILTER);
-        })
-        .sort((a, b) => (b.pinned === true) - (a.pinned === true));
-    }
+function isPostType(types) {
+  return types.includes("Post");
+}
+
+function isReelType(types) {
+  return types.includes("Reel") || types.includes("Reels");
+}
+
+function isFavoriteBucket(types) {
+  // Favorite tab = empty type OR unknown/legacy types (Story/Tiktok/etc.)
+  if (types.length === 0) return true;
+  if (isPostType(types)) return false;
+  if (isReelType(types)) return false;
+  return true;
+}
+
+function getVisibleGridPosts() {
+  return ALL_POSTS
+    .filter(post => {
+      if (post.hide) return false;
+      if (!hasMedia(post)) return false;
+
+      const types = normalizeTypes(post.type);
+
+      if (FILTER === "Post") return isPostType(types);
+      if (FILTER === "Reel") return isReelType(types);
+      if (FILTER === "__FAVORITE__") return isFavoriteBucket(types);
+
+      return false;
+    })
+    .sort((a, b) => (b.pinned === true) - (a.pinned === true));
+}
 
     function computeStatsFromGrid(posts) {
       const today = new Date().toISOString().split("T")[0];
@@ -1235,19 +1282,24 @@
       underline.style.transform = `translateX(${x}px)`;
     }
 
-    function setFilter(type, el) {
-      FILTER = type;
+   function setFilter(type, el) {
+  FILTER = type;
 
-      document.querySelectorAll(".tabItem").forEach(tab => {
-        tab.classList.remove("active");
-        const img = tab.querySelector("img");
-        img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
-      });
+  document.querySelectorAll(".tabItem").forEach(tab => {
+    tab.classList.remove("active");
 
-      el.classList.add("active");
-      moveUnderline(el);
-      renderGrid();
+    const img = tab.querySelector("img");
+    if (img) {
+      img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
     }
+    // Material icon tabs don't need swapping
+  });
+
+  el.classList.add("active");
+  moveUnderline(el);
+  renderGrid();
+  updateStats();
+}
 
     window.setFilter = setFilter;
 
@@ -1258,9 +1310,7 @@
 
       try {
         const res = await fetch(`/api/list-database?slug=${slug}`);
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
 
         const data = await res.json();
         const databases = data.databases || data;
@@ -1273,7 +1323,7 @@
         wrap.innerHTML = `
           <div class="dbPill">
             ${databases.map(db => `
-              <button class="dbBtn ${db.is_primary ? "active" : ""}" 
+              <button class="dbBtn ${db.is_primary ? "active" : ""}"
                       data-id="${db.database_id}">
                 ${db.label}
               </button>
@@ -1314,11 +1364,6 @@
       }, 50);
     }
 
-    function switchDatabase(dbId) {
-      localStorage.setItem("activeDatabase", dbId);
-      loadPosts(dbId);
-    }
-
     /* -------------------- DATA LOAD -------------------- */
     async function loadPosts(selectedDb = null, btn = null) {
       const icon = btn?.querySelector(".refreshIcon");
@@ -1334,24 +1379,15 @@
         let url = `/api/get-posts?slug=${slug}`;
 
         const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-
-        if (activeDb) {
-          url += `&db=${activeDb}`;
-        }
+        if (activeDb) url += `&db=${activeDb}`;
 
         const res = await fetch(url);
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
-        }
-
-        const { profile: apiProfile, posts, plan } = await res.json();
+        const { profile: apiProfile, posts } = await res.json();
 
         ALL_POSTS = Array.isArray(posts) ? posts : [];
-        sessionStorage.setItem(
-          "cachedData",
-          JSON.stringify({ profile: apiProfile, posts })
-        );
+        sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts }));
 
         const derivedProfile = extractProfileFromPosts(ALL_POSTS);
         const finalProfile = apiProfile || derivedProfile;
@@ -1368,7 +1404,6 @@
 
         renderHighlights(ALL_POSTS);
         renderGrid();
-
         updateStats();
 
       } catch (e) {
@@ -1405,10 +1440,7 @@
       row.innerHTML = "";
 
       const MAX = 10;
-
-      const items = posts.filter(
-        p => p.highlight && hasMedia(p) && !p.hide
-      );
+      const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
 
       items.slice(0, MAX).forEach(post => {
         const wrap = document.createElement("div");
@@ -1423,7 +1455,6 @@
       });
 
       const remaining = MAX - items.length;
-
       for (let i = 0; i < remaining; i++) {
         const ph = document.createElement("div");
         ph.className = "highlightItem highlightPlaceholder";
@@ -1467,12 +1498,8 @@
           }
         }
 
-        if (isMultiMedia(post)) {
-          addBadge(card, "/icons/multi.png");
-        }
-        if (post.pinned) {
-          addBadge(card, "/icons/pin.png");
-        }
+        if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
+        if (post.pinned) addBadge(card, "/icons/pin.png");
 
         card.onclick = () => openViewer(post);
         grid.appendChild(card);
@@ -1514,16 +1541,13 @@
 
     function nextImage() {
       if (!currentMedia.length) return;
-
       currentSlide = (currentSlide + 1) % currentMedia.length;
       updateViewerImage();
     }
 
     function prevImage() {
       if (!currentMedia.length) return;
-
-      currentSlide =
-        (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+      currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
       updateViewerImage();
     }
 
