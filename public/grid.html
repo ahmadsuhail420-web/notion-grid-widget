@@ -1109,14 +1109,63 @@
   </div>
 
   <script>
+    let CURRENT_PLAN = "free";
+
+    function planAllows(plan, feature) {
+      const isPaid = plan === "advanced" || plan === "pro";
+      if (feature === "remove_branding") return isPaid;
+      if (feature === "fonts") return isPaid;
+      if (feature === "hide_sections") return isPaid;
+      if (feature === "pinned") return isPaid;
+      if (feature === "multi_db_switcher") return isPaid;
+      if (feature === "unlimited_highlights") return isPaid;
+      return false;
+    }
+
+    function applyPlanToUI() {
+      // Branding
+      const footer = document.querySelector(".footer");
+      if (footer) {
+        footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
+      }
+
+      // Menu gating
+      const menu = document.getElementById("menu");
+      if (menu) {
+        const fontSelect = menu.querySelector('select[onchange="setFont(this.value)"]');
+        if (fontSelect) {
+          fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
+        }
+
+        const toggleLabels = [...menu.querySelectorAll("label.toggleItem")];
+        toggleLabels.forEach(label => {
+          const text = label.textContent || "";
+          const isSectionToggle =
+            text.includes("Header") ||
+            text.includes("Highlights") ||
+            text.includes("Profile") ||
+            text.includes("Note");
+
+          if (isSectionToggle) {
+            label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
+          }
+        });
+      }
+
+      // Multi-db switcher
+      const dbSwitch = document.getElementById("dbSwitcherHeader");
+      if (dbSwitch) {
+        dbSwitch.classList.toggle("hidden", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
+      }
+    }
+
     /* -------------------- THEME INITIALIZATION -------------------- */
     (function () {
       const theme = localStorage.getItem("theme") || "default";
-
       if (
         theme === "dark" ||
         (theme === "default" &&
-         window.matchMedia("(prefers-color-scheme: dark)").matches)
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
       ) {
         document.body.setAttribute("data-theme", "dark");
       }
@@ -1128,7 +1177,6 @@
     let currentSlide = 0;
     let currentMedia = [];
 
-    /* -------------------- UTILITIES -------------------- */
     function getSlug() {
       const params = new URLSearchParams(window.location.search);
       return params.get("slug");
@@ -1146,25 +1194,18 @@
       return Array.isArray(post.attachment) && post.attachment.length > 1;
     }
 
-    /* -------------------- FONTS -------------------- */
     function setFont(font) {
       let value;
 
-      if (font === "inter") {
-        value = "'Inter', -apple-system, sans-serif";
-      } else if (font === "poppins") {
-        value = "'Poppins', -apple-system, sans-serif";
-      } else {
-        value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
-      }
+      if (font === "inter") value = "'Inter', -apple-system, sans-serif";
+      else if (font === "poppins") value = "'Poppins', -apple-system, sans-serif";
+      else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
 
       document.documentElement.style.setProperty("--font-main", value);
       localStorage.setItem("font", font);
     }
-
     window.setFont = setFont;
 
-    /* -------------------- HELPERS (UPDATED FILTER LOGIC) -------------------- */
     function normalizeTypes(typeArr) {
       if (!Array.isArray(typeArr)) return [];
       return typeArr.map(t => String(t || "").trim()).filter(Boolean);
@@ -1172,11 +1213,7 @@
 
     function matchesFilter(post) {
       const types = normalizeTypes(post.type);
-
-      // Posts tab = ONLY when Type is empty
       if (FILTER === "__POSTS__") return types.length === 0;
-
-      // Video/Favorite tabs = include that type (multi-select can show in both)
       return types.includes(FILTER);
     }
 
@@ -1187,7 +1224,10 @@
           if (!hasMedia(post)) return false;
           return matchesFilter(post);
         })
-        .sort((a, b) => (b.pinned === true) - (a.pinned === true));
+        .sort((a, b) => {
+          if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
+          return (b.pinned === true) - (a.pinned === true);
+        });
     }
 
     function computeStatsFromGrid(posts) {
@@ -1210,53 +1250,37 @@
 
     function updateStats() {
       const stats = computeStatsFromGrid(getVisibleGridPosts());
-
       document.getElementById("statPosts").innerText = stats.total;
       document.getElementById("statScheduled").innerText = stats.scheduled;
       document.getElementById("statPublished").innerText = stats.published;
     }
 
-    /* -------------------- THEME FUNCTIONS -------------------- */
     function syncThemePill(mode) {
       const indicator = document.querySelector(".themeIndicator");
       const buttons = [...document.querySelectorAll("[data-theme-btn]")];
       const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
 
-      if (indicator && index >= 0) {
-        indicator.style.transform = `translateX(${index * 100}%)`;
-      }
-
-      buttons.forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.themeBtn === mode);
-      });
+      if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
+      buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.themeBtn === mode));
     }
 
     function setTheme(mode) {
-      if (mode === "dark") {
-        document.body.setAttribute("data-theme", "dark");
-      } else if (mode === "light") {
-        document.body.removeAttribute("data-theme");
-      } else if (mode === "default") {
+      if (mode === "dark") document.body.setAttribute("data-theme", "dark");
+      else if (mode === "light") document.body.removeAttribute("data-theme");
+      else {
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (prefersDark) {
-          document.body.setAttribute("data-theme", "dark");
-        } else {
-          document.body.removeAttribute("data-theme");
-        }
+        if (prefersDark) document.body.setAttribute("data-theme", "dark");
+        else document.body.removeAttribute("data-theme");
       }
 
       localStorage.setItem("theme", mode);
       syncThemePill(mode);
     }
-
     window.setTheme = setTheme;
 
-    /* -------------------- MENU FUNCTIONS -------------------- */
     function toggleMenu() {
-      const menu = document.getElementById("menu");
-      menu.classList.toggle("hidden");
+      document.getElementById("menu").classList.toggle("hidden");
     }
-
     window.toggleMenu = toggleMenu;
 
     function toggleSection(section, checkbox) {
@@ -1264,35 +1288,27 @@
         section === "header"
           ? document.getElementById("profileHeader")
           : document.getElementById("highlightsWrap");
-
       if (!el) return;
-
       el.classList.toggle("hidden-section", !checkbox.checked);
     }
-
     window.toggleSection = toggleSection;
 
     function toggleAvatar(checkbox) {
       const profile = document.getElementById("profileHeader");
       if (!profile) return;
-
       profile.classList.toggle("no-avatar", !checkbox.checked);
       localStorage.setItem("showAvatar", checkbox.checked);
     }
-
     window.toggleAvatar = toggleAvatar;
 
     function toggleProfileNote(checkbox) {
       const note = document.getElementById("profileNote");
       if (!note) return;
-
       note.classList.toggle("hidden-section", !checkbox.checked);
       localStorage.setItem("showProfileNote", checkbox.checked);
     }
-
     window.toggleProfileNote = toggleProfileNote;
 
-    /* -------------------- TAB FUNCTIONS -------------------- */
     function moveUnderline(tab) {
       const underline = document.getElementById("slidingUnderline");
       const tabs = document.querySelector(".tabs");
@@ -1309,12 +1325,8 @@
 
       document.querySelectorAll(".tabItem").forEach(tab => {
         tab.classList.remove("active");
-
-        // Only update PNG tabs
         const img = tab.querySelector("img");
-        if (img) {
-          img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
-        }
+        if (img) img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
       });
 
       el.classList.add("active");
@@ -1322,19 +1334,15 @@
       renderGrid();
       updateStats();
     }
-
     window.setFilter = setFilter;
 
-    /* -------------------- DATABASE FUNCTIONS -------------------- */
     async function loadDatabaseSwitcher() {
       const slug = getSlug();
       if (!slug) return;
 
       try {
         const res = await fetch(`/api/list-database?slug=${slug}`);
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
 
         const data = await res.json();
         const databases = data.databases || data;
@@ -1347,8 +1355,7 @@
         wrap.innerHTML = `
           <div class="dbPill">
             ${databases.map(db => `
-              <button class="dbBtn ${db.is_primary ? "active" : ""}"
-                      data-id="${db.database_id}">
+              <button class="dbBtn ${db.is_primary ? "active" : ""}" data-id="${db.database_id}">
                 ${db.label}
               </button>
             `).join("")}
@@ -1356,15 +1363,12 @@
         `;
 
         const buttons = wrap.querySelectorAll(".dbBtn");
-
         buttons.forEach((btn) => {
           btn.onclick = async () => {
             buttons.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-
             const dbId = btn.dataset.id;
             localStorage.setItem("activeDatabase", dbId);
-
             await animateDatabaseChange(dbId);
           };
         });
@@ -1375,7 +1379,6 @@
 
     async function animateDatabaseChange(dbId) {
       const container = document.querySelector(".gridWrap");
-
       container.style.opacity = 0;
       container.style.transform = "translateY(10px)";
       container.style.transition = "all 0.3s ease";
@@ -1388,7 +1391,6 @@
       }, 50);
     }
 
-    /* -------------------- DATA LOAD -------------------- */
     async function loadPosts(selectedDb = null, btn = null) {
       const icon = btn?.querySelector(".refreshIcon");
       if (icon) icon.classList.add("spin");
@@ -1403,23 +1405,19 @@
         let url = `/api/get-posts?slug=${slug}`;
 
         const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-        if (activeDb) {
-          url += `&db=${activeDb}`;
-        }
+        if (activeDb) url += `&db=${activeDb}`;
 
         const res = await fetch(url);
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
-        }
+        // IMPORTANT: expects { profile, posts, plan }
+        const { profile: apiProfile, posts, plan } = await res.json();
 
-        const { profile: apiProfile, posts } = await res.json();
+        CURRENT_PLAN = plan || "free";
+        applyPlanToUI();
 
         ALL_POSTS = Array.isArray(posts) ? posts : [];
-        sessionStorage.setItem(
-          "cachedData",
-          JSON.stringify({ profile: apiProfile, posts })
-        );
+        sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
 
         const derivedProfile = extractProfileFromPosts(ALL_POSTS);
         const finalProfile = apiProfile || derivedProfile;
@@ -1437,7 +1435,6 @@
         renderHighlights(ALL_POSTS);
         renderGrid();
         updateStats();
-
       } catch (e) {
         console.error("loadPosts failed:", e);
       }
@@ -1450,10 +1447,8 @@
       if (icon) icon.classList.remove("spin");
     }
 
-    /* -------------------- PROFILE FUNCTIONS -------------------- */
     function renderProfile(profile) {
       if (!profile) return;
-
       document.getElementById("profileName").innerText = profile.name;
       document.getElementById("profileImage").src = profile.picture;
 
@@ -1466,16 +1461,13 @@
       }
     }
 
-    /* -------------------- HIGHLIGHTS -------------------- */
     function renderHighlights(posts) {
       const row = document.getElementById("highlights");
       row.innerHTML = "";
 
-      const MAX = 10;
+      const MAX = planAllows(CURRENT_PLAN, "unlimited_highlights") ? 10 : 5;
 
-      const items = posts.filter(
-        p => p.highlight && hasMedia(p) && !p.hide
-      );
+      const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
 
       items.slice(0, MAX).forEach(post => {
         const wrap = document.createElement("div");
@@ -1490,7 +1482,6 @@
       });
 
       const remaining = MAX - items.length;
-
       for (let i = 0; i < remaining; i++) {
         const ph = document.createElement("div");
         ph.className = "highlightItem highlightPlaceholder";
@@ -1498,7 +1489,6 @@
       }
     }
 
-    /* -------------------- GRID FUNCTIONS -------------------- */
     function addBadge(card, src, index = 0) {
       const img = document.createElement("img");
       img.src = src;
@@ -1534,19 +1524,14 @@
           }
         }
 
-        if (isMultiMedia(post)) {
-          addBadge(card, "/icons/multi.png");
-        }
-        if (post.pinned) {
-          addBadge(card, "/icons/pin.png");
-        }
+        if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
+        if (planAllows(CURRENT_PLAN, "pinned") && post.pinned) addBadge(card, "/icons/pin.png");
 
         card.onclick = () => openViewer(post);
         grid.appendChild(card);
       });
     }
 
-    /* -------------------- VIEWER FUNCTIONS -------------------- */
     function openViewer(post) {
       currentMedia =
         post.attachment?.length ? post.attachment :
@@ -1581,16 +1566,13 @@
 
     function nextImage() {
       if (!currentMedia.length) return;
-
       currentSlide = (currentSlide + 1) % currentMedia.length;
       updateViewerImage();
     }
 
     function prevImage() {
       if (!currentMedia.length) return;
-
-      currentSlide =
-        (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+      currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
       updateViewerImage();
     }
 
@@ -1602,15 +1584,10 @@
       v.classList.remove("show");
       setTimeout(() => v.classList.add("hidden"), 250);
     }
-
     window.closeViewer = closeViewer;
 
-    /* -------------------- ACCESS CHECK -------------------- */
-    async function checkAccess() {
-      return true;
-    }
+    async function checkAccess() { return true; }
 
-    /* -------------------- INITIALIZATION -------------------- */
     async function startGrid() {
       try {
         let slugRetries = window.__slugRetries || 0;
@@ -1629,22 +1606,13 @@
 
         const cached = sessionStorage.getItem("cachedData");
         if (cached) {
-          const { profile, posts } = JSON.parse(cached);
+          const { profile, posts, plan } = JSON.parse(cached);
 
           ALL_POSTS = posts || [];
+          CURRENT_PLAN = plan || "free";
+          applyPlanToUI();
+
           renderProfile(profile);
-
-          if (profile) {
-            document.getElementById("profileName").innerText = profile.name;
-            document.getElementById("profileImage").src = profile.picture;
-
-            const noteEl = document.getElementById("profileNote");
-            if (profile.note) {
-              noteEl.textContent = profile.note;
-              noteEl.classList.remove("hidden-section");
-            }
-          }
-
           renderHighlights(ALL_POSTS);
           renderGrid();
           updateStats();
@@ -1675,9 +1643,7 @@
           if (savedFont) setFont(savedFont);
 
           const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
-          if (fontSelect && savedFont) {
-            fontSelect.value = savedFont;
-          }
+          if (fontSelect && savedFont) fontSelect.value = savedFont;
 
           await checkAccess();
           await loadDatabaseSwitcher();
@@ -1693,29 +1659,8 @@
         const savedTheme = localStorage.getItem("theme") || "default";
         syncThemePill(savedTheme);
 
-        const showAvatar = localStorage.getItem("showAvatar");
-        if (showAvatar === "false") {
-          const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
-          if (avatarToggle) {
-            avatarToggle.checked = false;
-            document.getElementById("profileHeader").classList.add("no-avatar");
-          }
-        }
-
-        const showNote = localStorage.getItem("showProfileNote");
-        if (showNote === "false") {
-          document.getElementById("profileNote")?.classList.add("hidden-section");
-          const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
-          if (noteToggle) noteToggle.checked = false;
-        }
-
         const savedFont = localStorage.getItem("font");
         if (savedFont) setFont(savedFont);
-
-        const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
-        if (fontSelect && savedFont) {
-          fontSelect.value = savedFont;
-        }
 
         await checkAccess();
         await loadDatabaseSwitcher();
@@ -1727,13 +1672,11 @@
           const activeTab = document.querySelector(".tabItem.active");
           if (activeTab) moveUnderline(activeTab);
         });
-
       } catch (e) {
         console.error("Grid init failed", e);
       }
     }
 
-    /* -------------------- EVENT LISTENERS -------------------- */
     document.querySelector(".refreshBtn").onclick = async function () {
       const selectedDb = localStorage.getItem("activeDatabase");
       await loadPosts(selectedDb, this);
@@ -1741,27 +1684,19 @@
 
     document.addEventListener("click", () => {
       const menu = document.getElementById("menu");
-      if (!menu.classList.contains("hidden")) {
-        menu.classList.add("hidden");
-      }
+      if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
     });
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeViewer();
     });
 
-    /* ---------- AUTO THEME LISTENER ---------- */
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-
     media.addEventListener("change", e => {
       const savedTheme = localStorage.getItem("theme");
-
       if (savedTheme === "default") {
-        if (e.matches) {
-          document.body.setAttribute("data-theme", "dark");
-        } else {
-          document.body.removeAttribute("data-theme");
-        }
+        if (e.matches) document.body.setAttribute("data-theme", "dark");
+        else document.body.removeAttribute("data-theme");
       }
     });
 
