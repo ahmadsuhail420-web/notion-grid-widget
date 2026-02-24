@@ -568,35 +568,38 @@ const token = params.get("token");
     return Infinity; // pro
   }
 
-  async function loadDatabases() {
-    dbList.innerHTML = `
-      <div class="loader">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        Loading databases…
-      </div>
-    `;
+async function loadDatabases() {
+  dbList.innerHTML = `
+    <div class="loader">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      Loading databases…
+    </div>
+  `;
 
-    const res = await fetch(`/api/list-database?slug=${encodeURIComponent(slug)}`);
-    const data = await res.json();
+  const res = await fetch(`/api/list-database?slug=${encodeURIComponent(slug)}`);
+  const data = await res.json();
 
-    if (!res.ok) {
-      dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
-      return;
-    }
+  if (!res.ok) {
+    dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
+    return;
+  }
 
-    DATABASES = Array.isArray(data.databases) ? data.databases : data;
-    CURRENT_PLAN = data.plan || "free";
+  DATABASES = Array.isArray(data.databases) ? data.databases : data;
+  CURRENT_PLAN = data.plan || "free";
 
-    if (!DATABASES.length) {
-      dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
-      return;
-    }
+  if (!DATABASES.length) {
+    dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
+    return;
+  }
 
-    dbList.innerHTML = `
-      <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
-      ${DATABASES.map(db => `
+  dbList.innerHTML = `
+    <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
+    ${DATABASES.map(db => {
+      const isEditing = editingDatabaseId === db.id;
+
+      return `
         <div style="
           display:flex;
           align-items:center;
@@ -608,60 +611,161 @@ const token = params.get("token");
           gap:12px;
         ">
           <div style="display:flex; flex-direction:column; flex:1;">
-            <div style="font-weight:600;">${db.label || "Untitled"}</div>
+            ${
+              isEditing
+                ? `
+                  <input
+                    data-edit-input="${db.id}"
+                    value="${escapeHtml(db.label || "Untitled")}"
+                    style="
+                      padding:8px 10px;
+                      font-size:14px;
+                      border-radius:10px;
+                      border:1px solid var(--border);
+                      outline:none;
+                      font-weight:600;
+                    "
+                  />
+                `
+                : `<div style="font-weight:600;">${escapeHtml(db.label || "Untitled")}</div>`
+            }
+
             <div style="font-size:12px; color:var(--text-muted);">
-              ${db.database_id || ""}
+              ${escapeHtml(db.database_id || "")}
             </div>
           </div>
 
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-  ${db.is_primary ? `
-    <span style="
-      font-size:12px;
-      font-weight:700;
-      color:#16a34a;
-      border:1px solid rgba(22,163,74,.35);
-      padding:6px 10px;
-      border-radius:999px;
-    ">Primary</span>
-  ` : `
-  <button
-  class="make-primary-btn"
-  data-primary-btn="${db.id}"
-  style="
-    padding:8px 10px;
-    font-size:13px;
-    border-radius:10px;
-    border:1px solid var(--border);
-    background:#fff;
-    cursor:pointer;
-    font-weight:600;
-  "
->Make primary</button>
-  `}
-  
-  <button
-    class="edit-btn"
-    data-edit-btn="${db.id}"
-    data-edit-label="${db.label || db.database_id}"
-  >Edit</button>
-</div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            ${
+              db.is_primary
+                ? `
+                  <span style="
+                    font-size:12px;
+                    font-weight:700;
+                    color:#16a34a;
+                    border:1px solid rgba(22,163,74,.35);
+                    padding:6px 10px;
+                    border-radius:999px;
+                  ">Primary</span>
+                `
+                : `
+                  <button
+                    class="make-primary-btn"
+                    data-primary-btn="${db.id}"
+                    style="
+                      padding:8px 10px;
+                      font-size:13px;
+                      border-radius:10px;
+                      border:1px solid var(--border);
+                      background:#fff;
+                      cursor:pointer;
+                      font-weight:600;
+                    "
+                  >Make primary</button>
+                `
+            }
+
+            ${
+              isEditing
+                ? `
+                  <button
+                    class="edit-btn"
+                    data-save-edit="${db.id}"
+                  >Save</button>
+                  <button
+                    class="edit-btn"
+                    data-cancel-edit="${db.id}"
+                    style="border-color:#e5e7eb;"
+                  >Cancel</button>
+                `
+                : `
+                  <button
+                    class="edit-btn"
+                    data-start-edit="${db.id}"
+                  >Edit</button>
+                `
+            }
+          </div>
         </div>
-      `).join("")}
-    `;
+      `;
+    }).join("")}
+  `;
 
-    DATABASES.forEach(db => {
-  const btn = document.querySelector(`[data-primary-btn="${db.id}"]`);
-  if (btn) {
-    btn.onclick = () => setPrimary(db.id);
+  // Bind handlers after render
+  DATABASES.forEach(db => {
+    const primaryBtn = document.querySelector(`[data-primary-btn="${db.id}"]`);
+    if (primaryBtn) primaryBtn.onclick = () => setPrimary(db.id);
+
+    const startEditBtn = document.querySelector(`[data-start-edit="${db.id}"]`);
+    if (startEditBtn) startEditBtn.onclick = () => startInlineEdit(db.id);
+
+    const cancelBtn = document.querySelector(`[data-cancel-edit="${db.id}"]`);
+    if (cancelBtn) cancelBtn.onclick = () => cancelInlineEdit();
+
+    const saveBtn = document.querySelector(`[data-save-edit="${db.id}"]`);
+    if (saveBtn) saveBtn.onclick = () => saveInlineEdit(db.id);
+
+    const input = document.querySelector(`[data-edit-input="${db.id}"]`);
+    if (input) {
+      // Enter saves, Esc cancels
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") saveInlineEdit(db.id);
+        if (e.key === "Escape") cancelInlineEdit();
+      };
+      // focus input when editing
+      setTimeout(() => input.focus(), 0);
+    }
+  });
+}
+
+// Small helper to avoid HTML breaking if label has quotes etc.
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function startInlineEdit(dbId) {
+  editingDatabaseId = dbId;
+  loadDatabases();
+}
+
+function cancelInlineEdit() {
+  editingDatabaseId = null;
+  loadDatabases();
+}
+
+async function saveInlineEdit(dbId) {
+  const input = document.querySelector(`[data-edit-input="${dbId}"]`);
+  const newLabel = (input?.value || "").trim();
+
+  if (!newLabel) {
+    alert("Label cannot be empty");
+    return;
   }
 
-  const editBtn = document.querySelector(`[data-edit-btn="${db.id}"]`);
-  if (editBtn) {
-    editBtn.onclick = () => openEditModal(db.id, db.label || db.database_id);
+  status.innerText = "Updating label…";
+
+  const res = await fetch("/api/update-database-label", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug, databaseId: dbId, newLabel }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    status.innerText = data.error || "Failed to update label";
+    return;
   }
-});
-  }
+
+  status.innerText = "Label updated ✅";
+  editingDatabaseId = null;
+  await loadDatabases();
+}
 
   async function setPrimary(id) {
   status.innerText = "Setting primary database…";
