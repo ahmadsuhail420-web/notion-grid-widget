@@ -1,21 +1,20 @@
 import { createClient } from "@supabase/supabase-js";
 
-function getPlanLimit(plan) {
+function getDbLimit(plan) {
   if (plan === "free") return 1;
   if (plan === "advanced") return 3;
   return Infinity; // pro
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
   try {
-    const { slug, databaseId, label } = req.body;
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
 
-    if (!slug || !databaseId) {
-      return res.status(400).json({ error: "Missing slug or databaseId" });
+    const { slug, databaseId, label } = req.body || {};
+    if (!slug || !databaseId || !label) {
+      return res.status(400).json({ error: "Missing slug, databaseId, or label" });
     }
 
     const supabase = createClient(
@@ -23,7 +22,7 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // 1️⃣ Find customer by slug
+    // 1) Load customer + plan
     const { data: customer, error: customerError } = await supabase
       .from("customers")
       .select("id, plan")
@@ -31,86 +30,68 @@ export default async function handler(req, res) {
       .single();
 
     if (customerError || !customer) {
-      return res.status(400).json({ error: "Customer not found" });
-    }
-
-    // 2️⃣ Find notion connection
-    const { data: conn, error: connError } = await supabase
-      .from("notion_connections")
-      .select("id")
-      .eq("customer_id", customer.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
-    if (connError || !conn) {
-      return res.status(400).json({ error: "Notion connection not found" });
-    }
-
-    // 3️⃣ Load existing databases
-    const { data: existingDbs, error: existingErr } = await supabase
-      .from("notion_databases")
-      .select("id, database_id")
-      .eq("connection_id", conn.id);
-
-    if (existingErr) {
-      return res.status(500).json({ error: existingErr.message });
+      return res.status(404).json({ error: "Customer not found" });
     }
 
     const plan = customer.plan || "free";
-    const limit = getPlanLimit(plan);
+    const limit = getDbLimit(plan);
 
-    if ((existingDbs?.length || 0) >= limit) {
-      return res.status(403).json({
-        error:
-          plan === "free"
-            ? "Free plan allows only 1 database."
-            : plan === "advanced"
-            ? "Advanced plan allows up to 3 databases."
-            : "Database limit reached.",
-      });
+    // 2) Count existing databases for this customer
+    const { count, error: countError } = await supabase
+      .from("notion_databases")
+      .select("id", { count: "exact", head: true })
+      .eq("customer_id", customer.id);
+
+    if (countError) {
+      return res.status(500).json({ error: countError.message });
     }
 
-    // Prevent duplicates
-    const already = (existingDbs || []).some(
-      (d) => d.database_id === databaseId
-    );
+    const existingCount = count || 0;
 
-    if (already) {
-      return res.status(409).json({
-        error: "This database is already connected.",
-      });
+    // 3) Enforce plan limit
+    if (existingCount >= limit) {
+      const msg =
+        plan === "free"
+          ? "Free plan allows only 1 database."
+          : plan === "advanced"
+          ? "Advanced plan allows up to 3 databases."
+          : "Database limit reached.";
+      return res.status(403).json({ error: msg, plan, limit });
     }
 
-    // First DB becomes primary
-    const shouldBePrimary = !existingDbs || existingDbs.length === 0;
+    // 4) Insert
+    // NOTE: assumes table is notion_databases with columns:
+    // customer_id, database_id, label, is_primary
+    // If first DB, set primary.
+    const isPrimary = existingCount === 0;
 
     const { data: inserted, error: insertError } = await supabase
       .from("notion_databases")
       .insert({
         customer_id: customer.id,
-        connection_id: conn.id,
         database_id: databaseId,
-        label: label?.trim() || "Database",
-        is_primary: shouldBePrimary,
+        label,
+        is_primary: isPrimary,
       })
-      .select("id, database_id, label, is_primary")
+      .select()
       .single();
 
     if (insertError) {
       return res.status(500).json({ error: insertError.message });
     }
 
-    const embed_url = `${process.env.APP_URL}/grid.html?slug=${slug}`;
+    // Your frontend expects embed_url sometimes; keep it compatible if you already generate it elsewhere.
+    // If your existing endpoint already returns embed_url, you can compute it here too:
+    const embed_url = `${process.env.PUBLIC_BASE_URL || ""}/grid.html?slug=${encodeURIComponent(slug)}`;
 
-    return res.json({
+    return res.status(200).json({
       ok: true,
       plan,
-      embed_url,
       database: inserted,
+      embed_url,
     });
-
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+  } catch (e) {
+    console.error("add-database error:", e);
+    return res.status(500).json({ error: "Server error" });
   }
 }
