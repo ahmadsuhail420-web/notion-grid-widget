@@ -186,6 +186,16 @@
       color: var(--text-main);
       cursor: pointer;
       transition: filter 0.25s ease, opacity 0.25s ease, color 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+      line-height: 1;
+    }
+
+    .menuBtn .material-icons {
+      font-size: 22px;
+      line-height: 1;
     }
 
     .menu {
@@ -577,29 +587,29 @@
       opacity: 1;
       transform: translateY(-2px) scale(1.05);
     }
-    
+
     /* Material icon in tab (Favorite) */
-.tabIcon {
-  font-size: 22px;
-  opacity: 0.45;
-  color: var(--text-main);
-  transition: transform 0.25s ease, opacity 0.25s ease;
-}
+    .tabIcon {
+      font-size: 22px;
+      opacity: 0.45;
+      color: var(--text-main);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      line-height: 1;
+    }
 
-.tabItem.active .tabIcon {
-  opacity: 1;
-  transform: translateY(-2px) scale(1.05);
-}
+    .tabItem.active .tabIcon {
+      opacity: 1;
+      transform: translateY(-2px) scale(1.05);
+    }
 
-/* Dark mode: keep icon visible similar to images */
-body[data-theme="dark"] .tabIcon {
-  opacity: 0.75;
-  color: #fff;
-}
+    body[data-theme="dark"] .tabIcon {
+      opacity: 0.75;
+      color: #fff;
+    }
 
-body[data-theme="dark"] .tabItem.active .tabIcon {
-  opacity: 1;
-}
+    body[data-theme="dark"] .tabItem.active .tabIcon {
+      opacity: 1;
+    }
 
     .slidingUnderline {
       position: absolute;
@@ -905,13 +915,13 @@ body[data-theme="dark"] .tabItem.active .tabIcon {
         <div class="headerDivider"></div>
 
         <div class="headerActions">
-          <button class="refreshBtn">
+          <button class="refreshBtn" aria-label="Refresh">
             <span class="material-icons refreshIcon">refresh</span>
           </button>
 
           <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()" aria-label="Menu">
-  <span class="material-icons">more_horiz</span>
-</button>
+            <span class="material-icons">more_horiz</span>
+          </button>
 
           <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
             <label class="menuItem toggleItem">
@@ -1030,21 +1040,24 @@ body[data-theme="dark"] .tabItem.active .tabIcon {
 
       <!-- TABS AND GRID -->
       <div class="contentArea">
- <div class="tabs">
-  <div class="tabItem active" data-type="post" onclick="setFilter('Post', this)">
-    <img src="/icons/post-dark.png">
-  </div>
+        <div class="tabs">
+          <!-- POSTS: no Type selected -->
+          <div class="tabItem active" data-type="post" onclick="setFilter('__POSTS__', this)">
+            <img src="/icons/post-dark.png">
+          </div>
 
-  <div class="tabItem" data-type="reel" onclick="setFilter('Reel', this)">
-    <img src="/icons/reel-light.png">
-  </div>
+          <!-- VIDEO: Type includes "Video" (icon uses existing reel png assets) -->
+          <div class="tabItem" data-type="reel" onclick="setFilter('Video', this)">
+            <img src="/icons/reel-light.png">
+          </div>
 
-  <div class="tabItem" data-type="favorite" onclick="setFilter('__FAVORITE__', this)">
-    <span class="material-icons tabIcon">favorite</span>
-  </div>
+          <!-- FAVORITE: Type includes "Favorite" -->
+          <div class="tabItem" data-type="favorite" onclick="setFilter('Favorite', this)">
+            <span class="material-icons tabIcon">favorite</span>
+          </div>
 
-  <div class="slidingUnderline" id="slidingUnderline"></div>
-</div>
+          <div class="slidingUnderline" id="slidingUnderline"></div>
+        </div>
 
         <div class="gridWrap">
           <div id="grid" class="grid"></div>
@@ -1089,7 +1102,7 @@ body[data-theme="dark"] .tabItem.active .tabIcon {
 
     /* -------------------- GLOBAL VARIABLES -------------------- */
     let ALL_POSTS = [];
-    let FILTER = "Post"; // Post | Reel | __TAG__
+    let FILTER = "__POSTS__"; // "__POSTS__" | "Video" | "Favorite"
     let currentSlide = 0;
     let currentMedia = [];
 
@@ -1130,43 +1143,30 @@ body[data-theme="dark"] .tabItem.active .tabIcon {
     window.setFont = setFont;
 
     /* -------------------- HELPERS (UPDATED FILTER LOGIC) -------------------- */
-   function normalizeTypes(typeArr) {
-  if (!Array.isArray(typeArr)) return [];
-  return typeArr.map(t => String(t || "").trim()).filter(Boolean);
-}
+    function normalizeTypes(typeArr) {
+      if (!Array.isArray(typeArr)) return [];
+      return typeArr.map(t => String(t || "").trim()).filter(Boolean);
+    }
 
-function isPostType(types) {
-  return types.includes("Post");
-}
-
-function isReelType(types) {
-  return types.includes("Reel") || types.includes("Reels");
-}
-
-function isFavoriteBucket(types) {
-  // Favorite tab = empty type OR unknown/legacy types (Story/Tiktok/etc.)
-  if (types.length === 0) return true;
-  if (isPostType(types)) return false;
-  if (isReelType(types)) return false;
-  return true;
-}
-
-function getVisibleGridPosts() {
-  return ALL_POSTS
-    .filter(post => {
-      if (post.hide) return false;
-      if (!hasMedia(post)) return false;
-
+    function matchesFilter(post) {
       const types = normalizeTypes(post.type);
 
-      if (FILTER === "Post") return isPostType(types);
-      if (FILTER === "Reel") return isReelType(types);
-      if (FILTER === "__FAVORITE__") return isFavoriteBucket(types);
+      // Posts tab = ONLY when Type is empty
+      if (FILTER === "__POSTS__") return types.length === 0;
 
-      return false;
-    })
-    .sort((a, b) => (b.pinned === true) - (a.pinned === true));
-}
+      // Video/Favorite tabs = include that type (multi-select can show in both)
+      return types.includes(FILTER);
+    }
+
+    function getVisibleGridPosts() {
+      return ALL_POSTS
+        .filter(post => {
+          if (post.hide) return false;
+          if (!hasMedia(post)) return false;
+          return matchesFilter(post);
+        })
+        .sort((a, b) => (b.pinned === true) - (a.pinned === true));
+    }
 
     function computeStatsFromGrid(posts) {
       const today = new Date().toISOString().split("T")[0];
@@ -1282,24 +1282,24 @@ function getVisibleGridPosts() {
       underline.style.transform = `translateX(${x}px)`;
     }
 
-   function setFilter(type, el) {
-  FILTER = type;
+    function setFilter(type, el) {
+      FILTER = type;
 
-  document.querySelectorAll(".tabItem").forEach(tab => {
-    tab.classList.remove("active");
+      document.querySelectorAll(".tabItem").forEach(tab => {
+        tab.classList.remove("active");
 
-    const img = tab.querySelector("img");
-    if (img) {
-      img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+        // Only update PNG tabs
+        const img = tab.querySelector("img");
+        if (img) {
+          img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+        }
+      });
+
+      el.classList.add("active");
+      moveUnderline(el);
+      renderGrid();
+      updateStats();
     }
-    // Material icon tabs don't need swapping
-  });
-
-  el.classList.add("active");
-  moveUnderline(el);
-  renderGrid();
-  updateStats();
-}
 
     window.setFilter = setFilter;
 
@@ -1310,7 +1310,9 @@ function getVisibleGridPosts() {
 
       try {
         const res = await fetch(`/api/list-database?slug=${slug}`);
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
 
         const data = await res.json();
         const databases = data.databases || data;
@@ -1379,15 +1381,23 @@ function getVisibleGridPosts() {
         let url = `/api/get-posts?slug=${slug}`;
 
         const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-        if (activeDb) url += `&db=${activeDb}`;
+        if (activeDb) {
+          url += `&db=${activeDb}`;
+        }
 
         const res = await fetch(url);
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
 
         const { profile: apiProfile, posts } = await res.json();
 
         ALL_POSTS = Array.isArray(posts) ? posts : [];
-        sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts }));
+        sessionStorage.setItem(
+          "cachedData",
+          JSON.stringify({ profile: apiProfile, posts })
+        );
 
         const derivedProfile = extractProfileFromPosts(ALL_POSTS);
         const finalProfile = apiProfile || derivedProfile;
@@ -1440,7 +1450,10 @@ function getVisibleGridPosts() {
       row.innerHTML = "";
 
       const MAX = 10;
-      const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
+
+      const items = posts.filter(
+        p => p.highlight && hasMedia(p) && !p.hide
+      );
 
       items.slice(0, MAX).forEach(post => {
         const wrap = document.createElement("div");
@@ -1455,6 +1468,7 @@ function getVisibleGridPosts() {
       });
 
       const remaining = MAX - items.length;
+
       for (let i = 0; i < remaining; i++) {
         const ph = document.createElement("div");
         ph.className = "highlightItem highlightPlaceholder";
@@ -1498,8 +1512,12 @@ function getVisibleGridPosts() {
           }
         }
 
-        if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
-        if (post.pinned) addBadge(card, "/icons/pin.png");
+        if (isMultiMedia(post)) {
+          addBadge(card, "/icons/multi.png");
+        }
+        if (post.pinned) {
+          addBadge(card, "/icons/pin.png");
+        }
 
         card.onclick = () => openViewer(post);
         grid.appendChild(card);
@@ -1541,13 +1559,16 @@ function getVisibleGridPosts() {
 
     function nextImage() {
       if (!currentMedia.length) return;
+
       currentSlide = (currentSlide + 1) % currentMedia.length;
       updateViewerImage();
     }
 
     function prevImage() {
       if (!currentMedia.length) return;
-      currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+
+      currentSlide =
+        (currentSlide - 1 + currentMedia.length) % currentMedia.length;
       updateViewerImage();
     }
 
