@@ -376,7 +376,30 @@
       transform: scale(0.92);
     }
 
-    /* ---------- HEADER ---------- */
+    /* ---------------------------------------------- HEADER ---------------------------------------------------------- */
+    /* Make header icons crisp (avoid blurred Material Icons) */
+.refreshBtn,
+.menuBtn {
+  -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0); /* prevents subpixel blur on some mobile browsers */
+}
+
+.refreshBtn .material-icons,
+.menuBtn .material-icons {
+  font-size: 22px;
+  line-height: 1;
+  display: inline-block;
+
+  /* Prevent blur from smoothing/filters */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  text-rendering: geometricPrecision;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1;
+}
+    
     .header {
       display: flex;
       flex-direction: column;
