@@ -44,6 +44,12 @@
       --toggle-on: #ffffff;
     }
 
+    /* IMPORTANT: lock the outside page so footer can't appear "outside" the widget */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       font-family: var(--font-main);
       max-width: 500px;
@@ -83,20 +89,21 @@
 
     .hidden-section { display: none !important; }
 
-   .container {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
+    .container {
+      flex: 1 1 auto;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
 
     /* Footer must stay INSIDE the widget as the last flex row */
     .footer {
       flex: 0 0 auto;
       text-align: center;
-      padding: 8px 0 10px;
+      padding: 8px 0;
       font-size: 13px;
       color: var(--text-muted);
       background: transparent;
