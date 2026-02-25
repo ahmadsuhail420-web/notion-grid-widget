@@ -1,65 +1,64 @@
 import { createClient } from "@supabase/supabase-js";
 
-const DEBUG_OAUTH = true; // <-- set false after debugging
+const DEBUG_OAUTH = false; // set true only while debugging
+
+function makeSlugBase(input) {
+  return String(input || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+}
+
+function randomSuffix(len = 6) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let out = "";
+  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
+
+  const appUrl =
+    process.env.APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
   try {
     const { code, state } = req.query;
 
     if (!code || !state) {
       if (DEBUG_OAUTH) return res.status(400).json({ step: "missing_code_or_state", code, state });
-      return res.redirect("/error.html?reason=missing_code");
+      return res.redirect(`${appUrl}/error.html?reason=missing_code`);
     }
 
     const setupToken = state;
 
-    // Initialize Supabase (SERVICE ROLE)
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-    // 1️⃣ Validate setup token
+    // 1) Validate setup token -> customer
     const { data: customer, error: customerError } = await supabase
       .from("customers")
-      .select("*")
+      .select("id,slug,setup_used")
       .eq("setup_token", setupToken)
       .single();
 
     if (customerError || !customer) {
       if (DEBUG_OAUTH) {
-        return res.status(401).json({
-          step: "customer_lookup_failed",
-          setupToken,
-          customerError,
-          customer,
-        });
+        return res.status(401).json({ step: "customer_lookup_failed", setupToken, customerError, customer });
       }
-      return res.redirect("/error.html?reason=invalid_setup_token");
+      return res.redirect(`${appUrl}/error.html?reason=invalid_setup_token`);
     }
 
-    // If already connected, just redirect forward
-    if (customer.setup_used) {
-      const appUrl =
-        process.env.APP_URL ||
-        (process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : "http://localhost:3000");
-      return res.redirect(`${appUrl}/database.html?slug=${customer.slug}`);
-    }
-
-    // 2️⃣ Exchange code for Notion access token
+    // 2) Exchange code for Notion access token
     const tokenRes = await fetch("https://api.notion.com/v1/oauth/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization:
           "Basic " +
-          Buffer.from(
-            `${process.env.NOTION_CLIENT_ID}:${process.env.NOTION_CLIENT_SECRET}`
-          ).toString("base64"),
+          Buffer.from(`${process.env.NOTION_CLIENT_ID}:${process.env.NOTION_CLIENT_SECRET}`).toString("base64"),
       },
       body: JSON.stringify({
         grant_type: "authorization_code",
@@ -68,7 +67,7 @@ export default async function handler(req, res) {
       }),
     });
 
-    const tokenData = await tokenRes.json();
+    const tokenData = await tokenRes.json().catch(() => ({}));
 
     if (!tokenRes.ok || !tokenData.access_token) {
       if (DEBUG_OAUTH) {
@@ -78,70 +77,86 @@ export default async function handler(req, res) {
           tokenData,
         });
       }
-      const appUrl =
-        process.env.APP_URL ||
-        (process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : "http://localhost:3000");
       return res.redirect(`${appUrl}/error.html?reason=notion_auth_failed`);
     }
 
-    // 3️⃣ Store Notion connection
-    const insertPayload = {
+    // 3) Upsert Notion connection (avoid duplicates)
+    const upsertPayload = {
       customer_id: customer.id,
       access_token: tokenData.access_token,
-      workspace_id: tokenData.workspace_id,
-      workspace_name: tokenData.workspace_name,
-      bot_id: tokenData.bot_id,
+      workspace_id: tokenData.workspace_id || null,
+      workspace_name: tokenData.workspace_name || null,
+      bot_id: tokenData.bot_id || null,
+      updated_at: new Date().toISOString(),
     };
 
-    const { data: insertData, error: insertError } = await supabase
+    const { error: upsertError } = await supabase
       .from("notion_connections")
-      .insert(insertPayload)
-      .select()
-      .single();
+      .upsert(upsertPayload, { onConflict: "customer_id" });
 
-    if (insertError) {
+    if (upsertError) {
       if (DEBUG_OAUTH) {
         return res.status(500).json({
-          step: "supabase_insert_failed",
-          insertPayload: {
-            ...insertPayload,
-            access_token: "[REDACTED]", // don't leak token
-          },
-          insertError,
+          step: "supabase_upsert_failed",
+          upsertPayload: { ...upsertPayload, access_token: "[REDACTED]" },
+          upsertError,
         });
       }
-
-      const appUrl =
-        process.env.APP_URL ||
-        (process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : "http://localhost:3000");
-      return res.redirect(`${appUrl}/error.html?reason=db_insert_failed`);
+      return res.redirect(`${appUrl}/error.html?reason=db_upsert_failed`);
     }
 
-    // 4️⃣ Mark setup token as used
-    const { error: updateError } = await supabase
-      .from("customers")
-      .update({ setup_used: true })
-      .eq("id", customer.id);
+    // 4) Ensure a widget exists for this customer (create default if none)
+    const { data: existingWidgets, error: widgetListError } = await supabase
+      .from("widgets")
+      .select("id,slug,name,created_at")
+      .eq("customer_id", customer.id)
+      .order("created_at", { ascending: true })
+      .limit(1);
 
-    if (updateError && DEBUG_OAUTH) {
-      return res.status(500).json({
-        step: "mark_setup_used_failed",
-        updateError,
-        inserted: insertData ? { id: insertData.id } : null,
-      });
+    if (widgetListError) {
+      if (DEBUG_OAUTH) return res.status(500).json({ step: "widget_lookup_failed", widgetListError });
+      return res.redirect(`${appUrl}/error.html?reason=widget_lookup_failed`);
     }
 
-    // 5️⃣ Redirect to database page
-    const appUrl =
-      process.env.APP_URL ||
-      (process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000");
-    return res.redirect(`${appUrl}/database.html?slug=${customer.slug}`);
+    let widget = existingWidgets?.[0] || null;
+
+    if (!widget) {
+      const base = makeSlugBase(customer.slug) || "widget";
+      // slug must be unique globally, so add suffix
+      const newSlug = `${base}-${randomSuffix(6)}`;
+
+      const { data: createdWidget, error: createWidgetError } = await supabase
+        .from("widgets")
+        .insert({
+          customer_id: customer.id,
+          slug: newSlug,
+          name: "My Grid",
+        })
+        .select("id,slug,name")
+        .single();
+
+      if (createWidgetError || !createdWidget) {
+        if (DEBUG_OAUTH) return res.status(500).json({ step: "widget_create_failed", createWidgetError });
+        return res.redirect(`${appUrl}/error.html?reason=widget_create_failed`);
+      }
+
+      widget = createdWidget;
+    }
+
+    // 5) Mark setup token used (optional: keep this behavior)
+    if (!customer.setup_used) {
+      const { error: updateError } = await supabase
+        .from("customers")
+        .update({ setup_used: true })
+        .eq("id", customer.id);
+
+      if (updateError && DEBUG_OAUTH) {
+        return res.status(500).json({ step: "mark_setup_used_failed", updateError, widget });
+      }
+    }
+
+    // 6) Redirect using WIDGET slug (not customer slug)
+    return res.redirect(`${appUrl}/database.html?slug=${encodeURIComponent(widget.slug)}`);
   } catch (err) {
     if (DEBUG_OAUTH) {
       return res.status(500).json({
@@ -150,12 +165,9 @@ export default async function handler(req, res) {
         stack: err?.stack,
       });
     }
-
     const appUrl =
       process.env.APP_URL ||
-      (process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000");
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
     return res.redirect(`${appUrl}/error.html?reason=server_error`);
   }
 }
