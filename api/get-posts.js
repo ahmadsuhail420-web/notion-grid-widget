@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
+
   try {
     const { slug, db } = req.query;
     if (!slug) return res.status(400).json({ profile: null, posts: [] });
@@ -17,12 +18,12 @@ export default async function handler(req, res) {
       `${supabaseUrl}/rest/v1/customers?slug=eq.${encodeURIComponent(slug)}&status=eq.active&select=id,plan`,
       { headers }
     );
-    
+
     if (!customerRes.ok) {
       console.error("Customer fetch failed:", customerRes.status);
       return res.json({ profile: null, posts: [] });
     }
-    
+
     const [customer] = await customerRes.json();
     if (!customer) return res.json({ profile: null, posts: [] });
 
@@ -33,26 +34,26 @@ export default async function handler(req, res) {
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id,access_token`,
       { headers }
     );
-    
+
     if (!connRes.ok) {
       console.error("Connection fetch failed:", connRes.status);
-      return res.json({ profile: null, posts: [] });
+      return res.json({ profile: null, posts: [], plan });
     }
-    
+
     const [connection] = await connRes.json();
-    if (!connection?.access_token) return res.json({ profile: null, posts: [] });
+    if (!connection?.access_token) return res.json({ profile: null, posts: [], plan });
 
     // 3) Get selected databases (✅ use database_id)
     const dbRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary`,
       { headers }
     );
-    
+
     if (!dbRes.ok) {
       console.error("Database fetch failed:", dbRes.status);
       return res.json({ profile: null, posts: [], plan });
     }
-    
+
     const databases = await dbRes.json();
 
     if (!Array.isArray(databases) || databases.length === 0) {
@@ -122,7 +123,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // 5) Parse rows (UNCHANGED LOGIC)
+    // 5) Parse rows (Attachment-only: removed Media/Video)
     let profile = null;
     const posts = [];
 
@@ -150,14 +151,11 @@ export default async function handler(req, res) {
       const name = page.properties?.Name?.title?.[0]?.plain_text || "";
       const publishDate = page.properties?.["Publish Date"]?.date?.start || null;
 
+      // ✅ Attachment is the only media source now (uploads or URLs)
       const attachment =
         page.properties?.Attachment?.files?.map(f => f.file?.url || f.external?.url) || [];
 
-      const video =
-        page.properties?.["Media/Video"]?.files?.[0]?.file?.url ||
-        page.properties?.["Media/Video"]?.files?.[0]?.external?.url ||
-        null;
-
+      // Optional thumbnail (especially useful for non-direct video URLs like YouTube/TikTok)
       const thumbnail =
         page.properties?.Thumbnail?.files?.[0]?.file?.url ||
         page.properties?.Thumbnail?.files?.[0]?.external?.url ||
@@ -170,7 +168,6 @@ export default async function handler(req, res) {
         name,
         publishDate,
         attachment,
-        video,
         thumbnail,
         type,
         pinned: page.properties?.Pin?.checkbox || false,
