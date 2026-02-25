@@ -758,7 +758,7 @@
   </div>
 
   <script>
-    let CURRENT_PLAN = "free";
+    CURRENT_PLAN = plan || "free";
 
     function planAllows(plan, feature) {
       const isPaid = plan === "advanced" || plan === "pro";
@@ -997,7 +997,7 @@
       if (!slug) return;
 
       try {
-        const res = await fetch(`/api/widget-databases?slug=${slug}`);
+        const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
         if (!res.ok) throw new Error(`API error: ${res.status}`);
 
         const data = await res.json();
@@ -1074,7 +1074,7 @@
 
       try {
         const slug = getSlug();
-        let url = `/api/get-posts?slug=${slug}`;
+        let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
         const activeDb = selectedDb || localStorage.getItem("activeDatabase");
         if (activeDb) url += `&db=${activeDb}`;
