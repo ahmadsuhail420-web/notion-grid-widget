@@ -9,24 +9,22 @@
  * - POST /api/widget-databases  { action:"delete", ... }     -> delete db from widget
  *
  * Uses widgets.slug as source of truth (Pro: multiple widgets).
- * Reads plan from customers via widget.customer_id and enforces plan_limits:
- * - free: max 1 db
- * - advanced: max 2 db
- * - pro: unlimited
+ * Reads plan from customers via widget.customer_id and enforces plan_limits.db_limit.
  */
-
-function getDbLimit(plan) {
-  if (plan === "free") return 1;
-  if (plan === "advanced") return 2;
-  return Infinity;
-}
 
 async function fetchJson(url, options) {
   const res = await fetch(url, options);
   const text = await res.text();
   let json = null;
-  try { json = text ? JSON.parse(text) : null; } catch (_) {}
+  try {
+    json = text ? JSON.parse(text) : null;
+  } catch (_) {}
   return { res, json, text };
+}
+
+function parseContentRangeCount(contentRange) {
+  const m = String(contentRange || "").match(/\/(\d+)$/);
+  return m ? Number(m[1]) : 0;
 }
 
 export default async function handler(req, res) {
@@ -47,7 +45,6 @@ export default async function handler(req, res) {
   };
 
   try {
-    // slug can come from query (GET) or body (POST)
     const slug = (req.query?.slug || req.body?.slug || "").trim();
     if (!slug) return res.status(400).json({ error: "Missing slug" });
 
@@ -76,7 +73,23 @@ export default async function handler(req, res) {
     if (!customer) return res.status(404).json({ error: "Customer not found" });
 
     const plan = customer.plan || "free";
-    const limit = getDbLimit(plan);
+
+    // 3) Load plan_limits.db_limit (fallback: free=1, advanced=3, pro=999999)
+    let dbLimit = plan === "free" ? 1 : plan === "advanced" ? 3 : 999999;
+
+    const limitsUrl = `${supabaseUrl}/rest/v1/plan_limits?plan=eq.${encodeURIComponent(plan)}&select=db_limit`;
+    const limitsResp = await fetchJson(limitsUrl, { headers });
+
+    if (limitsResp.res.ok && Array.isArray(limitsResp.json) && limitsResp.json[0]?.db_limit != null) {
+      const n = Number(limitsResp.json[0].db_limit);
+      if (!Number.isNaN(n) && n > 0) dbLimit = n;
+    }
+
+    async function getExistingCount() {
+      const countUrl = `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}&select=id`;
+      const r = await fetch(countUrl, { headers: { ...headers, Prefer: "count=exact" } });
+      return parseContentRangeCount(r.headers.get("content-range"));
+    }
 
     // -------------------------
     // GET = LIST
@@ -91,12 +104,17 @@ export default async function handler(req, res) {
 
       if (!dbResp.res.ok) {
         console.error("Database list failed:", dbResp.res.status, dbResp.text);
-        return res.json({ plan, limit, widget: { id: widget.id, slug: widget.slug }, databases: [] });
+        return res.json({
+          plan,
+          db_limit: dbLimit,
+          widget: { id: widget.id, slug: widget.slug, name: widget.name },
+          databases: [],
+        });
       }
 
       return res.json({
         plan,
-        limit,
+        db_limit: dbLimit,
         widget: { id: widget.id, slug: widget.slug, name: widget.name },
         databases: dbResp.json || [],
       });
@@ -111,17 +129,6 @@ export default async function handler(req, res) {
 
     const action = String(req.body?.action || "").trim();
 
-    // Helper: list count
-    async function getExistingCount() {
-      const countUrl =
-        `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}&select=id`;
-      const r = await fetch(countUrl, { headers: { ...headers, Prefer: "count=exact" } });
-      // Supabase returns count in header: content-range: 0-0/COUNT
-      const range = r.headers.get("content-range") || "";
-      const m = range.match(/\/(\d+)$/);
-      return m ? Number(m[1]) : 0;
-    }
-
     if (action === "add") {
       const databaseId = String(req.body?.databaseId || "").trim();
       const label = String(req.body?.label || "").trim();
@@ -131,14 +138,15 @@ export default async function handler(req, res) {
       }
 
       const existingCount = await getExistingCount();
-      if (existingCount >= limit) {
+
+      if (existingCount >= dbLimit) {
         const msg =
           plan === "free"
             ? "Free plan allows only 1 database."
             : plan === "advanced"
-            ? "Advanced plan allows up to 2 databases."
+            ? "Advanced plan allows up to 3 databases."
             : "Database limit reached.";
-        return res.status(403).json({ error: msg, plan, limit });
+        return res.status(403).json({ error: msg, plan, db_limit: dbLimit });
       }
 
       // Prevent duplicates
@@ -174,8 +182,8 @@ export default async function handler(req, res) {
       return res.json({
         ok: true,
         plan,
-        limit,
-        widget: { id: widget.id, slug: widget.slug },
+        db_limit: dbLimit,
+        widget: { id: widget.id, slug: widget.slug, name: widget.name },
         database: insResp.json,
       });
     }
@@ -199,14 +207,18 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "Failed to rename database" });
       }
 
-      return res.json({ ok: true, plan, widget: { id: widget.id, slug: widget.slug }, database: patchResp.json });
+      return res.json({
+        ok: true,
+        plan,
+        widget: { id: widget.id, slug: widget.slug, name: widget.name },
+        database: patchResp.json,
+      });
     }
 
     if (action === "set_primary") {
       const id = String(req.body?.id || "").trim();
       if (!id) return res.status(400).json({ error: "Missing id" });
 
-      // 1) unset all primaries for this widget
       const unsetUrl = `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}`;
       const unsetResp = await fetchJson(unsetUrl, {
         method: "PATCH",
@@ -219,7 +231,6 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "Failed to update primary database" });
       }
 
-      // 2) set primary for selected row
       const setUrl =
         `${supabaseUrl}/rest/v1/notion_databases?id=eq.${encodeURIComponent(id)}&widget_id=eq.${widget.id}`;
 
@@ -234,18 +245,21 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "Failed to set primary database" });
       }
 
-      return res.json({ ok: true, plan, widget: { id: widget.id, slug: widget.slug }, database: setResp.json });
+      return res.json({
+        ok: true,
+        plan,
+        widget: { id: widget.id, slug: widget.slug, name: widget.name },
+        database: setResp.json,
+      });
     }
 
     if (action === "delete") {
       const id = String(req.body?.id || "").trim();
       if (!id) return res.status(400).json({ error: "Missing id" });
 
-      // Check if deleting primary; if so, after delete set another as primary (if any)
       const getUrl =
         `${supabaseUrl}/rest/v1/notion_databases?id=eq.${encodeURIComponent(id)}&widget_id=eq.${widget.id}&select=id,is_primary`;
       const rowResp = await fetchJson(getUrl, { headers });
-
       const row = Array.isArray(rowResp.json) ? rowResp.json[0] : null;
 
       const delUrl =
@@ -259,7 +273,6 @@ export default async function handler(req, res) {
       }
 
       if (row?.is_primary) {
-        // pick oldest remaining and set primary
         const listUrl =
           `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
           `&select=id&order=created_at.asc&limit=1`;
@@ -273,7 +286,11 @@ export default async function handler(req, res) {
         }
       }
 
-      return res.json({ ok: true, plan, widget: { id: widget.id, slug: widget.slug } });
+      return res.json({
+        ok: true,
+        plan,
+        widget: { id: widget.id, slug: widget.slug, name: widget.name },
+      });
     }
 
     return res.status(400).json({
