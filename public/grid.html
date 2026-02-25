@@ -87,6 +87,20 @@
 
     .hidden-section { display: none !important; }
 
+    .container {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .container.popup-open .gridWrap {
+      opacity: 0.4;
+    }
+    
     /* ---------- HEADER ---------- */
     .header {
       display: flex;
