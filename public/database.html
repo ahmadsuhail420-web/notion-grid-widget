@@ -9,10 +9,8 @@
 
   <style>
   /* Ensure Make primary button text is visible (don’t change design) */
-.make-primary-btn {
-  color: #111 !important;
-}
-  
+.make-primary-btn { color: #111 !important; }
+
   /* Fix invisible Switch button (mobile + light background) */
 button.switch-btn,
 button.switch,
@@ -23,21 +21,17 @@ button[data-action="switch"] {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-
   opacity: 1 !important;
   visibility: visible !important;
-
-  background: #2563eb !important;   /* blue background */
-  color: #ffffff !important;        /* white text */
+  background: #2563eb !important;
+  color: #ffffff !important;
   border: none !important;
-
   padding: 8px 12px !important;
   border-radius: 999px !important;
   font-weight: 700 !important;
   line-height: 1 !important;
 }
 
-/* If it was hidden via hover-only CSS, defeat it */
 @media (hover: none) {
   .db-row:hover button.switch-btn,
   .db-row:hover .switch-btn {
@@ -45,8 +39,7 @@ button[data-action="switch"] {
     visibility: visible !important;
   }
 }
-  
-  /* --- Force database action buttons visible (mobile-friendly) --- */
+
 .db-actions button,
 .database-actions button,
 .actions button,
@@ -57,18 +50,15 @@ button.primary-btn {
   justify-content: center;
   opacity: 1 !important;
   visibility: visible !important;
-
-  background: #2563eb !important; /* blue */
+  background: #2563eb !important;
   color: #ffffff !important;
   border: none !important;
-
   padding: 10px 14px !important;
   border-radius: 10px !important;
   font-weight: 600 !important;
   line-height: 1 !important;
 }
 
-/* If your UI uses link-style buttons/icons */
 .db-actions a,
 .database-actions a {
   color: #2563eb !important;
@@ -76,26 +66,20 @@ button.primary-btn {
   visibility: visible !important;
 }
 
-/* Avoid "only visible on hover" patterns that break on mobile */
 .db-actions button:hover,
 .database-actions button:hover {
   filter: brightness(0.95);
 }
 
-    #save {
-  background: #3b82f6; /* blue */
-}
+#save { background: #3b82f6; }
+#save:hover { background: #2563eb; }
 
-    .helpLink {
-  color: inherit;          /* same color as text */
-     /* no underline */
-  font-weight: 600;        /* slightly bolder */
+.helpLink {
+  color: inherit;
+  font-weight: 600;
   cursor: pointer;
 }
 
-#save:hover {
-  background: #2563eb; /* slightly darker blue */
-}
     /* ---------- NAV ---------- */
     .nav {
       max-width: 1100px;
@@ -106,11 +90,7 @@ button.primary-btn {
       justify-content: space-between;
     }
 
-    .logo {
-      font-weight: 800;
-      font-size: 18px;
-      letter-spacing: -0.02em;
-    }
+    .logo { font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
 
     .nav a {
       margin-left: 20px;
@@ -128,21 +108,9 @@ button.primary-btn {
       text-align: center;
     }
 
-    .hero h1 {
-      font-size: 44px;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .hero h1 span {
-      color: #3b82f6; /* accent like SwipeWell */
-    }
-
-    .hero p {
-      margin-top: 16px;
-      font-size: 17px;
-      color: var(--text-muted);
-    }
+    .hero h1 { font-size: 44px; line-height: 1.1; letter-spacing: -0.03em; }
+    .hero h1 span { color: #3b82f6; }
+    .hero p { margin-top: 16px; font-size: 17px; color: var(--text-muted); }
 
     /* ---------- CARD ---------- */
     .card {
@@ -156,29 +124,11 @@ button.primary-btn {
     }
 
     /* ---------- LOADER ---------- */
-    .loader {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      color: var(--text-muted);
-    }
-
-    .dot {
-      width: 6px;
-      height: 6px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: pulse 1.2s infinite ease-in-out;
-    }
-
+    .loader { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--text-muted); }
+    .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1.2s infinite ease-in-out; }
     .dot:nth-child(2) { animation-delay: .15s; }
     .dot:nth-child(3) { animation-delay: .3s; }
-
-    @keyframes pulse {
-      0%, 80%, 100% { opacity: .2; }
-      40% { opacity: 1; }
-    }
+    @keyframes pulse { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
 
     /* ---------- EDIT MODAL ---------- */
     #editModal {
@@ -190,10 +140,7 @@ button.primary-btn {
       justify-content: center;
       z-index: 1001;
     }
-
-    #editModal.active {
-      display: flex;
-    }
+    #editModal.active { display: flex; }
 
     #editModal .modal-content {
       background: #fff;
@@ -222,16 +169,9 @@ button.primary-btn {
       font-family: inherit;
     }
 
-    #editModal .modal-input:focus {
-      outline: none;
-      border-color: #3b82f6;
-    }
+    #editModal .modal-input:focus { outline: none; border-color: #3b82f6; }
 
-    #editModal .modal-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
+    #editModal .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
 
     #editModal .modal-btn {
       padding: 10px 16px;
@@ -242,25 +182,12 @@ button.primary-btn {
       font-size: 13px;
     }
 
-    #editModal .modal-btn-save {
-      background: #3b82f6;
-      color: white;
-    }
+    #editModal .modal-btn-save { background: #3b82f6; color: white; }
+    #editModal .modal-btn-save:hover { background: #2563eb; }
 
-    #editModal .modal-btn-save:hover {
-      background: #2563eb;
-    }
+    #editModal .modal-btn-cancel { background: #e5e7eb; color: #111; }
+    #editModal .modal-btn-cancel:hover { background: #d1d5db; }
 
-    #editModal .modal-btn-cancel {
-      background: #e5e7eb;
-      color: #111;
-    }
-
-    #editModal .modal-btn-cancel:hover {
-      background: #d1d5db;
-    }
-
-    /* Edit button styling */
     .edit-btn {
       padding: 6px 10px;
       font-size: 12px;
@@ -283,7 +210,6 @@ button.primary-btn {
 
 <body>
 
-  <!-- NAV -->
   <div class="nav">
     <div class="logo">Grid Planner</div>
     <div>
@@ -293,216 +219,103 @@ button.primary-btn {
     </div>
   </div>
 
-  <!-- HERO -->
   <div class="hero">
-
     <h1>
       A grid that stays in <br>
       <span>sync with your content</span>
     </h1>
 
-    <p>
-     Connect your Notion database to finish setting up your grid.
-    </p>
+    <p>Connect your Notion database to finish setting up your grid.</p>
 
-    <!-- STATE CARD -->
    <div class="card" style="text-align:center;">
+    <h2 style="margin:0 0 6px; font-size:20px;">
+      One step ahead to connect your grid to Notion
+    </h2>
 
-  <h2 style="margin:0 0 6px; font-size:20px;">
-    One step ahead to connect your grid to Notion
-  </h2>
+    <div id="content" style="margin-top:20px; text-align:left;">
+      <label>
+        Enter Database ID or URL
+        <input id="db" placeholder="https://www.notion.so/..." style="margin-top:8px;" />
+      </label>
 
-  <div id="content" style="margin-top:20px; text-align:left;">
-    <label>
-  Enter Database ID or URL
-  <input
-    id="db"
-    placeholder="https://www.notion.so/..."
-    style="margin-top:8px;"
-  />
-</label>
+      <div class="helper" style="margin-top:10px;">
+        Open the
+        <a href="#" class="helpLink" data-img="/images/database.png">database</a>
+        in Notion →
+        <a href="#" class="helpLink" data-img="/images/click.png">Right (⋯) Menu</a>
+        →
+        <a href="#" class="helpLink" data-img="/images/copylink.png">Copy link</a>
+        → Paste here
+      </div>
 
-<div class="helper" style="margin-top:10px;">
-  Open the
-  <a href="#" class="helpLink" data-img="/images/database.png">
-    database
-  </a>
-  in Notion → 
-  <a href="#" class="helpLink" data-img="/images/click.png">
-  Right (⋯) Menu
-  </a>
-  → 
-  <a href="#" class="helpLink" data-img="/images/copylink.png">
-    Copy link
-  </a>
-  → Paste here
-</div>
+      <label style="margin-top:14px; display:block;">
+        Database Label
+        <input id="label" placeholder="Instagram / TikTok / YouTube" style="margin-top:8px;" />
+      </label>
 
-<label style="margin-top:14px; display:block;">
-  Database Label
-  <input
-    id="label"
-    placeholder="Instagram / TikTok / YouTube"
-    style="margin-top:8px;"
-  />
-</label>
-
-<button id="save" style="margin-top:22px;">
-  Save
-</button>
-  </div>
-     <details style="margin-top:18px;">
-  <summary style="font-size:14px; color:#555; cursor:pointer;">
-    Database structure & property guide
-  </summary>
-
-  <div style="margin-top:14px; font-size:13px; color:#666;">
-
-    <p style="margin-bottom:12px;">
-      For the grid to work correctly, your Notion database must use the
-      following property names and types.
-    </p>
-
-    <!-- HEADER -->
-    <div style="
-  display:grid;
-  grid-template-columns: 1.2fr 1fr 3fr;
-  font-weight:600;
-  color:#444;
-  margin-bottom:8px;
-      text-align:left;
-">
-      <div>Property</div>
-      <div>Type</div>
-      <div>Explanation</div>
+      <button id="save" style="margin-top:22px;">Save</button>
     </div>
 
-    <!-- ROWS -->
-    <div style="
-  display:grid;
-  grid-template-columns: 1.2fr 1fr 3fr;
-  row-gap:10px;
-  text-align:left;
-">
-
-      <div><b>Name</b></div>
-      <div><i>Title</i></div>
-      <div>Main label shown for each item in the grid.</div>
-
-      <div><b>Type</b></div>
-      <div><i>Multi-select</i></div>
-      <div>Used to categorize content (Post, Story, Reel, Tiktok).</div>
-
-      <div><b>Publish Date</b></div>
-      <div><i>Date</i></div>
-      <div>Controls scheduling and chronological order.</div>
-
-      <div><b>Attachment</b></div>
-      <div><i>Files & Media</i></div>
-      <div>Images or files displayed directly inside the grid.</div>
-
-      <div><b>Media/Video</b></div>
-      <div><i>Files & Media</i></div>
-      <div>Video files or external video links.</div>
-
-      <div><b>Thumbnail</b></div>
-      <div><i>Files & Media</i></div>
-      <div>Preview image shown before opening media.</div>
-
-      <div><b>Pin</b></div>
-      <div><i>Checkbox</i></div>
-      <div>Pins an item to the top of the grid.</div>
-
-      <div><b>Hide</b></div>
-      <div><i>Checkbox</i></div>
-      <div>Hides an item from the grid without deleting it.</div>
-
-    </div>
-
-    <p style="margin-top:14px; color:#777;">
-      Property names are case-sensitive and must match exactly.
-    </p>
-
-    <p style="font-size:13px; color:#777;">
-  If something doesn't appear in your grid, it's usually because one of these
-  properties is missing or named differently.
-</p>
-
+    <div id="status" style="margin-top:18px; font-size:14px;"></div>
+    <div id="embedWrap" style="margin-top:20px; display:none;"></div>
+    <div id="dbList" style="margin-top:24px;"></div>
+   </div>
   </div>
-</details>
 
- <!-- STATUS -->
-      <div id="status" style="margin-top:18px; font-size:14px;"></div>
-
-<div id="embedWrap" style="margin-top:20px; display:none;"></div>
-
-<div id="dbList" style="margin-top:24px;"></div>
-    </div>
-
-  </div>
-  <!-- DATABASE HELP MODAL -->
-<!-- HELP IMAGE MODAL -->
-<div id="helpModal" style="
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:1000;
-">
-
-  <div style="
-    background:#fff;
-    padding:16px;
-    border-radius:14px;
-    max-width:700px;
-    width:90%;
-    position:relative;
-    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  <!-- HELP IMAGE MODAL -->
+  <div id="helpModal" style="
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
   ">
+    <div style="
+      background:#fff;
+      padding:16px;
+      border-radius:14px;
+      max-width:700px;
+      width:90%;
+      position:relative;
+      box-shadow:0 20px 60px rgba(0,0,0,0.25);
+    ">
+      <button id="closeHelpModal" style="
+        position:absolute;
+        top:10px;
+        right:12px;
+        border:none;
+        background:none;
+        font-size:18px;
+        cursor:pointer;
+      ">✕</button>
 
-    <button id="closeHelpModal" style="
-      position:absolute;
-      top:10px;
-      right:12px;
-      border:none;
-      background:none;
-      font-size:18px;
-      cursor:pointer;
-    ">✕</button>
-
-    <img
-      id="helpModalImg"
-      src=""
-      style="width:100%; border-radius:10px;"
-      alt="Notion help"
-    />
-  </div>
-
-</div>
-
-<!-- EDIT LABEL MODAL -->
-<div id="editModal">
-  <div class="modal-content">
-    <div class="modal-title">Edit Database Label</div>
-    <input 
-      id="editLabelInput" 
-      type="text"
-      class="modal-input" 
-      placeholder="Enter new label"
-    />
-    <div class="modal-actions">
-      <button class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
-      <button class="modal-btn modal-btn-save" onclick="saveEditLabel()">Save</button>
+      <img id="helpModalImg" src="" style="width:100%; border-radius:10px;" alt="Notion help" />
     </div>
   </div>
-</div>
+
+  <!-- EDIT LABEL MODAL -->
+  <div id="editModal">
+    <div class="modal-content">
+      <div class="modal-title">Edit Database Label</div>
+      <input
+        id="editLabelInput"
+        type="text"
+        class="modal-input"
+        placeholder="Enter new label"
+      />
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="modal-btn modal-btn-save" onclick="saveEditLabel()">Save</button>
+      </div>
+    </div>
+  </div>
 
   <script>
   const params = new URLSearchParams(location.search);
-const slug = params.get("slug");
-const token = params.get("token");
+  const slug = params.get("slug");
+  const token = params.get("token");
   const status = document.getElementById("status");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
@@ -519,12 +332,12 @@ const token = params.get("token");
 
   function renderEmbedUrl(url) {
     embedWrap.style.display = "block";
-    embedWrap.innerHTML = `
+    embedWrap.innerHTML = \`
       <strong>Embed this URL in Notion:</strong>
       <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <input
           id="embedUrl"
-          value="${url}"
+          value="\${url}"
           readonly
           style="
             flex:1;
@@ -552,7 +365,7 @@ const token = params.get("token");
           Copy
         </button>
       </div>
-    `;
+    \`;
 
     document.getElementById("copyUrl").onclick = () => {
       navigator.clipboard.writeText(url);
@@ -562,235 +375,216 @@ const token = params.get("token");
     };
   }
 
+  // Match your plan spec: free=1, advanced=2, pro=unlimited
   function getPlanLimit(plan) {
     if (plan === "free") return 1;
-    if (plan === "advanced") return 3;
-    return Infinity; // pro
+    if (plan === "advanced") return 2;
+    return Infinity;
   }
 
-async function loadDatabases() {
-  dbList.innerHTML = `
-    <div class="loader">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      Loading databases…
-    </div>
-  `;
-
-  const res = await fetch(`/api/list-database?slug=${encodeURIComponent(slug)}`);
-  const data = await res.json();
-
-  if (!res.ok) {
-    dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
-    return;
+  async function apiWidgetDatabases(action, payload = {}) {
+    const res = await fetch("/api/widget-databases", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, action, ...payload }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Request failed");
+    return data;
   }
 
-  DATABASES = Array.isArray(data.databases) ? data.databases : data;
-  CURRENT_PLAN = data.plan || "free";
+  async function loadDatabases() {
+    dbList.innerHTML = \`
+      <div class="loader">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        Loading databases…
+      </div>
+    \`;
 
-  if (!DATABASES.length) {
-    dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
-    return;
-  }
-
-  dbList.innerHTML = `
-    <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
-    ${DATABASES.map(db => {
-      const isEditing = editingDatabaseId === db.id;
-
-      return `
-        <div style="
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          padding:10px 12px;
-          border:1px solid var(--border);
-          border-radius:10px;
-          margin-bottom:10px;
-          gap:12px;
-        ">
-          <div style="display:flex; flex-direction:column; flex:1;">
-            ${
-              isEditing
-                ? `
-                  <input
-                    data-edit-input="${db.id}"
-                    value="${escapeHtml(db.label || "Untitled")}"
-                    style="
-                      padding:8px 10px;
-                      font-size:14px;
-                      border-radius:10px;
-                      border:1px solid var(--border);
-                      outline:none;
-                      font-weight:600;
-                    "
-                  />
-                `
-                : `<div style="font-weight:600;">${escapeHtml(db.label || "Untitled")}</div>`
-            }
-
-            <div style="font-size:12px; color:var(--text-muted);">
-              ${escapeHtml(db.database_id || "")}
-            </div>
-          </div>
-
-          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            ${
-              db.is_primary
-                ? `
-                  <span style="
-                    font-size:12px;
-                    font-weight:700;
-                    color:#16a34a;
-                    border:1px solid rgba(22,163,74,.35);
-                    padding:6px 10px;
-                    border-radius:999px;
-                  ">Primary</span>
-                `
-                : `
-                  <button
-                    class="make-primary-btn"
-                    data-primary-btn="${db.id}"
-                    style="
-                      padding:8px 10px;
-                      font-size:13px;
-                      border-radius:10px;
-                      border:1px solid var(--border);
-                      background:#fff;
-                      cursor:pointer;
-                      font-weight:600;
-                    "
-                  >Make primary</button>
-                `
-            }
-
-            ${
-              isEditing
-                ? `
-                  <button
-                    class="edit-btn"
-                    data-save-edit="${db.id}"
-                  >Save</button>
-                  <button
-                    class="edit-btn"
-                    data-cancel-edit="${db.id}"
-                    style="border-color:#e5e7eb;"
-                  >Cancel</button>
-                `
-                : `
-                  <button
-                    class="edit-btn"
-                    data-start-edit="${db.id}"
-                  >Edit</button>
-                `
-            }
-          </div>
-        </div>
-      `;
-    }).join("")}
-  `;
-
-  // Bind handlers after render
-  DATABASES.forEach(db => {
-    const primaryBtn = document.querySelector(`[data-primary-btn="${db.id}"]`);
-    if (primaryBtn) primaryBtn.onclick = () => setPrimary(db.id);
-
-    const startEditBtn = document.querySelector(`[data-start-edit="${db.id}"]`);
-    if (startEditBtn) startEditBtn.onclick = () => startInlineEdit(db.id);
-
-    const cancelBtn = document.querySelector(`[data-cancel-edit="${db.id}"]`);
-    if (cancelBtn) cancelBtn.onclick = () => cancelInlineEdit();
-
-    const saveBtn = document.querySelector(`[data-save-edit="${db.id}"]`);
-    if (saveBtn) saveBtn.onclick = () => saveInlineEdit(db.id);
-
-    const input = document.querySelector(`[data-edit-input="${db.id}"]`);
-    if (input) {
-      // Enter saves, Esc cancels
-      input.onkeydown = (e) => {
-        if (e.key === "Enter") saveInlineEdit(db.id);
-        if (e.key === "Escape") cancelInlineEdit();
-      };
-      // focus input when editing
-      setTimeout(() => input.focus(), 0);
-    }
-  });
-}
-
-// Small helper to avoid HTML breaking if label has quotes etc.
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function startInlineEdit(dbId) {
-  editingDatabaseId = dbId;
-  loadDatabases();
-}
-
-function cancelInlineEdit() {
-  editingDatabaseId = null;
-  loadDatabases();
-}
-
-async function saveInlineEdit(dbId) {
-  const input = document.querySelector(`[data-edit-input="${dbId}"]`);
-  const newLabel = (input?.value || "").trim();
-
-  if (!newLabel) {
-    alert("Label cannot be empty");
-    return;
-  }
-
-  status.innerText = "Updating label…";
-
-  const res = await fetch("/api/update-database-label", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ slug, databaseId: dbId, newLabel }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    status.innerText = data.error || "Failed to update label";
-    return;
-  }
-
-  status.innerText = "Label updated ✅";
-  editingDatabaseId = null;
-  await loadDatabases();
-}
-
-  async function setPrimary(id) {
-  status.innerText = "Setting primary database…";
-
-  const res = await fetch("/api/set-primary-db", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      slug,
-      databaseRowId: id
-    }),
-  });
-  
-    const data = await res.json();
+    // NEW: list from unified endpoint (GET)
+    const res = await fetch(\`/api/widget-databases?slug=\${encodeURIComponent(slug)}\`);
+    const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      status.innerText = data.error || "Failed to set primary";
+      dbList.innerHTML = \`<div style="color:#b91c1c;">\${data.error || "Failed to load databases"}</div>\`;
       return;
     }
 
-    status.innerText = "Primary database updated ✅";
-    await loadDatabases();
+    DATABASES = Array.isArray(data.databases) ? data.databases : [];
+    CURRENT_PLAN = data.plan || "free";
+
+    if (!DATABASES.length) {
+      dbList.innerHTML = \`<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>\`;
+      return;
+    }
+
+    dbList.innerHTML = \`
+      <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
+      \${DATABASES.map(db => {
+        const isEditing = editingDatabaseId === db.id;
+
+        return \`
+          <div style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:10px 12px;
+            border:1px solid var(--border);
+            border-radius:10px;
+            margin-bottom:10px;
+            gap:12px;
+          ">
+            <div style="display:flex; flex-direction:column; flex:1;">
+              \${
+                isEditing
+                  ? \`
+                    <input
+                      data-edit-input="\${db.id}"
+                      value="\${escapeHtml(db.label || "Untitled")}"
+                      style="
+                        padding:8px 10px;
+                        font-size:14px;
+                        border-radius:10px;
+                        border:1px solid var(--border);
+                        outline:none;
+                        font-weight:600;
+                      "
+                    />
+                  \`
+                  : \`<div style="font-weight:600;">\${escapeHtml(db.label || "Untitled")}</div>\`
+              }
+
+              <div style="font-size:12px; color:var(--text-muted);">
+                \${escapeHtml(db.database_id || "")}
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              \${
+                db.is_primary
+                  ? \`
+                    <span style="
+                      font-size:12px;
+                      font-weight:700;
+                      color:#16a34a;
+                      border:1px solid rgba(22,163,74,.35);
+                      padding:6px 10px;
+                      border-radius:999px;
+                    ">Primary</span>
+                  \`
+                  : \`
+                    <button
+                      class="make-primary-btn"
+                      data-primary-btn="\${db.id}"
+                      style="
+                        padding:8px 10px;
+                        font-size:13px;
+                        border-radius:10px;
+                        border:1px solid var(--border);
+                        background:#fff;
+                        cursor:pointer;
+                        font-weight:600;
+                      "
+                    >Make primary</button>
+                  \`
+              }
+
+              \${
+                isEditing
+                  ? \`
+                    <button class="edit-btn" data-save-edit="\${db.id}">Save</button>
+                    <button class="edit-btn" data-cancel-edit="\${db.id}" style="border-color:#e5e7eb;">Cancel</button>
+                  \`
+                  : \`
+                    <button class="edit-btn" data-start-edit="\${db.id}">Edit</button>
+                  \`
+              }
+            </div>
+          </div>
+        \`;
+      }).join("")}
+    \`;
+
+    // Bind handlers after render
+    DATABASES.forEach(db => {
+      const primaryBtn = document.querySelector(\`[data-primary-btn="\${db.id}"]\`);
+      if (primaryBtn) primaryBtn.onclick = () => setPrimary(db.id);
+
+      const startEditBtn = document.querySelector(\`[data-start-edit="\${db.id}"]\`);
+      if (startEditBtn) startEditBtn.onclick = () => startInlineEdit(db.id);
+
+      const cancelBtn = document.querySelector(\`[data-cancel-edit="\${db.id}"]\`);
+      if (cancelBtn) cancelBtn.onclick = () => cancelInlineEdit();
+
+      const saveBtn = document.querySelector(\`[data-save-edit="\${db.id}"]\`);
+      if (saveBtn) saveBtn.onclick = () => saveInlineEdit(db.id);
+
+      const input = document.querySelector(\`[data-edit-input="\${db.id}"]\`);
+      if (input) {
+        input.onkeydown = (e) => {
+          if (e.key === "Enter") saveInlineEdit(db.id);
+          if (e.key === "Escape") cancelInlineEdit();
+        };
+        setTimeout(() => input.focus(), 0);
+      }
+    });
   }
 
-  // Edit modal functions
+  function escapeHtml(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function startInlineEdit(dbId) {
+    editingDatabaseId = dbId;
+    loadDatabases();
+  }
+
+  function cancelInlineEdit() {
+    editingDatabaseId = null;
+    loadDatabases();
+  }
+
+  async function saveInlineEdit(dbId) {
+    const input = document.querySelector(\`[data-edit-input="\${dbId}"]\`);
+    const newLabel = (input?.value || "").trim();
+
+    if (!newLabel) {
+      alert("Label cannot be empty");
+      return;
+    }
+
+    status.innerText = "Updating label…";
+
+    try {
+      await apiWidgetDatabases("rename", { id: dbId, label: newLabel });
+      status.innerText = "Label updated ✅";
+      editingDatabaseId = null;
+      await loadDatabases();
+    } catch (e) {
+      status.innerText = e.message || "Failed to update label";
+    }
+  }
+
+  async function setPrimary(id) {
+    status.innerText = "Setting primary database…";
+
+    try {
+      await apiWidgetDatabases("set_primary", { id });
+      status.innerText = "Primary database updated ✅";
+      await loadDatabases();
+    } catch (e) {
+      status.innerText = e.message || "Failed to set primary";
+    }
+  }
+
+  // Edit modal functions (kept for compatibility; uses same rename action)
   function openEditModal(databaseId, currentLabel) {
     editingDatabaseId = databaseId;
     editingDatabaseLabel = currentLabel;
@@ -823,94 +617,57 @@ async function saveInlineEdit(dbId) {
     status.innerText = "Updating label…";
 
     try {
-      const res = await fetch("/api/update-database-label", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          databaseId: editingDatabaseId,
-          newLabel
-        })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        status.innerText = data.error || "Failed to update label";
-        return;
-      }
-
+      await apiWidgetDatabases("rename", { id: editingDatabaseId, label: newLabel });
       status.innerText = "Label updated ✅";
       closeEditModal();
       await loadDatabases();
     } catch (e) {
-      status.innerText = "Something went wrong. Please try again.";
+      status.innerText = e.message || "Failed to update label";
     }
   }
 
-  // Close modal on Escape
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeEditModal();
   });
 
-document.getElementById("save").onclick = async () => {
-  const raw = document.getElementById("db").value.trim();
-  if (!raw) return alert("Enter Notion database ID or URL");
+  document.getElementById("save").onclick = async () => {
+    const raw = document.getElementById("db").value.trim();
+    if (!raw) return alert("Enter Notion database ID or URL");
 
-  const databaseId = extractDatabaseId(raw);
-  if (!databaseId) return alert("Invalid Notion database ID or URL");
+    const databaseId = extractDatabaseId(raw);
+    if (!databaseId) return alert("Invalid Notion database ID or URL");
 
-  const label = document.getElementById("label").value.trim();
-  if (!label) return alert("Enter a label name");
+    const label = document.getElementById("label").value.trim();
+    if (!label) return alert("Enter a label name");
 
-  const limit = getPlanLimit(CURRENT_PLAN);
-  if (DATABASES.length >= limit) {
-    if (CURRENT_PLAN === "free") {
-      return alert("Free plan allows only 1 database.");
-    }
-    if (CURRENT_PLAN === "advanced") {
-      return alert("Advanced plan allows up to 3 databases.");
-    }
-  }
-
-  status.innerText = "Adding database…";
-
-  try {
-    const res = await fetch("/api/add-database", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    slug,
-    databaseId,
-    label,
-  }),
-});
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      status.innerText = data.error || "Error adding database";
-      return;
+    const limit = getPlanLimit(CURRENT_PLAN);
+    if (DATABASES.length >= limit) {
+      if (CURRENT_PLAN === "free") return alert("Free plan allows only 1 database.");
+      if (CURRENT_PLAN === "advanced") return alert("Advanced plan allows up to 2 databases.");
     }
 
-    status.innerText = "Database added successfully ✅";
-    renderEmbedUrl(data.embed_url);
+    status.innerText = "Adding database…";
 
-    document.getElementById("db").value = "";
-    document.getElementById("label").value = "";
+    try {
+      // Prefer unified endpoint, so we can delete add-database.js later if you want
+      const data = await apiWidgetDatabases("add", { databaseId, label });
 
-    await loadDatabases();
-  } catch (e) {
-    status.innerText = "Something went wrong. Please try again.";
-  }
-};
-    
-  if (slug) {
-  loadDatabases();
-} else {
-  status.innerText = "Missing slug in URL";
-}
+      status.innerText = "Database added successfully ✅";
 
-</script>
+      // If backend returns embed_url (optional), show it
+      if (data.embed_url) renderEmbedUrl(data.embed_url);
+
+      document.getElementById("db").value = "";
+      document.getElementById("label").value = "";
+
+      await loadDatabases();
+    } catch (e) {
+      status.innerText = e.message || "Error adding database";
+    }
+  };
+
+  if (slug) loadDatabases();
+  else status.innerText = "Missing slug in URL";
+  </script>
 </body>
 </html>
