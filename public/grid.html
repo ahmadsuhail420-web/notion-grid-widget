@@ -997,7 +997,7 @@
       if (!slug) return;
 
       try {
-        const res = await fetch(`/api/list-database?slug=${slug}`);
+        const res = await fetch(`/api/widget-databases?slug=${slug}`);
         if (!res.ok) throw new Error(`API error: ${res.status}`);
 
         const data = await res.json();
