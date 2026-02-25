@@ -1082,7 +1082,7 @@
         const res = await fetch(url);
         if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        const { profile: apiProfile, posts, plan } = await res.json();
+        const { profile: apiProfile, posts, plan, databases, widget_settings } = await res.json();
 
         CURRENT_PLAN = plan || "free";
         applyPlanToUI();
