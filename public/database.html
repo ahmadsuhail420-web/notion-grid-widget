@@ -332,12 +332,12 @@ button.primary-btn {
 
   function renderEmbedUrl(url) {
     embedWrap.style.display = "block";
-    embedWrap.innerHTML = \`
+    embedWrap.innerHTML = `
       <strong>Embed this URL in Notion:</strong>
       <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <input
           id="embedUrl"
-          value="\${url}"
+          value="${url}"
           readonly
           style="
             flex:1;
@@ -365,7 +365,7 @@ button.primary-btn {
           Copy
         </button>
       </div>
-    \`;
+    `;
 
     document.getElementById("copyUrl").onclick = () => {
       navigator.clipboard.writeText(url);
@@ -375,10 +375,11 @@ button.primary-btn {
     };
   }
 
-  // Match your plan spec: free=1, advanced=2, pro=unlimited
+  // BUG: your plan is advanced=3 now (and API enforces plan_limits anyway)
+  // Update this to match, so the client-side pre-check doesn’t block valid adds.
   function getPlanLimit(plan) {
     if (plan === "free") return 1;
-    if (plan === "advanced") return 2;
+    if (plan === "advanced") return 3;   // FIXED
     return Infinity;
   }
 
@@ -394,21 +395,20 @@ button.primary-btn {
   }
 
   async function loadDatabases() {
-    dbList.innerHTML = \`
+    dbList.innerHTML = `
       <div class="loader">
         <div class="dot"></div>
         <div class="dot"></div>
         <div class="dot"></div>
         Loading databases…
       </div>
-    \`;
+    `;
 
-    // NEW: list from unified endpoint (GET)
-    const res = await fetch(\`/api/widget-databases?slug=\${encodeURIComponent(slug)}\`);
+    const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      dbList.innerHTML = \`<div style="color:#b91c1c;">\${data.error || "Failed to load databases"}</div>\`;
+      dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
       return;
     }
 
@@ -416,16 +416,16 @@ button.primary-btn {
     CURRENT_PLAN = data.plan || "free";
 
     if (!DATABASES.length) {
-      dbList.innerHTML = \`<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>\`;
+      dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
       return;
     }
 
-    dbList.innerHTML = \`
+    dbList.innerHTML = `
       <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
-      \${DATABASES.map(db => {
+      ${DATABASES.map(db => {
         const isEditing = editingDatabaseId === db.id;
 
-        return \`
+        return `
           <div style="
             display:flex;
             align-items:center;
@@ -437,12 +437,12 @@ button.primary-btn {
             gap:12px;
           ">
             <div style="display:flex; flex-direction:column; flex:1;">
-              \${
+              ${
                 isEditing
-                  ? \`
+                  ? `
                     <input
-                      data-edit-input="\${db.id}"
-                      value="\${escapeHtml(db.label || "Untitled")}"
+                      data-edit-input="${db.id}"
+                      value="${escapeHtml(db.label || "Untitled")}"
                       style="
                         padding:8px 10px;
                         font-size:14px;
@@ -452,19 +452,19 @@ button.primary-btn {
                         font-weight:600;
                       "
                     />
-                  \`
-                  : \`<div style="font-weight:600;">\${escapeHtml(db.label || "Untitled")}</div>\`
+                  `
+                  : `<div style="font-weight:600;">${escapeHtml(db.label || "Untitled")}</div>`
               }
 
               <div style="font-size:12px; color:var(--text-muted);">
-                \${escapeHtml(db.database_id || "")}
+                ${escapeHtml(db.database_id || "")}
               </div>
             </div>
 
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-              \${
+              ${
                 db.is_primary
-                  ? \`
+                  ? `
                     <span style="
                       font-size:12px;
                       font-weight:700;
@@ -473,11 +473,11 @@ button.primary-btn {
                       padding:6px 10px;
                       border-radius:999px;
                     ">Primary</span>
-                  \`
-                  : \`
+                  `
+                  : `
                     <button
                       class="make-primary-btn"
-                      data-primary-btn="\${db.id}"
+                      data-primary-btn="${db.id}"
                       style="
                         padding:8px 10px;
                         font-size:13px;
@@ -488,40 +488,39 @@ button.primary-btn {
                         font-weight:600;
                       "
                     >Make primary</button>
-                  \`
+                  `
               }
 
-              \${
+              ${
                 isEditing
-                  ? \`
-                    <button class="edit-btn" data-save-edit="\${db.id}">Save</button>
-                    <button class="edit-btn" data-cancel-edit="\${db.id}" style="border-color:#e5e7eb;">Cancel</button>
-                  \`
-                  : \`
-                    <button class="edit-btn" data-start-edit="\${db.id}">Edit</button>
-                  \`
+                  ? `
+                    <button class="edit-btn" data-save-edit="${db.id}">Save</button>
+                    <button class="edit-btn" data-cancel-edit="${db.id}" style="border-color:#e5e7eb;">Cancel</button>
+                  `
+                  : `
+                    <button class="edit-btn" data-start-edit="${db.id}">Edit</button>
+                  `
               }
             </div>
           </div>
-        \`;
+        `;
       }).join("")}
-    \`;
+    `;
 
-    // Bind handlers after render
     DATABASES.forEach(db => {
-      const primaryBtn = document.querySelector(\`[data-primary-btn="\${db.id}"]\`);
+      const primaryBtn = document.querySelector(`[data-primary-btn="${db.id}"]`);
       if (primaryBtn) primaryBtn.onclick = () => setPrimary(db.id);
 
-      const startEditBtn = document.querySelector(\`[data-start-edit="\${db.id}"]\`);
+      const startEditBtn = document.querySelector(`[data-start-edit="${db.id}"]`);
       if (startEditBtn) startEditBtn.onclick = () => startInlineEdit(db.id);
 
-      const cancelBtn = document.querySelector(\`[data-cancel-edit="\${db.id}"]\`);
+      const cancelBtn = document.querySelector(`[data-cancel-edit="${db.id}"]`);
       if (cancelBtn) cancelBtn.onclick = () => cancelInlineEdit();
 
-      const saveBtn = document.querySelector(\`[data-save-edit="\${db.id}"]\`);
+      const saveBtn = document.querySelector(`[data-save-edit="${db.id}"]`);
       if (saveBtn) saveBtn.onclick = () => saveInlineEdit(db.id);
 
-      const input = document.querySelector(\`[data-edit-input="\${db.id}"]\`);
+      const input = document.querySelector(`[data-edit-input="${db.id}"]`);
       if (input) {
         input.onkeydown = (e) => {
           if (e.key === "Enter") saveInlineEdit(db.id);
@@ -552,7 +551,7 @@ button.primary-btn {
   }
 
   async function saveInlineEdit(dbId) {
-    const input = document.querySelector(\`[data-edit-input="\${dbId}"]\`);
+    const input = document.querySelector(`[data-edit-input="${dbId}"]`);
     const newLabel = (input?.value || "").trim();
 
     if (!newLabel) {
@@ -584,7 +583,6 @@ button.primary-btn {
     }
   }
 
-  // Edit modal functions (kept for compatibility; uses same rename action)
   function openEditModal(databaseId, currentLabel) {
     editingDatabaseId = databaseId;
     editingDatabaseLabel = currentLabel;
@@ -643,18 +641,15 @@ button.primary-btn {
     const limit = getPlanLimit(CURRENT_PLAN);
     if (DATABASES.length >= limit) {
       if (CURRENT_PLAN === "free") return alert("Free plan allows only 1 database.");
-      if (CURRENT_PLAN === "advanced") return alert("Advanced plan allows up to 2 databases.");
+      if (CURRENT_PLAN === "advanced") return alert("Advanced plan allows up to 3 databases."); // FIXED
     }
 
     status.innerText = "Adding database…";
 
     try {
-      // Prefer unified endpoint, so we can delete add-database.js later if you want
       const data = await apiWidgetDatabases("add", { databaseId, label });
 
       status.innerText = "Database added successfully ✅";
-
-      // If backend returns embed_url (optional), show it
       if (data.embed_url) renderEmbedUrl(data.embed_url);
 
       document.getElementById("db").value = "";
