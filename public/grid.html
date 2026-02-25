@@ -377,28 +377,21 @@
     }
 
     /* ---------------------------------------------- HEADER ---------------------------------------------------------- */
-    /* Make header icons crisp (avoid blurred Material Icons) */
-.refreshBtn,
-.menuBtn {
-  -webkit-tap-highlight-color: transparent;
-  transform: translateZ(0); /* prevents subpixel blur on some mobile browsers */
-}
+    /* Crisp icons override */
+    .refreshBtn,
+    .menuBtn,
+    .refreshBtn *,
+    .menuBtn * {
+      filter: none !important;
+    }
 
-.refreshBtn .material-icons,
-.menuBtn .material-icons {
-  font-size: 22px;
-  line-height: 1;
-  display: inline-block;
+    .refreshBtn .material-icons,
+    .menuBtn .material-icons {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
 
-  /* Prevent blur from smoothing/filters */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  text-rendering: geometricPrecision;
-  filter: none !important;
-  opacity: 1;
-}
-    
     .header {
       display: flex;
       flex-direction: column;
@@ -583,7 +576,7 @@
     /* ---------- TABS ---------- */
     .tabs {
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* UPDATED: 3 tabs */
+      grid-template-columns: repeat(3, 1fr);
       align-items: center;
       padding: 10px 0 8px;
       position: relative;
@@ -610,7 +603,6 @@
       transform: translateY(-2px) scale(1.05);
     }
 
-    /* Material icon in tab (Favorite) */
     .tabIcon {
       font-size: 22px;
       opacity: 0.45;
@@ -713,7 +705,6 @@
       opacity: 0.85;
     }
 
-    /* ---------- DARK MODE TAB ICONS ---------- */
     body[data-theme="dark"] .tabItem img {
       filter: invert(1) brightness(1.1);
       opacity: 0.75;
@@ -821,7 +812,6 @@
       flex-shrink: 0;
     }
 
-    /* ---------- PROFILE AVATAR OFF MODE ---------- */
     .profile.no-avatar .profilePic {
       display: none;
     }
@@ -835,7 +825,6 @@
       text-align: center;
     }
 
-    /* slightly increase size when avatar is hidden */
     .profile.no-avatar .profileTitle {
       font-size: clamp(14px, 5vw, 24px);
     }
@@ -907,7 +896,6 @@
       border-radius: 2px;
     }
 
-    /* shimmer */
     #skeleton * {
       animation: shimmer 1.2s infinite linear;
       background: linear-gradient(
@@ -930,10 +918,7 @@
     <div class="container" data-loading="true">
 
       <div class="header">
-        <!-- DATABASE SWITCHER -->
         <div id="dbSwitcherHeader" class="dbSwitcher"></div>
-
-        <!-- DIVIDER -->
         <div class="headerDivider"></div>
 
         <div class="headerActions">
@@ -1050,30 +1035,22 @@
         </div>
       </div>
 
-      <!-- PROFILE NOTE -->
-      <div id="profileNote" class="profileNote">
-        Content Planner
-      </div>
+      <div id="profileNote" class="profileNote">Content Planner</div>
 
-      <!-- HIGHLIGHTS -->
       <div id="highlightsWrap" class="highlights">
         <div id="highlights" class="highlightsRow"></div>
       </div>
 
-      <!-- TABS AND GRID -->
       <div class="contentArea">
         <div class="tabs">
-          <!-- POSTS: no Type selected -->
           <div class="tabItem active" data-type="post" onclick="setFilter('__POSTS__', this)">
             <img src="/icons/post-dark.png">
           </div>
 
-          <!-- VIDEO: Type includes "Video" (icon uses existing reel png assets) -->
           <div class="tabItem" data-type="reel" onclick="setFilter('Video', this)">
             <img src="/icons/reel-light.png">
           </div>
 
-          <!-- FAVORITE: Type includes "Favorite" -->
           <div class="tabItem" data-type="favorite" onclick="setFilter('Favorite', this)">
             <span class="material-icons tabIcon">favorite</span>
           </div>
@@ -1086,7 +1063,6 @@
         </div>
       </div>
 
-      <!-- MEDIA VIEWER -->
       <div id="viewer" class="viewer hidden" onclick="closeViewer()">
         <div class="viewerInner" onclick="event.stopPropagation()">
           <button class="viewerClose" onclick="closeViewer()">✕</button>
@@ -1123,19 +1099,13 @@
     }
 
     function applyPlanToUI() {
-      // Branding
       const footer = document.querySelector(".footer");
-      if (footer) {
-        footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
-      }
+      if (footer) footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
 
-      // Menu gating
       const menu = document.getElementById("menu");
       if (menu) {
         const fontSelect = menu.querySelector('select[onchange="setFont(this.value)"]');
-        if (fontSelect) {
-          fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
-        }
+        if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
 
         const toggleLabels = [...menu.querySelectorAll("label.toggleItem")];
         toggleLabels.forEach(label => {
@@ -1145,33 +1115,25 @@
             text.includes("Highlights") ||
             text.includes("Profile") ||
             text.includes("Note");
-
-          if (isSectionToggle) {
-            label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
-          }
+          if (isSectionToggle) label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
         });
       }
 
-      // Multi-db switcher
       const dbSwitch = document.getElementById("dbSwitcherHeader");
-      if (dbSwitch) {
-        dbSwitch.classList.toggle("hidden", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
-      }
+      if (dbSwitch) dbSwitch.classList.toggle("hidden", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
     }
 
-    /* -------------------- THEME INITIALIZATION -------------------- */
     (function () {
       const theme = localStorage.getItem("theme") || "default";
       if (
         theme === "dark" ||
         (theme === "default" &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
+         window.matchMedia("(prefers-color-scheme: dark)").matches)
       ) {
         document.body.setAttribute("data-theme", "dark");
       }
     })();
 
-    /* -------------------- GLOBAL VARIABLES -------------------- */
     let ALL_POSTS = [];
     let FILTER = "__POSTS__"; // "__POSTS__" | "Video" | "Favorite"
     let currentSlide = 0;
@@ -1182,11 +1144,11 @@
       return params.get("slug");
     }
 
+    // Attachment-only: no post.video support
     function hasMedia(post) {
       return (
         (Array.isArray(post.attachment) && post.attachment.length > 0) ||
-        post.thumbnail ||
-        post.video
+        post.thumbnail
       );
     }
 
@@ -1197,13 +1159,18 @@
     function setFont(font) {
       let value;
 
-      if (font === "inter") value = "'Inter', -apple-system, sans-serif";
-      else if (font === "poppins") value = "'Poppins', -apple-system, sans-serif";
-      else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+      if (font === "inter") {
+        value = "'Inter', -apple-system, sans-serif";
+      } else if (font === "poppins") {
+        value = "'Poppins', -apple-system, sans-serif";
+      } else {
+        value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+      }
 
       document.documentElement.style.setProperty("--font-main", value);
       localStorage.setItem("font", font);
     }
+
     window.setFont = setFont;
 
     function normalizeTypes(typeArr) {
@@ -1260,27 +1227,40 @@
       const buttons = [...document.querySelectorAll("[data-theme-btn]")];
       const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
 
-      if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
-      buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.themeBtn === mode));
+      if (indicator && index >= 0) {
+        indicator.style.transform = `translateX(${index * 100}%)`;
+      }
+
+      buttons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.themeBtn === mode);
+      });
     }
 
     function setTheme(mode) {
-      if (mode === "dark") document.body.setAttribute("data-theme", "dark");
-      else if (mode === "light") document.body.removeAttribute("data-theme");
-      else {
+      if (mode === "dark") {
+        document.body.setAttribute("data-theme", "dark");
+      } else if (mode === "light") {
+        document.body.removeAttribute("data-theme");
+      } else if (mode === "default") {
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (prefersDark) document.body.setAttribute("data-theme", "dark");
-        else document.body.removeAttribute("data-theme");
+        if (prefersDark) {
+          document.body.setAttribute("data-theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+        }
       }
 
       localStorage.setItem("theme", mode);
       syncThemePill(mode);
     }
+
     window.setTheme = setTheme;
 
     function toggleMenu() {
-      document.getElementById("menu").classList.toggle("hidden");
+      const menu = document.getElementById("menu");
+      menu.classList.toggle("hidden");
     }
+
     window.toggleMenu = toggleMenu;
 
     function toggleSection(section, checkbox) {
@@ -1288,25 +1268,31 @@
         section === "header"
           ? document.getElementById("profileHeader")
           : document.getElementById("highlightsWrap");
+
       if (!el) return;
       el.classList.toggle("hidden-section", !checkbox.checked);
     }
+
     window.toggleSection = toggleSection;
 
     function toggleAvatar(checkbox) {
       const profile = document.getElementById("profileHeader");
       if (!profile) return;
+
       profile.classList.toggle("no-avatar", !checkbox.checked);
       localStorage.setItem("showAvatar", checkbox.checked);
     }
+
     window.toggleAvatar = toggleAvatar;
 
     function toggleProfileNote(checkbox) {
       const note = document.getElementById("profileNote");
       if (!note) return;
+
       note.classList.toggle("hidden-section", !checkbox.checked);
       localStorage.setItem("showProfileNote", checkbox.checked);
     }
+
     window.toggleProfileNote = toggleProfileNote;
 
     function moveUnderline(tab) {
@@ -1326,7 +1312,9 @@
       document.querySelectorAll(".tabItem").forEach(tab => {
         tab.classList.remove("active");
         const img = tab.querySelector("img");
-        if (img) img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+        if (img) {
+          img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+        }
       });
 
       el.classList.add("active");
@@ -1334,6 +1322,7 @@
       renderGrid();
       updateStats();
     }
+
     window.setFilter = setFilter;
 
     async function loadDatabaseSwitcher() {
@@ -1355,7 +1344,8 @@
         wrap.innerHTML = `
           <div class="dbPill">
             ${databases.map(db => `
-              <button class="dbBtn ${db.is_primary ? "active" : ""}" data-id="${db.database_id}">
+              <button class="dbBtn ${db.is_primary ? "active" : ""}"
+                      data-id="${db.database_id}">
                 ${db.label}
               </button>
             `).join("")}
@@ -1367,8 +1357,10 @@
           btn.onclick = async () => {
             buttons.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
+
             const dbId = btn.dataset.id;
             localStorage.setItem("activeDatabase", dbId);
+
             await animateDatabaseChange(dbId);
           };
         });
@@ -1379,6 +1371,7 @@
 
     async function animateDatabaseChange(dbId) {
       const container = document.querySelector(".gridWrap");
+
       container.style.opacity = 0;
       container.style.transform = "translateY(10px)";
       container.style.transition = "all 0.3s ease";
@@ -1405,12 +1398,13 @@
         let url = `/api/get-posts?slug=${slug}`;
 
         const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-        if (activeDb) url += `&db=${activeDb}`;
+        if (activeDb) {
+          url += `&db=${activeDb}`;
+        }
 
         const res = await fetch(url);
         if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        // IMPORTANT: expects { profile, posts, plan }
         const { profile: apiProfile, posts, plan } = await res.json();
 
         CURRENT_PLAN = plan || "free";
@@ -1449,6 +1443,7 @@
 
     function renderProfile(profile) {
       if (!profile) return;
+
       document.getElementById("profileName").innerText = profile.name;
       document.getElementById("profileImage").src = profile.picture;
 
@@ -1482,6 +1477,7 @@
       });
 
       const remaining = MAX - items.length;
+
       for (let i = 0; i < remaining; i++) {
         const ph = document.createElement("div");
         ph.className = "highlightItem highlightPlaceholder";
@@ -1497,6 +1493,18 @@
       card.appendChild(img);
     }
 
+    // Decide what to show for card:
+    // - if thumbnail exists, use it first (helps for non-direct video URLs)
+    // - else use attachment[0]
+    function getCardSrc(post) {
+      if (post.thumbnail) return post.thumbnail;
+      return (Array.isArray(post.attachment) && post.attachment[0]) || null;
+    }
+
+    function isDirectVideoUrl(url) {
+      return typeof url === "string" && url.match(/\.(mp4|webm|ogg)(\?.*)?$/i);
+    }
+
     function renderGrid() {
       const grid = document.getElementById("grid");
       grid.innerHTML = "";
@@ -1505,13 +1513,11 @@
         const card = document.createElement("div");
         card.className = "card";
 
-        const src =
-          (Array.isArray(post.attachment) && post.attachment[0]) ||
-          post.thumbnail ||
-          post.video;
+        const src = getCardSrc(post);
 
         if (src) {
-          if (src.match(/\.(mp4|webm|ogg)/i)) {
+          // If it's a direct video URL and no separate thumbnail, we can preview it on hover
+          if (isDirectVideoUrl(src) && !post.thumbnail) {
             const v = document.createElement("video");
             v.src = src;
             v.muted = true;
@@ -1533,9 +1539,11 @@
     }
 
     function openViewer(post) {
+      // Attachment-only viewer:
+      // - If there are multiple attachments, allow slide.
+      // - If thumbnail exists but attachment is a non-direct URL, thumbnail will show (still useful).
       currentMedia =
         post.attachment?.length ? post.attachment :
-        post.video ? [post.video] :
         post.thumbnail ? [post.thumbnail] : [];
 
       currentSlide = 0;
@@ -1553,7 +1561,7 @@
       const src = currentMedia[currentSlide];
       if (!src) return;
 
-      const el = src.match(/\.(mp4|webm|ogg)/i)
+      const el = isDirectVideoUrl(src)
         ? Object.assign(document.createElement("video"), { src, controls: true })
         : Object.assign(document.createElement("img"), { src });
 
@@ -1584,9 +1592,12 @@
       v.classList.remove("show");
       setTimeout(() => v.classList.add("hidden"), 250);
     }
+
     window.closeViewer = closeViewer;
 
-    async function checkAccess() { return true; }
+    async function checkAccess() {
+      return true;
+    }
 
     async function startGrid() {
       try {
@@ -1613,6 +1624,7 @@
           applyPlanToUI();
 
           renderProfile(profile);
+
           renderHighlights(ALL_POSTS);
           renderGrid();
           updateStats();
@@ -1643,7 +1655,9 @@
           if (savedFont) setFont(savedFont);
 
           const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
-          if (fontSelect && savedFont) fontSelect.value = savedFont;
+          if (fontSelect && savedFont) {
+            fontSelect.value = savedFont;
+          }
 
           await checkAccess();
           await loadDatabaseSwitcher();
@@ -1659,8 +1673,29 @@
         const savedTheme = localStorage.getItem("theme") || "default";
         syncThemePill(savedTheme);
 
+        const showAvatar = localStorage.getItem("showAvatar");
+        if (showAvatar === "false") {
+          const avatarToggle = document.querySelector('input[onchange="toggleAvatar(this)"]');
+          if (avatarToggle) {
+            avatarToggle.checked = false;
+            document.getElementById("profileHeader").classList.add("no-avatar");
+          }
+        }
+
+        const showNote = localStorage.getItem("showProfileNote");
+        if (showNote === "false") {
+          document.getElementById("profileNote")?.classList.add("hidden-section");
+          const noteToggle = document.querySelector('input[onchange="toggleProfileNote(this)"]');
+          if (noteToggle) noteToggle.checked = false;
+        }
+
         const savedFont = localStorage.getItem("font");
         if (savedFont) setFont(savedFont);
+
+        const fontSelect = document.querySelector('select[onchange="setFont(this.value)"]');
+        if (fontSelect && savedFont) {
+          fontSelect.value = savedFont;
+        }
 
         await checkAccess();
         await loadDatabaseSwitcher();
@@ -1672,6 +1707,7 @@
           const activeTab = document.querySelector(".tabItem.active");
           if (activeTab) moveUnderline(activeTab);
         });
+
       } catch (e) {
         console.error("Grid init failed", e);
       }
@@ -1684,7 +1720,9 @@
 
     document.addEventListener("click", () => {
       const menu = document.getElementById("menu");
-      if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+      if (!menu.classList.contains("hidden")) {
+        menu.classList.add("hidden");
+      }
     });
 
     document.addEventListener("keydown", (e) => {
@@ -1692,11 +1730,16 @@
     });
 
     const media = window.matchMedia("(prefers-color-scheme: dark)");
+
     media.addEventListener("change", e => {
       const savedTheme = localStorage.getItem("theme");
+
       if (savedTheme === "default") {
-        if (e.matches) document.body.setAttribute("data-theme", "dark");
-        else document.body.removeAttribute("data-theme");
+        if (e.matches) {
+          document.body.setAttribute("data-theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+        }
       }
     });
 
