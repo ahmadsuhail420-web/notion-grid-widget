@@ -8,14 +8,36 @@ export default async function handler(req, res) {
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+    if (!supabaseUrl || !serviceKey) {
+      return res.status(500).json({ error: "Missing Supabase env vars" });
+    }
+
     const headers = {
       apikey: serviceKey,
       Authorization: `Bearer ${serviceKey}`,
     };
 
-    // 1) Get customer (WITH PLAN)
+    // ---------------------------
+    // 1) Resolve WIDGET by slug
+    // ---------------------------
+    const widgetRes = await fetch(
+      `${supabaseUrl}/rest/v1/widgets?slug=eq.${encodeURIComponent(slug)}&select=id,customer_id,slug,name`,
+      { headers }
+    );
+
+    if (!widgetRes.ok) {
+      console.error("Widget fetch failed:", widgetRes.status);
+      return res.json({ profile: null, posts: [] });
+    }
+
+    const [widget] = await widgetRes.json();
+    if (!widget) return res.json({ profile: null, posts: [] });
+
+    // ---------------------------
+    // 2) Get customer (WITH PLAN)
+    // ---------------------------
     const customerRes = await fetch(
-      `${supabaseUrl}/rest/v1/customers?slug=eq.${encodeURIComponent(slug)}&status=eq.active&select=id,plan`,
+      `${supabaseUrl}/rest/v1/customers?id=eq.${widget.customer_id}&status=eq.active&select=id,plan`,
       { headers }
     );
 
@@ -29,7 +51,34 @@ export default async function handler(req, res) {
 
     const plan = customer.plan || "free";
 
-    // 2) Get Notion connection
+    // ---------------------------
+    // 3) Load widget settings (Pro/Advanced will use; Free can ignore)
+    // ---------------------------
+    let widget_settings = {
+      white_label_enabled: false,
+      custom_css: "",
+      layout_mode: "grid",
+      auto_refresh_enabled: false,
+      auto_refresh_interval_sec: 0,
+      theme_mode: "default",
+    };
+
+    const settingsRes = await fetch(
+      `${supabaseUrl}/rest/v1/widget_settings?widget_id=eq.${widget.id}&select=white_label_enabled,custom_css,layout_mode,auto_refresh_enabled,auto_refresh_interval_sec,theme_mode`,
+      { headers }
+    );
+
+    if (settingsRes.ok) {
+      const [s] = await settingsRes.json();
+      if (s) widget_settings = { ...widget_settings, ...s };
+    } else {
+      // Not fatal (widget can still work)
+      console.warn("Widget settings fetch failed:", settingsRes.status);
+    }
+
+    // ---------------------------
+    // 4) Get Notion connection (by customer)
+    // ---------------------------
     const connRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id,access_token`,
       { headers }
@@ -37,27 +86,46 @@ export default async function handler(req, res) {
 
     if (!connRes.ok) {
       console.error("Connection fetch failed:", connRes.status);
-      return res.json({ profile: null, posts: [], plan });
+      return res.json({ profile: null, posts: [], plan, widget_settings });
     }
 
     const [connection] = await connRes.json();
-    if (!connection?.access_token) return res.json({ profile: null, posts: [], plan });
+    if (!connection?.access_token) return res.json({ profile: null, posts: [], plan, widget_settings });
 
-    // 3) Get selected databases (✅ use database_id)
-    const dbRes = await fetch(
-      `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary`,
+    // ---------------------------
+    // 5) Get widget databases
+    // IMPORTANT: prefer widget_id if present; fallback to connection_id for backward compatibility
+    // ---------------------------
+    let databases = [];
+
+    // Try widget_id first
+    const dbByWidgetRes = await fetch(
+      `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}&select=database_id,is_primary,label`,
       { headers }
     );
 
-    if (!dbRes.ok) {
-      console.error("Database fetch failed:", dbRes.status);
-      return res.json({ profile: null, posts: [], plan });
+    if (dbByWidgetRes.ok) {
+      databases = await dbByWidgetRes.json();
+    } else {
+      console.warn("DB fetch by widget_id failed:", dbByWidgetRes.status);
     }
 
-    const databases = await dbRes.json();
+    // Fallback (legacy schema)
+    if (!Array.isArray(databases) || databases.length === 0) {
+      const dbByConnRes = await fetch(
+        `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary,label`,
+        { headers }
+      );
+
+      if (!dbByConnRes.ok) {
+        console.error("Database fetch failed:", dbByConnRes.status);
+        return res.json({ profile: null, posts: [], plan, widget_settings, databases: [] });
+      }
+      databases = await dbByConnRes.json();
+    }
 
     if (!Array.isArray(databases) || databases.length === 0) {
-      return res.json({ profile: null, posts: [], plan });
+      return res.json({ profile: null, posts: [], plan, widget_settings, databases: [] });
     }
 
     const primary = databases.find(d => d.is_primary) || null;
@@ -68,13 +136,11 @@ export default async function handler(req, res) {
     if (plan === "free") {
       if (primary?.database_id) databaseIds = [primary.database_id];
     }
-
     // ADVANCED: allow choose 1 OR fallback primary
     else if (plan === "advanced") {
       if (db) databaseIds = [db];
       else if (primary?.database_id) databaseIds = [primary.database_id];
     }
-
     // PRO: allow merge OR choose 1 OR fallback primary
     else if (plan === "pro") {
       if (db === "merge") databaseIds = databases.map(d => d.database_id);
@@ -83,10 +149,12 @@ export default async function handler(req, res) {
     }
 
     if (databaseIds.length === 0) {
-      return res.json({ profile: null, posts: [], plan });
+      return res.json({ profile: null, posts: [], plan, widget_settings, databases });
     }
 
-    // 4) Query Notion (WITH PAGINATION)
+    // ---------------------------
+    // 6) Query Notion (WITH PAGINATION)
+    // ---------------------------
     let allPages = [];
 
     for (const databaseId of databaseIds) {
@@ -123,7 +191,9 @@ export default async function handler(req, res) {
       }
     }
 
-    // 5) Parse rows (Attachment-only: removed Media/Video)
+    // ---------------------------
+    // 7) Parse rows (Attachment-only)
+    // ---------------------------
     let profile = null;
     const posts = [];
 
@@ -151,11 +221,9 @@ export default async function handler(req, res) {
       const name = page.properties?.Name?.title?.[0]?.plain_text || "";
       const publishDate = page.properties?.["Publish Date"]?.date?.start || null;
 
-      // ✅ Attachment is the only media source now (uploads or URLs)
       const attachment =
         page.properties?.Attachment?.files?.map(f => f.file?.url || f.external?.url) || [];
 
-      // Optional thumbnail (especially useful for non-direct video URLs like YouTube/TikTok)
       const thumbnail =
         page.properties?.Thumbnail?.files?.[0]?.file?.url ||
         page.properties?.Thumbnail?.files?.[0]?.external?.url ||
@@ -176,8 +244,18 @@ export default async function handler(req, res) {
       });
     }
 
-    // 6) Return
-    return res.json({ profile, posts, plan });
+    // ---------------------------
+    // 8) Return (now includes widget_settings + databases)
+    // You can delete list-database.js if you update frontend to read databases from here.
+    // ---------------------------
+    return res.json({
+      profile,
+      posts,
+      plan,
+      widget_settings,
+      databases,
+      widget: { id: widget.id, slug: widget.slug, name: widget.name },
+    });
   } catch (err) {
     console.error("get-posts error:", err);
     return res.status(500).json({ error: "Failed to load posts" });
