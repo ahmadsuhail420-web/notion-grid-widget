@@ -72,7 +72,6 @@ export default async function handler(req, res) {
       const [s] = await settingsRes.json();
       if (s) widget_settings = { ...widget_settings, ...s };
     } else {
-      // Not fatal (widget can still work)
       console.warn("Widget settings fetch failed:", settingsRes.status);
     }
 
@@ -98,7 +97,6 @@ export default async function handler(req, res) {
     // ---------------------------
     let databases = [];
 
-    // Try widget_id first
     const dbByWidgetRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}&select=database_id,is_primary,label`,
       { headers }
@@ -110,7 +108,6 @@ export default async function handler(req, res) {
       console.warn("DB fetch by widget_id failed:", dbByWidgetRes.status);
     }
 
-    // Fallback (legacy schema)
     if (!Array.isArray(databases) || databases.length === 0) {
       const dbByConnRes = await fetch(
         `${supabaseUrl}/rest/v1/notion_databases?connection_id=eq.${connection.id}&select=database_id,is_primary,label`,
@@ -132,17 +129,12 @@ export default async function handler(req, res) {
 
     let databaseIds = [];
 
-    // FREE: primary only
     if (plan === "free") {
       if (primary?.database_id) databaseIds = [primary.database_id];
-    }
-    // ADVANCED: allow choose 1 OR fallback primary
-    else if (plan === "advanced") {
+    } else if (plan === "advanced") {
       if (db) databaseIds = [db];
       else if (primary?.database_id) databaseIds = [primary.database_id];
-    }
-    // PRO: allow merge OR choose 1 OR fallback primary
-    else if (plan === "pro") {
+    } else if (plan === "pro") {
       if (db === "merge") databaseIds = databases.map(d => d.database_id);
       else if (db) databaseIds = [db];
       else if (primary?.database_id) databaseIds = [primary.database_id];
@@ -244,10 +236,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // ---------------------------
-    // 8) Return (now includes widget_settings + databases)
-    // You can delete list-database.js if you update frontend to read databases from here.
-    // ---------------------------
     return res.json({
       profile,
       posts,
