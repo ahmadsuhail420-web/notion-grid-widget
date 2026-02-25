@@ -795,6 +795,770 @@
       <!-- PROFILE HEADER -->
       <div id="profileHeader" class="profile">
         <div class="profileRow">
+          <div class="<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #ffffff;
+      --bg-card: #ffffff;
+      --bg-muted: #f5f5f5;
+
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+                 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+      --text-main: #111111;
+      --text-muted: #777777;
+
+      --border-color: #e2e2e2;
+      --shadow: 0 10px 30px rgba(0,0,0,0.12);
+
+      --toggle-off: #ddd;
+      --toggle-on: #000;
+    }
+
+    body[data-theme="dark"] {
+      --bg-main: #191919;
+      --bg-card: #202020;
+      --bg-muted: #262626;
+
+      --text-main: #ededed;
+      --text-muted: #9b9b9b;
+
+      --border-color: #2f2f2f;
+      --shadow: 0 10px 30px rgba(0,0,0,0.4);
+
+      --toggle-off: #3a3a3a;
+      --toggle-on: #ffffff;
+    }
+
+    /* IMPORTANT: lock the outside page so footer can't appear "outside" the widget */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: var(--font-main);
+      max-width: 500px;
+      max-height: 700px;
+      margin: auto;
+      background: var(--bg-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px 20px 0;
+      border-radius: 24px;
+      border: 3px solid var(--border-color);
+      -webkit-text-size-adjust: 100%;
+      text-rendering: geometricPrecision;
+      box-sizing: border-box;
+    }
+
+    .widgetWrap {
+      width: 100%;
+      max-width: 500px;
+      height: 700px;
+      background: var(--bg-main);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-radius: 24px;
+      overflow: hidden; /* KEY: prevents anything from visually leaving the widget */
+    }
+
+    /* During loading: remove main UI from layout so skeleton doesn't push content */
+    .container[data-loading="true"] #profileHeader,
+    .container[data-loading="true"] #profileNote,
+    .container[data-loading="true"] #highlightsWrap,
+    .container[data-loading="true"] .contentArea {
+      display: none !important;
+    }
+
+    .hidden-section { display: none !important; }
+
+    .container {
+      flex: 1 1 auto;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    /* Footer must stay INSIDE the widget as the last flex row */
+    .footer {
+      flex: 0 0 auto;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: transparent;
+    }
+
+    /* ---------- HEADER ---------- */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 4px 12px 6px;
+      gap: 1px;
+      width: 100%;
+      box-sizing: border-box;
+      flex: 0 0 auto;
+    }
+
+    .headerActions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+
+    .refreshBtn,
+    .menuBtn {
+      background: transparent;
+      border: none;
+      padding: 0;
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      transform: none !important;
+      filter: none !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .material-symbols-outlined {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+      transform: translateZ(0);
+    }
+
+    .refreshIcon.spin { animation: spin 1s linear infinite; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .headerDivider {
+      height: 1px;
+      background: var(--border-color);
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    /* ---------- MENU ---------- */
+    .menu {
+      width: 180px;
+      position: absolute;
+      top: 38px;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 30;
+    }
+
+    .menu.hidden { display: none; }
+
+    .menuItem {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .menuSection {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-left: -2px;
+    }
+
+    .menuLabel {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .toggleItem input { position: absolute; opacity: 0; pointer-events: none; }
+    .toggleItem { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
+
+    .toggle {
+      width: 34px;
+      height: 18px;
+      background: var(--toggle-off);
+      border-radius: 999px;
+      position: relative;
+      transition: background 0.25s ease;
+      flex: 0 0 auto;
+    }
+
+    .toggle::before {
+      content: "";
+      position: absolute;
+      top: 1.5px;
+      left: 1.5px;
+      width: 15px;
+      height: 15px;
+      background: var(--bg-card);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toggleItem input:checked + .toggle { background: var(--toggle-on); }
+    .toggleItem input:checked + .toggle::before { transform: translateX(16px); }
+
+    .dbMenuTitle {
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.75;
+      width: 100%;
+    }
+
+    .dbMenuList {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 6px;
+    }
+
+    .dbMenuBtn {
+      border: 1px solid var(--border-color);
+      background: var(--bg-muted);
+      color: var(--text-main);
+      padding: 7px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .dbMenuBtn.active {
+      background: var(--text-main);
+      color: var(--bg-main);
+      border-color: var(--text-main);
+    }
+
+    body[data-theme="dark"] .dbMenuBtn.active {
+      background: #fff;
+      color: #111;
+      border-color: #fff;
+    }
+
+    .themeTitle { font-size: 12px; font-weight: 600; opacity: 0.6; }
+
+    .themeSegment {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 4px;
+      background: var(--bg-muted);
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      width: auto;
+      margin: auto;
+      min-width: 107px;
+      max-width: 100%;
+    }
+
+    .themeIndicator {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      height: 26px;
+      width: calc((100% - 8px) / 3);
+      border-radius: 999px;
+      background: #000;
+      z-index: 0;
+      transition: transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1), background-color 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    .themeSegment button {
+      height: 26px;
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: color 0.25s ease;
+    }
+
+    .themeSegment button.active { color: #fff; transform: scale(0.96); }
+
+    body[data-theme="dark"] .themeIndicator {
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.25);
+    }
+
+    body[data-theme="dark"] .themeSegment button.active { color: #111; }
+
+    /* ---------- PROFILE (slightly up) ---------- */
+    .profile {
+      padding: 14px 16px 18px;
+      display: flex;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .profileRow {
+      display: flex;
+      max-width: 520px;
+      align-items: center;
+      gap: clamp(10px, 5vw, 24px);
+    }
+
+    .profilePic {
+      width: clamp(44px, 20vw, 108px);
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #eee;
+      flex-shrink: 0;
+    }
+
+    .profilePic img { width: 100%; height: 100%; object-fit: cover; }
+
+    .profileRight {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 2px 6px;
+    }
+
+    .profileTitle {
+      font-size: clamp(12px, 4.5vw, 20px);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text-main);
+    }
+
+    .profileStats {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      column-gap: clamp(14px, 7vw, 36px);
+      margin-top: 10px;
+    }
+
+    .stat { text-align: center; }
+    .stat strong {
+      font-size: clamp(11px, 4vw, 18px);
+      font-weight: 700;
+      color: var(--text-main);
+      display: block;
+    }
+    .stat span { font-size: clamp(9px, 3.2vw, 13px); color: var(--text-muted); }
+
+    .profileNote {
+      text-align: center;
+      font-size: clamp(10px, 3.5vw, 24px);
+      color: var(--text-muted);
+      padding: 4px 16px 10px;
+      flex: 0 0 auto;
+    }
+
+    /* ---------- HIGHLIGHTS ---------- */
+    .highlights {
+      width: 100%;
+      padding-left: 10px;
+      box-sizing: border-box;
+      flex: 0 0 auto;
+    }
+
+    .highlightsRow {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+    }
+    .highlightsRow::-webkit-scrollbar { display: none; }
+
+    .highlightItem {
+      width: clamp(36px, 16vw, 76px);
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .highlightItem img {
+      width: 92%;
+      height: 92%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .highlightPlaceholder {
+      background: var(--bg-muted);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    body[data-theme="dark"] .highlightPlaceholder {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    #highlightsWrap { margin-bottom: 12px; }
+
+    /* ---------- CONTENT AREA ---------- */
+    .contentArea {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ---------- TABS ---------- */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      padding: 10px 0 8px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .tabItem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .tabItem img {
+      width: 22px;
+      height: 22px;
+      opacity: 0.45;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .tabItem.active img {
+      opacity: 1;
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    .tabIcon {
+      font-size: 22px;
+      opacity: 0.45;
+      color: var(--text-main);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      line-height: 1;
+      font-variation-settings: "FILL" 1;
+    }
+
+    .tabItem.active .tabIcon {
+      opacity: 1;
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    body[data-theme="dark"] .tabIcon { opacity: 0.75; color: #fff; }
+    body[data-theme="dark"] .tabItem.active .tabIcon { opacity: 1; }
+
+    .slidingUnderline {
+      position: absolute;
+      bottom: 0;
+      height: 2px;
+      width: 18px;
+      background: var(--text-main);
+      border-radius: 2px;
+      transform: translateX(0);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ---------- GRID ---------- */
+    .gridWrap {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+    }
+    .gridWrap::-webkit-scrollbar { display: none; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+      padding: 0;
+    }
+
+    .card {
+      aspect-ratio: 5 / 7;
+      background: var(--bg-muted);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card img,
+    .card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card img { z-index: 1; pointer-events: none; }
+
+    .card video {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+    .card:hover video { opacity: 1; }
+
+    .card .badge {
+      position: absolute;
+      top: 4%;
+      right: 6%;
+      width: 16%;
+      height: 16%;
+      object-fit: contain;
+      z-index: 5;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    body[data-theme="dark"] .card video { opacity: 0.85; }
+
+    /* ---------- VIEWER ---------- */
+    .viewer {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .viewer.show { opacity: 1; pointer-events: auto; }
+    .viewer.hidden { display: none; }
+
+    .viewerInner {
+      width: min(360px, 85%);
+      position: relative;
+      transform: scale(0.96);
+      transition: transform 0.25s ease;
+    }
+    .viewer.show .viewerInner { transform: scale(1); }
+
+    .viewerCard {
+      background: var(--bg-card);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+
+    .viewerImage { aspect-ratio: 5 / 7; overflow: hidden; }
+    .viewerImage img, .viewerImage video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .viewerFooter {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .viewerClose,
+    .nav {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+    }
+
+    .viewerClose { top: -14px; right: -14px; font-size: 16px; }
+    .nav { top: 50%; transform: translateY(-50%); font-size: 20px; }
+    .nav.prev { left: -14px; }
+    .nav.next { right: -14px; }
+
+    /* ---------- SKELETON ---------- */
+    #skeleton { padding: 16px; }
+    .sk-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .sk-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--bg-muted); }
+    .sk-lines { flex: 1; }
+    .sk-line { height: 12px; background: var(--bg-muted); border-radius: 6px; margin-bottom: 8px; }
+    .sk-line.short { width: 40%; }
+    .sk-highlights { display: flex; gap: 12px; margin: 16px 0; }
+    .sk-circle { width: 62px; height: 62px; border-radius: 50%; background: var(--bg-muted); }
+    .sk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+    .sk-grid div { aspect-ratio: 4 / 5; background: var(--bg-muted); border-radius: 2px; }
+    #skeleton * {
+      animation: shimmer 1.2s infinite linear;
+      background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+      background-size: 400% 100%;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="widgetWrap">
+    <div class="container" data-loading="true">
+      <div class="header">
+        <div class="headerActions">
+          <button class="refreshBtn" aria-label="Refresh">
+            <span class="material-symbols-outlined refreshIcon">refresh</span>
+          </button>
+
+          <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()" aria-label="Menu">
+            <span class="material-symbols-outlined">more_horiz</span>
+          </button>
+
+          <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
+            <div id="dbMenuWrap" class="hidden-section">
+              <div class="dbMenuTitle">Databases</div>
+              <div id="dbMenuList" class="dbMenuList"></div>
+            </div>
+
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Header</span>
+              <input type="checkbox" checked onchange="toggleSection('header', this)">
+              <span class="toggle"></span>
+            </label>
+
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Highlights</span>
+              <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+              <span class="toggle"></span>
+            </label>
+
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Profile</span>
+              <input type="checkbox" checked onchange="toggleAvatar(this)">
+              <span class="toggle"></span>
+            </label>
+
+            <label class="menuItem toggleItem">
+              <span class="menuLabel">Note</span>
+              <input type="checkbox" checked onchange="toggleProfileNote(this)">
+              <span class="toggle"></span>
+            </label>
+
+            <select id="fontSelect" onchange="setFont(this.value)">
+              <option value="system">System</option>
+              <option value="inter">Inter</option>
+              <option value="poppins">Poppins</option>
+              <option value="manrope">Manrope</option>
+              <option value="montserrat">Montserrat</option>
+            </select>
+
+            <div class="menuSection">
+              <div class="menuLabel themeTitle">Theme</div>
+
+              <div class="themeSegment">
+                <div class="themeIndicator"></div>
+
+                <button data-theme-btn="light" title="Light" onclick="setTheme('light')">
+                  <span class="material-symbols-outlined">light_mode</span>
+                </button>
+
+                <button data-theme-btn="dark" title="Dark" onclick="setTheme('dark')">
+                  <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+
+                <button data-theme-btn="default" title="Auto" onclick="setTheme('default')">
+                  <span class="material-symbols-outlined">hdr_auto</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="headerDivider"></div>
+      </div>
+
+      <div id="skeleton">
+        <div class="sk-profile">
+          <div class="sk-avatar"></div>
+          <div class="sk-lines">
+            <div class="sk-line short"></div>
+            <div class="sk-line"></div>
+          </div>
+        </div>
+
+        <div class="sk-highlights">
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+        </div>
+
+        <div class="sk-grid">
+          <div></div><div></div><div></div>
+          <div></div><div></div><div></div>
+        </div>
+      </div>
+
+      <div id="profileHeader" class="profile">
+        <div class="profileRow">
           <div class="profilePic">
             <img id="profileImage" src="/icons/profile-placeholder.png" />
           </div>
@@ -848,7 +1612,6 @@
         </div>
       </div>
 
-      <!-- MEDIA VIEWER -->
       <div id="viewer" class="viewer hidden" onclick="closeViewer()">
         <div class="viewerInner" onclick="event.stopPropagation()">
           <button class="viewerClose" onclick="closeViewer()">✕</button>
