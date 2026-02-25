@@ -77,11 +77,13 @@
     }
 
     /* keep layout stable, just hide */
-    .container[data-loading="true"] #profileHeader,
-    .container[data-loading="true"] #highlightsWrap,
-    .container[data-loading="true"] .contentArea {
-      visibility: hidden;
-    }
+   /* During loading: remove main UI from layout so skeleton doesn't push content */
+.container[data-loading="true"] #profileHeader,
+.container[data-loading="true"] #profileNote,
+.container[data-loading="true"] #highlightsWrap,
+.container[data-loading="true"] .contentArea {
+  display: none !important;
+}
 
     .hidden-section { display: none !important; }
 
