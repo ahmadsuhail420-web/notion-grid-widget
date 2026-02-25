@@ -44,10 +44,9 @@
       --toggle-on: #ffffff;
     }
 
-    /* IMPORTANT: lock the outside page so footer can't appear "outside" the widget */
+    /* IMPORTANT: remove overflow hidden on outer page (it can clip footer) */
     html, body {
       height: 100%;
-      overflow: hidden;
     }
 
     body {
@@ -76,7 +75,7 @@
       display: flex;
       flex-direction: column;
       border-radius: 24px;
-      overflow: hidden; /* KEY: prevents anything from visually leaving the widget */
+      overflow: hidden;
     }
 
     /* During loading: remove main UI from layout so skeleton doesn't push content */
@@ -99,11 +98,12 @@
       width: 100%;
     }
 
-    /* Footer must stay INSIDE the widget as the last flex row */
+    /* Footer: move a little up from border */
     .footer {
       flex: 0 0 auto;
       text-align: center;
-      padding: 8px 0;
+      padding: 6px 0 10px; /* moved up (more bottom padding inside) */
+      margin-top: -2px;     /* slight lift */
       font-size: 13px;
       color: var(--text-muted);
       background: transparent;
@@ -162,11 +162,7 @@
     }
 
     .refreshIcon.spin { animation: spin 1s linear infinite; }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .headerDivider {
       height: 1px;
@@ -194,26 +190,9 @@
 
     .menu.hidden { display: none; }
 
-    .menuItem {
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      white-space: nowrap;
-    }
-
-    .menuSection {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      margin-left: -2px;
-    }
-
-    .menuLabel {
-      font-size: 13px;
-      color: var(--text-main);
-    }
+    .menuItem { font-size: 13px; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .menuSection { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-left: -2px; }
+    .menuLabel { font-size: 13px; color: var(--text-main); }
 
     .toggleItem input { position: absolute; opacity: 0; pointer-events: none; }
     .toggleItem { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; }
@@ -244,19 +223,8 @@
     .toggleItem input:checked + .toggle { background: var(--toggle-on); }
     .toggleItem input:checked + .toggle::before { transform: translateX(16px); }
 
-    .dbMenuTitle {
-      font-size: 12px;
-      font-weight: 700;
-      opacity: 0.75;
-      width: 100%;
-    }
-
-    .dbMenuList {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      gap: 6px;
-    }
+    .dbMenuTitle { font-size: 12px; font-weight: 700; opacity: 0.75; width: 100%; }
+    .dbMenuList { display: flex; flex-direction: column; width: 100%; gap: 6px; }
 
     .dbMenuBtn {
       border: 1px solid var(--border-color);
@@ -283,7 +251,6 @@
     }
 
     .themeTitle { font-size: 12px; font-weight: 600; opacity: 0.6; }
-
     .themeSegment {
       position: relative;
       display: grid;
@@ -307,7 +274,7 @@
       border-radius: 999px;
       background: #000;
       z-index: 0;
-      transition: transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1), background-color 0.25s ease;
+      transition: transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1);
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
 
@@ -328,15 +295,10 @@
     }
 
     .themeSegment button.active { color: #fff; transform: scale(0.96); }
-
-    body[data-theme="dark"] .themeIndicator {
-      background: #ffffff;
-      box-shadow: 0 2px 8px rgba(255,255,255,0.25);
-    }
-
+    body[data-theme="dark"] .themeIndicator { background: #ffffff; }
     body[data-theme="dark"] .themeSegment button.active { color: #111; }
 
-    /* ---------- PROFILE (slightly up) ---------- */
+    /* ---------- PROFILE ---------- */
     .profile {
       padding: 14px 16px 18px;
       display: flex;
@@ -384,12 +346,7 @@
     }
 
     .stat { text-align: center; }
-    .stat strong {
-      font-size: clamp(11px, 4vw, 18px);
-      font-weight: 700;
-      color: var(--text-main);
-      display: block;
-    }
+    .stat strong { font-size: clamp(11px, 4vw, 18px); font-weight: 700; color: var(--text-main); display: block; }
     .stat span { font-size: clamp(9px, 3.2vw, 13px); color: var(--text-muted); }
 
     .profileNote {
@@ -430,23 +387,9 @@
       flex-shrink: 0;
     }
 
-    .highlightItem img {
-      width: 92%;
-      height: 92%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .highlightPlaceholder {
-      background: var(--bg-muted);
-      border-color: rgba(0, 0, 0, 0.08);
-    }
-
-    body[data-theme="dark"] .highlightPlaceholder {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.15);
-    }
-
+    .highlightItem img { width: 92%; height: 92%; border-radius: 50%; object-fit: cover; }
+    .highlightPlaceholder { background: var(--bg-muted); border-color: rgba(0, 0, 0, 0.08); }
+    body[data-theme="dark"] .highlightPlaceholder { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
     #highlightsWrap { margin-bottom: 12px; }
 
     /* ---------- CONTENT AREA ---------- */
@@ -468,13 +411,7 @@
       flex: 0 0 auto;
     }
 
-    .tabItem {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
+    .tabItem { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
 
     .tabItem img {
       width: 22px;
@@ -483,10 +420,7 @@
       transition: transform 0.25s ease, opacity 0.25s ease;
     }
 
-    .tabItem.active img {
-      opacity: 1;
-      transform: translateY(-2px) scale(1.05);
-    }
+    .tabItem.active img { opacity: 1; transform: translateY(-2px) scale(1.05); }
 
     .tabIcon {
       font-size: 22px;
@@ -497,11 +431,7 @@
       font-variation-settings: "FILL" 1;
     }
 
-    .tabItem.active .tabIcon {
-      opacity: 1;
-      transform: translateY(-2px) scale(1.05);
-    }
-
+    .tabItem.active .tabIcon { opacity: 1; transform: translateY(-2px) scale(1.05); }
     body[data-theme="dark"] .tabIcon { opacity: 0.75; color: #fff; }
     body[data-theme="dark"] .tabItem.active .tabIcon { opacity: 1; }
 
@@ -606,11 +536,7 @@
     }
 
     .viewerImage { aspect-ratio: 5 / 7; overflow: hidden; }
-    .viewerImage img, .viewerImage video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .viewerImage img, .viewerImage video { width: 100%; height: 100%; object-fit: cover; }
 
     .viewerFooter {
       padding: 14px 16px;
@@ -618,8 +544,7 @@
       color: var(--text-main);
     }
 
-    .viewerClose,
-    .nav {
+    .viewerClose, .nav {
       position: absolute;
       width: 36px;
       height: 36px;
@@ -655,11 +580,7 @@
       background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
       background-size: 400% 100%;
     }
-
-    @keyframes shimmer {
-      0% { background-position: 100% 0; }
-      100% { background-position: -100% 0; }
-    }
+    @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
   </style>
 </head>
 <body>
@@ -837,7 +758,6 @@
   </div>
 
   <script>
-    /* -------------------- PLAN GATING -------------------- */
     let CURRENT_PLAN = "free";
 
     function planAllows(plan, feature) {
@@ -856,7 +776,19 @@
       const footer = document.querySelector(".footer");
       if (footer) footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
 
-      // Font select + section toggles
+      // FREE PLAN: hide menu entirely (you asked to delete menu section for free)
+      if (CURRENT_PLAN === "free") {
+        const menuBtn = document.querySelector(".menuBtn");
+        const menu = document.getElementById("menu");
+        if (menuBtn) menuBtn.style.display = "none";
+        if (menu) menu.classList.add("hidden");
+        return;
+      } else {
+        const menuBtn = document.querySelector(".menuBtn");
+        if (menuBtn) menuBtn.style.display = "";
+      }
+
+      // Paid-only: font select + section toggles
       const menu = document.getElementById("menu");
       if (menu) {
         const fontSelect = document.getElementById("fontSelect");
@@ -874,22 +806,17 @@
         });
       }
 
-      // DB switcher inside menu
       const dbMenuWrap = document.getElementById("dbMenuWrap");
-      if (dbMenuWrap) {
-        dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
-      }
+      if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
     }
 
-    /* -------------------- THEME INITIALIZATION -------------------- */
+    /* Auto theme: always match system unless user explicitly set theme */
     (function () {
       const theme = localStorage.getItem("theme") || "default";
-      if (
-        theme === "dark" ||
-        (theme === "default" &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
+      if (theme === "dark" || (theme === "default" && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
         document.body.setAttribute("data-theme", "dark");
+      } else {
+        document.body.removeAttribute("data-theme");
       }
     })();
 
