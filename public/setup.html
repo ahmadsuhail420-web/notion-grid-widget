@@ -228,7 +228,7 @@
         if (!data.valid) {
           if (data.already_used) {
             // Token already used, redirect to database page
-            window.location.href = `/database.html?slug=${data.slug}`;
+            window.location.href = `/database.html?slug=${data.widget_slug}`;
             return false;
           }
           showError("Setup link is invalid or expired. Please contact support.");
