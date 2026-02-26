@@ -964,15 +964,6 @@
       document.getElementById("statPublished").innerText = stats.published;
     }
 
-    function syncUnderlineToActiveTab() {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (!activeTab) return;
-
-  // run twice to handle late layout (fonts/images)
-  requestAnimationFrame(() => moveUnderline(activeTab));
-  setTimeout(() => moveUnderline(activeTab), 50);
-}
-
     /* -------------------- THEME -------------------- */
     function syncThemePill(mode) {
       const indicator = document.querySelector(".themeIndicator");
@@ -1046,6 +1037,16 @@ window.toggleProfileNote = toggleProfileNote;
   const x = (tabRect.left - tabsRect.left) + (tabRect.width / 2) - (underlineWidth / 2);
 
   underline.style.transform = `translateX(${x}px)`;
+}
+    function syncUnderlineToActiveTab() {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (!activeTab) return;
+
+  // 1) ASAP after layout
+  requestAnimationFrame(() => moveUnderline(activeTab));
+
+  // 2) Once more after fonts/icons finish shifting layout
+  setTimeout(() => moveUnderline(activeTab), 100);
 }
 
     function setFilter(type, el) {
@@ -1432,14 +1433,7 @@ if (Number.isFinite(MAX)) {
           if (fontSelect && savedFont) fontSelect.value = savedFont;
 
           await loadDatabaseSwitcher();
-
-         requestAnimationFrame(() => {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (!activeTab) return;
-  moveUnderline(activeTab);
-  setTimeout(() => moveUnderline(activeTab), 50); // re-center after layout settles
-});
-
+         syncUnderlineToActiveTab();
           return;
         }
 
@@ -1485,6 +1479,9 @@ if (Number.isFinite(MAX)) {
         else document.body.removeAttribute("data-theme");
       }
     });
+    window.addEventListener("load", () => {
+  syncUnderlineToActiveTab();
+});
 
     window.addEventListener("load", startGrid);
   </script>
