@@ -98,7 +98,7 @@
       flex: 0 0 auto;
       text-align: center;
       padding: 6px 0 10px;
-      margin-top: -2px;
+      margin-top: 0;
       font-size: 13px;
       color: var(--text-muted);
       background: transparent;
@@ -775,6 +775,22 @@
 
       return false;
     }
+    
+    // FREE PLAN: hide profile + note + highlights (optional) + stats
+const profileHeader = document.getElementById("profileHeader");
+const profileNote = document.getElementById("profileNote");
+const highlightsWrap = document.getElementById("highlightsWrap");
+
+if (CURRENT_PLAN === "free") {
+  if (profileHeader) profileHeader.classList.add("hidden-section"); // hides picture + stats block
+  if (profileNote) profileNote.classList.add("hidden-section");     // hides note
+  // optional: also hide highlights row entirely for free (since free highlights=0 anyway)
+  if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
+} else {
+  if (profileHeader) profileHeader.classList.remove("hidden-section");
+  // show/hide note is still controlled by content
+  if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
+}
 
     function applyPlanToUI() {
       // Branding
