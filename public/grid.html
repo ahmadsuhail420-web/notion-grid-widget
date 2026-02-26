@@ -169,20 +169,42 @@
 
     /* ---------- MENU ---------- */
     .menu {
-     width: 160px; 
-      position: absolute;
-      top: 38px;
-      right: 0;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 10px 12px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 30;
-    }
+  width: min(240px, 78vw);           /* responsive */
+  max-height: min(420px, 70vh);      /* prevents huge menu */
+  overflow: auto;                    /* scroll inside if needed */
+
+  position: absolute;
+  top: 42px;
+  right: 0;
+
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 30;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+body[data-theme="dark"] .menu {
+  box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
+
+.menuItem.toggleItem {
+  width: 100%;
+  justify-content: space-between;
+  padding: 6px 2px;
+}
+
+.menuLabel {
+  font-size: 13px;
+  font-weight: 600;
+}
 
     .menu.hidden { display: none; }
 
@@ -232,7 +254,52 @@
       font-weight: 600;
       cursor: pointer;
       text-align: left;
+       width: 100%;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  border-radius: 12px;
+  padding: 10px 12px;
     }
+    
+    #fontSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-muted);
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 13px;
+  outline: none;
+}
+
+.menuSection {
+  width: 100%;
+  align-items: stretch;
+  gap: 8px;
+  margin-left: 0; /* remove the negative offset */
+}
+
+.themeTitle {
+  text-align: center;
+  margin-top: 2px;
+}
+
+.themeSegment {
+  width: 100%;
+  min-width: 0;
+  justify-self: stretch;
+}
+
+.menuSection {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-card);
+  padding-top: 8px;
+}
 
     .dbMenuBtn.active {
       background: var(--text-main);
