@@ -505,28 +505,38 @@
   display: flex;
   align-items: flex-end;
   padding: 10px;
-  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+  background: linear-gradient(to top, rgba(0,0,0,0.60), rgba(0,0,0,0));
   color: #fff;
-  font-size: 12px;
-  font-weight: 600;
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 6;
-  pointer-events: none; /* don't block clicks */
+  pointer-events: none;
 }
 
-.card:hover .hoverText {
-  opacity: 1;
-}
+.card:hover .hoverText { opacity: 1; }
+.card:active .hoverText { opacity: 1; } /* helps on touch devices */
+
+.card .hoverText .textWrap { width: 100%; }
 
 .card .hoverText .title {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
   display: -webkit-box;
-  -webkit-line-clamp: 2;      /* max 2 lines */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.2;
 }
-    .card:active .hoverText { opacity: 1; }
+
+.card .hoverText .date {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
     /* ---------- VIEWER ---------- */
     .viewer {
@@ -806,54 +816,41 @@
       return false;
     }
     
-    // FREE PLAN: hide profile + note + highlights (optional) + stats
-const profileHeader = document.getElementById("profileHeader");
-const profileNote = document.getElementById("profileNote");
-const highlightsWrap = document.getElementById("highlightsWrap");
-
-if (CURRENT_PLAN === "free") {
-  if (profileHeader) profileHeader.classList.add("hidden-section"); // hides picture + stats block
-  if (profileNote) profileNote.classList.add("hidden-section");     // hides note
-  // optional: also hide highlights row entirely for free (since free highlights=0 anyway)
-  if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-} else {
-  if (profileHeader) profileHeader.classList.remove("hidden-section");
-  // show/hide note is still controlled by content
-  if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
-}
-
-    function applyPlanToUI() {
+   function applyPlanToUI() {
   // Branding
   const footer = document.querySelector(".footer");
   if (footer) footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
 
-  // Free: hide menu
+  // Menu button + menu
   const menuBtn = document.querySelector(".menuBtn");
   const menu = document.getElementById("menu");
-  if (CURRENT_PLAN === "free") {
-    if (menuBtn) menuBtn.style.display = "none";
-    if (menu) menu.classList.add("hidden");
-  } else {
-    if (menuBtn) menuBtn.style.display = "";
-  }
 
-  // ✅ Free: hide profile header (pic + stats), note, highlights wrapper
-  const profileHeader = document.getElementById("profileHeader");
+  // Sections we need to hide/show
+  const profileHeader = document.getElementById("profileHeader");   // picture + stats
   const profileNote = document.getElementById("profileNote");
   const highlightsWrap = document.getElementById("highlightsWrap");
 
   if (CURRENT_PLAN === "free") {
+    // hide menu
+    if (menuBtn) menuBtn.style.display = "none";
+    if (menu) menu.classList.add("hidden");
+
+    // hide profile + note + highlights
     if (profileHeader) profileHeader.classList.add("hidden-section");
     if (profileNote) profileNote.classList.add("hidden-section");
     if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-    return; // nothing else for free
-  } else {
-    if (profileHeader) profileHeader.classList.remove("hidden-section");
-    if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
-    // note visibility is controlled by renderProfile/loadPosts based on content
+
+    return;
   }
 
-  // Paid-only options in menu
+  // paid: show menu button
+  if (menuBtn) menuBtn.style.display = "";
+
+  // paid: show profile + highlights; note visibility handled by renderProfile() based on content
+  if (profileHeader) profileHeader.classList.remove("hidden-section");
+  if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
+
+  // Paid-only options inside menu
   if (menu) {
     const fontSelect = document.getElementById("fontSelect");
     if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
@@ -1012,11 +1009,10 @@ if (CURRENT_PLAN === "free") {
     }
     window.toggleAvatar = toggleAvatar;
 
-    function toggleProfileNote(checkbox) {
+    fufunction toggleProfileNote(checkbox) {
   const note = document.getElementById("profileNote");
   if (!note) return;
 
-  // Free: always hidden
   if (CURRENT_PLAN === "free") {
     note.classList.add("hidden-section");
     return;
@@ -1026,7 +1022,7 @@ if (CURRENT_PLAN === "free") {
   localStorage.setItem("showProfileNote", checkbox.checked);
 }
 window.toggleProfileNote = toggleProfileNote;
-
+    
     /* -------------------- TABS -------------------- */
     function moveUnderline(tab) {
       const underline = document.getElementById("slidingUnderline");
@@ -1176,28 +1172,27 @@ window.toggleProfileNote = toggleProfileNote;
 
     /* -------------------- PROFILE -------------------- */
     function renderProfile(profile) {
-      if (!profile) return;
-      document.getElementById("profileName").innerText = profile.name;
-      document.getElementById("profileImage").src = profile.picture || "/icons/profile-placeholder.png";
+  if (!profile) return;
 
-      const noteEl = document.getElementById("profileNote");
-if (!noteEl) return;
+  document.getElementById("profileName").innerText = profile.name || "Grid Planner";
+  document.getElementById("profileImage").src = profile.picture || "/icons/profile-placeholder.png";
 
-if (CURRENT_PLAN === "free") {
-  noteEl.classList.add("hidden-section");
-} else if (profile.note) {
-  noteEl.textContent = profile.note;
-  noteEl.classList.remove("hidden-section");
-} else {
-  noteEl.classList.add("hidden-section");
+  const noteEl = document.getElementById("profileNote");
+  if (!noteEl) return;
+
+  // Free: never show note
+  if (CURRENT_PLAN === "free") {
+    noteEl.classList.add("hidden-section");
+    return;
+  }
+
+  if (profile.note) {
+    noteEl.textContent = profile.note;
+    noteEl.classList.remove("hidden-section");
+  } else {
+    noteEl.classList.add("hidden-section");
+  }
 }
-      if (profile.note) {
-        noteEl.textContent = profile.note;
-        noteEl.classList.remove("hidden-section");
-      } else {
-        noteEl.classList.add("hidden-section");
-      }
-    }
 
     /* -------------------- HIGHLIGHTS -------------------- */
     function renderHighlights(posts) {
@@ -1258,64 +1253,74 @@ if (Number.isFinite(MAX)) {
       if (post.thumbnail) return post.thumbnail;
       return (Array.isArray(post.attachment) && post.attachment[0]) || null;
     }
+    function formatDateForHover(post) {
+  const raw = post.publishDate || post.date || post.createdAt || post.created_at || "";
+  if (!raw) return "";
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return String(raw);
+
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "2-digit" });
+}
 
     function renderGrid() {
-      const grid = document.getElementById("grid");
-      grid.innerHTML = "";
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
 
-      getVisibleGridPosts().forEach(post => {
-        const card = document.createElement("div");
-        card.className = "card";
+  getVisibleGridPosts().forEach(post => {
+    const card = document.createElement("div");
+    card.className = "card";
 
-        const src = getCardSrc(post);
-        if (src) {
-          if (isDirectVideoUrl(src) && !post.thumbnail) {
-            const v = document.createElement("video");
-            v.src = src;
-            v.muted = true;
-            v.playsInline = true;
-            card.appendChild(v);
-          } else {
-            const img = document.createElement("img");
-            img.src = src;
-            card.appendChild(img);
-          }
-        }
-
-        if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
-        if (planAllows(CURRENT_PLAN, "pinned") && post.pinned) addBadge(card, "/icons/pin.png");
-
-        // ✅ Free: disable viewer modal
-        card.onclick = () => {
-          if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
-          openViewer(post);
-        };
-        const hover = document.createElement("div");
-hover.className = "hoverText";
-
-const title = document.createElement("div");
-title.className = "title";
-title.textContent = post.name || post.title || post.caption || "";
-
-hover.appendChild(title);
-card.appendChild(hover);
-
-        grid.appendChild(card);
-      });
-      // Hover overlay text (works on free + paid)
-const hover = document.createElement("div");
-hover.className = "hoverText";
-
-const title = document.createElement("div");
-title.className = "title";
-
-// Choose what text to show (adjust fields if needed)
-title.textContent = post.name || post.title || post.caption || "";
-
-hover.appendChild(title);
-card.appendChild(hover);
+    const src = getCardSrc(post);
+    if (src) {
+      if (isDirectVideoUrl(src) && !post.thumbnail) {
+        const v = document.createElement("video");
+        v.src = src;
+        v.muted = true;
+        v.playsInline = true;
+        card.appendChild(v);
+      } else {
+        const img = document.createElement("img");
+        img.src = src;
+        card.appendChild(img);
+      }
     }
 
+    if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
+    if (planAllows(CURRENT_PLAN, "pinned") && post.pinned) addBadge(card, "/icons/pin.png");
+
+    // Hover overlay (name + date) — works on Free too
+    const hover = document.createElement("div");
+    hover.className = "hoverText";
+
+    const wrap = document.createElement("div");
+    wrap.className = "textWrap";
+
+    const title = document.createElement("div");
+    title.className = "title";
+    title.textContent = post.name || post.title || post.caption || "";
+
+    const date = document.createElement("div");
+    date.className = "date";
+    date.textContent = formatDateForHover(post);
+
+    wrap.appendChild(title);
+    if (date.textContent) wrap.appendChild(date);
+
+    hover.appendChild(wrap);
+    card.appendChild(hover);
+
+    // Click: popup only for paid
+    card.onclick = () => {
+      if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
+      openViewer(post);
+    };
+
+    grid.appendChild(card);
+  });
+}
     /* -------------------- VIEWER -------------------- */
     function openViewer(post) {
       const viewer = document.getElementById("viewer");
