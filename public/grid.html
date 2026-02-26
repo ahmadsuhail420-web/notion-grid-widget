@@ -169,7 +169,7 @@
 
     /* ---------- MENU ---------- */
     .menu {
-  width: 110px;           /* responsive */
+  width: 115px;           /* responsive */
   height: auto;      /* prevents huge menu */
   overflow: auto;                    /* scroll inside if needed */
   position: absolute;
@@ -314,11 +314,6 @@ body[data-theme="dark"] .menu {
   outline: none;
 }
 
-.themeTitle {
-  text-align: center;
-  margin-top: 2px;
-}
-
 .themeSegment {
   width: 100%;
   min-width: 0;
@@ -326,7 +321,7 @@ body[data-theme="dark"] .menu {
 }
 
 .themeSegment .material-symbols-outlined {
-  font-size: 18px;           /* was effectively 22px globally */
+  font-size: 14px;           /* was effectively 22px globally */
   width: 18px;
   height: 18px;
   line-height: 18px;
@@ -344,18 +339,24 @@ body[data-theme="dark"] .menu {
       border-color: #fff;
     }
 
-    .themeTitle { font-size: 12px; font-weight: 600; opacity: 0.6; }
+    .themeTitle { 
+      font-size: 12px; 
+      font-weight: 600; 
+      opacity: 0.6; 
+      text-align: center;
+  margin-top: 2px;
+    }
+    
     .themeSegment {
       position: relative;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      padding: 4px;
+      padding: 4px 6px;
       background: var(--bg-muted);
       border-radius: 999px;
       border: 1px solid var(--border-color);
       width: auto;
       margin: auto;
-      min-width: 107px;
       max-width: 100%;
     }
 
