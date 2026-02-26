@@ -526,6 +526,7 @@
   overflow: hidden;
   line-height: 1.2;
 }
+    .card:active .hoverText { opacity: 1; }
 
     /* ---------- VIEWER ---------- */
     .viewer {
@@ -822,43 +823,56 @@ if (CURRENT_PLAN === "free") {
 }
 
     function applyPlanToUI() {
-      // Branding
-      const footer = document.querySelector(".footer");
-      if (footer) footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
+  // Branding
+  const footer = document.querySelector(".footer");
+  if (footer) footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
 
-      // FREE PLAN: hide menu entirely
-      if (CURRENT_PLAN === "free") {
-        const menuBtn = document.querySelector(".menuBtn");
-        const menu = document.getElementById("menu");
-        if (menuBtn) menuBtn.style.display = "none";
-        if (menu) menu.classList.add("hidden");
-        return;
-      } else {
-        const menuBtn = document.querySelector(".menuBtn");
-        if (menuBtn) menuBtn.style.display = "";
-      }
+  // Free: hide menu
+  const menuBtn = document.querySelector(".menuBtn");
+  const menu = document.getElementById("menu");
+  if (CURRENT_PLAN === "free") {
+    if (menuBtn) menuBtn.style.display = "none";
+    if (menu) menu.classList.add("hidden");
+  } else {
+    if (menuBtn) menuBtn.style.display = "";
+  }
 
-      // Paid-only: font select + section toggles
-      const menu = document.getElementById("menu");
-      if (menu) {
-        const fontSelect = document.getElementById("fontSelect");
-        if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
+  // ✅ Free: hide profile header (pic + stats), note, highlights wrapper
+  const profileHeader = document.getElementById("profileHeader");
+  const profileNote = document.getElementById("profileNote");
+  const highlightsWrap = document.getElementById("highlightsWrap");
 
-        const toggleLabels = [...menu.querySelectorAll("label.toggleItem")];
-        toggleLabels.forEach(label => {
-          const text = label.textContent || "";
-          const isSectionToggle =
-            text.includes("Header") ||
-            text.includes("Highlights") ||
-            text.includes("Profile") ||
-            text.includes("Note");
-          if (isSectionToggle) label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
-        });
-      }
+  if (CURRENT_PLAN === "free") {
+    if (profileHeader) profileHeader.classList.add("hidden-section");
+    if (profileNote) profileNote.classList.add("hidden-section");
+    if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
+    return; // nothing else for free
+  } else {
+    if (profileHeader) profileHeader.classList.remove("hidden-section");
+    if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
+    // note visibility is controlled by renderProfile/loadPosts based on content
+  }
 
-      const dbMenuWrap = document.getElementById("dbMenuWrap");
-      if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
-    }
+  // Paid-only options in menu
+  if (menu) {
+    const fontSelect = document.getElementById("fontSelect");
+    if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
+
+    const toggleLabels = [...menu.querySelectorAll("label.toggleItem")];
+    toggleLabels.forEach(label => {
+      const text = label.textContent || "";
+      const isSectionToggle =
+        text.includes("Header") ||
+        text.includes("Highlights") ||
+        text.includes("Profile") ||
+        text.includes("Note");
+      if (isSectionToggle) label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
+    });
+  }
+
+  const dbMenuWrap = document.getElementById("dbMenuWrap");
+  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
+}
 
     /* Auto theme: always match system unless user explicitly set theme */
     (function () {
@@ -999,22 +1013,19 @@ if (CURRENT_PLAN === "free") {
     window.toggleAvatar = toggleAvatar;
 
     function toggleProfileNote(checkbox) {
-     const noteEl = document.getElementById("profileNote");
+  const note = document.getElementById("profileNote");
+  if (!note) return;
 
-if (CURRENT_PLAN === "free") {
-  noteEl.classList.add("hidden-section");
-} else if (apiProfile?.note) {
-  noteEl.textContent = apiProfile.note;
-  noteEl.classList.remove("hidden-section");
-} else {
-  noteEl.classList.add("hidden-section");
+  // Free: always hidden
+  if (CURRENT_PLAN === "free") {
+    note.classList.add("hidden-section");
+    return;
+  }
+
+  note.classList.toggle("hidden-section", !checkbox.checked);
+  localStorage.setItem("showProfileNote", checkbox.checked);
 }
-      
-      if (!note) return;
-      note.classList.toggle("hidden-section", !checkbox.checked);
-      localStorage.setItem("showProfileNote", checkbox.checked);
-    }
-    window.toggleProfileNote = toggleProfileNote;
+window.toggleProfileNote = toggleProfileNote;
 
     /* -------------------- TABS -------------------- */
     function moveUnderline(tab) {
@@ -1148,23 +1159,6 @@ if (CURRENT_PLAN === "free") {
 
         renderProfile(finalProfile);
 
-       const noteEl = document.getElementById("profileNote");
-
-if (CURRENT_PLAN === "free") {
-  noteEl.classList.add("hidden-section");
-} else if (profile.note) {
-  noteEl.textContent = profile.note;
-  noteEl.classList.remove("hidden-section");
-} else {
-  noteEl.classList.add("hidden-section");
-}
-        if (apiProfile?.note) {
-          noteEl.textContent = apiProfile.note;
-          noteEl.classList.remove("hidden-section");
-        } else {
-          noteEl.classList.add("hidden-section");
-        }
-
         renderHighlights(ALL_POSTS);
         renderGrid();
         updateStats();
@@ -1187,6 +1181,16 @@ if (CURRENT_PLAN === "free") {
       document.getElementById("profileImage").src = profile.picture || "/icons/profile-placeholder.png";
 
       const noteEl = document.getElementById("profileNote");
+if (!noteEl) return;
+
+if (CURRENT_PLAN === "free") {
+  noteEl.classList.add("hidden-section");
+} else if (profile.note) {
+  noteEl.textContent = profile.note;
+  noteEl.classList.remove("hidden-section");
+} else {
+  noteEl.classList.add("hidden-section");
+}
       if (profile.note) {
         noteEl.textContent = profile.note;
         noteEl.classList.remove("hidden-section");
@@ -1286,6 +1290,15 @@ if (Number.isFinite(MAX)) {
           if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
           openViewer(post);
         };
+        const hover = document.createElement("div");
+hover.className = "hoverText";
+
+const title = document.createElement("div");
+title.className = "title";
+title.textContent = post.name || post.title || post.caption || "";
+
+hover.appendChild(title);
+card.appendChild(hover);
 
         grid.appendChild(card);
       });
