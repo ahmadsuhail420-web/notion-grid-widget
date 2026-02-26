@@ -225,15 +225,14 @@
         const res = await fetch(`/api/validate-token?token=${encodeURIComponent(token)}`);
         const data = await res.json();
 
-        if (!data.valid) {
-          if (data.already_used) {
-            // Token already used, redirect to database page
-            window.location.href = `/database.html?slug=${data.widget_slug}`;
-            return false;
-          }
-          showError("Setup link is invalid or expired. Please contact support.");
-          return false;
-        }
+       if (!data.valid) {
+  if (data.already_used && data.widget_slug) {
+    window.location.href = `/database.html?slug=${encodeURIComponent(data.widget_slug)}`;
+    return false;
+  }
+  showError(data.error || "Setup link is invalid or expired. Please contact support.");
+  return false;
+}
 
         // Token is valid ✅
         status.style.display = "none";
