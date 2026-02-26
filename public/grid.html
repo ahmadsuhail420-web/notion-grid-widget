@@ -468,7 +468,7 @@ body[data-theme="dark"] .menu {
     /* ---------- HIGHLIGHTS ---------- */
     .highlights {
       width: 100%;
-      padding-left: 10px;
+      padding-left: 1px;
       box-sizing: border-box;
       flex: 0 0 auto;
     }
@@ -916,7 +916,7 @@ body[data-theme="dark"] .tabItem.active img {
       </div>
     </div>
 
-    <div class="footer">Alif Designs</div>
+  <div class="footer"><span class="footerBrand">Alif Designs</span></div>
   </div>
 
   <script>
@@ -944,9 +944,11 @@ body[data-theme="dark"] .tabItem.active img {
     }
     
    function applyPlanToUI() {
-  // Branding
-  const footer = document.querySelector(".footer");
-  if (footer) footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
+  // Branding (keep footer space, hide only text on paid)
+const footerBrand = document.querySelector(".footerBrand");
+if (footerBrand) {
+  footerBrand.style.visibility = (CURRENT_PLAN === "advanced" || CURRENT_PLAN === "pro") ? "hidden" : "visible";
+}
 
   // Menu button + menu
   const menuBtn = document.querySelector(".menuBtn");
