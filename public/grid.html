@@ -498,6 +498,35 @@
 
     body[data-theme="dark"] .card video { opacity: 0.85; }
 
+    /* Hover overlay text */
+.card .hoverText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 6;
+  pointer-events: none; /* don't block clicks */
+}
+
+.card:hover .hoverText {
+  opacity: 1;
+}
+
+.card .hoverText .title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;      /* max 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
     /* ---------- VIEWER ---------- */
     .viewer {
       position: absolute;
@@ -970,7 +999,17 @@ if (CURRENT_PLAN === "free") {
     window.toggleAvatar = toggleAvatar;
 
     function toggleProfileNote(checkbox) {
-      const note = document.getElementById("profileNote");
+     const noteEl = document.getElementById("profileNote");
+
+if (CURRENT_PLAN === "free") {
+  noteEl.classList.add("hidden-section");
+} else if (apiProfile?.note) {
+  noteEl.textContent = apiProfile.note;
+  noteEl.classList.remove("hidden-section");
+} else {
+  noteEl.classList.add("hidden-section");
+}
+      
       if (!note) return;
       note.classList.toggle("hidden-section", !checkbox.checked);
       localStorage.setItem("showProfileNote", checkbox.checked);
@@ -1109,7 +1148,16 @@ if (CURRENT_PLAN === "free") {
 
         renderProfile(finalProfile);
 
-        const noteEl = document.getElementById("profileNote");
+       const noteEl = document.getElementById("profileNote");
+
+if (CURRENT_PLAN === "free") {
+  noteEl.classList.add("hidden-section");
+} else if (profile.note) {
+  noteEl.textContent = profile.note;
+  noteEl.classList.remove("hidden-section");
+} else {
+  noteEl.classList.add("hidden-section");
+}
         if (apiProfile?.note) {
           noteEl.textContent = apiProfile.note;
           noteEl.classList.remove("hidden-section");
@@ -1241,6 +1289,18 @@ if (Number.isFinite(MAX)) {
 
         grid.appendChild(card);
       });
+      // Hover overlay text (works on free + paid)
+const hover = document.createElement("div");
+hover.className = "hoverText";
+
+const title = document.createElement("div");
+title.className = "title";
+
+// Choose what text to show (adjust fields if needed)
+title.textContent = post.name || post.title || post.caption || "";
+
+hover.appendChild(title);
+card.appendChild(hover);
     }
 
     /* -------------------- VIEWER -------------------- */
