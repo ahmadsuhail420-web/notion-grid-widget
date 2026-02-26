@@ -434,7 +434,7 @@
       position: absolute;
       bottom: 0;
       height: 2px;
-      width: clamp(18px, 10vw, 44px);
+      width: 28px;
       background: var(--text-main);
       border-radius: 2px;
       transform: translateX(0);
@@ -1026,15 +1026,18 @@ window.toggleProfileNote = toggleProfileNote;
     
     /* -------------------- TABS -------------------- */
     function moveUnderline(tab) {
-      const underline = document.getElementById("slidingUnderline");
-      const tabs = document.querySelector(".tabs");
-      if (!underline || !tabs || !tab) return;
+  const underline = document.getElementById("slidingUnderline");
+  const tabs = document.querySelector(".tabs");
+  if (!underline || !tabs || !tab) return;
 
-      const tabRect = tab.getBoundingClientRect();
-      const tabsRect = tabs.getBoundingClientRect();
-      const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underline.offsetWidth / 2;
-      underline.style.transform = `translateX(${x}px)`;
-    }
+  const tabRect = tab.getBoundingClientRect();
+  const tabsRect = tabs.getBoundingClientRect();
+
+  const underlineWidth = underline.getBoundingClientRect().width || underline.offsetWidth || 0;
+  const x = (tabRect.left - tabsRect.left) + (tabRect.width / 2) - (underlineWidth / 2);
+
+  underline.style.transform = `translateX(${x}px)`;
+}
 
     function setFilter(type, el) {
       FILTER = type;
@@ -1417,10 +1420,12 @@ if (Number.isFinite(MAX)) {
 
           await loadDatabaseSwitcher();
 
-          requestAnimationFrame(() => {
-            const activeTab = document.querySelector(".tabItem.active");
-            if (activeTab) moveUnderline(activeTab);
-          });
+         requestAnimationFrame(() => {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (!activeTab) return;
+  moveUnderline(activeTab);
+  setTimeout(() => moveUnderline(activeTab), 50); // re-center after layout settles
+});
 
           return;
         }
@@ -1439,9 +1444,11 @@ if (Number.isFinite(MAX)) {
         await loadPosts(savedDb);
 
         requestAnimationFrame(() => {
-          const activeTab = document.querySelector(".tabItem.active");
-          if (activeTab) moveUnderline(activeTab);
-        });
+  const activeTab = document.querySelector(".tabItem.active");
+  if (!activeTab) return;
+  moveUnderline(activeTab);
+  setTimeout(() => moveUnderline(activeTab), 50); // re-center after layout settles
+});
       } catch (e) {
         console.error("Grid init failed", e);
       }
