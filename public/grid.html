@@ -168,7 +168,7 @@
 
     /* ---------- MENU ---------- */
     .menu {
-      width: 180px;
+     width: min(160px, 92vw); 
       position: absolute;
       top: 38px;
       right: 0;
@@ -231,6 +231,11 @@
       font-weight: 600;
       cursor: pointer;
       text-align: left;
+       width: 100%;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
     }
 
     .dbMenuBtn.active {
@@ -244,6 +249,12 @@
       color: #111;
       border-color: #fff;
     }
+
+    #fontSelect {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 
     .themeTitle { font-size: 12px; font-weight: 600; opacity: 0.6; }
     .themeSegment {
