@@ -771,9 +771,7 @@
       if (feature === "pinned") return isPaid;
       if (feature === "multi_db_switcher") return isPaid;
 
-      // Your current UI behavior: paid = 10, free = 5
-      // (You said Free should be 0 and Pro unlimited; that needs separate changes.)
-      if (feature === "unlimited_highlights") return isPaid;
+     if (feature === "unlimited_highlights") return plan === "pro";
 
       return false;
     }
@@ -1138,10 +1136,15 @@
       const row = document.getElementById("highlights");
       row.innerHTML = "";
 
-      const MAX = planAllows(CURRENT_PLAN, "unlimited_highlights") ? 10 : 5;
+      let MAX = 0; // free
+if (CURRENT_PLAN === "advanced") MAX = 10;
+if (CURRENT_PLAN === "pro") MAX = Infinity; // unlimited
 
-      const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
-      items.slice(0, MAX).forEach(post => {
+     const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
+
+const visibleItems = Number.isFinite(MAX) ? items.slice(0, MAX) : items;
+
+visibleItems.forEach(post => {
         const wrap = document.createElement("div");
         wrap.className = "highlightItem";
 
@@ -1159,12 +1162,15 @@
         row.appendChild(wrap);
       });
 
-      const remaining = MAX - items.length;
-      for (let i = 0; i < remaining; i++) {
-        const ph = document.createElement("div");
-        ph.className = "highlightItem highlightPlaceholder";
-        row.appendChild(ph);
-      }
+    // Only show placeholders when MAX is a real number (free/advanced)
+if (Number.isFinite(MAX)) {
+  const remaining = Math.max(0, MAX - items.length);
+  for (let i = 0; i < remaining; i++) {
+    const ph = document.createElement("div");
+    ph.className = "highlightItem highlightPlaceholder";
+    row.appendChild(ph);
+  }
+}
     }
 
     /* -------------------- GRID -------------------- */
