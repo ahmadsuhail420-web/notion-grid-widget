@@ -44,10 +44,7 @@
       --toggle-on: #ffffff;
     }
 
-    /* IMPORTANT: remove overflow hidden on outer page (it can clip footer) */
-    html, body {
-      height: 100%;
-    }
+    html, body { height: 100%; }
 
     body {
       font-family: var(--font-main);
@@ -78,7 +75,6 @@
       overflow: hidden;
     }
 
-    /* During loading: remove main UI from layout so skeleton doesn't push content */
     .container[data-loading="true"] #profileHeader,
     .container[data-loading="true"] #profileNote,
     .container[data-loading="true"] #highlightsWrap,
@@ -98,12 +94,11 @@
       width: 100%;
     }
 
-    /* Footer: move a little up from border */
     .footer {
       flex: 0 0 auto;
       text-align: center;
-      padding: 6px 0 10px; /* moved up (more bottom padding inside) */
-      margin-top: -2px;     /* slight lift */
+      padding: 6px 0 10px;
+      margin-top: -2px;
       font-size: 13px;
       color: var(--text-muted);
       background: transparent;
@@ -758,16 +753,28 @@
   </div>
 
   <script>
-    CURRENT_PLAN = plan || "free";
+    /* -------------------- GLOBALS -------------------- */
+    let CURRENT_PLAN = "free";
+    let ALL_POSTS = [];
+    let FILTER = "__POSTS__"; // "__POSTS__" | "Video" | "Favorite"
+    let currentSlide = 0;
+    let currentMedia = [];
 
+    /* -------------------- PLAN GATING -------------------- */
     function planAllows(plan, feature) {
       const isPaid = plan === "advanced" || plan === "pro";
-      if (feature === "remove_branding") return isPaid;
+
+      if (feature === "viewer_modal") return plan !== "free";  // ✅ Free: no popup viewer
+      if (feature === "remove_branding") return plan !== "free"; // change later if you want Advanced branding OFF only via plan_limits
       if (feature === "fonts") return isPaid;
       if (feature === "hide_sections") return isPaid;
       if (feature === "pinned") return isPaid;
       if (feature === "multi_db_switcher") return isPaid;
+
+      // Your current UI behavior: paid = 10, free = 5
+      // (You said Free should be 0 and Pro unlimited; that needs separate changes.)
       if (feature === "unlimited_highlights") return isPaid;
+
       return false;
     }
 
@@ -776,7 +783,7 @@
       const footer = document.querySelector(".footer");
       if (footer) footer.style.display = planAllows(CURRENT_PLAN, "remove_branding") ? "none" : "";
 
-      // FREE PLAN: hide menu entirely (you asked to delete menu section for free)
+      // FREE PLAN: hide menu entirely
       if (CURRENT_PLAN === "free") {
         const menuBtn = document.querySelector(".menuBtn");
         const menu = document.getElementById("menu");
@@ -820,18 +827,11 @@
       }
     })();
 
-    /* -------------------- GLOBALS -------------------- */
-    let ALL_POSTS = [];
-    let FILTER = "__POSTS__"; // "__POSTS__" | "Video" | "Favorite"
-    let currentSlide = 0;
-    let currentMedia = [];
-
     function getSlug() {
       const params = new URLSearchParams(window.location.search);
       return params.get("slug");
     }
 
-    // Attachment-only
     function hasMedia(post) {
       return (
         (Array.isArray(post.attachment) && post.attachment.length > 0) ||
@@ -854,7 +854,7 @@
       else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
 
       document.documentElement.style.setProperty("--font-main", value);
-      document.body.style.fontFamily = "var(--font-main)"; // ensure applied
+      document.body.style.fontFamily = "var(--font-main)";
       localStorage.setItem("font", font);
     }
     window.setFont = setFont;
@@ -1004,7 +1004,8 @@
         const databases = data.databases || [];
         const plan = data.plan || "free";
 
-        CURRENT_PLAN = CURRENT_PLAN || plan;
+        // ✅ FIX: always take plan from API
+        CURRENT_PLAN = plan || "free";
         applyPlanToUI();
 
         if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
@@ -1034,7 +1035,6 @@
 
             localStorage.setItem("activeDatabase", dbItem.database_id);
             await animateDatabaseChange(dbItem.database_id);
-            // close menu after switch
             document.getElementById("menu").classList.add("hidden");
           };
 
@@ -1077,12 +1077,12 @@
         let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
         const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-        if (activeDb) url += `&db=${activeDb}`;
+        if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
 
         const res = await fetch(url);
         if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        const { profile: apiProfile, posts, plan, databases, widget_settings } = await res.json();
+        const { profile: apiProfile, posts, plan } = await res.json();
 
         CURRENT_PLAN = plan || "free";
         applyPlanToUI();
@@ -1149,7 +1149,13 @@
         img.src = post.thumbnail || post.attachment?.[0];
 
         wrap.appendChild(img);
-        wrap.onclick = () => openViewer(post);
+
+        // ✅ Free: disable viewer modal
+        wrap.onclick = () => {
+          if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
+          openViewer(post);
+        };
+
         row.appendChild(wrap);
       });
 
@@ -1205,19 +1211,26 @@
         if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
         if (planAllows(CURRENT_PLAN, "pinned") && post.pinned) addBadge(card, "/icons/pin.png");
 
-        card.onclick = () => openViewer(post);
+        // ✅ Free: disable viewer modal
+        card.onclick = () => {
+          if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
+          openViewer(post);
+        };
+
         grid.appendChild(card);
       });
     }
 
     /* -------------------- VIEWER -------------------- */
     function openViewer(post) {
+      const viewer = document.getElementById("viewer");
+      if (!viewer) return;
+
       currentMedia = post.attachment?.length ? post.attachment : (post.thumbnail ? [post.thumbnail] : []);
       currentSlide = 0;
       updateViewerImage();
 
       document.getElementById("viewerTitle").innerText = post.name || "";
-      const viewer = document.getElementById("viewer");
       viewer.classList.remove("hidden");
       requestAnimationFrame(() => viewer.classList.add("show"));
     }
@@ -1257,6 +1270,7 @@
 
     function closeViewer() {
       const v = document.getElementById("viewer");
+      if (!v) return;
       v.classList.remove("show");
       setTimeout(() => v.classList.add("hidden"), 250);
     }
@@ -1342,7 +1356,7 @@
 
     document.addEventListener("click", () => {
       const menu = document.getElementById("menu");
-      if (!menu.classList.contains("hidden")) menu.classList.add("hidden");
+      if (menu && !menu.classList.contains("hidden")) menu.classList.add("hidden");
     });
 
     document.addEventListener("keydown", (e) => {
