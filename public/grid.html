@@ -964,6 +964,15 @@
       document.getElementById("statPublished").innerText = stats.published;
     }
 
+    function syncUnderlineToActiveTab() {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (!activeTab) return;
+
+  // run twice to handle late layout (fonts/images)
+  requestAnimationFrame(() => moveUnderline(activeTab));
+  setTimeout(() => moveUnderline(activeTab), 50);
+}
+
     /* -------------------- THEME -------------------- */
     function syncThemePill(mode) {
       const indicator = document.querySelector(".themeIndicator");
@@ -1049,9 +1058,11 @@ window.toggleProfileNote = toggleProfileNote;
       });
 
       el.classList.add("active");
+      syncUnderlineToActiveTab();
       moveUnderline(el);
       renderGrid();
       updateStats();
+      
     }
     window.setFilter = setFilter;
 
@@ -1161,6 +1172,8 @@ window.toggleProfileNote = toggleProfileNote;
     renderHighlights(ALL_POSTS);
     renderGrid();
     updateStats();
+    syncUnderlineToActiveTab();
+    
   } catch (e) {
     console.error("loadPosts failed:", e);
   } finally {
@@ -1443,12 +1456,8 @@ if (Number.isFinite(MAX)) {
         const savedDb = localStorage.getItem("activeDatabase");
         await loadPosts(savedDb);
 
-        requestAnimationFrame(() => {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (!activeTab) return;
-  moveUnderline(activeTab);
-  setTimeout(() => moveUnderline(activeTab), 50); // re-center after layout settles
-});
+      syncUnderlineToActiveTab();
+        
       } catch (e) {
         console.error("Grid init failed", e);
       }
