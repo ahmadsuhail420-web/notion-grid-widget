@@ -1009,7 +1009,7 @@
     }
     window.toggleAvatar = toggleAvatar;
 
-    fufunction toggleProfileNote(checkbox) {
+    function toggleProfileNote(checkbox) {
   const note = document.getElementById("profileNote");
   if (!note) return;
 
@@ -1124,52 +1124,49 @@ window.toggleProfileNote = toggleProfileNote;
 
     /* -------------------- DATA LOAD -------------------- */
     async function loadPosts(selectedDb = null, btn = null) {
-      const icon = btn?.querySelector(".refreshIcon");
-      if (icon) icon.classList.add("spin");
+  const icon = btn?.querySelector(".refreshIcon");
+  if (icon) icon.classList.add("spin");
 
-      if (!btn) {
-        document.querySelector(".container").setAttribute("data-loading", "true");
-        document.getElementById("skeleton").style.display = "block";
-      }
+  if (!btn) {
+    document.querySelector(".container").setAttribute("data-loading", "true");
+    document.getElementById("skeleton").style.display = "block";
+  }
 
-      try {
-        const slug = getSlug();
-        let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
+  try {
+    const slug = getSlug();
+    let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
-        const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-        if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
+    const activeDb = selectedDb || localStorage.getItem("activeDatabase");
+    if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        const { profile: apiProfile, posts, plan } = await res.json();
+    const { profile: apiProfile, posts, plan } = await res.json();
 
-        CURRENT_PLAN = plan || "free";
-        applyPlanToUI();
+    CURRENT_PLAN = plan || "free";
+    applyPlanToUI();
 
-        ALL_POSTS = Array.isArray(posts) ? posts : [];
-        sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
+    ALL_POSTS = Array.isArray(posts) ? posts : [];
+    sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
 
-        const derivedProfile = extractProfileFromPosts(ALL_POSTS);
-        const finalProfile = apiProfile || derivedProfile;
+    const derivedProfile = extractProfileFromPosts(ALL_POSTS);
+    const finalProfile = apiProfile || derivedProfile;
 
-        renderProfile(finalProfile);
-
-        renderHighlights(ALL_POSTS);
-        renderGrid();
-        updateStats();
-      } catch (e) {
-        console.error("loadPosts failed:", e);
-      }
-
-      if (!btn) {
-        document.getElementById("skeleton").style.display = "none";
-        document.querySelector(".container").removeAttribute("data-loading");
-      }
-
-      if (icon) icon.classList.remove("spin");
+    renderProfile(finalProfile);
+    renderHighlights(ALL_POSTS);
+    renderGrid();
+    updateStats();
+  } catch (e) {
+    console.error("loadPosts failed:", e);
+  } finally {
+    if (!btn) {
+      document.getElementById("skeleton").style.display = "none";
+      document.querySelector(".container").removeAttribute("data-loading");
     }
-
+    if (icon) icon.classList.remove("spin");
+  }
+}
     /* -------------------- PROFILE -------------------- */
     function renderProfile(profile) {
   if (!profile) return;
@@ -1450,9 +1447,9 @@ if (Number.isFinite(MAX)) {
     }
 
     document.querySelector(".refreshBtn").onclick = async function () {
-      const selectedDb = localStorage.getItem("activeDatabase");
-      await loadPosts(selectedDb, null);
-    };
+  const selectedDb = localStorage.getItem("activeDatabase");
+  await loadPosts(selectedDb, this);
+};
 
     document.addEventListener("click", () => {
       const menu = document.getElementById("menu");
