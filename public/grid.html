@@ -388,6 +388,25 @@ body[data-theme="dark"] .menu {
     body[data-theme="dark"] .themeSegment button.active { color: #111; }
 
     /* ---------- PROFILE ---------- */
+    /* Hide profile picture when user turns off "Profile" */
+#profileHeader.no-avatar .profilePic {
+  display: none !important;
+}
+
+/* Optional: tighten spacing when avatar is hidden */
+#profileHeader.no-avatar .profileRow {
+  gap: 0 !important;
+}
+
+#profileHeader.no-avatar .profileRow {
+  justify-content: center;
+}
+
+#profileHeader.no-avatar .profileRight {
+  align-items: center;
+  text-align: center;
+}
+    
     .profile {
       padding: 14px 16px 18px;
       display: flex;
