@@ -419,7 +419,10 @@ button.primary-btn {
       dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
       return;
     }
-
+    
+const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
+renderEmbedUrl(embedUrl);
+    
     dbList.innerHTML = `
       <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
       ${DATABASES.map(db => {
@@ -650,7 +653,10 @@ button.primary-btn {
       const data = await apiWidgetDatabases("add", { databaseId, label });
 
       status.innerText = "Database added successfully ✅";
-      if (data.embed_url) renderEmbedUrl(data.embed_url);
+
+// Always render embed URL after first successful add
+const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
+renderEmbedUrl(embedUrl);
 
       document.getElementById("db").value = "";
       document.getElementById("label").value = "";
