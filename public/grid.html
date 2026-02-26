@@ -314,13 +314,6 @@ body[data-theme="dark"] .menu {
   outline: none;
 }
 
-.themeSegment .material-symbols-outlined {
-  font-size: 14px;           /* was effectively 22px globally */
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-}
-
     .dbMenuBtn.active {
       background: var(--text-main);
       color: var(--bg-main);
@@ -332,6 +325,13 @@ body[data-theme="dark"] .menu {
       color: #111;
       border-color: #fff;
     }
+    
+    .themeSegment .material-symbols-outlined {
+  font-size: 16px;           /* was effectively 22px globally */
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
 
     .themeTitle { 
       font-size: 12px; 
@@ -362,6 +362,7 @@ body[data-theme="dark"] .menu {
       border-radius: 999px;
       background: #000;
       z-index: 0;
+      text-align: center;
       transition: transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1);
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
