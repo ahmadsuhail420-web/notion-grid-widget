@@ -289,23 +289,19 @@ body[data-theme="dark"] .menu {
       flex-direction: column; 
       width: 100%; 
       gap: 4px; }
-
-    .dbMenuBtn {
-      border: 1px solid var(--border-color);
-      background: var(--bg-muted);
-      color: var(--text-main);
-      padding: 5px 7px;
-      border-radius: 8px;
-      font-size: 10px;
-      font-weight: 500;
-      cursor: pointer;
-      text-align: left;
-       width: 100%;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-    }
+    
+    .dbSelect {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-muted);
+  color: var(--text-main);
+  font-size: 11px;
+  font-weight: 600;
+  outline: none;
+  box-sizing: border-box;
+}
     
     #fontSelect {
   width: 100%;
@@ -318,12 +314,6 @@ body[data-theme="dark"] .menu {
   font-size: 10px;
   outline: none;
 }
-
-    .dbMenuBtn.active {
-      background: var(--text-main);
-      color: var(--bg-main);
-      border-color: var(--text-main);
-    }
 
     body[data-theme="dark"] .dbMenuBtn.active {
       background: #fff;
@@ -771,7 +761,7 @@ body[data-theme="dark"] .tabItem.active img {
           <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
             <div id="dbMenuWrap" class="hidden-section">
               <div class="dbMenuTitle">Databases</div>
-              <div id="dbMenuList" class="dbMenuList"></div>
+              <select id="dbSelect" class="dbSelect"></select>
             </div>
 
             <label class="menuItem toggleItem">
@@ -1226,32 +1216,38 @@ window.toggleProfileNote = toggleProfileNote;
         if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
         if (!Array.isArray(databases) || databases.length === 0) return;
 
-        const list = document.getElementById("dbMenuList");
-        const wrap = document.getElementById("dbMenuWrap");
-        if (!list || !wrap) return;
+     const select = document.getElementById("dbSelect");
+const wrap = document.getElementById("dbMenuWrap");
+if (!select || !wrap) return;
 
-        wrap.classList.remove("hidden-section");
-        list.innerHTML = "";
+wrap.classList.remove("hidden-section");
 
-        const activeDb = localStorage.getItem("activeDatabase");
+const activeDb = localStorage.getItem("activeDatabase");
 
-        databases.forEach((dbItem) => {
-          const b = document.createElement("button");
-          b.className = "dbMenuBtn";
-          b.textContent = dbItem.label;
-          b.dataset.id = dbItem.database_id;
+// build options
+select.innerHTML = "";
+databases.forEach(dbItem => {
+  const opt = document.createElement("option");
+  opt.value = dbItem.database_id;
+  opt.textContent = dbItem.label;
+  select.appendChild(opt);
+});
 
-          const isActive = (activeDb && activeDb === dbItem.database_id) || (!activeDb && dbItem.is_primary);
-          if (isActive) b.classList.add("active");
+// pick selected (activeDb > primary > first)
+let selected =
+  activeDb ||
+  databases.find(d => d.is_primary)?.database_id ||
+  databases[0]?.database_id;
 
-          b.onclick = async () => {
-            [...list.querySelectorAll(".dbMenuBtn")].forEach(x => x.classList.remove("active"));
-            b.classList.add("active");
+if (selected) select.value = selected;
 
-            localStorage.setItem("activeDatabase", dbItem.database_id);
-            await animateDatabaseChange(dbItem.database_id);
-            document.getElementById("menu").classList.add("hidden");
-          };
+// save + load on change
+select.onchange = async () => {
+  const dbId = select.value;
+  localStorage.setItem("activeDatabase", dbId);
+  await animateDatabaseChange(dbId);
+  document.getElementById("menu")?.classList.add("hidden");
+};
 
           list.appendChild(b);
         });
