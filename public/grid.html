@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Times New Roman:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -1197,65 +1198,61 @@ window.toggleProfileNote = toggleProfileNote;
     window.setFilter = setFilter;
 
     /* -------------------- DATABASE SWITCHER (IN MENU) -------------------- */
-    async function loadDatabaseSwitcher() {
-      const slug = getSlug();
-      if (!slug) return;
+  async function loadDatabaseSwitcher() {
+  const slug = getSlug();
+  if (!slug) return;
 
-      try {
-        const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
+  try {
+    const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-        const data = await res.json();
-        const databases = data.databases || [];
-        const plan = data.plan || "free";
+    const data = await res.json();
+    const databases = data.databases || [];
+    const plan = data.plan || "free";
 
-        // ✅ FIX: always take plan from API
-        CURRENT_PLAN = plan || "free";
-        applyPlanToUI();
+    CURRENT_PLAN = plan || "free";
+    applyPlanToUI();
 
-        if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
-        if (!Array.isArray(databases) || databases.length === 0) return;
+    if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
+    if (!Array.isArray(databases) || databases.length === 0) return;
 
-     const select = document.getElementById("dbSelect");
-const wrap = document.getElementById("dbMenuWrap");
-if (!select || !wrap) return;
+    const select = document.getElementById("dbSelect");
+    const wrap = document.getElementById("dbMenuWrap");
+    if (!select || !wrap) return;
 
-wrap.classList.remove("hidden-section");
+    wrap.classList.remove("hidden-section");
 
-const activeDb = localStorage.getItem("activeDatabase");
+    const activeDb = localStorage.getItem("activeDatabase");
 
-// build options
-select.innerHTML = "";
-databases.forEach(dbItem => {
-  const opt = document.createElement("option");
-  opt.value = dbItem.database_id;
-  opt.textContent = dbItem.label;
-  select.appendChild(opt);
-});
+    // options
+    select.innerHTML = "";
+    databases.forEach(dbItem => {
+      const opt = document.createElement("option");
+      opt.value = dbItem.database_id;
+      opt.textContent = dbItem.label;
+      select.appendChild(opt);
+    });
 
-// pick selected (activeDb > primary > first)
-let selected =
-  activeDb ||
-  databases.find(d => d.is_primary)?.database_id ||
-  databases[0]?.database_id;
+    // selected
+    const selected =
+      activeDb ||
+      databases.find(d => d.is_primary)?.database_id ||
+      databases[0].database_id;
 
-if (selected) select.value = selected;
+    select.value = selected;
+    localStorage.setItem("activeDatabase", selected);
 
-// save + load on change
-select.onchange = async () => {
-  const dbId = select.value;
-  localStorage.setItem("activeDatabase", dbId);
-  await animateDatabaseChange(dbId);
-  document.getElementById("menu")?.classList.add("hidden");
-};
-
-          list.appendChild(b);
-        });
-
-      } catch (e) {
-        console.error("loadDatabaseSwitcher failed:", e);
-      }
-    }
+    // change handler (attach once)
+    select.onchange = async () => {
+      const dbId = select.value;
+      localStorage.setItem("activeDatabase", dbId);
+      await animateDatabaseChange(dbId);
+      document.getElementById("menu")?.classList.add("hidden");
+    };
+  } catch (e) {
+    console.error("loadDatabaseSwitcher failed:", e);
+  }
+}
 
     async function animateDatabaseChange(dbId) {
       const container = document.querySelector(".gridWrap");
