@@ -74,6 +74,19 @@
       padding: 0px 20px 0px;
       box-sizing: border-box;
     }
+    
+    /* Blur everything behind the viewer */
+.widgetWrap.modalOpen .header,
+.widgetWrap.modalOpen .container,
+.widgetWrap.modalOpen .footer {
+  filter: blur(6px);
+  transition: filter 0.25s ease;
+}
+
+/* Keep the viewer sharp (not blurred) */
+.widgetWrap .viewer {
+  backdrop-filter: blur(0px); /* optional */
+}
 
     .container[data-loading="true"] #profileHeader,
     .container[data-loading="true"] #profileNote,
@@ -676,7 +689,10 @@ body[data-theme="dark"] .tabItem.active img {
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease;
-    }
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.25);
+}
 
     .viewer.show { opacity: 1; pointer-events: auto; }
     .viewer.hidden { display: none; }
@@ -1468,6 +1484,8 @@ if (Number.isFinite(MAX)) {
     function openViewer(post) {
       const viewer = document.getElementById("viewer");
       if (!viewer) return;
+      
+document.querySelector(".widgetWrap")?.classList.add("modalOpen");
 
       currentMedia = post.attachment?.length ? post.attachment : (post.thumbnail ? [post.thumbnail] : []);
       currentSlide = 0;
@@ -1512,11 +1530,15 @@ if (Number.isFinite(MAX)) {
     window.prevImage = prevImage;
 
     function closeViewer() {
-      const v = document.getElementById("viewer");
-      if (!v) return;
-      v.classList.remove("show");
-      setTimeout(() => v.classList.add("hidden"), 250);
-    }
+  const v = document.getElementById("viewer");
+  if (!v) return;
+
+  v.classList.remove("show");
+  document.querySelector(".widgetWrap")?.classList.remove("modalOpen");
+
+  setTimeout(() => v.classList.add("hidden"), 250);
+}
+
     window.closeViewer = closeViewer;
 
     /* -------------------- INIT -------------------- */
