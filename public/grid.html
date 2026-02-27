@@ -75,14 +75,6 @@
       box-sizing: border-box;
     }
     
-    /* Blur everything behind the viewer */
-.widgetWrap.modalOpen .header,
-.widgetWrap.modalOpen .container,
-.widgetWrap.modalOpen .footer {
-  filter: blur(6px);
-  transition: filter 0.25s ease;
-}
-
 /* Keep the viewer sharp (not blurred) */
 .widgetWrap .viewer {
   backdrop-filter: blur(0px); /* optional */
@@ -678,20 +670,23 @@ body[data-theme="dark"] .tabItem.active img {
 }
 
     /* ---------- VIEWER ---------- */
-    .viewer {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.35);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  background: rgba(0,0,0,0.25);
+.viewer {
+  position: absolute;
+  inset: 0;
+
+  /* dim + blur ONLY what's behind the overlay */
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
 }
 
     .viewer.show { opacity: 1; pointer-events: auto; }
@@ -1484,8 +1479,6 @@ if (Number.isFinite(MAX)) {
     function openViewer(post) {
       const viewer = document.getElementById("viewer");
       if (!viewer) return;
-      
-document.querySelector(".widgetWrap")?.classList.add("modalOpen");
 
       currentMedia = post.attachment?.length ? post.attachment : (post.thumbnail ? [post.thumbnail] : []);
       currentSlide = 0;
@@ -1534,7 +1527,6 @@ document.querySelector(".widgetWrap")?.classList.add("modalOpen");
   if (!v) return;
 
   v.classList.remove("show");
-  document.querySelector(".widgetWrap")?.classList.remove("modalOpen");
 
   setTimeout(() => v.classList.add("hidden"), 250);
 }
