@@ -233,6 +233,14 @@ button.primary-btn {
     </h2>
 
     <div id="content" style="margin-top:20px; text-align:left;">
+      <label style="display:block;">
+  Select Widget
+  <select id="widgetSelect" style="margin-top:8px;"></select>
+</label>
+
+<div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+  <button id="newWidget" type="button">+ New widget</button>
+</div>
       <label>
         Enter Database ID or URL
         <input id="db" placeholder="https://www.notion.so/..." style="margin-top:8px;" />
@@ -314,8 +322,8 @@ button.primary-btn {
 
   <script>
   const params = new URLSearchParams(location.search);
-  const slug = params.get("slug");
   const token = params.get("token");
+let slug = null; // will be set from selected widget
   const status = document.getElementById("status");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
@@ -594,6 +602,75 @@ renderEmbedUrl(embedUrl);
     document.getElementById("editLabelInput").focus();
   }
 
+    async function apiWidgets(method, payload = {}) {
+  const res = await fetch("/api/widgets", {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: method === "GET" ? undefined : JSON.stringify({ token, ...payload }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Widgets request failed");
+  return data;
+}
+
+async function loadWidgets() {
+  // simple GET with token in query (recommended)
+  const res = await fetch(`/api/widgets?token=${encodeURIComponent(token)}`);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Failed to load widgets");
+  return data;
+}
+
+    async function initDashboard() {
+  status.innerText = "Loading widgets…";
+
+  try {
+    const data = await loadWidgets();
+    const widgets = Array.isArray(data.widgets) ? data.widgets : [];
+
+    if (!widgets.length) {
+      status.innerText = "No widgets found for this token.";
+      return;
+    }
+
+    const sel = document.getElementById("widgetSelect");
+    sel.innerHTML = widgets
+      .map(w => `<option value="${escapeHtml(w.slug)}">${escapeHtml(w.name || w.slug)}</option>`)
+      .join("");
+
+    // restore last selected widget for this browser
+    const saved = localStorage.getItem("activeWidgetSlug");
+    slug = saved && widgets.some(w => w.slug === saved) ? saved : widgets[0].slug;
+    sel.value = slug;
+
+    sel.onchange = async () => {
+      slug = sel.value;
+      localStorage.setItem("activeWidgetSlug", slug);
+      status.innerText = "";
+      await loadDatabases(); // reload db list + embed link for new slug
+    };
+
+    document.getElementById("newWidget").onclick = async () => {
+      const name = prompt("Widget name?", "My Grid");
+      if (!name) return;
+
+      status.innerText = "Creating widget…";
+
+      // POST create widget
+      const created = await apiWidgets("POST", { action: "create", name });
+      // then reload widgets list
+      await initDashboard();
+      status.innerText = "Widget created ✅";
+    };
+
+    status.innerText = "";
+    await loadDatabases();
+  } catch (e) {
+    status.innerText = e.message || "Failed to init dashboard";
+  }
+}
+
   function closeEditModal() {
     editingDatabaseId = null;
     editingDatabaseLabel = null;
@@ -667,8 +744,11 @@ renderEmbedUrl(embedUrl);
     }
   };
 
-  if (slug) loadDatabases();
-  else status.innerText = "Missing slug in URL";
+ if (!token) {
+  status.innerText = "Missing token in URL";
+} else {
+  initDashboard();
+}
   </script>
 </body>
 </html>
