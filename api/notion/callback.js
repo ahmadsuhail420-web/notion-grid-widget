@@ -26,7 +26,7 @@ function randomTokenHex(len = 48) {
   return out;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   const appUrl =
@@ -48,8 +48,9 @@ export default async function handler(req, res) {
     // 1) Validate setup token -> customer
     const { data: customer, error: customerError } = await supabase
       .from("customers")
-      .select("id,slug,setup_used,dashboard_token,default_widget_slug")
+      .select("id,slug,setup_used,dashboard_token,default_widget_slug,status")
       .eq("setup_token", setupToken)
+      .eq("status", "active")
       .single();
 
     if (customerError || !customer) {
@@ -130,7 +131,6 @@ export default async function handler(req, res) {
 
     if (!widget) {
       const base = makeSlugBase(customer.slug) || "widget";
-      // slug must be unique globally, so add suffix
       const newSlug = `${base}-${randomSuffix(6)}`;
 
       const { data: createdWidget, error: createWidgetError } = await supabase
@@ -151,7 +151,7 @@ export default async function handler(req, res) {
       widget = createdWidget;
     }
 
-    // 5) Mark setup token used (optional: keep this behavior)
+    // 5) Mark setup token used (optional)
     if (!customer.setup_used) {
       const { error: updateError } = await supabase
         .from("customers")
@@ -163,32 +163,37 @@ export default async function handler(req, res) {
       }
     }
 
-    // 6) Ensure dashboard_token exists (for dashboard access)
-let dashboardToken = customer.dashboard_token;
+    // 6) Ensure dashboard_token exists
+    let dashboardToken = customer.dashboard_token;
 
-if (!dashboardToken) {
-  dashboardToken = randomTokenHex(48);
+    if (!dashboardToken) {
+      dashboardToken = randomTokenHex(48);
 
-  const { error: dashTokenErr } = await supabase
-    .from("customers")
-    .update({
-      dashboard_token: dashboardToken,
-      dashboard_token_created_at: new Date().toISOString(),
-      default_widget_slug: customer.default_widget_slug || widget.slug,
-    })
-    .eq("id", customer.id);
+      const { error: dashTokenErr } = await supabase
+        .from("customers")
+        .update({
+          dashboard_token: dashboardToken,
+          dashboard_token_created_at: new Date().toISOString(),
+          default_widget_slug: customer.default_widget_slug || widget.slug,
+        })
+        .eq("id", customer.id);
 
-  if (dashTokenErr) {
-    if (DEBUG_OAUTH) return res.status(500).json({ step: "dashboard_token_update_failed", dashTokenErr });
-    return res.redirect(`${appUrl}/error.html?reason=dashboard_token_update_failed`);
-  }
-}
+      if (dashTokenErr) {
+        if (DEBUG_OAUTH) return res.status(500).json({ step: "dashboard_token_update_failed", dashTokenErr });
+        return res.redirect(`${appUrl}/error.html?reason=dashboard_token_update_failed`);
+      }
+    }
+
+    // Ensure default_widget_slug exists even if token already existed
     if (!customer.default_widget_slug) {
-  await supabase
-    .from("customers")
-    .update({ default_widget_slug: widget.slug })
-    .eq("id", customer.id);
-}
+      await supabase.from("customers").update({ default_widget_slug: widget.slug }).eq("id", customer.id);
+    }
 
-// 7) Redirect to dashboard (token-based)
-return res.redirect(`${appUrl}/database.html?token=${encodeURIComponent(dashboardToken)}`);
+    // 7) Redirect to dashboard (token-based)
+    return res.redirect(`${appUrl}/database.html?token=${encodeURIComponent(dashboardToken)}`);
+  } catch (err) {
+    console.error("notion callback error:", err);
+    if (DEBUG_OAUTH) return res.status(500).json({ step: "unhandled_exception", err: String(err) });
+    return res.redirect(`${appUrl}/error.html?reason=callback_crashed`);
+  }
+};
