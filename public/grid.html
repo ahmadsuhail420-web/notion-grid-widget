@@ -962,7 +962,7 @@ body[data-theme="dark"] .card video {
 </head>
 <body>
   <div class="widgetWrap">
-  
+      <!-- ========================= HEADER ========================== -->
       <div class="header">
         <div class="headerActions">
           <button class="refreshBtn" aria-label="Refresh">
@@ -973,8 +973,10 @@ body[data-theme="dark"] .card video {
             <span class="material-symbols-outlined">more_horiz</span>
           </button>
 
+          <!-- Free plan top-right name -->
           <div id="freeProfileName" class="freeProfileName hidden-section"></div>
 
+          <!-- Menu panel -->
           <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
             <div id="dbMenuWrap" class="hidden-section">
               <div class="dbMenuTitle">Databases</div>
@@ -983,25 +985,25 @@ body[data-theme="dark"] .card video {
 
             <label class="menuItem toggleItem">
               <span class="menuLabel">Header</span>
-              <input type="checkbox" checked onchange="toggleSection('header', this)">
+              <input type="checkbox" checked onchange="toggleSection('header', this)" />
               <span class="toggle"></span>
             </label>
 
             <label class="menuItem toggleItem">
               <span class="menuLabel">Highlights</span>
-              <input type="checkbox" checked onchange="toggleSection('highlights', this)">
+              <input type="checkbox" checked onchange="toggleSection('highlights', this)" />
               <span class="toggle"></span>
             </label>
 
             <label class="menuItem toggleItem">
               <span class="menuLabel">Profile</span>
-              <input type="checkbox" checked onchange="toggleAvatar(this)">
+              <input type="checkbox" checked onchange="toggleAvatar(this)" />
               <span class="toggle"></span>
             </label>
 
             <label class="menuItem toggleItem">
               <span class="menuLabel">Note</span>
-              <input type="checkbox" checked onchange="toggleProfileNote(this)">
+              <input type="checkbox" checked onchange="toggleProfileNote(this)" />
               <span class="toggle"></span>
             </label>
 
@@ -1037,107 +1039,119 @@ body[data-theme="dark"] .card video {
 
         <div class="headerDivider"></div>
       </div>
-          <div class="container" data-loading="true">
 
-      <div id="skeleton">
-        <div class="sk-profile">
-          <div class="sk-avatar"></div>
-          <div class="sk-lines">
-            <div class="sk-line short"></div>
-            <div class="sk-line"></div>
+      <!-- ========================= CONTAINER (SKELETON + CONTENT) ========================== -->
+      <div class="container" data-loading="true">
+        <!-- Skeleton -->
+        <div id="skeleton">
+          <div class="sk-profile">
+            <div class="sk-avatar"></div>
+            <div class="sk-lines">
+              <div class="sk-line short"></div>
+              <div class="sk-line"></div>
+            </div>
+          </div>
+
+          <div class="sk-highlights">
+            <div class="sk-circle"></div>
+            <div class="sk-circle"></div>
+            <div class="sk-circle"></div>
+            <div class="sk-circle"></div>
+          </div>
+
+          <div class="sk-grid">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
           </div>
         </div>
 
-        <div class="sk-highlights">
-          <div class="sk-circle"></div>
-          <div class="sk-circle"></div>
-          <div class="sk-circle"></div>
-          <div class="sk-circle"></div>
+        <!-- Profile header -->
+        <div id="profileHeader" class="profile">
+          <div class="profileRow">
+            <div class="profilePic">
+              <img id="profileImage" src="/icons/profile-placeholder.png" alt="Profile picture" />
+            </div>
+
+            <div class="profileRight">
+              <div id="profileName" class="profileTitle">Grid Planner</div>
+
+              <div class="profileStats">
+                <div class="stat">
+                  <strong id="statPosts">0</strong>
+                  <span>Posts</span>
+                </div>
+                <div class="stat">
+                  <strong id="statScheduled">0</strong>
+                  <span>Scheduled</span>
+                </div>
+                <div class="stat">
+                  <strong id="statPublished">0</strong>
+                  <span>Published</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="sk-grid">
-          <div></div><div></div><div></div>
-          <div></div><div></div><div></div>
-        </div>
-      </div>
+        <!-- Profile note -->
+        <div id="profileNote" class="profileNote">Content Planner</div>
 
-      <div id="profileHeader" class="profile">
-        <div class="profileRow">
-          <div class="profilePic">
-            <img id="profileImage" src="/icons/profile-placeholder.png" />
+        <!-- Highlights -->
+        <div id="highlightsWrap" class="highlights">
+          <div id="highlights" class="highlightsRow"></div>
+        </div>
+
+        <!-- Content area -->
+        <div class="contentArea">
+          <!-- Tabs -->
+          <div class="tabs">
+            <div class="tabItem active" data-type="post" onclick="setFilter('__POSTS__', this)">
+              <img src="/icons/post-dark.png" alt="Posts" />
+            </div>
+
+            <div class="tabItem" data-type="reel" onclick="setFilter('Video', this)">
+              <img src="/icons/reel-light.png" alt="Reels" />
+            </div>
+
+            <div class="tabItem" data-type="favorite" onclick="setFilter('Favorite', this)">
+              <span class="material-symbols-outlined tabIcon">favorite</span>
+            </div>
+
+            <div class="slidingUnderline" id="slidingUnderline"></div>
           </div>
 
-          <div class="profileRight">
-            <div id="profileName" class="profileTitle">Grid Planner</div>
+          <!-- Grid -->
+          <div class="gridWrap">
+            <div id="grid" class="grid"></div>
+          </div>
+        </div>
 
-            <div class="profileStats">
-              <div class="stat">
-                <strong id="statPosts">0</strong>
-                <span>Posts</span>
-              </div>
-              <div class="stat">
-                <strong id="statScheduled">0</strong>
-                <span>Scheduled</span>
-              </div>
-              <div class="stat">
-                <strong id="statPublished">0</strong>
-                <span>Published</span>
+        <!-- Viewer modal -->
+        <div id="viewer" class="viewer hidden" onclick="closeViewer()">
+          <div class="viewerInner" onclick="event.stopPropagation()">
+            <button class="viewerClose" onclick="closeViewer()" aria-label="Close viewer">✕</button>
+            <button class="nav prev" onclick="prevImage()" aria-label="Previous">‹</button>
+            <button class="nav next" onclick="nextImage()" aria-label="Next">›</button>
+
+            <div class="viewerCard">
+              <div class="viewerImage" id="viewerMedia"></div>
+
+              <div class="viewerFooter">
+                <div id="viewerTitle"></div>
+                <div id="viewerDate"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div id="profileNote" class="profileNote">Content Planner</div>
-
-      <div id="highlightsWrap" class="highlights">
-        <div id="highlights" class="highlightsRow"></div>
-      </div>
-
-      <div class="contentArea">
-        <div class="tabs">
-          <div class="tabItem active" data-type="post" onclick="setFilter('__POSTS__', this)">
-            <img src="/icons/post-dark.png">
-          </div>
-
-          <div class="tabItem" data-type="reel" onclick="setFilter('Video', this)">
-            <img src="/icons/reel-light.png">
-          </div>
-
-          <div class="tabItem" data-type="favorite" onclick="setFilter('Favorite', this)">
-            <span class="material-symbols-outlined tabIcon">favorite</span>
-          </div>
-
-          <div class="slidingUnderline" id="slidingUnderline"></div>
-        </div>
-
-        <div class="gridWrap">
-          <div id="grid" class="grid"></div>
-        </div>
-      </div>
-
-      <div id="viewer" class="viewer hidden" onclick="closeViewer()">
-        <div class="viewerInner" onclick="event.stopPropagation()">
-          <button class="viewerClose" onclick="closeViewer()">✕</button>
-          <button class="nav prev" onclick="prevImage()">‹</button>
-          <button class="nav next" onclick="nextImage()">›</button>
-
-          <div class="viewerCard">
-            <div class="viewerImage" id="viewerMedia"></div>
-
-            <div class="viewerFooter">
-              <div id="viewerTitle"></div>
-              <div id="viewerDate"></div>
-            </div>
-          </div>
-        </div>
+      <!-- Footer -->
+      <div class="footer">
+        <span class="footerBrand">Alif Designs</span>
       </div>
     </div>
-
-  <div class="footer"><span class="footerBrand">Alif Designs</span></div>
-  </div>
-
   <script>
+    
     /* -------------------- GLOBALS -------------------- */
     let CURRENT_PLAN = "free";
     let ALL_POSTS = [];
@@ -1623,18 +1637,27 @@ if (Number.isFinite(MAX)) {
       if (post.thumbnail) return post.thumbnail;
       return (Array.isArray(post.attachment) && post.attachment[0]) || null;
     }
-   function formatDateForHover(post) {
-    const raw = post?.publishDate || "";
-    if (!raw) return "";
+   
+    function formatDateForHover(post) {
+  const raw = post?.publishDate || "";
+  if (!raw) return "";
 
-    // Keep YYYY-MM-DD as-is
-    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  // Expected from API: "YYYY-MM-DD"
+  const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return "";
 
-    const d = new Date(raw);
-    if (Number.isNaN(d.getTime())) return String(raw);
+  const [, yyyy, mm, dd] = m;
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "2-digit" });
-  }
+  const monthIndex = Number(mm) - 1;
+  const mon = monthNames[monthIndex] || "";
+
+  // "26" from "2026"
+  const yy = yyyy.slice(-2);
+
+  return `${dd} ${mon} ${yy}`;
+}
+   
     function renderGrid() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
