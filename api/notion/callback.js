@@ -18,6 +18,13 @@ function randomSuffix(len = 6) {
   return out;
 }
 
+function randomTokenHex(len = 48) {
+  const chars = "abcdef0123456789";
+  let out = "";
+  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  return out;
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
@@ -40,7 +47,7 @@ export default async function handler(req, res) {
     // 1) Validate setup token -> customer
     const { data: customer, error: customerError } = await supabase
       .from("customers")
-      .select("id,slug,setup_used")
+      .select("id,slug,setup_used,dashboard_token,default_widget_slug")
       .eq("setup_token", setupToken)
       .single();
 
@@ -155,19 +162,32 @@ export default async function handler(req, res) {
       }
     }
 
-    // 6) Redirect using WIDGET slug (not customer slug)
-    return res.redirect(`${appUrl}/database.html?slug=${encodeURIComponent(widget.slug)}`);
-  } catch (err) {
-    if (DEBUG_OAUTH) {
-      return res.status(500).json({
-        step: "unhandled_exception",
-        message: err?.message,
-        stack: err?.stack,
-      });
-    }
-    const appUrl =
-      process.env.APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-    return res.redirect(`${appUrl}/error.html?reason=server_error`);
+    // 6) Ensure dashboard_token exists (for dashboard access)
+let dashboardToken = customer.dashboard_token;
+
+if (!dashboardToken) {
+  dashboardToken = randomTokenHex(48);
+
+  const { error: dashTokenErr } = await supabase
+    .from("customers")
+    .update({
+      dashboard_token: dashboardToken,
+      dashboard_token_created_at: new Date().toISOString(),
+      default_widget_slug: customer.default_widget_slug || widget.slug,
+    })
+    .eq("id", customer.id);
+
+  if (dashTokenErr) {
+    if (DEBUG_OAUTH) return res.status(500).json({ step: "dashboard_token_update_failed", dashTokenErr });
+    return res.redirect(`${appUrl}/error.html?reason=dashboard_token_update_failed`);
   }
 }
+    if (!customer.default_widget_slug) {
+  await supabase
+    .from("customers")
+    .update({ default_widget_slug: widget.slug })
+    .eq("id", customer.id);
+}
+
+// 7) Redirect to dashboard (token-based)
+return res.redirect(`${appUrl}/database.html?token=${encodeURIComponent(dashboardToken)}`);
