@@ -233,14 +233,50 @@ button.primary-btn {
     </h2>
 
     <div id="content" style="margin-top:20px; text-align:left;">
-      <label style="display:block;">
-  Select Widget
-  <select id="widgetSelect" style="margin-top:8px;"></select>
-</label>
 
-<div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-  <button id="newWidget" type="button">+ New widget</button>
-</div>
+      <!-- Modern Top Controls Row -->
+      <div id="topControls" style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        flex-wrap:wrap;
+        padding:12px 12px;
+        border:1px solid var(--border);
+        border-radius:14px;
+        background:#fff;
+        box-shadow: var(--shadow-soft);
+        margin-bottom:14px;
+      ">
+        <div style="display:flex; align-items:center; gap:10px; min-width:240px; flex:1;">
+          <div style="font-weight:700; font-size:13px; color:var(--text-muted); white-space:nowrap;">
+            Widget
+          </div>
+          <select id="widgetSelect" style="
+            width:100%;
+            padding:10px 12px;
+            border-radius:12px;
+            border:1px solid var(--border);
+            background:#f9fafb;
+            font-weight:600;
+            outline:none;
+          "></select>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button id="addWidget" type="button" style="
+            padding:10px 14px;
+            font-size:14px;
+            border-radius:12px;
+            border:none;
+            background:#111827;
+            color:#fff;
+            font-weight:700;
+            cursor:pointer;
+          ">Add Widget</button>
+        </div>
+      </div>
+
       <label>
         Enter Database ID or URL
         <input id="db" placeholder="https://www.notion.so/..." style="margin-top:8px;" />
@@ -256,10 +292,7 @@ button.primary-btn {
         → Paste here
       </div>
 
-      <label style="margin-top:14px; display:block;">
-        Database Label
-        <input id="label" placeholder="Instagram / TikTok / YouTube" style="margin-top:8px;" />
-      </label>
+      <!-- Label input REMOVED (auto generated) -->
 
       <button id="save" style="margin-top:22px;">Save</button>
     </div>
@@ -303,7 +336,7 @@ button.primary-btn {
     </div>
   </div>
 
-  <!-- EDIT LABEL MODAL -->
+  <!-- EDIT LABEL MODAL (kept, even if not used currently) -->
   <div id="editModal">
     <div class="modal-content">
       <div class="modal-title">Edit Database Label</div>
@@ -323,7 +356,8 @@ button.primary-btn {
   <script>
   const params = new URLSearchParams(location.search);
   const token = params.get("token");
-let slug = null; // will be set from selected widget
+  let slug = null; // selected widget slug
+
   const status = document.getElementById("status");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
@@ -383,12 +417,14 @@ let slug = null; // will be set from selected widget
     };
   }
 
-  // BUG: your plan is advanced=3 now (and API enforces plan_limits anyway)
-  // Update this to match, so the client-side pre-check doesn’t block valid adds.
   function getPlanLimit(plan) {
     if (plan === "free") return 1;
-    if (plan === "advanced") return 3;   // FIXED
+    if (plan === "advanced") return 3;
     return Infinity;
+  }
+
+  function nextAutoLabel() {
+    return `Database ${DATABASES.length + 1}`;
   }
 
   async function apiWidgetDatabases(action, payload = {}) {
@@ -402,41 +438,41 @@ let slug = null; // will be set from selected widget
     return data;
   }
 
- async function loadDatabases() {
-  if (!slug) {
-    dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">Select a widget first.</div>`;
-    return;
-  }
+  async function loadDatabases() {
+    if (!slug) {
+      dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">Select a widget first.</div>`;
+      return;
+    }
 
-  dbList.innerHTML = `
-    <div class="loader">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      Loading databases…
-    </div>
-  `;
+    dbList.innerHTML = `
+      <div class="loader">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        Loading databases…
+      </div>
+    `;
 
-  const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
-  const data = await res.json().catch(() => ({}));
+    const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
+    const data = await res.json().catch(() => ({}));
 
-  if (!res.ok) {
-    dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
-    return;
-  }
+    if (!res.ok) {
+      dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
+      return;
+    }
 
-  DATABASES = Array.isArray(data.databases) ? data.databases : [];
-  CURRENT_PLAN = data.plan || "free";
+    DATABASES = Array.isArray(data.databases) ? data.databases : [];
+    CURRENT_PLAN = data.plan || "free";
 
-  // Always show embed link for selected widget
-  const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
-  renderEmbedUrl(embedUrl);
+    // Always show embed URL for selected widget
+    const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
+    renderEmbedUrl(embedUrl);
 
-  if (!DATABASES.length) {
-    dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
-    return;
-  }
-    
+    if (!DATABASES.length) {
+      dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
+      return;
+    }
+
     dbList.innerHTML = `
       <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
       ${DATABASES.map(db => {
@@ -608,80 +644,80 @@ let slug = null; // will be set from selected widget
     document.getElementById("editLabelInput").focus();
   }
 
-    async function loadWidgets() {
-  const res = await fetch(`/api/widgets?token=${encodeURIComponent(token)}`);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Failed to load widgets");
-  return data;
-}
-
-async function createWidget(name) {
-  const res = await fetch("/api/widgets", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, action: "create", name }),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Failed to create widget");
-  return data;
-}
-
-async function initDashboard() {
-  if (!token) {
-    status.innerText = "Missing token in URL";
-    return;
+  async function loadWidgets() {
+    const res = await fetch(`/api/widgets?token=${encodeURIComponent(token)}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Failed to load widgets");
+    return data;
   }
 
-  status.innerText = "Loading widgets…";
+  async function createWidget(name) {
+    const res = await fetch("/api/widgets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, action: "create", name }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Failed to create widget");
+    return data;
+  }
 
-  try {
-    const data = await loadWidgets();
-    CURRENT_PLAN = data.plan || "free";
-
-    const widgets = Array.isArray(data.widgets) ? data.widgets : [];
-    if (!widgets.length) {
-      status.innerText = "No widgets found for this token.";
+  async function initDashboard() {
+    if (!token) {
+      status.innerText = "Missing token in URL";
       return;
     }
 
-    const select = document.getElementById("widgetSelect");
-    select.innerHTML = widgets
-      .map(w => `<option value="${escapeHtml(w.slug)}">${escapeHtml(w.name || w.slug)}</option>`)
-      .join("");
+    status.innerText = "Loading widgets…";
 
-    const saved = localStorage.getItem("activeWidgetSlug");
-    const def = data.default_widget_slug;
+    try {
+      const data = await loadWidgets();
+      CURRENT_PLAN = data.plan || "free";
 
-    slug =
-      (saved && widgets.some(w => w.slug === saved) && saved) ||
-      (def && widgets.some(w => w.slug === def) && def) ||
-      widgets[0].slug;
+      const widgets = Array.isArray(data.widgets) ? data.widgets : [];
+      if (!widgets.length) {
+        status.innerText = "No widgets found for this token.";
+        return;
+      }
 
-    select.value = slug;
+      const select = document.getElementById("widgetSelect");
+      select.innerHTML = widgets
+        .map(w => `<option value="${escapeHtml(w.slug)}">${escapeHtml(w.name || w.slug)}</option>`)
+        .join("");
 
-    select.onchange = async () => {
-      slug = select.value;
-      localStorage.setItem("activeWidgetSlug", slug);
+      const saved = localStorage.getItem("activeWidgetSlug");
+      const def = data.default_widget_slug;
+
+      slug =
+        (saved && widgets.some(w => w.slug === saved) && saved) ||
+        (def && widgets.some(w => w.slug === def) && def) ||
+        widgets[0].slug;
+
+      select.value = slug;
+
+      select.onchange = async () => {
+        slug = select.value;
+        localStorage.setItem("activeWidgetSlug", slug);
+        status.innerText = "";
+        await loadDatabases();
+      };
+
+      document.getElementById("addWidget").onclick = async () => {
+        const name = prompt("Widget name?", "My Grid");
+        if (!name) return;
+
+        status.innerText = "Creating widget…";
+        await createWidget(name);
+        status.innerText = "Widget created ✅";
+        await initDashboard();
+      };
+
       status.innerText = "";
       await loadDatabases();
-    };
-
-    document.getElementById("newWidget").onclick = async () => {
-      const name = prompt("Widget name?", "My Grid");
-      if (!name) return;
-
-      status.innerText = "Creating widget…";
-      await createWidget(name);
-      status.innerText = "Widget created ✅";
-      await initDashboard();
-    };
-
-    status.innerText = "";
-    await loadDatabases();
-  } catch (e) {
-    status.innerText = e.message || "Failed to init dashboard";
+    } catch (e) {
+      status.innerText = e.message || "Failed to init dashboard";
+    }
   }
-}
 
   function closeEditModal() {
     editingDatabaseId = null;
@@ -727,28 +763,22 @@ async function initDashboard() {
     const databaseId = extractDatabaseId(raw);
     if (!databaseId) return alert("Invalid Notion database ID or URL");
 
-    const label = document.getElementById("label").value.trim();
-    if (!label) return alert("Enter a label name");
-
     const limit = getPlanLimit(CURRENT_PLAN);
     if (DATABASES.length >= limit) {
       if (CURRENT_PLAN === "free") return alert("Free plan allows only 1 database.");
-      if (CURRENT_PLAN === "advanced") return alert("Advanced plan allows up to 3 databases."); // FIXED
+      if (CURRENT_PLAN === "advanced") return alert("Advanced plan allows up to 3 databases.");
     }
+
+    const label = nextAutoLabel();
 
     status.innerText = "Adding database…";
 
     try {
-      const data = await apiWidgetDatabases("add", { databaseId, label });
+      await apiWidgetDatabases("add", { databaseId, label });
 
       status.innerText = "Database added successfully ✅";
 
-// Always render embed URL after first successful add
-const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
-renderEmbedUrl(embedUrl);
-
       document.getElementById("db").value = "";
-      document.getElementById("label").value = "";
 
       await loadDatabases();
     } catch (e) {
@@ -756,11 +786,7 @@ renderEmbedUrl(embedUrl);
     }
   };
 
- if (!token) {
-  status.innerText = "Missing token in URL";
-} else {
   initDashboard();
-}
   </script>
 </body>
 </html>
