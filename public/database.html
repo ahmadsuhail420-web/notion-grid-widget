@@ -402,34 +402,40 @@ let slug = null; // will be set from selected widget
     return data;
   }
 
-  async function loadDatabases() {
-    dbList.innerHTML = `
-      <div class="loader">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        Loading databases…
-      </div>
-    `;
+ async function loadDatabases() {
+  if (!slug) {
+    dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">Select a widget first.</div>`;
+    return;
+  }
 
-    const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
-    const data = await res.json().catch(() => ({}));
+  dbList.innerHTML = `
+    <div class="loader">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      Loading databases…
+    </div>
+  `;
 
-    if (!res.ok) {
-      dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
-      return;
-    }
+  const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
+  const data = await res.json().catch(() => ({}));
 
-    DATABASES = Array.isArray(data.databases) ? data.databases : [];
-    CURRENT_PLAN = data.plan || "free";
+  if (!res.ok) {
+    dbList.innerHTML = `<div style="color:#b91c1c;">${data.error || "Failed to load databases"}</div>`;
+    return;
+  }
 
-    if (!DATABASES.length) {
-      dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
-      return;
-    }
-    
-const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
-renderEmbedUrl(embedUrl);
+  DATABASES = Array.isArray(data.databases) ? data.databases : [];
+  CURRENT_PLAN = data.plan || "free";
+
+  // Always show embed link for selected widget
+  const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
+  renderEmbedUrl(embedUrl);
+
+  if (!DATABASES.length) {
+    dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
+    return;
+  }
     
     dbList.innerHTML = `
       <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
@@ -602,53 +608,62 @@ renderEmbedUrl(embedUrl);
     document.getElementById("editLabelInput").focus();
   }
 
-    async function apiWidgets(method, payload = {}) {
-  const res = await fetch("/api/widgets", {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: method === "GET" ? undefined : JSON.stringify({ token, ...payload }),
-  });
-
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Widgets request failed");
-  return data;
-}
-
-async function loadWidgets() {
-  // simple GET with token in query (recommended)
+    async function loadWidgets() {
   const res = await fetch(`/api/widgets?token=${encodeURIComponent(token)}`);
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || "Failed to load widgets");
   return data;
 }
 
-    async function initDashboard() {
+async function createWidget(name) {
+  const res = await fetch("/api/widgets", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, action: "create", name }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Failed to create widget");
+  return data;
+}
+
+async function initDashboard() {
+  if (!token) {
+    status.innerText = "Missing token in URL";
+    return;
+  }
+
   status.innerText = "Loading widgets…";
 
   try {
     const data = await loadWidgets();
-    const widgets = Array.isArray(data.widgets) ? data.widgets : [];
+    CURRENT_PLAN = data.plan || "free";
 
+    const widgets = Array.isArray(data.widgets) ? data.widgets : [];
     if (!widgets.length) {
       status.innerText = "No widgets found for this token.";
       return;
     }
 
-    const sel = document.getElementById("widgetSelect");
-    sel.innerHTML = widgets
+    const select = document.getElementById("widgetSelect");
+    select.innerHTML = widgets
       .map(w => `<option value="${escapeHtml(w.slug)}">${escapeHtml(w.name || w.slug)}</option>`)
       .join("");
 
-    // restore last selected widget for this browser
     const saved = localStorage.getItem("activeWidgetSlug");
-    slug = saved && widgets.some(w => w.slug === saved) ? saved : widgets[0].slug;
-    sel.value = slug;
+    const def = data.default_widget_slug;
 
-    sel.onchange = async () => {
-      slug = sel.value;
+    slug =
+      (saved && widgets.some(w => w.slug === saved) && saved) ||
+      (def && widgets.some(w => w.slug === def) && def) ||
+      widgets[0].slug;
+
+    select.value = slug;
+
+    select.onchange = async () => {
+      slug = select.value;
       localStorage.setItem("activeWidgetSlug", slug);
       status.innerText = "";
-      await loadDatabases(); // reload db list + embed link for new slug
+      await loadDatabases();
     };
 
     document.getElementById("newWidget").onclick = async () => {
@@ -656,12 +671,9 @@ async function loadWidgets() {
       if (!name) return;
 
       status.innerText = "Creating widget…";
-
-      // POST create widget
-      const created = await apiWidgets("POST", { action: "create", name });
-      // then reload widgets list
-      await initDashboard();
+      await createWidget(name);
       status.innerText = "Widget created ✅";
+      await initDashboard();
     };
 
     status.innerText = "";
