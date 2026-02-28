@@ -1502,17 +1502,21 @@ if (Number.isFinite(MAX)) {
 }
     /* -------------------- VIEWER -------------------- */
     function openViewer(post) {
-      const viewer = document.getElementById("viewer");
-      if (!viewer) return;
+  const viewer = document.getElementById("viewer");
+  if (!viewer) return;
 
-      currentMedia = post.attachment?.length ? post.attachment : (post.thumbnail ? [post.thumbnail] : []);
-      currentSlide = 0;
-      updateViewerImage();
+  currentMedia = post.attachment?.length ? post.attachment : (post.thumbnail ? [post.thumbnail] : []);
+  currentSlide = 0;
+  updateViewerImage();
 
-      document.getElementById("viewerTitle").innerText = post.name || "";
-      viewer.classList.remove("hidden");
-      requestAnimationFrame(() => viewer.classList.add("show"));
-    }
+  document.getElementById("viewerTitle").innerText = post.name || "";
+
+  const d = document.getElementById("viewerDate");
+  if (d) d.innerText = formatDateForHover(post);
+
+  viewer.classList.remove("hidden");
+  requestAnimationFrame(() => viewer.classList.add("show"));
+}
 
     function updateViewerImage() {
       const wrap = document.getElementById("viewerMedia");
