@@ -264,18 +264,53 @@ button.primary-btn {
         </div>
 
         <div style="display:flex; align-items:center; gap:10px;">
-          <button id="addWidget" type="button" style="
-            padding:10px 14px;
-            font-size:14px;
-            border-radius:12px;
-            border:none;
-            background:#111827;
-            color:#fff;
-            font-weight:700;
-            cursor:pointer;
-          ">Add Widget</button>
-        </div>
-      </div>
+         <div id="widgetCreateWrap" style="display:flex; align-items:center; gap:10px;">
+  <button id="addWidget" type="button" style="
+    padding:10px 14px;
+    font-size:14px;
+    border-radius:12px;
+    border:none;
+    background:#111827;
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+  ">Add Widget</button>
+
+  <div id="widgetCreateInline" style="display:none; align-items:center; gap:8px;">
+    <input id="newWidgetName" placeholder="Widget name" style="
+      width:220px;
+      max-width:50vw;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#f9fafb;
+      font-weight:600;
+      outline:none;
+    " />
+
+    <button id="createWidgetBtn" type="button" style="
+      padding:10px 14px;
+      font-size:14px;
+      border-radius:12px;
+      border:none;
+      background:#3b82f6;
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    ">Create</button>
+
+    <button id="cancelWidgetBtn" type="button" style="
+      padding:10px 12px;
+      font-size:14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:#111;
+      font-weight:700;
+      cursor:pointer;
+    ">Cancel</button>
+  </div>
+</div>
 
       <label>
         Enter Database ID or URL
@@ -702,15 +737,48 @@ button.primary-btn {
         await loadDatabases();
       };
 
-      document.getElementById("addWidget").onclick = async () => {
-        const name = prompt("Widget name?", "My Grid");
-        if (!name) return;
+     const addBtn = document.getElementById("addWidget");
+const inline = document.getElementById("widgetCreateInline");
+const nameInput = document.getElementById("newWidgetName");
+const createBtn = document.getElementById("createWidgetBtn");
+const cancelBtn = document.getElementById("cancelWidgetBtn");
 
-        status.innerText = "Creating widget…";
-        await createWidget(name);
-        status.innerText = "Widget created ✅";
-        await initDashboard();
-      };
+function openInlineCreate() {
+  inline.style.display = "inline-flex";
+  addBtn.style.display = "none";
+  nameInput.value = "My Grid";
+  setTimeout(() => nameInput.focus(), 0);
+}
+
+function closeInlineCreate() {
+  inline.style.display = "none";
+  addBtn.style.display = "inline-flex";
+  nameInput.value = "";
+}
+
+addBtn.onclick = () => openInlineCreate();
+
+cancelBtn.onclick = () => closeInlineCreate();
+
+createBtn.onclick = async () => {
+  const name = (nameInput.value || "").trim();
+  if (!name) return alert("Enter a widget name");
+
+  status.innerText = "Creating widget…";
+  try {
+    await createWidget(name);
+    closeInlineCreate();
+    status.innerText = "Widget created ✅";
+    await initDashboard(); // reload widget list and select
+  } catch (e) {
+    status.innerText = e.message || "Failed to create widget";
+  }
+};
+
+nameInput.onkeydown = (e) => {
+  if (e.key === "Enter") createBtn.click();
+  if (e.key === "Escape") closeInlineCreate();
+};
 
       status.innerText = "";
       await loadDatabases();
