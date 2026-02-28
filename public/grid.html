@@ -472,6 +472,19 @@ body[data-theme="dark"] .menu {
       flex: 0 0 1;
     }
 
+    .freeProfileName {
+  margin-left: auto;               /* pushes it to the far right */
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+  padding-right: 2px;
+}
+
     /* ---------- HIGHLIGHTS ---------- */
     .highlights {
       width: 100%;
@@ -770,6 +783,8 @@ body[data-theme="dark"] .tabItem.active img {
             <span class="material-symbols-outlined">more_horiz</span>
           </button>
 
+          <div id="freeProfileName" class="freeProfileName hidden-section"></div>
+
           <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
             <div id="dbMenuWrap" class="hidden-section">
               <div class="dbMenuTitle">Databases</div>
@@ -970,25 +985,36 @@ body[data-theme="dark"] .tabItem.active img {
   const profileNote = document.getElementById("profileNote");
   const highlightsWrap = document.getElementById("highlightsWrap");
 
-  if (CURRENT_PLAN === "free") {
-    // Hide menu button + menu
-    if (menuBtn) menuBtn.style.display = "none";
-    if (menu) menu.classList.add("hidden");
+ if (CURRENT_PLAN === "free") {
+  const menuBtn = document.querySelector(".menuBtn");
+  const menu = document.getElementById("menu");
+  const freeName = document.getElementById("freeProfileName");
 
-    // Hide profile pic + stats (but keep the profile header container if you still want the name)
-    if (profileHeader) {
-      profileHeader.classList.remove("hidden-section"); // ensure header container isn't hidden
-      profileHeader.classList.add("free-hide-avatar", "free-hide-stats");
-    }
+  // hide menu button + menu panel
+  if (menuBtn) menuBtn.style.display = "none";
+  if (menu) menu.classList.add("hidden");
 
-    // Hide profile note
-    if (profileNote) profileNote.classList.add("hidden-section");
+  // show the name in the top-right slot
+  if (freeName) freeName.classList.remove("hidden-section");
 
-    // Hide highlights
-    if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-
-    return;
+  // hide avatar + stats (but keep #profileHeader so data still exists)
+  const profileHeader = document.getElementById("profileHeader");
+  if (profileHeader) {
+    profileHeader.classList.remove("hidden-section");
+    profileHeader.classList.add("free-hide-avatar", "free-hide-stats");
   }
+
+  // hide note + highlights
+  document.getElementById("profileNote")?.classList.add("hidden-section");
+  document.getElementById("highlightsWrap")?.classList.add("hidden-section");
+
+  return;
+}
+      const freeName = document.getElementById("freeProfileName");
+if (freeName) freeName.classList.add("hidden-section");
+
+const menuBtn = document.querySelector(".menuBtn");
+if (menuBtn) menuBtn.style.display = "";
 
   // Paid: show menu button
   if (menuBtn) menuBtn.style.display = "";
@@ -1342,6 +1368,10 @@ window.toggleProfileNote = toggleProfileNote;
   if (!profile) return;
 
   document.getElementById("profileName").innerText = profile.name || "Grid Planner";
+
+const freeName = document.getElementById("freeProfileName");
+if (freeName) freeName.textContent = profile.name || "Grid Planner";
+      
   document.getElementById("profileImage").src = profile.picture || "/icons/profile-placeholder.png";
 
   const noteEl = document.getElementById("profileNote");
