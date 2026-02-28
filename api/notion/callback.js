@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+const { createClient } = require("@supabase/supabase-js");
+const { Buffer } = require("buffer");
 
 const DEBUG_OAUTH = false; // set true only while debugging
 
