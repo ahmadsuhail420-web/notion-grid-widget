@@ -72,10 +72,11 @@ export default async function handler(req, res) {
     const customer = Array.isArray(custResp.json) ? custResp.json[0] : null;
     if (!customer) return res.status(404).json({ error: "Customer not found" });
 
-    const plan = customer.plan || "free";
+    const rawPlan = customer.plan || "free";
+const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
 
     // 3) Load plan_limits.db_limit (fallback: free=1, advanced=3, pro=999999)
-    let dbLimit = plan === "free" ? 1 : plan === "advanced" ? 3 : 999999;
+    let dbLimit = plan === "free" ? 1 : 999999; // free=1, pro=unlimited (or set a number)
 
     const limitsUrl = `${supabaseUrl}/rest/v1/plan_limits?plan=eq.${encodeURIComponent(plan)}&select=db_limit`;
     const limitsResp = await fetchJson(limitsUrl, { headers });
@@ -141,11 +142,9 @@ export default async function handler(req, res) {
 
       if (existingCount >= dbLimit) {
         const msg =
-          plan === "free"
-            ? "Free plan allows only 1 database."
-            : plan === "advanced"
-            ? "Advanced plan allows up to 3 databases."
-            : "Database limit reached.";
+  plan === "free"
+    ? "Free plan allows only 1 database."
+    : "Database limit reached.";
         return res.status(403).json({ error: msg, plan, db_limit: dbLimit });
       }
 
