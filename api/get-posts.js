@@ -49,7 +49,9 @@ export default async function handler(req, res) {
     const [customer] = await customerRes.json();
     if (!customer) return res.json({ profile: null, posts: [] });
 
-    const plan = customer.plan || "free";
+    const rawPlan = customer.plan || "free";
+// Only two plans supported by frontend now
+const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
 
     // ---------------------------
     // 3) Load widget settings (Pro/Advanced will use; Free can ignore)
@@ -129,17 +131,14 @@ export default async function handler(req, res) {
 
     let databaseIds = [];
 
-    if (plan === "free") {
-      if (primary?.database_id) databaseIds = [primary.database_id];
-    } else if (plan === "advanced") {
-      if (db) databaseIds = [db];
-      else if (primary?.database_id) databaseIds = [primary.database_id];
-    } else if (plan === "pro") {
-      if (db === "merge") databaseIds = databases.map(d => d.database_id);
-      else if (db) databaseIds = [db];
-      else if (primary?.database_id) databaseIds = [primary.database_id];
-    }
-
+   if (plan === "free") {
+  if (primary?.database_id) databaseIds = [primary.database_id];
+} else {
+  // pro
+  if (db === "merge") databaseIds = databases.map(d => d.database_id);
+  else if (db) databaseIds = [db];
+  else if (primary?.database_id) databaseIds = [primary.database_id];
+}
     if (databaseIds.length === 0) {
       return res.json({ profile: null, posts: [], plan, widget_settings, databases });
     }
