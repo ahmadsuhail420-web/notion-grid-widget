@@ -234,81 +234,82 @@ button.primary-btn {
 
     <div id="content" style="margin-top:20px; text-align:left;">
 
-      <!-- Modern Top Controls Row -->
-      <div id="topControls" style="
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:12px;
-        flex-wrap:wrap;
-        padding:12px 12px;
-        border:1px solid var(--border);
-        border-radius:14px;
-        background:#fff;
-        box-shadow: var(--shadow-soft);
-        margin-bottom:14px;
-      ">
-        <div style="display:flex; align-items:center; gap:10px; min-width:240px; flex:1;">
-          <div style="font-weight:700; font-size:13px; color:var(--text-muted); white-space:nowrap;">
-            Widget
-          </div>
-          <select id="widgetSelect" style="
-            width:100%;
-            padding:10px 12px;
-            border-radius:12px;
-            border:1px solid var(--border);
-            background:#f9fafb;
-            font-weight:600;
-            outline:none;
-          "></select>
-        </div>
+     <!-- Modern Top Controls Row -->
+<div id="topControls" style="
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:12px 12px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:#fff;
+  box-shadow: var(--shadow-soft);
+  margin-bottom:14px;
+">
+  <div style="display:flex; align-items:center; gap:10px; min-width:240px; flex:1;">
+    <div style="font-weight:700; font-size:13px; color:var(--text-muted); white-space:nowrap;">
+      Widget
+    </div>
 
-        <div style="display:flex; align-items:center; gap:10px;">
-         <div id="widgetCreateWrap" style="display:flex; align-items:center; gap:10px;">
-  <button id="addWidget" type="button" style="
-    padding:10px 14px;
-    font-size:14px;
-    border-radius:12px;
-    border:none;
-    background:#111827;
-    color:#fff;
-    font-weight:700;
-    cursor:pointer;
-  ">Add Widget</button>
-
-  <div id="widgetCreateInline" style="display:none; align-items:center; gap:8px;">
-    <input id="newWidgetName" placeholder="Widget name" style="
-      width:220px;
-      max-width:50vw;
+    <select id="widgetSelect" style="
+      width:100%;
       padding:10px 12px;
       border-radius:12px;
       border:1px solid var(--border);
       background:#f9fafb;
       font-weight:600;
       outline:none;
-    " />
+    "></select>
+  </div>
 
-    <button id="createWidgetBtn" type="button" style="
+  <div id="widgetCreateWrap" style="display:flex; align-items:center; gap:10px;">
+    <button id="addWidget" type="button" style="
       padding:10px 14px;
       font-size:14px;
       border-radius:12px;
       border:none;
-      background:#3b82f6;
+      background:#111827;
       color:#fff;
       font-weight:700;
       cursor:pointer;
-    ">Create</button>
+    ">Add Widget</button>
 
-    <button id="cancelWidgetBtn" type="button" style="
-      padding:10px 12px;
-      font-size:14px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:#111;
-      font-weight:700;
-      cursor:pointer;
-    ">Cancel</button>
+    <div id="widgetCreateInline" style="display:none; align-items:center; gap:8px;">
+      <input id="newWidgetName" placeholder="Widget name" style="
+        width:220px;
+        max-width:50vw;
+        padding:10px 12px;
+        border-radius:12px;
+        border:1px solid var(--border);
+        background:#f9fafb;
+        font-weight:600;
+        outline:none;
+      " />
+
+      <button id="createWidgetBtn" type="button" style="
+        padding:10px 14px;
+        font-size:14px;
+        border-radius:12px;
+        border:none;
+        background:#3b82f6;
+        color:#fff;
+        font-weight:700;
+        cursor:pointer;
+      ">Create</button>
+
+      <button id="cancelWidgetBtn" type="button" style="
+        padding:10px 12px;
+        font-size:14px;
+        border-radius:12px;
+        border:1px solid var(--border);
+        background:#fff;
+        color:#111;
+        font-weight:700;
+        cursor:pointer;
+      ">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -766,10 +767,14 @@ createBtn.onclick = async () => {
 
   status.innerText = "Creating widget…";
   try {
-    await createWidget(name);
-    closeInlineCreate();
-    status.innerText = "Widget created ✅";
-    await initDashboard(); // reload widget list and select
+   const created = await createWidget(name);
+closeInlineCreate();
+status.innerText = "Widget created ✅";
+
+if (created?.widget?.slug) {
+  localStorage.setItem("activeWidgetSlug", created.widget.slug);
+}
+await initDashboard();
   } catch (e) {
     status.innerText = e.message || "Failed to create widget";
   }
