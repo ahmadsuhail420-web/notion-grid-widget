@@ -970,57 +970,46 @@ body[data-theme="dark"] .tabItem.active img {
   return false;
 }
     
-    function applyPlanToUI() {
+   function applyPlanToUI() {
   const isPro = CURRENT_PLAN === "pro";
 
-  // Branding (keep footer space, hide only text on pro)
+  // Branding: hide only on pro
   const footerBrand = document.querySelector(".footerBrand");
   if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
 
-  // Header/menu elements
   const menuBtn = document.querySelector(".menuBtn");
   const menu = document.getElementById("menu");
   const freeName = document.getElementById("freeProfileName");
 
-  // Profile/highlights elements
   const profileHeader = document.getElementById("profileHeader");
   const profileNote = document.getElementById("profileNote");
   const highlightsWrap = document.getElementById("highlightsWrap");
+  const dbMenuWrap = document.getElementById("dbMenuWrap");
 
   if (!isPro) {
-    // ---- FREE ----
+    // ----- FREE -----
     if (menuBtn) menuBtn.style.display = "none";
     if (menu) menu.classList.add("hidden");
 
     if (freeName) freeName.classList.remove("hidden-section");
 
-    // Hide avatar + stats but keep container so name can still be derived/used
-    if (profileHeader) {
-      profileHeader.classList.remove("hidden-section");
-      profileHeader.classList.add("free-hide-avatar", "free-hide-stats");
-    }
+    // Hide center profile block (so name only appears top-right)
+    if (profileHeader) profileHeader.classList.add("hidden-section");
 
     if (profileNote) profileNote.classList.add("hidden-section");
     if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-
-    // Also hide db switcher wrapper just in case
-    const dbMenuWrap = document.getElementById("dbMenuWrap");
     if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
 
     return;
   }
 
-  // ---- PRO ----
+  // ----- PRO -----
   if (menuBtn) menuBtn.style.display = "";
   if (freeName) freeName.classList.add("hidden-section");
 
-  if (profileHeader) {
-    profileHeader.classList.remove("hidden-section");
-    profileHeader.classList.remove("free-hide-avatar", "free-hide-stats");
-  }
-
+  if (profileHeader) profileHeader.classList.remove("hidden-section");
   if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
-  // Note is controlled by renderProfile() (based on profile.note), so don't force show/hide here.
+  // profileNote is controlled by renderProfile()
 
   // Pro-only menu options visibility
   if (menu) {
@@ -1040,10 +1029,8 @@ body[data-theme="dark"] .tabItem.active img {
     });
   }
 
-  const dbMenuWrap = document.getElementById("dbMenuWrap");
   if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
 }
-
     
     (function () {
       const theme = localStorage.getItem("theme") || "default";
@@ -1324,6 +1311,7 @@ window.toggleProfileNote = toggleProfileNote;
 
   try {
     const slug = getSlug();
+    if (!slug) throw new Error("Missing slug");
     let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
     const activeDb = selectedDb || localStorage.getItem("activeDatabase");
