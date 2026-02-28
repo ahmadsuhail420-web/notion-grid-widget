@@ -1143,570 +1143,583 @@ body[data-theme="dark"] .card video {
     </div>
   <script>
     
-    /* -------------------- GLOBALS -------------------- */
-    let CURRENT_PLAN = "free";
-    let ALL_POSTS = [];
-    let FILTER = "__POSTS__"; // "__POSTS__" | "Video" | "Favorite"
-    let currentSlide = 0;
-    let currentMedia = [];
+  /* =========================  GLOBALS  ========================= */
+  let CURRENT_PLAN = "free";
+  let ALL_POSTS = [];
+  let FILTER = "__POSTS__"; // "__POSTS__" | "Video" | "Favorite"
+  let currentSlide = 0;
+  let currentMedia = [];
 
-    /* -------------------- PLAN GATING -------------------- */
-    function planAllows(plan, feature) {
-  const isPro = plan === "pro";
+  /* =========================
+     PLAN GATING (FREE / PRO)
+  ========================= */
+  function planAllows(plan, feature) {
+    const isPro = plan === "pro";
 
-  if (feature === "viewer_modal") return isPro;          // free: no viewer popup
-  if (feature === "remove_branding") return isPro;       // pro: remove footer text
-  if (feature === "fonts") return isPro;                 // pro: font select
-  if (feature === "hide_sections") return isPro;         // pro: section toggles
-  if (feature === "pinned") return isPro;                // pro: pinned badge + sorting
-  if (feature === "multi_db_switcher") return isPro;     // pro: db switcher in menu
-  if (feature === "unlimited_highlights") return isPro;  // pro: unlimited highlights
+    if (feature === "viewer_modal") return isPro;
+    if (feature === "remove_branding") return isPro;
+    if (feature === "fonts") return isPro;
+    if (feature === "hide_sections") return isPro;
+    if (feature === "pinned") return isPro;
+    if (feature === "multi_db_switcher") return isPro;
+    if (feature === "unlimited_highlights") return isPro;
 
-  return false;
-}
-    
-   function applyPlanToUI() {
-  const isPro = CURRENT_PLAN === "pro";
-
-  // Branding: hide only on pro
-  const footerBrand = document.querySelector(".footerBrand");
-  if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
-
-  const menuBtn = document.querySelector(".menuBtn");
-  const menu = document.getElementById("menu");
-  const freeName = document.getElementById("freeProfileName");
-
-  const profileHeader = document.getElementById("profileHeader");
-  const profileNote = document.getElementById("profileNote");
-  const highlightsWrap = document.getElementById("highlightsWrap");
-  const dbMenuWrap = document.getElementById("dbMenuWrap");
-
-  if (!isPro) {
-    // ----- FREE -----
-    if (menuBtn) menuBtn.style.display = "none";
-    if (menu) menu.classList.add("hidden");
-
-    if (freeName) freeName.classList.remove("hidden-section");
-
-    // Hide center profile block (so name only appears top-right)
-    if (profileHeader) profileHeader.classList.add("hidden-section");
-
-    if (profileNote) profileNote.classList.add("hidden-section");
-    if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-    if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
-
-    return;
+    return false;
   }
 
-  // ----- PRO -----
-  if (menuBtn) menuBtn.style.display = "";
-  if (freeName) freeName.classList.add("hidden-section");
+  function applyPlanToUI() {
+    const isPro = CURRENT_PLAN === "pro";
 
-  if (profileHeader) profileHeader.classList.remove("hidden-section");
-  if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
-  // profileNote is controlled by renderProfile()
+    // Branding: hide only on pro (keep spacing)
+    const footerBrand = document.querySelector(".footerBrand");
+    if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
 
-  // Pro-only menu options visibility
-  if (menu) {
-    const fontSelect = document.getElementById("fontSelect");
-    if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
+    const menuBtn = document.querySelector(".menuBtn");
+    const menu = document.getElementById("menu");
+    const freeName = document.getElementById("freeProfileName");
 
-    const toggleLabels = [...menu.querySelectorAll("label.toggleItem")];
-    toggleLabels.forEach(label => {
-      const text = (label.textContent || "").trim();
-      const isSectionToggle =
-        text.includes("Header") ||
-        text.includes("Highlights") ||
-        text.includes("Profile") ||
-        text.includes("Note");
+    const profileHeader = document.getElementById("profileHeader");
+    const profileNote = document.getElementById("profileNote");
+    const highlightsWrap = document.getElementById("highlightsWrap");
+    const dbMenuWrap = document.getElementById("dbMenuWrap");
 
-      if (isSectionToggle) label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
-    });
-  }
+    if (!isPro) {
+      // ----- FREE -----
+      if (menuBtn) menuBtn.style.display = "none";
+      if (menu) menu.classList.add("hidden");
+      if (freeName) freeName.classList.remove("hidden-section");
 
-  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
-}
-    
-    (function () {
-      const theme = localStorage.getItem("theme") || "default";
-      if (theme === "dark" || (theme === "default" && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-        document.body.setAttribute("data-theme", "dark");
-      } else {
-        document.body.removeAttribute("data-theme");
-      }
-    })();
-
-    function getSlug() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("slug");
+      // Hide center profile (name shown top-right)
+      if (profileHeader) profileHeader.classList.add("hidden-section");
+      if (profileNote) profileNote.classList.add("hidden-section");
+      if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
+      if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
+      return;
     }
 
-    function hasMedia(post) {
-      return (
-        (Array.isArray(post.attachment) && post.attachment.length > 0) ||
-        post.thumbnail
-      );
-    }
+    // ----- PRO -----
+    if (menuBtn) menuBtn.style.display = "";
+    if (freeName) freeName.classList.add("hidden-section");
 
-    function isMultiMedia(post) {
-      return Array.isArray(post.attachment) && post.attachment.length > 1;
-    }
+    if (profileHeader) profileHeader.classList.remove("hidden-section");
+    if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
+    // profileNote visibility is controlled in renderProfile()
 
-    /* -------------------- FONTS -------------------- */
-    function setFont(font) {
-      let value;
+    // Pro menu options
+    if (menu) {
+      const fontSelect = document.getElementById("fontSelect");
+      if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
 
-      if (font === "inter") value = "'Inter', system-ui, -apple-system, sans-serif";
-      else if (font === "poppins") value = "'Poppins', system-ui, -apple-system, sans-serif";
-      else if (font === "manrope") value = "'Manrope', system-ui, -apple-system, sans-serif";
-      else if (font === "montserrat") value = "'Montserrat', system-ui, -apple-system, sans-serif";
-      else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
-
-      document.documentElement.style.setProperty("--font-main", value);
-      document.body.style.fontFamily = "var(--font-main)";
-      localStorage.setItem("font", font);
-    }
-    window.setFont = setFont;
-
-    /* -------------------- FILTER HELPERS -------------------- */
-    function normalizeTypes(typeArr) {
-      if (!Array.isArray(typeArr)) return [];
-      return typeArr.map(t => String(t || "").trim()).filter(Boolean);
-    }
-
-    function matchesFilter(post) {
-      const types = normalizeTypes(post.type);
-      if (FILTER === "__POSTS__") return types.length === 0;
-      return types.includes(FILTER);
-    }
-
-    function getVisibleGridPosts() {
-      return ALL_POSTS
-        .filter(post => {
-          if (post.hide) return false;
-          if (!hasMedia(post)) return false;
-          return matchesFilter(post);
-        })
-        .sort((a, b) => {
-          if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
-          return (b.pinned === true) - (a.pinned === true);
-        });
-    }
-
-    function computeStatsFromGrid(posts) {
-      const today = new Date().toISOString().split("T")[0];
-      return {
-        total: posts.length,
-        scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
-        published: posts.filter(p => p.publishDate && p.publishDate <= today).length
-      };
-    }
-
-    function extractProfileFromPosts(posts) {
-      const rowWithName = posts.find(p => p.profileName);
-      const rowWithPic = posts.find(p => p.profilePicture);
-      return {
-        name: rowWithName?.profileName || "Grid Planner",
-        picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png"
-      };
-    }
-
-    function updateStats() {
-      const stats = computeStatsFromGrid(getVisibleGridPosts());
-      document.getElementById("statPosts").innerText = stats.total;
-      document.getElementById("statScheduled").innerText = stats.scheduled;
-      document.getElementById("statPublished").innerText = stats.published;
-    }
-
-    /* -------------------- THEME -------------------- */
-    function syncThemePill(mode) {
-      const indicator = document.querySelector(".themeIndicator");
-      const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-      const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
-      if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
-      buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.themeBtn === mode));
-    }
-
-    function setTheme(mode) {
-      if (mode === "dark") document.body.setAttribute("data-theme", "dark");
-      else if (mode === "light") document.body.removeAttribute("data-theme");
-      else {
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (prefersDark) document.body.setAttribute("data-theme", "dark");
-        else document.body.removeAttribute("data-theme");
-      }
-      localStorage.setItem("theme", mode);
-      syncThemePill(mode);
-    }
-    window.setTheme = setTheme;
-
-    /* -------------------- MENU -------------------- */
-    function toggleMenu() {
-      document.getElementById("menu").classList.toggle("hidden");
-    }
-    window.toggleMenu = toggleMenu;
-
-    function toggleSection(section, checkbox) {
-      const el =
-        section === "header"
-          ? document.getElementById("profileHeader")
-          : document.getElementById("highlightsWrap");
-      if (!el) return;
-      el.classList.toggle("hidden-section", !checkbox.checked);
-    }
-    window.toggleSection = toggleSection;
-
-    function toggleAvatar(checkbox) {
-      const profile = document.getElementById("profileHeader");
-      if (!profile) return;
-      profile.classList.toggle("no-avatar", !checkbox.checked);
-      localStorage.setItem("showAvatar", checkbox.checked);
-    }
-    window.toggleAvatar = toggleAvatar;
-
-    function toggleProfileNote(checkbox) {
-  const note = document.getElementById("profileNote");
-  if (!note) return;
-
-  if (CURRENT_PLAN === "free") {
-    note.classList.add("hidden-section");
-    return;
-  }
-
-  note.classList.toggle("hidden-section", !checkbox.checked);
-  localStorage.setItem("showProfileNote", checkbox.checked);
-}
-window.toggleProfileNote = toggleProfileNote;
-    
-    /* -------------------- TABS -------------------- */
-    function moveUnderline(tab) {
-  const underline = document.getElementById("slidingUnderline");
-  const tabs = document.querySelector(".tabs");
-  if (!underline || !tabs || !tab) return;
-
-  const tabRect = tab.getBoundingClientRect();
-  const tabsRect = tabs.getBoundingClientRect();
-
-  const underlineWidth = underline.getBoundingClientRect().width || underline.offsetWidth || 0;
-  const x = (tabRect.left - tabsRect.left) + (tabRect.width / 2) - (underlineWidth / 2);
-
-  underline.style.transform = `translateX(${x}px)`;
-}
-    function syncUnderlineToActiveTab() {
-  const activeTab = document.querySelector(".tabItem.active");
-  if (!activeTab) return;
-
-  // 1) ASAP after layout
-  requestAnimationFrame(() => moveUnderline(activeTab));
-
-  // 2) Once more after fonts/icons finish shifting layout
-  setTimeout(() => moveUnderline(activeTab), 100);
-}
-
-    function setFilter(type, el) {
-      FILTER = type;
-
-      document.querySelectorAll(".tabItem").forEach(tab => {
-        tab.classList.remove("active");
-        const img = tab.querySelector("img");
-        if (img) img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+      const toggleLabels = [...menu.querySelectorAll("label.toggleItem")];
+      toggleLabels.forEach(label => {
+        const text = (label.textContent || "").trim();
+        const isSectionToggle =
+          text.includes("Header") ||
+          text.includes("Highlights") ||
+          text.includes("Profile") ||
+          text.includes("Note");
+        if (isSectionToggle) label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
       });
-
-      el.classList.add("active");
-      syncUnderlineToActiveTab();
-      moveUnderline(el);
-      renderGrid();
-      updateStats();
-      
     }
-    window.setFilter = setFilter;
 
-    /* -------------------- DATABASE SWITCHER (IN MENU) -------------------- */
-  async function loadDatabaseSwitcher() {
-  const slug = getSlug();
-  if (!slug) throw new Error("Missing slug");
+    if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
+  }
 
-  try {
-    const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
+  /* =========================
+     THEME (AUTO)
+  ========================= */
+  (function initThemeOnLoad() {
+    const theme = localStorage.getItem("theme") || "default";
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    const data = await res.json();
-    const databases = data.databases || [];
-    const plan = data.plan || "free";
+    if (theme === "dark" || (theme === "default" && prefersDark)) {
+      document.body.setAttribute("data-theme", "dark");
+    } else {
+      document.body.removeAttribute("data-theme");
+    }
+  })();
 
-    CURRENT_PLAN = plan || "free";
-    applyPlanToUI();
+  function syncThemePill(mode) {
+    const indicator = document.querySelector(".themeIndicator");
+    const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+    const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
 
-    if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
-    if (!Array.isArray(databases) || databases.length === 0) return;
+    if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
+    buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.themeBtn === mode));
+  }
 
-    const select = document.getElementById("dbSelect");
-    const wrap = document.getElementById("dbMenuWrap");
-    if (!select || !wrap) return;
+  function setTheme(mode) {
+    if (mode === "dark") document.body.setAttribute("data-theme", "dark");
+    else if (mode === "light") document.body.removeAttribute("data-theme");
+    else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (prefersDark) document.body.setAttribute("data-theme", "dark");
+      else document.body.removeAttribute("data-theme");
+    }
 
-    wrap.classList.remove("hidden-section");
+    localStorage.setItem("theme", mode);
+    syncThemePill(mode);
+  }
+  window.setTheme = setTheme;
 
-    const activeDb = localStorage.getItem("activeDatabase");
+  /* =========================
+     HELPERS
+  ========================= */
+  function getSlug() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("slug");
+  }
 
-    // options
-    select.innerHTML = "";
-    databases.forEach(dbItem => {
-      const opt = document.createElement("option");
-      opt.value = dbItem.database_id;
-      opt.textContent = dbItem.label;
-      select.appendChild(opt);
+  function hasMedia(post) {
+    return (Array.isArray(post.attachment) && post.attachment.length > 0) || post.thumbnail;
+  }
+
+  function isMultiMedia(post) {
+    return Array.isArray(post.attachment) && post.attachment.length > 1;
+  }
+
+  function normalizeTypes(typeArr) {
+    if (!Array.isArray(typeArr)) return [];
+    return typeArr.map(t => String(t || "").trim()).filter(Boolean);
+  }
+
+  function matchesFilter(post) {
+    const types = normalizeTypes(post.type);
+    if (FILTER === "__POSTS__") return types.length === 0;
+    return types.includes(FILTER);
+  }
+
+  function getVisibleGridPosts() {
+    return ALL_POSTS
+      .filter(post => {
+        if (post.hide) return false;
+        if (!hasMedia(post)) return false;
+        return matchesFilter(post);
+      })
+      .sort((a, b) => {
+        if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
+        return (b.pinned === true) - (a.pinned === true);
+      });
+  }
+
+  function computeStatsFromGrid(posts) {
+    const today = new Date().toISOString().split("T")[0];
+
+    return {
+      total: posts.length,
+      scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
+      published: posts.filter(p => p.publishDate && p.publishDate <= today).length,
+    };
+  }
+
+  function updateStats() {
+    const stats = computeStatsFromGrid(getVisibleGridPosts());
+    document.getElementById("statPosts").innerText = stats.total;
+    document.getElementById("statScheduled").innerText = stats.scheduled;
+    document.getElementById("statPublished").innerText = stats.published;
+  }
+
+  function extractProfileFromPosts(posts) {
+    const rowWithName = posts.find(p => p.profileName);
+    const rowWithPic = posts.find(p => p.profilePicture);
+
+    return {
+      name: rowWithName?.profileName || "Grid Planner",
+      picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png",
+    };
+  }
+
+  /* =========================
+     FONTS
+  ========================= */
+  function setFont(font) {
+    let value;
+
+    if (font === "inter") value = "'Inter', system-ui, -apple-system, sans-serif";
+    else if (font === "poppins") value = "'Poppins', system-ui, -apple-system, sans-serif";
+    else if (font === "manrope") value = "'Manrope', system-ui, -apple-system, sans-serif";
+    else if (font === "montserrat") value = "'Montserrat', system-ui, -apple-system, sans-serif";
+    else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+
+    document.documentElement.style.setProperty("--font-main", value);
+    document.body.style.fontFamily = "var(--font-main)";
+    localStorage.setItem("font", font);
+  }
+  window.setFont = setFont;
+
+  /* =========================
+     DATE FORMAT (Publish Date only)
+     Example: 2026-02-01 -> 01 Feb 26
+  ========================= */
+  function formatDateForHover(post) {
+    const raw = post?.publishDate || "";
+    if (!raw) return "";
+
+    const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return "";
+
+    const [, yyyy, mm, dd] = m;
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthIndex = Number(mm) - 1;
+    const mon = monthNames[monthIndex] || "";
+    const yy = yyyy.slice(-2);
+
+    return `${dd} ${mon} ${yy}`;
+  }
+
+  /* =========================
+     MENU
+  ========================= */
+  function toggleMenu() {
+    document.getElementById("menu").classList.toggle("hidden");
+  }
+  window.toggleMenu = toggleMenu;
+
+  function toggleSection(section, checkbox) {
+    const el = section === "header" ? document.getElementById("profileHeader") : document.getElementById("highlightsWrap");
+    if (!el) return;
+    el.classList.toggle("hidden-section", !checkbox.checked);
+  }
+  window.toggleSection = toggleSection;
+
+  function toggleAvatar(checkbox) {
+    const profile = document.getElementById("profileHeader");
+    if (!profile) return;
+    profile.classList.toggle("no-avatar", !checkbox.checked);
+    localStorage.setItem("showAvatar", checkbox.checked);
+  }
+  window.toggleAvatar = toggleAvatar;
+
+  function toggleProfileNote(checkbox) {
+    const note = document.getElementById("profileNote");
+    if (!note) return;
+
+    // Free: never show note
+    if (CURRENT_PLAN === "free") {
+      note.classList.add("hidden-section");
+      return;
+    }
+
+    note.classList.toggle("hidden-section", !checkbox.checked);
+    localStorage.setItem("showProfileNote", checkbox.checked);
+  }
+  window.toggleProfileNote = toggleProfileNote;
+
+  /* =========================
+     TABS / UNDERLINE
+  ========================= */
+  function moveUnderline(tab) {
+    const underline = document.getElementById("slidingUnderline");
+    const tabs = document.querySelector(".tabs");
+    if (!underline || !tabs || !tab) return;
+
+    const tabRect = tab.getBoundingClientRect();
+    const tabsRect = tabs.getBoundingClientRect();
+
+    const underlineWidth = underline.getBoundingClientRect().width || underline.offsetWidth || 0;
+    const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underlineWidth / 2;
+
+    underline.style.transform = `translateX(${x}px)`;
+  }
+
+  function syncUnderlineToActiveTab() {
+    const activeTab = document.querySelector(".tabItem.active");
+    if (!activeTab) return;
+
+    requestAnimationFrame(() => moveUnderline(activeTab));
+    setTimeout(() => moveUnderline(activeTab), 100);
+  }
+
+  function setFilter(type, el) {
+    FILTER = type;
+
+    document.querySelectorAll(".tabItem").forEach(tab => {
+      tab.classList.remove("active");
+      const img = tab.querySelector("img");
+      if (img) img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
     });
 
-    // selected
-    const selected =
-      activeDb ||
-      databases.find(d => d.is_primary)?.database_id ||
-      databases[0].database_id;
+    el.classList.add("active");
+    syncUnderlineToActiveTab();
 
-    select.value = selected;
-    localStorage.setItem("activeDatabase", selected);
-
-    // change handler (attach once)
-    select.onchange = async () => {
-      const dbId = select.value;
-      localStorage.setItem("activeDatabase", dbId);
-      await animateDatabaseChange(dbId);
-      document.getElementById("menu")?.classList.add("hidden");
-    };
-  } catch (e) {
-    console.error("loadDatabaseSwitcher failed:", e);
-  }
-}
-
-    async function animateDatabaseChange(dbId) {
-      const container = document.querySelector(".gridWrap");
-      if (!container) return;
-
-      container.style.opacity = 0;
-      container.style.transform = "translateY(10px)";
-      container.style.transition = "all 0.3s ease";
-
-      await loadPosts(dbId);
-
-      setTimeout(() => {
-        container.style.opacity = 1;
-        container.style.transform = "translateY(0)";
-      }, 50);
-    }
-
-    /* -------------------- DATA LOAD -------------------- */
-    async function loadPosts(selectedDb = null, btn = null) {
-  const icon = btn?.querySelector(".refreshIcon");
-  if (icon) icon.classList.add("spin");
-
-  if (!btn) {
-    document.querySelector(".container").setAttribute("data-loading", "true");
-    document.getElementById("skeleton").style.display = "block";
-  }
-
-  try {
-    const slug = getSlug();
-    if (!slug) throw new Error("Missing slug");
-    let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
-
-    const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-    if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
-
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-
-    const { profile: apiProfile, posts, plan } = await res.json();
-
-    CURRENT_PLAN = plan || "free";
-    applyPlanToUI();
-
-    ALL_POSTS = Array.isArray(posts) ? posts : [];
-    sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
-
-    const derivedProfile = extractProfileFromPosts(ALL_POSTS);
-    const finalProfile = apiProfile || derivedProfile;
-
-    renderProfile(finalProfile);
-    renderHighlights(ALL_POSTS);
     renderGrid();
     updateStats();
-    syncUnderlineToActiveTab();
-    
-  } catch (e) {
-    console.error("loadPosts failed:", e);
-  } finally {
-    if (!btn) {
-      document.getElementById("skeleton").style.display = "none";
-      document.querySelector(".container").removeAttribute("data-loading");
-    }
-    if (icon) icon.classList.remove("spin");
   }
-}
-    /* -------------------- PROFILE -------------------- */
-    function renderProfile(profile) {
-  if (!profile) return;
+  window.setFilter = setFilter;
 
-  document.getElementById("profileName").innerText = profile.name || "Grid Planner";
+  /* =========================
+     DATABASE SWITCHER (PRO)
+  ========================= */
+  async function loadDatabaseSwitcher() {
+    const slug = getSlug();
+    if (!slug) throw new Error("Missing slug");
 
-const freeName = document.getElementById("freeProfileName");
-if (freeName) freeName.textContent = profile.name || "Grid Planner";
-      
-  document.getElementById("profileImage").src = profile.picture || "/icons/profile-placeholder.png";
+    try {
+      const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-  const noteEl = document.getElementById("profileNote");
-  if (!noteEl) return;
+      const data = await res.json();
+      const databases = data.databases || [];
+      const plan = data.plan || "free";
 
-  // Free: never show note
-  if (CURRENT_PLAN === "free") {
-    noteEl.classList.add("hidden-section");
-    return;
-  }
+      CURRENT_PLAN = plan || "free";
+      applyPlanToUI();
 
-  if (profile.note) {
-    noteEl.textContent = profile.note;
-    noteEl.classList.remove("hidden-section");
-  } else {
-    noteEl.classList.add("hidden-section");
-  }
-}
+      if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
+      if (!Array.isArray(databases) || databases.length === 0) return;
 
-    /* -------------------- HIGHLIGHTS -------------------- */
-    function renderHighlights(posts) {
-      const row = document.getElementById("highlights");
-      row.innerHTML = "";
+      const select = document.getElementById("dbSelect");
+      const wrap = document.getElementById("dbMenuWrap");
+      if (!select || !wrap) return;
 
- let MAX = 0; // free
-if (CURRENT_PLAN === "pro") MAX = Infinity; // unlimited
+      wrap.classList.remove("hidden-section");
 
-     const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
+      const activeDb = localStorage.getItem("activeDatabase");
 
-const visibleItems = Number.isFinite(MAX) ? items.slice(0, MAX) : items;
-
-visibleItems.forEach(post => {
-        const wrap = document.createElement("div");
-        wrap.className = "highlightItem";
-
-        const img = document.createElement("img");
-        img.src = post.thumbnail || post.attachment?.[0];
-
-        wrap.appendChild(img);
-
-        // ✅ Free: disable viewer modal
-        wrap.onclick = () => {
-          if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
-          openViewer(post);
-        };
-
-        row.appendChild(wrap);
+      // options
+      select.innerHTML = "";
+      databases.forEach(dbItem => {
+        const opt = document.createElement("option");
+        opt.value = dbItem.database_id;
+        opt.textContent = dbItem.label;
+        select.appendChild(opt);
       });
 
-    // Only show placeholders when MAX is a real number (free/advanced)
-if (Number.isFinite(MAX)) {
-  const remaining = Math.max(0, MAX - items.length);
-  for (let i = 0; i < remaining; i++) {
-    const ph = document.createElement("div");
-    ph.className = "highlightItem highlightPlaceholder";
-    row.appendChild(ph);
+      // selected
+      const selected = activeDb || databases.find(d => d.is_primary)?.database_id || databases[0].database_id;
+      select.value = selected;
+      localStorage.setItem("activeDatabase", selected);
+
+      // change handler
+      select.onchange = async () => {
+        const dbId = select.value;
+        localStorage.setItem("activeDatabase", dbId);
+        await animateDatabaseChange(dbId);
+        document.getElementById("menu")?.classList.add("hidden");
+      };
+    } catch (e) {
+      console.error("loadDatabaseSwitcher failed:", e);
+    }
   }
-}
+
+  async function animateDatabaseChange(dbId) {
+    const container = document.querySelector(".gridWrap");
+    if (!container) return;
+
+    container.style.opacity = 0;
+    container.style.transform = "translateY(10px)";
+    container.style.transition = "all 0.3s ease";
+
+    await loadPosts(dbId);
+
+    setTimeout(() => {
+      container.style.opacity = 1;
+      container.style.transform = "translateY(0)";
+    }, 50);
+  }
+
+  /* =========================
+     DATA LOAD
+  ========================= */
+  async function loadPosts(selectedDb = null, btn = null) {
+    const icon = btn?.querySelector(".refreshIcon");
+    if (icon) icon.classList.add("spin");
+
+    if (!btn) {
+      document.querySelector(".container").setAttribute("data-loading", "true");
+      document.getElementById("skeleton").style.display = "block";
     }
 
-    /* -------------------- GRID -------------------- */
-    function addBadge(card, src, index = 0) {
+    try {
+      const slug = getSlug();
+      if (!slug) throw new Error("Missing slug");
+
+      let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
+
+      const activeDb = selectedDb || localStorage.getItem("activeDatabase");
+      if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+      const { profile: apiProfile, posts, plan } = await res.json();
+
+      CURRENT_PLAN = plan || "free";
+      applyPlanToUI();
+
+      ALL_POSTS = Array.isArray(posts) ? posts : [];
+      sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
+
+      const derivedProfile = extractProfileFromPosts(ALL_POSTS);
+      const finalProfile = apiProfile || derivedProfile;
+
+      renderProfile(finalProfile);
+      renderHighlights(ALL_POSTS);
+      renderGrid();
+      updateStats();
+      syncUnderlineToActiveTab();
+    } catch (e) {
+      console.error("loadPosts failed:", e);
+    } finally {
+      if (!btn) {
+        document.getElementById("skeleton").style.display = "none";
+        document.querySelector(".container").removeAttribute("data-loading");
+      }
+      if (icon) icon.classList.remove("spin");
+    }
+  }
+
+  /* =========================
+     PROFILE
+  ========================= */
+  function renderProfile(profile) {
+    if (!profile) return;
+
+    document.getElementById("profileName").innerText = profile.name || "Grid Planner";
+
+    const freeName = document.getElementById("freeProfileName");
+    if (freeName) freeName.textContent = profile.name || "Grid Planner";
+
+    document.getElementById("profileImage").src = profile.picture || "/icons/profile-placeholder.png";
+
+    const noteEl = document.getElementById("profileNote");
+    if (!noteEl) return;
+
+    // Free: never show note
+    if (CURRENT_PLAN === "free") {
+      noteEl.classList.add("hidden-section");
+      return;
+    }
+
+    if (profile.note) {
+      noteEl.textContent = profile.note;
+      noteEl.classList.remove("hidden-section");
+    } else {
+      noteEl.classList.add("hidden-section");
+    }
+  }
+
+  /* =========================
+     HIGHLIGHTS
+  ========================= */
+  function renderHighlights(posts) {
+    const row = document.getElementById("highlights");
+    row.innerHTML = "";
+
+    let MAX = 0; // free
+    if (CURRENT_PLAN === "pro") MAX = Infinity;
+
+    const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
+    const visibleItems = Number.isFinite(MAX) ? items.slice(0, MAX) : items;
+
+    visibleItems.forEach(post => {
+      const wrap = document.createElement("div");
+      wrap.className = "highlightItem";
+
       const img = document.createElement("img");
-      img.src = src;
-      img.className = "badge";
-      img.style.top = `${6 + index * 18}px`;
-      card.appendChild(img);
-    }
+      img.src = post.thumbnail || post.attachment?.[0];
+      wrap.appendChild(img);
 
-    function isDirectVideoUrl(url) {
-      return typeof url === "string" && url.match(/\.(mp4|webm|ogg)(\?.*)?$/i);
-    }
+      wrap.onclick = () => {
+        if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
+        openViewer(post);
+      };
 
-    function getCardSrc(post) {
-      if (post.thumbnail) return post.thumbnail;
-      return (Array.isArray(post.attachment) && post.attachment[0]) || null;
-    }
-   
-    function formatDateForHover(post) {
-  const raw = post?.publishDate || "";
-  if (!raw) return "";
+      row.appendChild(wrap);
+    });
 
-  // Expected from API: "YYYY-MM-DD"
-  const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return "";
-
-  const [, yyyy, mm, dd] = m;
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  const monthIndex = Number(mm) - 1;
-  const mon = monthNames[monthIndex] || "";
-
-  // "26" from "2026"
-  const yy = yyyy.slice(-2);
-
-  return `${dd} ${mon} ${yy}`;
-}
-   
-    function renderGrid() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-
-  getVisibleGridPosts().forEach(post => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const src = getCardSrc(post);
-    if (src) {
-      if (isDirectVideoUrl(src) && !post.thumbnail) {
-        const v = document.createElement("video");
-        v.src = src;
-        v.muted = true;
-        v.playsInline = true;
-        card.appendChild(v);
-      } else {
-        const img = document.createElement("img");
-        img.src = src;
-        card.appendChild(img);
+    // Only show placeholders when MAX is a real number (free)
+    if (Number.isFinite(MAX)) {
+      const remaining = Math.max(0, MAX - items.length);
+      for (let i = 0; i < remaining; i++) {
+        const ph = document.createElement("div");
+        ph.className = "highlightItem highlightPlaceholder";
+        row.appendChild(ph);
       }
     }
+  }
 
-    if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
-    if (planAllows(CURRENT_PLAN, "pinned") && post.pinned) addBadge(card, "/icons/pin.png");
+  /* =========================
+     GRID
+  ========================= */
+  function addBadge(card, src, index = 0) {
+    const img = document.createElement("img");
+    img.src = src;
+    img.className = "badge";
+    img.style.top = `${6 + index * 18}px`;
+    card.appendChild(img);
+  }
 
-    // Hover overlay (name + date) — works on Free too
-    const hover = document.createElement("div");
-    hover.className = "hoverText";
+  function isDirectVideoUrl(url) {
+    return typeof url === "string" && url.match(/\.(mp4|webm|ogg)(\?.*)?$/i);
+  }
 
-    const wrap = document.createElement("div");
-    wrap.className = "textWrap";
+  function getCardSrc(post) {
+    if (post.thumbnail) return post.thumbnail;
+    return (Array.isArray(post.attachment) && post.attachment[0]) || null;
+  }
 
-    const title = document.createElement("div");
-    title.className = "title";
-    title.textContent = post.name || post.title || post.caption || "";
+  function renderGrid() {
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
 
-    const date = document.createElement("div");
-    date.className = "date";
-    date.textContent = formatDateForHover(post);
+    getVisibleGridPosts().forEach(post => {
+      const card = document.createElement("div");
+      card.className = "card";
 
-    wrap.appendChild(title);
-    if (date.textContent) wrap.appendChild(date);
+      const src = getCardSrc(post);
+      if (src) {
+        if (isDirectVideoUrl(src) && !post.thumbnail) {
+          const v = document.createElement("video");
+          v.src = src;
+          v.muted = true;
+          v.playsInline = true;
+          card.appendChild(v);
+        } else {
+          const img = document.createElement("img");
+          img.src = src;
+          card.appendChild(img);
+        }
+      }
 
-    hover.appendChild(wrap);
-    card.appendChild(hover);
+      if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
+      if (planAllows(CURRENT_PLAN, "pinned") && post.pinned) addBadge(card, "/icons/pin.png");
 
-    // Click: popup only for paid
-    card.onclick = () => {
-      if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
-      openViewer(post);
-    };
+      // Hover overlay (title + publish date only)
+      const hover = document.createElement("div");
+      hover.className = "hoverText";
 
-    grid.appendChild(card);
-  });
-}
-    /* -------------------- VIEWER -------------------- */
-   function openViewer(post) {
+      const wrap = document.createElement("div");
+      wrap.className = "textWrap";
+
+      const title = document.createElement("div");
+      title.className = "title";
+      title.textContent = post.name || post.title || post.caption || "";
+
+      const dateStr = formatDateForHover(post);
+      const date = document.createElement("div");
+      date.className = "date";
+      date.textContent = dateStr;
+
+      wrap.appendChild(title);
+      if (dateStr) wrap.appendChild(date);
+
+      hover.appendChild(wrap);
+      card.appendChild(hover);
+
+      card.onclick = () => {
+        if (!planAllows(CURRENT_PLAN, "viewer_modal")) return;
+        openViewer(post);
+      };
+
+      grid.appendChild(card);
+    });
+  }
+
+  /* =========================
+     VIEWER
+  ========================= */
+  function openViewer(post) {
     const viewer = document.getElementById("viewer");
     if (!viewer) return;
 
@@ -1717,149 +1730,154 @@ if (Number.isFinite(MAX)) {
     document.getElementById("viewerTitle").innerText = post.name || "";
 
     const d = document.getElementById("viewerDate");
-    if (d) d.innerText = formatDateForHover(post); // will be "" if no publishDate
+    if (d) d.innerText = formatDateForHover(post);
 
     viewer.classList.remove("hidden");
     requestAnimationFrame(() => viewer.classList.add("show"));
   }
 
-    function updateViewerImage() {
-      const wrap = document.getElementById("viewerMedia");
-      wrap.innerHTML = "";
+  function updateViewerImage() {
+    const wrap = document.getElementById("viewerMedia");
+    wrap.innerHTML = "";
 
-      const src = currentMedia[currentSlide];
-      if (!src) return;
+    const src = currentMedia[currentSlide];
+    if (!src) return;
 
-      const el = isDirectVideoUrl(src)
-        ? Object.assign(document.createElement("video"), { src, controls: true })
-        : Object.assign(document.createElement("img"), { src });
+    const el = isDirectVideoUrl(src)
+      ? Object.assign(document.createElement("video"), { src, controls: true })
+      : Object.assign(document.createElement("img"), { src });
 
-      wrap.appendChild(el);
+    wrap.appendChild(el);
 
-      const showNav = currentMedia.length > 1;
-      document.querySelector(".nav.prev").style.display = showNav ? "flex" : "none";
-      document.querySelector(".nav.next").style.display = showNav ? "flex" : "none";
-    }
+    const showNav = currentMedia.length > 1;
+    document.querySelector(".nav.prev").style.display = showNav ? "flex" : "none";
+    document.querySelector(".nav.next").style.display = showNav ? "flex" : "none";
+  }
 
-    function nextImage() {
-      if (!currentMedia.length) return;
-      currentSlide = (currentSlide + 1) % currentMedia.length;
-      updateViewerImage();
-    }
+  function nextImage() {
+    if (!currentMedia.length) return;
+    currentSlide = (currentSlide + 1) % currentMedia.length;
+    updateViewerImage();
+  }
 
-    function prevImage() {
-      if (!currentMedia.length) return;
-      currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
-      updateViewerImage();
-    }
+  function prevImage() {
+    if (!currentMedia.length) return;
+    currentSlide = (currentSlide - 1 + currentMedia.length) % currentMedia.length;
+    updateViewerImage();
+  }
 
-    window.nextImage = nextImage;
-    window.prevImage = prevImage;
+  function closeViewer() {
+    const v = document.getElementById("viewer");
+    if (!v) return;
 
-    function closeViewer() {
-  const v = document.getElementById("viewer");
-  if (!v) return;
+    v.classList.remove("show");
+    setTimeout(() => v.classList.add("hidden"), 250);
+  }
 
-  v.classList.remove("show");
+  window.nextImage = nextImage;
+  window.prevImage = prevImage;
+  window.closeViewer = closeViewer;
 
-  setTimeout(() => v.classList.add("hidden"), 250);
-}
+  /* =========================
+     INIT
+  ========================= */
+  async function startGrid() {
+    try {
+      let slugRetries = window.__slugRetries || 0;
+      window.__slugRetries = slugRetries + 1;
 
-    window.closeViewer = closeViewer;
-
-    /* -------------------- INIT -------------------- */
-    async function startGrid() {
-      try {
-        let slugRetries = window.__slugRetries || 0;
-        window.__slugRetries = slugRetries + 1;
-
-        if (!getSlug()) {
-          if (slugRetries < 20) {
-            setTimeout(startGrid, 300);
-            return;
-          } else {
-            document.getElementById("skeleton").style.display = "none";
-            document.querySelector(".container").removeAttribute("data-loading");
-            return;
-          }
-        }
-
-        const cached = sessionStorage.getItem("cachedData");
-        if (cached) {
-          const { profile, posts, plan } = JSON.parse(cached);
-
-          ALL_POSTS = posts || [];
-          CURRENT_PLAN = plan || "free";
-          applyPlanToUI();
-
-          renderProfile(profile);
-          renderHighlights(ALL_POSTS);
-          renderGrid();
-          updateStats();
-
-          document.getElementById("skeleton").style.display = "none";
-          document.querySelector(".container").removeAttribute("data-loading");
-
-          const savedTheme = localStorage.getItem("theme") || "default";
-          syncThemePill(savedTheme);
-
-          const savedFont = localStorage.getItem("font");
-          if (savedFont) setFont(savedFont);
-          const fontSelect = document.getElementById("fontSelect");
-          if (fontSelect && savedFont) fontSelect.value = savedFont;
-
-          await loadDatabaseSwitcher();
-         syncUnderlineToActiveTab();
+      if (!getSlug()) {
+        if (slugRetries < 20) {
+          setTimeout(startGrid, 300);
           return;
         }
+        document.getElementById("skeleton").style.display = "none";
+        document.querySelector(".container").removeAttribute("data-loading");
+        return;
+      }
+
+      const cached = sessionStorage.getItem("cachedData");
+      if (cached) {
+        const { profile, posts, plan } = JSON.parse(cached);
+
+        ALL_POSTS = posts || [];
+        CURRENT_PLAN = plan || "free";
+        applyPlanToUI();
+
+        renderProfile(profile);
+        renderHighlights(ALL_POSTS);
+        renderGrid();
+        updateStats();
+
+        document.getElementById("skeleton").style.display = "none";
+        document.querySelector(".container").removeAttribute("data-loading");
 
         const savedTheme = localStorage.getItem("theme") || "default";
         syncThemePill(savedTheme);
 
         const savedFont = localStorage.getItem("font");
         if (savedFont) setFont(savedFont);
+
         const fontSelect = document.getElementById("fontSelect");
         if (fontSelect && savedFont) fontSelect.value = savedFont;
 
         await loadDatabaseSwitcher();
+        syncUnderlineToActiveTab();
+        return;
+      }
 
-        const savedDb = localStorage.getItem("activeDatabase");
-        await loadPosts(savedDb);
+      const savedTheme = localStorage.getItem("theme") || "default";
+      syncThemePill(savedTheme);
+
+      const savedFont = localStorage.getItem("font");
+      if (savedFont) setFont(savedFont);
+
+      const fontSelect = document.getElementById("fontSelect");
+      if (fontSelect && savedFont) fontSelect.value = savedFont;
+
+      await loadDatabaseSwitcher();
+
+      const savedDb = localStorage.getItem("activeDatabase");
+      await loadPosts(savedDb);
 
       syncUnderlineToActiveTab();
-        
-      } catch (e) {
-        console.error("Grid init failed", e);
-      }
+    } catch (e) {
+      console.error("Grid init failed", e);
     }
+  }
 
-    document.querySelector(".refreshBtn").onclick = async function () {
-  const selectedDb = localStorage.getItem("activeDatabase");
-  await loadPosts(selectedDb, this);
-};
+  // Refresh click
+  document.querySelector(".refreshBtn").onclick = async function () {
+    const selectedDb = localStorage.getItem("activeDatabase");
+    await loadPosts(selectedDb, this);
+  };
 
-    document.addEventListener("click", () => {
-      const menu = document.getElementById("menu");
-      if (menu && !menu.classList.contains("hidden")) menu.classList.add("hidden");
-    });
+  // Close menu when clicking outside
+  document.addEventListener("click", () => {
+    const menu = document.getElementById("menu");
+    if (menu && !menu.classList.contains("hidden")) menu.classList.add("hidden");
+  });
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeViewer();
-    });
+  // Escape closes viewer
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeViewer();
+  });
 
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    media.addEventListener("change", e => {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "default") {
-        if (e.matches) document.body.setAttribute("data-theme", "dark");
-        else document.body.removeAttribute("data-theme");
-      }
-    });
-    window.addEventListener("load", () => {
-  syncUnderlineToActiveTab();
-});
+  // Auto theme reacts to system changes when theme=default
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  media.addEventListener("change", e => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "default") {
+      if (e.matches) document.body.setAttribute("data-theme", "dark");
+      else document.body.removeAttribute("data-theme");
+    }
+  });
 
-    window.addEventListener("load", startGrid);
+  window.addEventListener("load", () => {
+    syncUnderlineToActiveTab();
+  });
+
+  window.addEventListener("load", startGrid);
   </script>
 </body>
 </html>
