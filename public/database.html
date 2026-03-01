@@ -697,6 +697,42 @@ button.primary-btn {
     if (!res.ok) throw new Error(data.error || "Failed to create widget");
     return data;
   }
+    
+  // --- Help image modal wiring ---
+  const helpModal = document.getElementById("helpModal");
+  const helpModalImg = document.getElementById("helpModalImg");
+  const closeHelpModalBtn = document.getElementById("closeHelpModal");
+
+  function openHelpModal(src) {
+    if (!helpModal || !helpModalImg) return;
+    helpModalImg.src = src;
+    helpModal.style.display = "flex";
+  }
+
+  function closeHelpModal() {
+    if (!helpModal) return;
+    helpModal.style.display = "none";
+    if (helpModalImg) helpModalImg.src = "";
+  }
+
+  // Attach click handlers to the helper links
+  document.querySelectorAll(".helpLink").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const src = a.getAttribute("data-img");
+      if (src) openHelpModal(src);
+    });
+  });
+
+  if (closeHelpModalBtn) closeHelpModalBtn.addEventListener("click", closeHelpModal);
+  if (helpModal) helpModal.addEventListener("click", (e) => {
+    // click outside image closes
+    if (e.target === helpModal) closeHelpModal();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeHelpModal();
+  });
 
   async function initDashboard() {
     if (!token) {
