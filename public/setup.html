@@ -179,26 +179,79 @@
     </div>
   </div>
 
-  <!-- CONTENT: SETUP FORM -->
-  <div id="content" style="display:none; margin-top:20px; text-align:left;">
-    <label>
-      Workspace name
-      <input id="name" placeholder="Ex: My Content Planner" style="margin-top:8px;"/>
-    </label>
-
-    <div class="helper" style="margin-top:8px;">
-      This is only for your reference.
-    </div>
-
-    <button id="connect" style="margin-top:8px;">
-      Connect Notion
-    </button>
+ <section id="proUnlock" style="
+  margin-top:18px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:#fff;
+  box-shadow: var(--shadow-soft);
+">
+  <div style="font-weight:800; font-size:14px; margin-bottom:6px;">Unlock Pro</div>
+  <div style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">
+    Paste your Gumroad license key to unlock lifetime Pro.
   </div>
+
+  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+    <input id="licenseKey" placeholder="XXXX-XXXX-XXXX" style="
+      flex:1;
+      min-width:220px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#f9fafb;
+      font-weight:600;
+      outline:none;
+    " />
+    <button id="unlockBtn" type="button" style="
+      padding:10px 14px;
+      font-size:14px;
+      border-radius:12px;
+      border:none;
+      background:#111827;
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+    ">Unlock</button>
+  </div>
+
+  <div id="unlockStatus" style="margin-top:10px; font-size:13px;"></div>
+</section>
 
  </div>
 
   <!-- SCRIPT -->
   <script>
+    const qs = new URLSearchParams(location.search);
+  const token = qs.get("token"); // dashboard_token
+
+  const unlockBtn = document.getElementById("unlockBtn");
+  const unlockStatus = document.getElementById("unlockStatus");
+
+  unlockBtn.onclick = async () => {
+    const license_key = (document.getElementById("licenseKey").value || "").trim();
+    if (!token) return alert("Missing token in URL");
+    if (!license_key) return alert("Paste your license key");
+
+    unlockStatus.textContent = "Verifying license…";
+
+    const res = await fetch("/api/unlock", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, provider: "gumroad", license_key })
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      unlockStatus.textContent = data.error || "Unlock failed";
+      unlockStatus.style.color = "#b91c1c";
+      return;
+    }
+
+    unlockStatus.textContent = "Unlocked ✅ You are Pro.";
+    unlockStatus.style.color = "#16a34a";
+    
     function slugify(text) {
       return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
     }
