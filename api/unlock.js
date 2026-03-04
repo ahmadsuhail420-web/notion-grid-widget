@@ -1,10 +1,8 @@
-// Vercel serverless (CommonJS)
-// POST /api/unlock
-//
-// Body: { token: dashboard_token, provider: "gumroad", license_key: "..." }
-//
-// Verifies Gumroad license key and activates Pro ONCE per key.
-// Stores activation proof in Supabase `license_activations` table and sets customers.plan='pro'.
+// UPDATED: works with setup.html?token=<SETUP_TOKEN>
+// - Finds customer by customers.setup_token (not dashboard_token)
+// - Single activation per license key
+// - Upgrades customer to plan='pro'
+// - Returns dashboard_token so frontend can redirect when ready
 
 const crypto = require("crypto");
 
@@ -12,8 +10,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const GUMROAD_ACCESS_TOKEN = process.env.GUMROAD_ACCESS_TOKEN;
-// Your product permalink from: https://suhailcraft0.gumroad.com/l/gridwidget
-const GUMROAD_PRODUCT_PERMALINK = "gridwidget";
+const GUMROAD_PRODUCT_PERMALINK = "gridwidget"; // from https://suhailcraft0.gumroad.com/l/gridwidget
 
 async function supabaseFetch(path, { method = "GET", body } = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -60,13 +57,8 @@ async function verifyGumroadLicense(license_key) {
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.message || data?.error || "Gumroad verify failed");
+  if (!data.success) throw new Error(data?.message || "Invalid license key");
 
-  // Gumroad verify response typically includes `success`
-  if (!data.success) {
-    throw new Error(data?.message || "Invalid license key");
-  }
-
-  // Some responses include `purchase` details; we keep best-effort fields
   const purchase = data.purchase || {};
   return {
     email: purchase.email || null,
@@ -86,23 +78,27 @@ module.exports = async function handler(req, res) {
     if (provider !== "gumroad") return res.status(400).json({ error: "Unsupported provider" });
     if (!license_key) return res.status(400).json({ error: "Missing license_key" });
 
-    // 1) Find customer by dashboard_token
-    const customers = await supabaseFetch(`customers?select=id,plan,status&dashboard_token=eq.${encodeURIComponent(token)}&limit=1`);
-    const customer = Array.isArray(customers) ? customers[0] : null;
-    if (!customer) return res.status(401).json({ error: "Invalid token" });
+    // IMPORTANT: token from setup.html is actually setup_token
+    const setupToken = token;
+
+    // 1) Find customer by setup_token
+    const rows = await supabaseFetch(
+      `customers?select=id,plan,status,dashboard_token,setup_token&setup_token=eq.${encodeURIComponent(setupToken)}&limit=1`
+    );
+    const customer = Array.isArray(rows) ? rows[0] : null;
+    if (!customer) return res.status(401).json({ error: "Invalid setup token" });
 
     // 2) Verify license with Gumroad
     const verify = await verifyGumroadLicense(license_key);
 
-    // Optional policy: do not activate refunded/chargebacked/cancelled
+    // policy: do not activate refunded/chargebacked/cancelled
     if (verify.refunded || verify.chargebacked || verify.cancelled) {
       return res.status(403).json({ error: "License is not active (refunded/chargeback/cancelled)" });
     }
 
-    // 3) Single activation enforcement: hash key and upsert activation
+    // 3) Single activation enforcement
     const license_key_hash = sha256Hex(license_key);
 
-    // check existing activations
     const existing = await supabaseFetch(
       `license_activations?select=id,customer_id&license_key_hash=eq.${license_key_hash}&limit=1`
     );
@@ -113,7 +109,6 @@ module.exports = async function handler(req, res) {
     }
 
     if (!activation) {
-      // insert activation row
       await supabaseFetch("license_activations", {
         method: "POST",
         body: [{
@@ -127,8 +122,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 4) Upgrade customer to Pro (idempotent)
-    await supabaseFetch(`customers?dashboard_token=eq.${encodeURIComponent(token)}`, {
+    // 4) Upgrade customer to Pro
+    await supabaseFetch(`customers?setup_token=eq.${encodeURIComponent(setupToken)}`, {
       method: "PATCH",
       body: {
         plan: "pro",
@@ -137,7 +132,11 @@ module.exports = async function handler(req, res) {
       },
     });
 
-    return res.status(200).json({ ok: true, plan: "pro" });
+    return res.status(200).json({
+      ok: true,
+      plan: "pro",
+      dashboard_token: customer.dashboard_token || null,
+    });
   } catch (e) {
     return res.status(500).json({ error: e.message || "Server error" });
   }
