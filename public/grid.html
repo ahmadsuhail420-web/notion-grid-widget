@@ -1506,10 +1506,6 @@ function updateModePill() {
      DATABASE SWITCHER (PRO)
   ========================= */
 
-    // Storage keys
-const LS_ACTIVE_DB = "activeDatabase";
-const LS_DB_MODE = "dbMode"; // "single" | "merge"
-
 // Called by the toggle in the menu
 async function onMergeToggle(enabled) {
   if (CURRENT_PLAN !== "pro") return; // hard guard
