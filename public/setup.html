@@ -180,6 +180,7 @@
   </div>
 
  <section id="proUnlock" style="
+  display:none;
   margin-top:18px;
   padding:14px;
   border:1px solid var(--border);
@@ -187,6 +188,7 @@
   background:#fff;
   box-shadow: var(--shadow-soft);
 ">
+   
   <div style="font-weight:800; font-size:14px; margin-bottom:6px;">Unlock Pro</div>
   <div style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">
     Paste your Gumroad license key to unlock lifetime Pro.
@@ -221,24 +223,86 @@
  </div>
 
   <!-- SCRIPT -->
-  <script>
-    const qs = new URLSearchParams(location.search);
-  const token = qs.get("token"); // dashboard_token
+<script>
+  const qs = new URLSearchParams(location.search);
+  const setupToken = qs.get("token"); // this is setup_token
 
+  const status = document.getElementById("status");
+  const statusError = document.getElementById("statusError");
+  const errorMessage = document.getElementById("errorMessage");
+
+  const proUnlock = document.getElementById("proUnlock");
   const unlockBtn = document.getElementById("unlockBtn");
   const unlockStatus = document.getElementById("unlockStatus");
 
+  function showError(message) {
+    if (status) status.style.display = "none";
+    if (statusError) statusError.style.display = "block";
+    if (errorMessage) errorMessage.textContent = message;
+  }
+
+  async function validateSetupToken() {
+    if (!setupToken) {
+      showError("Setup link is missing token. Please contact support.");
+      return null;
+    }
+
+    if (status) status.style.display = "block";
+    if (statusError) statusError.style.display = "none";
+
+    const res = await fetch(`/api/validate-token?token=${encodeURIComponent(setupToken)}`);
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      showError(data.error || "Failed to verify setup link. Please try again.");
+      return null;
+    }
+
+    return data;
+  }
+
+  async function start() {
+    const data = await validateSetupToken();
+    if (!data) return;
+
+    // If invalid/expired
+    if (!data.valid) {
+      // ✅ If already used, redirect to dashboard using DASHBOARD TOKEN
+      if (data.already_used && data.dashboard_token) {
+        window.location.href = `/database.html?token=${encodeURIComponent(data.dashboard_token)}`;
+        return;
+      }
+      showError(data.error || "Setup link is invalid or expired. Please contact support.");
+      return;
+    }
+
+    // Valid token
+    if (status) status.style.display = "none";
+
+    const plan = data.plan || "free";
+
+    // ✅ If pro, skip unlock UI and go straight to Notion OAuth
+    if (plan === "pro") {
+      window.location.href = `/api/auth?token=${encodeURIComponent(setupToken)}`;
+      return;
+    }
+
+    // Free -> show unlock UI
+    if (proUnlock) proUnlock.style.display = "block";
+  }
+
   unlockBtn.onclick = async () => {
     const license_key = (document.getElementById("licenseKey").value || "").trim();
-    if (!token) return alert("Missing token in URL");
+    if (!setupToken) return alert("Missing setup token in URL");
     if (!license_key) return alert("Paste your license key");
 
     unlockStatus.textContent = "Verifying license…";
+    unlockStatus.style.color = "inherit";
 
     const res = await fetch("/api/unlock", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, provider: "gumroad", license_key })
+      body: JSON.stringify({ token: setupToken, provider: "gumroad", license_key })
     });
 
     const data = await res.json().catch(() => ({}));
@@ -249,76 +313,16 @@
       return;
     }
 
-    unlockStatus.textContent = "Unlocked ✅ You are Pro.";
+    unlockStatus.textContent = "Unlocked ✅ Redirecting to Notion…";
     unlockStatus.style.color = "#16a34a";
-    
-    function slugify(text) {
-      return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-");
-    }
 
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+    // Now that it’s Pro, go straight to Notion OAuth
+    window.location.href = `/api/auth?token=${encodeURIComponent(setupToken)}`;
+  };
 
-    const status = document.getElementById("status");
-    const statusError = document.getElementById("statusError");
-    const errorMessage = document.getElementById("errorMessage");
-    const content = document.getElementById("content");
-    const connectBtn = document.getElementById("connect");
-
-    // ==================== VALIDATE TOKEN ====================
-    async function validateToken() {
-      if (!token) {
-        showError("Setup link is missing token. Please contact support.");
-        return false;
-      }
-
-      try {
-        status.style.display = "block";
-
-        const res = await fetch(`/api/validate-token?token=${encodeURIComponent(token)}`);
-        const data = await res.json();
-
-        // ✅ IMPORTANT: if already used, redirect using WIDGET slug
-        if (!data.valid) {
-          if (data.already_used && data.widget_slug) {
-            window.location.href = `/database.html?slug=${encodeURIComponent(data.widget_slug)}`;
-            return false;
-          }
-          showError(data.error || "Setup link is invalid or expired. Please contact support.");
-          return false;
-        }
-
-        // Token is valid ✅
-        status.style.display = "none";
-        content.style.display = "block";
-        return true;
-
-      } catch (err) {
-        console.error("Token validation error:", err);
-        showError("Failed to verify setup link. Please try again.");
-        return false;
-      }
-    }
-
-    // ==================== SHOW ERROR ====================
-    function showError(message) {
-      status.style.display = "none";
-      statusError.style.display = "block";
-      errorMessage.textContent = message;
-    }
-
-    // ==================== CONNECT NOTION ====================
-    connectBtn.onclick = () => {
-      const name = document.getElementById("name").value;
-      if (!name) return alert("Enter workspace name");
-
-      // Redirect to OAuth
-      window.location.href = `/api/auth?token=${token}`;
-    };
-
-    // ==================== INITIALIZE ====================
-    window.addEventListener("load", validateToken);
-  </script>
+  // initialize
+  window.addEventListener("load", start);
+</script>
 
 </body>
 </html>
