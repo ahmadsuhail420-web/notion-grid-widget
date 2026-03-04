@@ -3,13 +3,14 @@ const { createClient } = require("@supabase/supabase-js");
 /**
  * Validates setup token.
  *
- * Updated behavior (for dashboard_token redirect):
- * - If token is unused: allow setup to continue, return { valid:true, plan, dashboard_token }.
- * - If token is already used: return { valid:false, already_used:true, dashboard_token } so setup.html can redirect to:
+ * Updated for your flow:
+ * - If token is unused: { valid:true, plan, dashboard_token }
+ * - If token is already used: { valid:false, already_used:true, dashboard_token }
+ *
+ * setup.html will redirect to:
  *   /database.html?token=<dashboard_token>
  *
- * NOTE:
- * - We keep widget lookup as a fallback for older data, but primary redirect is now dashboard_token.
+ * NOTE: This file uses CommonJS (module.exports) to match Vercel Node serverless style.
  */
 module.exports = async function handler(req, res) {
   try {
@@ -48,7 +49,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3) setup_used=true => redirect to dashboard token (preferred)
+    // 3) setup_used=true => redirect to dashboard (preferred)
     if (customer.dashboard_token) {
       return res.json({
         valid: false,
@@ -57,7 +58,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 4) Fallback: older rows may not have dashboard_token; try to derive via widget/customer relationship
+    // 4) Fallback: keep old widget lookup (in case some old customers have no dashboard_token)
     const { data: widgets, error: widgetError } = await supabase
       .from("widgets")
       .select("slug, created_at")
@@ -83,7 +84,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Last-resort (if you still support slug-based dashboards somewhere)
+    // If you *still* have any slug-based fallback logic elsewhere, you can keep returning it.
     return res.json({
       valid: false,
       already_used: true,
