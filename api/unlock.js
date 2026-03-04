@@ -1,8 +1,8 @@
-// UPDATED: works with setup.html?token=<SETUP_TOKEN>
-// - Finds customer by customers.setup_token (not dashboard_token)
-// - Single activation per license key
-// - Upgrades customer to plan='pro'
-// - Returns dashboard_token so frontend can redirect when ready
+// Works with setup.html?token=<SETUP_TOKEN>
+// - Finds customer by customers.setup_token
+// - Verifies Gumroad license key
+// - Enforces single activation per key (license_activations.license_key_hash UNIQUE)
+// - Upgrades customer plan='pro'
 
 const crypto = require("crypto");
 
@@ -10,7 +10,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const GUMROAD_ACCESS_TOKEN = process.env.GUMROAD_ACCESS_TOKEN;
-const GUMROAD_PRODUCT_PERMALINK = "gridwidget"; // from https://suhailcraft0.gumroad.com/l/gridwidget
+const GUMROAD_PRODUCT_PERMALINK = "gridwidget"; // https://suhailcraft0.gumroad.com/l/gridwidget
 
 async function supabaseFetch(path, { method = "GET", body } = {}) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
@@ -43,11 +43,12 @@ function sha256Hex(s) {
 }
 
 async function verifyGumroadLicense(license_key) {
-  if (!GUMROAD_ACCESS_TOKEN) throw new Error("Missing GUMROAD_ACCESS_TOKEN env var");
-
   const params = new URLSearchParams();
   params.set("product_permalink", GUMROAD_PRODUCT_PERMALINK);
   params.set("license_key", license_key);
+
+  // If you have an access token, include it (harmless even if not required)
+  if (GUMROAD_ACCESS_TOKEN) params.set("access_token", GUMROAD_ACCESS_TOKEN);
 
   const res = await fetch("https://api.gumroad.com/v2/licenses/verify", {
     method: "POST",
@@ -78,25 +79,30 @@ module.exports = async function handler(req, res) {
     if (provider !== "gumroad") return res.status(400).json({ error: "Unsupported provider" });
     if (!license_key) return res.status(400).json({ error: "Missing license_key" });
 
-    // IMPORTANT: token from setup.html is actually setup_token
     const setupToken = token;
 
-    // 1) Find customer by setup_token
+    // 1) Find active customer by setup_token
     const rows = await supabaseFetch(
-      `customers?select=id,plan,status,dashboard_token,setup_token&setup_token=eq.${encodeURIComponent(setupToken)}&limit=1`
+      `customers?select=id,plan,status,dashboard_token,setup_token` +
+      `&setup_token=eq.${encodeURIComponent(setupToken)}` +
+      `&status=eq.active&limit=1`
     );
     const customer = Array.isArray(rows) ? rows[0] : null;
     if (!customer) return res.status(401).json({ error: "Invalid setup token" });
 
+    // If already pro, return success (idempotent)
+    if ((customer.plan || "free") === "pro") {
+      return res.status(200).json({ ok: true, plan: "pro", dashboard_token: customer.dashboard_token || null });
+    }
+
     // 2) Verify license with Gumroad
     const verify = await verifyGumroadLicense(license_key);
 
-    // policy: do not activate refunded/chargebacked/cancelled
     if (verify.refunded || verify.chargebacked || verify.cancelled) {
       return res.status(403).json({ error: "License is not active (refunded/chargeback/cancelled)" });
     }
 
-    // 3) Single activation enforcement
+    // 3) Single activation
     const license_key_hash = sha256Hex(license_key);
 
     const existing = await supabaseFetch(
@@ -122,13 +128,12 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 4) Upgrade customer to Pro
-    await supabaseFetch(`customers?setup_token=eq.${encodeURIComponent(setupToken)}`, {
+    // 4) Upgrade customer
+    await supabaseFetch(`customers?id=eq.${encodeURIComponent(customer.id)}`, {
       method: "PATCH",
       body: {
         plan: "pro",
         pro_activated_at: new Date().toISOString(),
-        status: "active",
       },
     });
 
