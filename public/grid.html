@@ -973,6 +973,21 @@ body[data-theme="dark"] .card video {
               <div class="dbMenuTitle">Databases</div>
               <select id="dbSelect" class="dbSelect"></select>
             </div>
+            
+            <!-- Pro-only Merge toggle -->
+<div id="mergeMenuWrap" class="hidden-section" style="width:100%;">
+  <div class="dbMenuTitle">Mode</div>
+
+  <label class="menuItem toggleItem" style="width:100%; justify-content:space-between;">
+    <span class="menuLabel">Merge</span>
+    <input id="mergeToggle" type="checkbox" onchange="onMergeToggle(this.checked)" />
+    <span class="toggle"></span>
+  </label>
+
+  <div style="font-size:10px; opacity:.7; margin-top:4px; line-height:1.2;">
+    Merge combines posts from all connected databases.
+  </div>
+</div>
 
             <label class="menuItem toggleItem">
               <span class="menuLabel">Header</span>
@@ -1194,7 +1209,10 @@ body[data-theme="dark"] .card video {
       if (profileNote) profileNote.classList.add("hidden-section");
       if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
       if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
-      return;
+       localStorage.removeItem("activeDatabase");
+      localStorage.removeItem(LS_ACTIVE_DB);
+  localStorage.removeItem(LS_DB_MODE);
+  return;
     }
 
     // ----- PRO -----
@@ -1207,6 +1225,9 @@ body[data-theme="dark"] .card video {
 
     // Pro menu options
     if (menu) {
+      const mergeMenuWrap = document.getElementById("mergeMenuWrap");
+if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
+      
       const fontSelect = document.getElementById("fontSelect");
       if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
 
@@ -1450,6 +1471,34 @@ body[data-theme="dark"] .card video {
   /* =========================
      DATABASE SWITCHER (PRO)
   ========================= */
+
+    // Storage keys
+const LS_ACTIVE_DB = "activeDatabase";
+const LS_DB_MODE = "dbMode"; // "single" | "merge"
+
+// Called by the toggle in the menu
+async function onMergeToggle(enabled) {
+  if (CURRENT_PLAN !== "pro") return; // hard guard
+
+  localStorage.setItem(LS_DB_MODE, enabled ? "merge" : "single");
+
+  const dbMenuWrap = document.getElementById("dbMenuWrap");
+  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", enabled);
+
+  // When merge is enabled, ignore any selected DB id.
+  // When disabled, keep existing selected DB (or primary).
+  if (enabled) {
+    // optional: keep last active DB in storage, but it won't be used while merge is on
+    await animateDatabaseChange("merge");
+  } else {
+    const dbId = localStorage.getItem(LS_ACTIVE_DB);
+    await animateDatabaseChange(dbId || null);
+  }
+
+  document.getElementById("menu")?.classList.add("hidden");
+}
+window.onMergeToggle = onMergeToggle;
+    
   async function loadDatabaseSwitcher() {
     const slug = getSlug();
     if (!slug) throw new Error("Missing slug");
@@ -1464,6 +1513,22 @@ body[data-theme="dark"] .card video {
 
       CURRENT_PLAN = plan || "free";
       applyPlanToUI();
+
+      // If pro, initialize merge toggle UI state
+if (CURRENT_PLAN === "pro") {
+  const mode = localStorage.getItem(LS_DB_MODE) || "single";
+  const mergeToggle = document.getElementById("mergeToggle");
+  const mergeMenuWrap = document.getElementById("mergeMenuWrap");
+  const dbMenuWrap = document.getElementById("dbMenuWrap");
+
+  if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
+
+  const isMerge = mode === "merge";
+  if (mergeToggle) mergeToggle.checked = isMerge;
+
+  // Hide DB selector when merge is on
+  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
+}
 
       if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
       if (!Array.isArray(databases) || databases.length === 0) return;
@@ -1491,12 +1556,15 @@ body[data-theme="dark"] .card video {
       localStorage.setItem("activeDatabase", selected);
 
       // change handler
-      select.onchange = async () => {
-        const dbId = select.value;
-        localStorage.setItem("activeDatabase", dbId);
-        await animateDatabaseChange(dbId);
-        document.getElementById("menu")?.classList.add("hidden");
-      };
+     select.onchange = async () => {
+  const mode = localStorage.getItem(LS_DB_MODE) || "single";
+  if (mode === "merge") return; // ignore while merging
+
+  const dbId = select.value;
+  localStorage.setItem(LS_ACTIVE_DB, dbId);
+  await animateDatabaseChange(dbId);
+  document.getElementById("menu")?.classList.add("hidden");
+};
     } catch (e) {
       console.error("loadDatabaseSwitcher failed:", e);
     }
@@ -1534,10 +1602,16 @@ body[data-theme="dark"] .card video {
       const slug = getSlug();
       if (!slug) throw new Error("Missing slug");
 
-      let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
+     let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
-      const activeDb = selectedDb || localStorage.getItem("activeDatabase");
-      if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
+const mode = localStorage.getItem(LS_DB_MODE) || "single";
+
+if (CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge")) {
+  url += `&db=merge`;
+} else {
+  const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
+  if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
+}
 
       const res = await fetch(url);
       if (!res.ok) throw new Error(`API error: ${res.status}`);
