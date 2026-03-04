@@ -2,10 +2,16 @@ const { createClient } = require("@supabase/supabase-js");
 
 /**
  * Validates setup token.
- * - If token is unused: allow setup to continue.
- * - If token is already used: return the widget_slug so setup.html can redirect correctly.
+ *
+ * Updated behavior (for dashboard_token redirect):
+ * - If token is unused: allow setup to continue, return { valid:true, plan, dashboard_token }.
+ * - If token is already used: return { valid:false, already_used:true, dashboard_token } so setup.html can redirect to:
+ *   /database.html?token=<dashboard_token>
+ *
+ * NOTE:
+ * - We keep widget lookup as a fallback for older data, but primary redirect is now dashboard_token.
  */
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     const { token } = req.query;
 
@@ -21,7 +27,7 @@ export default async function handler(req, res) {
     // 1) Lookup customer by setup token
     const { data: customer, error: customerError } = await supabase
       .from("customers")
-      .select("id, plan, setup_used")
+      .select("id, plan, setup_used, dashboard_token")
       .eq("setup_token", token)
       .eq("status", "active")
       .single();
@@ -33,15 +39,25 @@ export default async function handler(req, res) {
       });
     }
 
-    // 2) If setup not used yet, allow user to proceed (widget will be created after OAuth)
+    // 2) If setup not used yet, allow user to proceed
     if (!customer.setup_used) {
       return res.json({
         valid: true,
         plan: customer.plan || "free",
+        dashboard_token: customer.dashboard_token || null,
       });
     }
 
-    // 3) setup_used=true => widget must exist; return its slug for redirect
+    // 3) setup_used=true => redirect to dashboard token (preferred)
+    if (customer.dashboard_token) {
+      return res.json({
+        valid: false,
+        already_used: true,
+        dashboard_token: customer.dashboard_token,
+      });
+    }
+
+    // 4) Fallback: older rows may not have dashboard_token; try to derive via widget/customer relationship
     const { data: widgets, error: widgetError } = await supabase
       .from("widgets")
       .select("slug, created_at")
@@ -63,10 +79,11 @@ export default async function handler(req, res) {
       return res.status(409).json({
         valid: false,
         already_used: true,
-        error: "Setup already used but no widget exists for this customer.",
+        error: "Setup already used but no dashboard token exists for this customer.",
       });
     }
 
+    // Last-resort (if you still support slug-based dashboards somewhere)
     return res.json({
       valid: false,
       already_used: true,
@@ -76,4 +93,4 @@ export default async function handler(req, res) {
     console.error("Token validation error:", err);
     return res.status(500).json({ valid: false, error: "Server error" });
   }
-}
+};
