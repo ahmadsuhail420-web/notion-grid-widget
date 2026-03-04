@@ -3,14 +3,9 @@ const { createClient } = require("@supabase/supabase-js");
 /**
  * Validates setup token.
  *
- * Updated for your flow:
+ * For setup.html:
  * - If token is unused: { valid:true, plan, dashboard_token }
  * - If token is already used: { valid:false, already_used:true, dashboard_token }
- *
- * setup.html will redirect to:
- *   /database.html?token=<dashboard_token>
- *
- * NOTE: This file uses CommonJS (module.exports) to match Vercel Node serverless style.
  */
 module.exports = async function handler(req, res) {
   try {
@@ -25,7 +20,6 @@ module.exports = async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // 1) Lookup customer by setup token
     const { data: customer, error: customerError } = await supabase
       .from("customers")
       .select("id, plan, setup_used, dashboard_token")
@@ -40,7 +34,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 2) If setup not used yet, allow user to proceed
     if (!customer.setup_used) {
       return res.json({
         valid: true,
@@ -49,7 +42,6 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3) setup_used=true => redirect to dashboard (preferred)
     if (customer.dashboard_token) {
       return res.json({
         valid: false,
@@ -58,7 +50,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 4) Fallback: keep old widget lookup (in case some old customers have no dashboard_token)
+    // fallback (optional): keep old widget lookup
     const { data: widgets, error: widgetError } = await supabase
       .from("widgets")
       .select("slug, created_at")
@@ -76,19 +68,13 @@ module.exports = async function handler(req, res) {
 
     const widget_slug = widgets?.[0]?.slug;
 
-    if (!widget_slug) {
-      return res.status(409).json({
-        valid: false,
-        already_used: true,
-        error: "Setup already used but no dashboard token exists for this customer.",
-      });
-    }
-
-    // If you *still* have any slug-based fallback logic elsewhere, you can keep returning it.
-    return res.json({
+    return res.status(409).json({
       valid: false,
       already_used: true,
-      widget_slug,
+      error:
+        widget_slug
+          ? "Setup already used but customer has no dashboard_token (add dashboard_token migration)."
+          : "Setup already used but no widget exists for this customer.",
     });
   } catch (err) {
     console.error("Token validation error:", err);
