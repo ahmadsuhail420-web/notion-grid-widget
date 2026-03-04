@@ -10,6 +10,8 @@
  *
  * Uses widgets.slug as source of truth (Pro: multiple widgets).
  * Reads plan from customers via widget.customer_id and enforces plan_limits.db_limit.
+ *
+ * NOTE: Converted to CommonJS export style for Vercel/Node default (no "type":"module").
  */
 
 async function fetchJson(url, options) {
@@ -27,7 +29,7 @@ function parseContentRangeCount(contentRange) {
   return m ? Number(m[1]) : 0;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   const supabaseUrl = process.env.SUPABASE_URL;
@@ -73,10 +75,10 @@ export default async function handler(req, res) {
     if (!customer) return res.status(404).json({ error: "Customer not found" });
 
     const rawPlan = customer.plan || "free";
-const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
+    const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
 
-    // 3) Load plan_limits.db_limit (fallback: free=1, advanced=3, pro=999999)
-    let dbLimit = plan === "free" ? 1 : 999999; // free=1, pro=unlimited (or set a number)
+    // 3) Load plan_limits.db_limit (fallback: free=1, pro=999999)
+    let dbLimit = plan === "free" ? 1 : 999999;
 
     const limitsUrl = `${supabaseUrl}/rest/v1/plan_limits?plan=eq.${encodeURIComponent(plan)}&select=db_limit`;
     const limitsResp = await fetchJson(limitsUrl, { headers });
@@ -92,9 +94,7 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
       return parseContentRangeCount(r.headers.get("content-range"));
     }
 
-    // -------------------------
     // GET = LIST
-    // -------------------------
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
@@ -121,9 +121,7 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
       });
     }
 
-    // -------------------------
     // POST = ACTIONS
-    // -------------------------
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
@@ -142,9 +140,9 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
 
       if (existingCount >= dbLimit) {
         const msg =
-  plan === "free"
-    ? "Free plan allows only 1 database."
-    : "Database limit reached.";
+          plan === "free"
+            ? "Free plan allows only 1 database."
+            : "Database limit reached.";
         return res.status(403).json({ error: msg, plan, db_limit: dbLimit });
       }
 
@@ -166,7 +164,7 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
         headers,
         body: JSON.stringify({
           widget_id: widget.id,
-          customer_id: customer.id, // optional; keep for reporting
+          customer_id: customer.id,
           database_id: databaseId,
           label,
           is_primary: isPrimary,
@@ -300,4 +298,4 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
     console.error("widget-databases error:", err);
     return res.status(500).json({ error: "Failed to handle widget databases" });
   }
-}
+};
