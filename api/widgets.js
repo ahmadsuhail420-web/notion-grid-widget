@@ -5,6 +5,8 @@
  * POST /api/widgets { token, action:"create", name } -> create new widget with unique slug
  *
  * Uses Supabase REST with service role key (bypasses RLS).
+ *
+ * NOTE: Converted to CommonJS export style for Vercel/Node default.
  */
 
 function makeSlugBase(input) {
@@ -33,7 +35,7 @@ async function fetchJson(url, options) {
   return { res, json, text };
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   const supabaseUrl = process.env.SUPABASE_URL;
@@ -71,9 +73,7 @@ export default async function handler(req, res) {
 
     const plan = customer.plan || "free";
 
-    // -------------------------
     // GET = LIST
-    // -------------------------
     if (req.method === "GET") {
       const wUrl =
         `${supabaseUrl}/rest/v1/widgets?customer_id=eq.${customer.id}` +
@@ -94,9 +94,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // -------------------------
     // POST = ACTIONS
-    // -------------------------
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
@@ -151,4 +149,4 @@ export default async function handler(req, res) {
     console.error("widgets api error:", err);
     return res.status(500).json({ error: "Server error" });
   }
-}
+};
