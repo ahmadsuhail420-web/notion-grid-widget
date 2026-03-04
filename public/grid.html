@@ -1508,21 +1508,31 @@ function updateModePill() {
 
 // Called by the toggle in the menu
 async function onMergeToggle(enabled) {
-  if (CURRENT_PLAN !== "pro") return; // hard guard
+  if (CURRENT_PLAN !== "pro") return;
 
+  const mergeToggle = document.getElementById("mergeToggle");
+  const dbMenuWrap = document.getElementById("dbMenuWrap");
+  const dbSelect = document.getElementById("dbSelect");
+
+  // Persist mode
   localStorage.setItem(LS_DB_MODE, enabled ? "merge" : "single");
 
-  const dbMenuWrap = document.getElementById("dbMenuWrap");
+  // Show/hide db switcher UI
   if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", enabled);
 
-  // When merge is enabled, ignore any selected DB id.
-  // When disabled, keep existing selected DB (or primary).
   if (enabled) {
-    // optional: keep last active DB in storage, but it won't be used while merge is on
     await animateDatabaseChange("merge");
   } else {
-    const dbId = localStorage.getItem(LS_ACTIVE_DB);
-    await animateDatabaseChange(dbId || null);
+    // When turning merge OFF, reload using the currently selected DB (or saved)
+    const selectedDb =
+      (dbSelect && dbSelect.value) ||
+      localStorage.getItem(LS_ACTIVE_DB) ||
+      null;
+
+    // ensure merge toggle state is consistent
+    if (mergeToggle) mergeToggle.checked = false;
+
+    await animateDatabaseChange(selectedDb);
   }
 
   document.getElementById("menu")?.classList.add("hidden");
@@ -1590,13 +1600,19 @@ localStorage.setItem(LS_ACTIVE_DB, selected);
       
       // change handler
      select.onchange = async () => {
-  const mode = localStorage.getItem(LS_DB_MODE) || "single";
-  if (mode === "merge") return; // ignore while merging
+  // Selecting a DB always means SINGLE mode
+  localStorage.setItem(LS_DB_MODE, "single");
+
+  const mergeToggle = document.getElementById("mergeToggle");
+  if (mergeToggle) mergeToggle.checked = false;
 
   const dbId = select.value;
   localStorage.setItem(LS_ACTIVE_DB, dbId);
+
   await animateDatabaseChange(dbId);
+
   document.getElementById("menu")?.classList.add("hidden");
+  updateModePill();
 };
     } catch (e) {
       console.error("loadDatabaseSwitcher failed:", e);
@@ -1635,11 +1651,11 @@ localStorage.setItem(LS_ACTIVE_DB, selected);
       const slug = getSlug();
       if (!slug) throw new Error("Missing slug");
 
-     let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
+  let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
 const mode = localStorage.getItem(LS_DB_MODE) || "single";
 
-if (CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge")) {
+if (selectedDb === "merge" || mode === "merge") {
   url += `&db=merge`;
 } else {
   const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
