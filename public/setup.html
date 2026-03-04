@@ -47,7 +47,7 @@
     }
 
     .hero h1 span {
-      color: #3b82f6; /* accent like SwipeWell */
+      color: #3b82f6;
     }
 
     .hero p {
@@ -92,7 +92,6 @@
       40% { opacity: 1; }
     }
 
-    /* Status messages */
     .status-verifying {
       text-align: center;
       display: flex;
@@ -110,21 +109,10 @@
       border-radius: 10px;
       margin-top: 20px;
     }
-
-    .status-success {
-      color: #166534;
-      text-align: center;
-      padding: 20px;
-      background: #f0fdf4;
-      border: 1px solid #86efac;
-      border-radius: 10px;
-      margin-top: 20px;
-    }
   </style>
 </head>
 
 <body>
-
   <!-- NAV -->
   <div class="nav">
     <div class="logo">Grid Planner</div>
@@ -137,7 +125,6 @@
 
   <!-- HERO -->
   <div class="hero">
-
     <h1>
       A grid that stays in <br>
       <span>sync with your content</span>
@@ -148,181 +135,176 @@
       that stays perfectly in sync.
     </p>
 
-    <!-- STATE CARD -->
-   <div class="card" style="text-align:center;">
+    <div class="card" style="text-align:center;">
+      <h2 style="margin:0 0 6px; font-size:20px;">
+        One step ahead to connect your grid to Notion
+      </h2>
 
-  <h2 style="margin:0 0 6px; font-size:20px;">
-    One step ahead to connect your grid to Notion
-  </h2>
+      <!-- STATUS: VERIFYING -->
+      <div id="status" style="text-align:center; display: none;">
+        <div class="status-verifying">
+          <div style="font-size:14px; color:var(--text-muted);">
+            Verifying your setup link
+          </div>
+          <div class="loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
 
-  <!-- STATUS: VERIFYING -->
-  <div id="status" style="text-align:center; display: none;">
-    <div class="status-verifying">
-      <div style="font-size:14px; color:var(--text-muted);">
-        Verifying your setup link
+      <!-- STATUS: ERROR -->
+      <div id="statusError" style="display: none;">
+        <div class="status-error" id="errorMessage"></div>
+        <div style="margin-top: 20px;">
+          <a href="mailto:support@alifdesigns.com" style="font-size:14px; font-weight:500; color:#3b82f6; text-decoration:none;">
+            Contact support
+          </a>
+        </div>
       </div>
-      <div class="loader">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-      </div>
+
+      <!-- PRO UNLOCK -->
+      <section id="proUnlock" style="
+        display:none;
+        margin-top:18px;
+        padding:14px;
+        border:1px solid var(--border);
+        border-radius:14px;
+        background:#fff;
+        box-shadow: var(--shadow-soft);
+        text-align:left;
+      ">
+        <div style="font-weight:800; font-size:14px; margin-bottom:6px;">Unlock Pro</div>
+        <div style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">
+          Paste your Gumroad license key to unlock lifetime Pro.
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <input id="licenseKey" placeholder="XXXX-XXXX-XXXX" style="
+            flex:1;
+            min-width:220px;
+            padding:10px 12px;
+            border-radius:12px;
+            border:1px solid var(--border);
+            background:#f9fafb;
+            font-weight:600;
+            outline:none;
+          " />
+          <button id="unlockBtn" type="button" style="
+            padding:10px 14px;
+            font-size:14px;
+            border-radius:12px;
+            border:none;
+            background:#111827;
+            color:#fff;
+            font-weight:800;
+            cursor:pointer;
+          ">Unlock</button>
+        </div>
+
+        <div id="unlockStatus" style="margin-top:10px; font-size:13px;"></div>
+      </section>
     </div>
   </div>
 
-  <!-- STATUS: ERROR -->
-  <div id="statusError" style="display: none;">
-    <div class="status-error" id="errorMessage"></div>
-    <div style="margin-top: 20px;">
-      <a href="mailto:support@alifdesigns.com" style="font-size:14px; font-weight:500; color:#3b82f6; text-decoration:none;">
-        Contact support
-      </a>
-    </div>
-  </div>
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const setupToken = qs.get("token"); // setup_token
 
- <section id="proUnlock" style="
-  display:none;
-  margin-top:18px;
-  padding:14px;
-  border:1px solid var(--border);
-  border-radius:14px;
-  background:#fff;
-  box-shadow: var(--shadow-soft);
-">
-   
-  <div style="font-weight:800; font-size:14px; margin-bottom:6px;">Unlock Pro</div>
-  <div style="color:var(--text-muted); font-size:13px; margin-bottom:12px;">
-    Paste your Gumroad license key to unlock lifetime Pro.
-  </div>
+    const status = document.getElementById("status");
+    const statusError = document.getElementById("statusError");
+    const errorMessage = document.getElementById("errorMessage");
 
-  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-    <input id="licenseKey" placeholder="XXXX-XXXX-XXXX" style="
-      flex:1;
-      min-width:220px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#f9fafb;
-      font-weight:600;
-      outline:none;
-    " />
-    <button id="unlockBtn" type="button" style="
-      padding:10px 14px;
-      font-size:14px;
-      border-radius:12px;
-      border:none;
-      background:#111827;
-      color:#fff;
-      font-weight:800;
-      cursor:pointer;
-    ">Unlock</button>
-  </div>
+    const proUnlock = document.getElementById("proUnlock");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const unlockStatus = document.getElementById("unlockStatus");
 
-  <div id="unlockStatus" style="margin-top:10px; font-size:13px;"></div>
-</section>
-
- </div>
-
-  <!-- SCRIPT -->
-<script>
-  const qs = new URLSearchParams(location.search);
-  const setupToken = qs.get("token"); // this is setup_token
-
-  const status = document.getElementById("status");
-  const statusError = document.getElementById("statusError");
-  const errorMessage = document.getElementById("errorMessage");
-
-  const proUnlock = document.getElementById("proUnlock");
-  const unlockBtn = document.getElementById("unlockBtn");
-  const unlockStatus = document.getElementById("unlockStatus");
-
-  function showError(message) {
-    if (status) status.style.display = "none";
-    if (statusError) statusError.style.display = "block";
-    if (errorMessage) errorMessage.textContent = message;
-  }
-
-  async function validateSetupToken() {
-    if (!setupToken) {
-      showError("Setup link is missing token. Please contact support.");
-      return null;
+    function showError(message) {
+      if (status) status.style.display = "none";
+      if (statusError) statusError.style.display = "block";
+      if (errorMessage) errorMessage.textContent = message;
     }
 
-    if (status) status.style.display = "block";
-    if (statusError) statusError.style.display = "none";
+    async function validateSetupToken() {
+      if (!setupToken) {
+        showError("Setup link is missing token. Please contact support.");
+        return null;
+      }
 
-    const res = await fetch(`/api/validate-token?token=${encodeURIComponent(setupToken)}`);
-    const data = await res.json().catch(() => ({}));
+      if (status) status.style.display = "block";
+      if (statusError) statusError.style.display = "none";
 
-    if (!res.ok) {
-      showError(data.error || "Failed to verify setup link. Please try again.");
-      return null;
+      const res = await fetch(`/api/validate-token?token=${encodeURIComponent(setupToken)}`);
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        showError(data.error || "Failed to verify setup link. Please try again.");
+        return null;
+      }
+
+      return data;
     }
 
-    return data;
-  }
+    async function start() {
+      const data = await validateSetupToken();
+      if (!data) return;
 
-  async function start() {
-    const data = await validateSetupToken();
-    if (!data) return;
-
-    // If invalid/expired
-    if (!data.valid) {
-      // ✅ If already used, redirect to dashboard using DASHBOARD TOKEN
-      if (data.already_used && data.dashboard_token) {
-        window.location.href = `/database.html?token=${encodeURIComponent(data.dashboard_token)}`;
+      // invalid/expired
+      if (!data.valid) {
+        // already used -> go to dashboard via dashboard_token
+        if (data.already_used && data.dashboard_token) {
+          window.location.href = `/database.html?token=${encodeURIComponent(data.dashboard_token)}`;
+          return;
+        }
+        showError(data.error || "Setup link is invalid or expired. Please contact support.");
         return;
       }
-      showError(data.error || "Setup link is invalid or expired. Please contact support.");
-      return;
+
+      // valid token
+      if (status) status.style.display = "none";
+
+      const plan = data.plan || "free";
+
+      // pro -> redirect straight to Notion OAuth
+      if (plan === "pro") {
+        window.location.href = `/api/auth?token=${encodeURIComponent(setupToken)}`;
+        return;
+      }
+
+      // free -> show unlock UI
+      if (proUnlock) proUnlock.style.display = "block";
     }
 
-    // Valid token
-    if (status) status.style.display = "none";
+    unlockBtn.onclick = async () => {
+      const license_key = (document.getElementById("licenseKey").value || "").trim();
+      if (!setupToken) return alert("Missing setup token in URL");
+      if (!license_key) return alert("Paste your license key");
 
-    const plan = data.plan || "free";
+      unlockStatus.textContent = "Verifying license…";
+      unlockStatus.style.color = "inherit";
 
-    // ✅ If pro, skip unlock UI and go straight to Notion OAuth
-    if (plan === "pro") {
+      const res = await fetch("/api/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: setupToken, provider: "gumroad", license_key })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        unlockStatus.textContent = data.error || "Unlock failed";
+        unlockStatus.style.color = "#b91c1c";
+        return;
+      }
+
+      unlockStatus.textContent = "Unlocked ✅ Redirecting to Notion…";
+      unlockStatus.style.color = "#16a34a";
+
       window.location.href = `/api/auth?token=${encodeURIComponent(setupToken)}`;
-      return;
-    }
+    };
 
-    // Free -> show unlock UI
-    if (proUnlock) proUnlock.style.display = "block";
-  }
-
-  unlockBtn.onclick = async () => {
-    const license_key = (document.getElementById("licenseKey").value || "").trim();
-    if (!setupToken) return alert("Missing setup token in URL");
-    if (!license_key) return alert("Paste your license key");
-
-    unlockStatus.textContent = "Verifying license…";
-    unlockStatus.style.color = "inherit";
-
-    const res = await fetch("/api/unlock", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: setupToken, provider: "gumroad", license_key })
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      unlockStatus.textContent = data.error || "Unlock failed";
-      unlockStatus.style.color = "#b91c1c";
-      return;
-    }
-
-    unlockStatus.textContent = "Unlocked ✅ Redirecting to Notion…";
-    unlockStatus.style.color = "#16a34a";
-
-    // Now that it’s Pro, go straight to Notion OAuth
-    window.location.href = `/api/auth?token=${encodeURIComponent(setupToken)}`;
-  };
-
-  // initialize
-  window.addEventListener("load", start);
-</script>
-
+    window.addEventListener("load", start);
+  </script>
 </body>
 </html>
