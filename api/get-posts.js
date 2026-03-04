@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   try {
@@ -17,9 +17,7 @@ export default async function handler(req, res) {
       Authorization: `Bearer ${serviceKey}`,
     };
 
-    // ---------------------------
     // 1) Resolve WIDGET by slug
-    // ---------------------------
     const widgetRes = await fetch(
       `${supabaseUrl}/rest/v1/widgets?slug=eq.${encodeURIComponent(slug)}&select=id,customer_id,slug,name`,
       { headers }
@@ -33,9 +31,7 @@ export default async function handler(req, res) {
     const [widget] = await widgetRes.json();
     if (!widget) return res.json({ profile: null, posts: [] });
 
-    // ---------------------------
     // 2) Get customer (WITH PLAN)
-    // ---------------------------
     const customerRes = await fetch(
       `${supabaseUrl}/rest/v1/customers?id=eq.${widget.customer_id}&status=eq.active&select=id,plan`,
       { headers }
@@ -50,12 +46,10 @@ export default async function handler(req, res) {
     if (!customer) return res.json({ profile: null, posts: [] });
 
     const rawPlan = customer.plan || "free";
-// Only two plans supported by frontend now
-const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
+    // Only two plans supported by frontend now
+    const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
 
-    // ---------------------------
-    // 3) Load widget settings (Pro/Advanced will use; Free can ignore)
-    // ---------------------------
+    // 3) Load widget settings
     let widget_settings = {
       white_label_enabled: false,
       custom_css: "",
@@ -77,9 +71,7 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
       console.warn("Widget settings fetch failed:", settingsRes.status);
     }
 
-    // ---------------------------
     // 4) Get Notion connection (by customer)
-    // ---------------------------
     const connRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id,access_token`,
       { headers }
@@ -93,10 +85,7 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
     const [connection] = await connRes.json();
     if (!connection?.access_token) return res.json({ profile: null, posts: [], plan, widget_settings });
 
-    // ---------------------------
     // 5) Get widget databases
-    // IMPORTANT: prefer widget_id if present; fallback to connection_id for backward compatibility
-    // ---------------------------
     let databases = [];
 
     const dbByWidgetRes = await fetch(
@@ -131,21 +120,19 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
 
     let databaseIds = [];
 
-   if (plan === "free") {
-  if (primary?.database_id) databaseIds = [primary.database_id];
-} else {
-  // pro
-  if (db === "merge") databaseIds = databases.map(d => d.database_id);
-  else if (db) databaseIds = [db];
-  else if (primary?.database_id) databaseIds = [primary.database_id];
-}
+    if (plan === "free") {
+      if (primary?.database_id) databaseIds = [primary.database_id];
+    } else {
+      if (db === "merge") databaseIds = databases.map(d => d.database_id);
+      else if (db) databaseIds = [db];
+      else if (primary?.database_id) databaseIds = [primary.database_id];
+    }
+
     if (databaseIds.length === 0) {
       return res.json({ profile: null, posts: [], plan, widget_settings, databases });
     }
 
-    // ---------------------------
     // 6) Query Notion (WITH PAGINATION)
-    // ---------------------------
     let allPages = [];
 
     for (const databaseId of databaseIds) {
@@ -182,9 +169,7 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
       }
     }
 
-    // ---------------------------
-    // 7) Parse rows (Attachment-only)
-    // ---------------------------
+    // 7) Parse rows
     let profile = null;
     const posts = [];
 
@@ -247,4 +232,4 @@ const plan = rawPlan === "pro" || rawPlan === "advanced" ? "pro" : "free";
     console.error("get-posts error:", err);
     return res.status(500).json({ error: "Failed to load posts" });
   }
-}
+};
