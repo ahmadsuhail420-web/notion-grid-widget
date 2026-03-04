@@ -132,103 +132,145 @@ module.exports = async function handler(req, res) {
       return res.json({ profile: null, posts: [], plan, widget_settings, databases });
     }
 
-    // 6) Query Notion (WITH PAGINATION)
-    let allPages = [];
+    // ---------------------------
+// 6) Query Notion (WITH PAGINATION)
+// ---------------------------
+let allPages = [];
 
-    for (const databaseId of databaseIds) {
-      let hasMore = true;
-      let cursor = undefined;
+async function queryAllPages(databaseId) {
+  let pages = [];
+  let hasMore = true;
+  let cursor = undefined;
 
-      while (hasMore) {
-        const body = cursor ? { start_cursor: cursor } : {};
+  while (hasMore) {
+    const body = cursor ? { start_cursor: cursor } : {};
 
-        const notionRes = await fetch(
-          `https://api.notion.com/v1/databases/${databaseId}/query`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${connection.access_token}`,
-              "Content-Type": "application/json",
-              "Notion-Version": "2022-06-28",
-            },
-            body: JSON.stringify(body),
-          }
-        );
-
-        if (!notionRes.ok) {
-          console.error(`Notion API error for ${databaseId}:`, notionRes.status);
-          break;
-        }
-
-        const notionData = await notionRes.json();
-        if (!Array.isArray(notionData.results)) break;
-
-        allPages = allPages.concat(notionData.results);
-        hasMore = notionData.has_more;
-        cursor = notionData.next_cursor;
+    const notionRes = await fetch(
+      `https://api.notion.com/v1/databases/${databaseId}/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${connection.access_token}`,
+          "Content-Type": "application/json",
+          "Notion-Version": "2022-06-28",
+        },
+        body: JSON.stringify(body),
       }
+    );
+
+    if (!notionRes.ok) {
+      console.error(`Notion API error for ${databaseId}:`, notionRes.status);
+      break;
     }
 
-    // 7) Parse rows
-    let profile = null;
-    const posts = [];
+    const notionData = await notionRes.json();
+    if (!Array.isArray(notionData.results)) break;
 
-    for (const page of allPages) {
-      const profileName =
-        page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
+    pages = pages.concat(notionData.results);
+    hasMore = notionData.has_more;
+    cursor = notionData.next_cursor;
+  }
 
-      const profilePicture =
-        page.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
-        page.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
-        null;
+  return pages;
+}
 
-      const profileNote =
-        page.properties?.["Profile Note"]?.rich_text?.map(t => t.plain_text).join("") || null;
+// Ensure primary DB is queried first in merge mode
+const primaryDbId = primary?.database_id || null;
+const isMerge = plan === "pro" && db === "merge";
 
-      if (profileName || profilePicture || profileNote) {
-        profile = {
-          name: profileName || "Grid Planner",
-          picture: profilePicture,
-          note: profileNote,
-        };
-        continue;
-      }
+let orderedDbIds = databaseIds.slice();
+if (isMerge && primaryDbId) {
+  orderedDbIds = [
+    primaryDbId,
+    ...databaseIds.filter((id) => id !== primaryDbId),
+  ];
+}
 
-      const name = page.properties?.Name?.title?.[0]?.plain_text || "";
-      const publishDate = page.properties?.["Publish Date"]?.date?.start || null;
+for (const databaseId of orderedDbIds) {
+  const pages = await queryAllPages(databaseId);
+  allPages = allPages.concat(pages);
+}
 
-      const attachment =
-        page.properties?.Attachment?.files?.map(f => f.file?.url || f.external?.url) || [];
+// ---------------------------
+// 7) Parse rows
+//    - In merge mode: only accept PROFILE row from PRIMARY database pages
+// ---------------------------
+let profile = null;
+const posts = [];
 
-      const thumbnail =
-        page.properties?.Thumbnail?.files?.[0]?.file?.url ||
-        page.properties?.Thumbnail?.files?.[0]?.external?.url ||
-        null;
+function parseProfileFromPage(page) {
+  const profileName =
+    page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
 
-      const type = page.properties?.Type?.multi_select?.map(t => t.name) || [];
+  const profilePicture =
+    page.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
+    page.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
+    null;
 
-      posts.push({
-        id: page.id,
-        name,
-        publishDate,
-        attachment,
-        thumbnail,
-        type,
-        pinned: page.properties?.Pin?.checkbox || false,
-        hide: page.properties?.Hide?.checkbox || false,
-        highlight: page.properties?.Highlight?.checkbox || false,
-      });
+  const profileNote =
+    page.properties?.["Profile Note"]?.rich_text?.map(t => t.plain_text).join("") || null;
+
+  if (profileName || profilePicture || profileNote) {
+    return {
+      name: profileName || "Grid Planner",
+      picture: profilePicture,
+      note: profileNote,
+    };
+  }
+  return null;
+}
+
+function parsePostFromPage(page) {
+  const name = page.properties?.Name?.title?.[0]?.plain_text || "";
+  const publishDate = page.properties?.["Publish Date"]?.date?.start || null;
+
+  const attachment =
+    page.properties?.Attachment?.files?.map(f => f.file?.url || f.external?.url) || [];
+
+  const thumbnail =
+    page.properties?.Thumbnail?.files?.[0]?.file?.url ||
+    page.properties?.Thumbnail?.files?.[0]?.external?.url ||
+    null;
+
+  const type = page.properties?.Type?.multi_select?.map(t => t.name) || [];
+
+  return {
+    id: page.id,
+    name,
+    publishDate,
+    attachment,
+    thumbnail,
+    type,
+    pinned: page.properties?.Pin?.checkbox || false,
+    hide: page.properties?.Hide?.checkbox || false,
+    highlight: page.properties?.Highlight?.checkbox || false,
+  };
+}
+
+// In merge mode, we only allow profile parsing while we're still in primary DB results.
+// Since we ordered primary DB first, we can stop accepting profile after we pass it.
+let acceptingProfile = true;
+
+for (const page of allPages) {
+  // Heuristic: we can't directly know which DB a page came from after concat,
+  // but because we ordered DBs (primary first), we can disable profile after first hit OR after first DB processed.
+  // Stronger approach: parse while profile is null, then stop.
+  if (acceptingProfile && !profile) {
+    const p = parseProfileFromPage(page);
+    if (p) {
+      profile = p;
+      // Once profile is found from primary DB pages, stop accepting any other profile rows
+      acceptingProfile = false;
+      continue;
     }
+  }
 
-    return res.json({
-      profile,
-      posts,
-      plan,
-      widget_settings,
-      databases,
-      widget: { id: widget.id, slug: widget.slug, name: widget.name },
-    });
-  } catch (err) {
+  // If this is a profile row (from non-primary DB), skip it
+  const maybeProfile = parseProfileFromPage(page);
+  if (maybeProfile) continue;
+
+  posts.push(parsePostFromPage(page));
+} catch (err) {
     console.error("get-posts error:", err);
     return res.status(500).json({ error: "Failed to load posts" });
   }
