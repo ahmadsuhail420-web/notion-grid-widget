@@ -1252,10 +1252,10 @@ const LS_DB_MODE = "dbMode";
   // Show merge section (pro-only)
   if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
 
-  // Hide DB switcher when merge is enabled
-  const mode = localStorage.getItem(LS_DB_MODE) || "single";
-  const isMerge = mode === "merge";
-  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
+  const mergeToggle = document.getElementById("mergeToggle");
+const isMerge = !!mergeToggle && mergeToggle.checked;
+   
+if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
 
   updateModePill();
 }
@@ -1368,15 +1368,15 @@ function updateModePill() {
   const pill = document.getElementById("modePill");
   if (!pill) return;
 
-  // Only for Pro
   if (CURRENT_PLAN !== "pro") {
     pill.classList.add("hidden-section");
     return;
   }
 
-  const mode = localStorage.getItem(LS_DB_MODE) || "single";
+  const mergeToggle = document.getElementById("mergeToggle");
+  const isMerge = !!mergeToggle && mergeToggle.checked;
 
-  if (mode === "merge") {
+  if (isMerge) {
     pill.textContent = "Merge";
     pill.classList.remove("hidden-section");
   } else {
@@ -1560,16 +1560,19 @@ window.onMergeToggle = onMergeToggle;
       // If pro, initialize merge toggle UI state
 if (CURRENT_PLAN === "pro") {
   const mode = localStorage.getItem(LS_DB_MODE) || "single";
+  const isMerge = mode === "merge";
+
   const mergeToggle = document.getElementById("mergeToggle");
   const mergeMenuWrap = document.getElementById("mergeMenuWrap");
   const dbMenuWrap = document.getElementById("dbMenuWrap");
 
   if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
 
-  const isMerge = mode === "merge";
-  if (mergeToggle) mergeToggle.checked = isMerge;
+  if (mergeToggle) {
+    mergeToggle.checked = isMerge;
+    if (!isMerge) localStorage.setItem(LS_DB_MODE, "single");
+  }
 
-  // Hide DB selector when merge is on
   if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
 }
 
@@ -1653,9 +1656,11 @@ localStorage.setItem(LS_ACTIVE_DB, selected);
 
   let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
-const mode = localStorage.getItem(LS_DB_MODE) || "single";
+// Merge only if the UI toggle is ON (this prevents "stuck merge" from localStorage)
+const mergeToggle = document.getElementById("mergeToggle");
+const mergeEnabled = CURRENT_PLAN === "pro" && !!mergeToggle && mergeToggle.checked;
 
-if (selectedDb === "merge" || mode === "merge") {
+if (selectedDb === "merge" || mergeEnabled) {
   url += `&db=merge`;
 } else {
   const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
