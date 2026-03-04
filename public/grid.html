@@ -960,6 +960,24 @@ body[data-theme="dark"] .card video {
             <span class="material-symbols-outlined refreshIcon">refresh</span>
           </button>
 
+          <!-- Add this inside .headerActions, centered between refresh button and menu button -->
+<div id="modePill" class="hidden-section" style="
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  font-weight:800;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--border-color);
+  background: var(--bg-muted);
+  color: var(--text-main);
+  line-height:1;
+  opacity:.95;
+">
+  Merge
+</div>
+
           <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()" aria-label="Menu">
             <span class="material-symbols-outlined">more_horiz</span>
           </button>
@@ -976,7 +994,6 @@ body[data-theme="dark"] .card video {
             
             <!-- Pro-only Merge toggle -->
 <div id="mergeMenuWrap" class="hidden-section" style="width:100%;">
-  <div class="dbMenuTitle">Mode</div>
 
   <label class="menuItem toggleItem" style="width:100%; justify-content:space-between;">
     <span class="menuLabel">Merge</span>
@@ -1165,6 +1182,9 @@ body[data-theme="dark"] .card video {
   let currentSlide = 0;
   let currentMedia = [];
 
+    const LS_ACTIVE_DB = "activeDatabase";
+const LS_DB_MODE = "dbMode";
+
   /* =========================
      PLAN GATING (FREE / PRO)
   ========================= */
@@ -1182,69 +1202,63 @@ body[data-theme="dark"] .card video {
     return false;
   }
 
-  function applyPlanToUI() {
-    const isPro = CURRENT_PLAN === "pro";
+ function applyPlanToUI() {
+  const isPro = CURRENT_PLAN === "pro";
 
-    // Branding: hide only on pro (keep spacing)
-    const footerBrand = document.querySelector(".footerBrand");
-    if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
+  // Branding: hide only on pro (keep spacing)
+  const footerBrand = document.querySelector(".footerBrand");
+  if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
 
-    const menuBtn = document.querySelector(".menuBtn");
-    const menu = document.getElementById("menu");
-    const freeName = document.getElementById("freeProfileName");
+  const menuBtn = document.querySelector(".menuBtn");
+  const menu = document.getElementById("menu");
+  const freeName = document.getElementById("freeProfileName");
 
-    const profileHeader = document.getElementById("profileHeader");
-    const profileNote = document.getElementById("profileNote");
-    const highlightsWrap = document.getElementById("highlightsWrap");
-    const dbMenuWrap = document.getElementById("dbMenuWrap");
+  const profileHeader = document.getElementById("profileHeader");
+  const profileNote = document.getElementById("profileNote");
+  const highlightsWrap = document.getElementById("highlightsWrap");
 
-    if (!isPro) {
-      // ----- FREE -----
-      if (menuBtn) menuBtn.style.display = "none";
-      if (menu) menu.classList.add("hidden");
-      if (freeName) freeName.classList.remove("hidden-section");
+  const dbMenuWrap = document.getElementById("dbMenuWrap");
+  const mergeMenuWrap = document.getElementById("mergeMenuWrap");
 
-      // Hide center profile (name shown top-right)
-      if (profileHeader) profileHeader.classList.add("hidden-section");
-      if (profileNote) profileNote.classList.add("hidden-section");
-      if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-      if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
-       localStorage.removeItem("activeDatabase");
-      localStorage.removeItem(LS_ACTIVE_DB);
-  localStorage.removeItem(LS_DB_MODE);
-  return;
-    }
+  if (!isPro) {
+    // ----- FREE -----
+    if (menuBtn) menuBtn.style.display = "none";
+    if (menu) menu.classList.add("hidden");
+    if (freeName) freeName.classList.remove("hidden-section");
 
-    // ----- PRO -----
-    if (menuBtn) menuBtn.style.display = "";
-    if (freeName) freeName.classList.add("hidden-section");
+    if (profileHeader) profileHeader.classList.add("hidden-section");
+    if (profileNote) profileNote.classList.add("hidden-section");
+    if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
 
-    if (profileHeader) profileHeader.classList.remove("hidden-section");
-    if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
-    // profileNote visibility is controlled in renderProfile()
+    if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
+    if (mergeMenuWrap) mergeMenuWrap.classList.add("hidden-section");
 
-    // Pro menu options
-    if (menu) {
-      const mergeMenuWrap = document.getElementById("mergeMenuWrap");
-if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
-      
-      const fontSelect = document.getElementById("fontSelect");
-      if (fontSelect) fontSelect.style.display = planAllows(CURRENT_PLAN, "fonts") ? "" : "none";
+    // Clear any prior Pro selections
+    localStorage.removeItem(LS_ACTIVE_DB);
+    localStorage.removeItem(LS_DB_MODE);
 
-      const toggleLabels = [...menu.querySelectorAll("label.toggleItem")];
-      toggleLabels.forEach(label => {
-        const text = (label.textContent || "").trim();
-        const isSectionToggle =
-          text.includes("Header") ||
-          text.includes("Highlights") ||
-          text.includes("Profile") ||
-          text.includes("Note");
-        if (isSectionToggle) label.style.display = planAllows(CURRENT_PLAN, "hide_sections") ? "" : "none";
-      });
-    }
-
-    if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", !planAllows(CURRENT_PLAN, "multi_db_switcher"));
+    updateModePill();
+    return;
   }
+
+  // ----- PRO -----
+  if (menuBtn) menuBtn.style.display = "";
+  if (freeName) freeName.classList.add("hidden-section");
+
+  if (profileHeader) profileHeader.classList.remove("hidden-section");
+  if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
+  // profileNote visibility handled in renderProfile()
+
+  // Show merge section (pro-only)
+  if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
+
+  // Hide DB switcher when merge is enabled
+  const mode = localStorage.getItem(LS_DB_MODE) || "single";
+  const isMerge = mode === "merge";
+  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
+
+  updateModePill();
+}
 
   /* =========================
      THEME (AUTO)
@@ -1349,6 +1363,26 @@ if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
       picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png",
     };
   }
+
+function updateModePill() {
+  const pill = document.getElementById("modePill");
+  if (!pill) return;
+
+  // Only for Pro
+  if (CURRENT_PLAN !== "pro") {
+    pill.classList.add("hidden-section");
+    return;
+  }
+
+  const mode = localStorage.getItem(LS_DB_MODE) || "single";
+
+  if (mode === "merge") {
+    pill.textContent = "Merge";
+    pill.classList.remove("hidden-section");
+  } else {
+    pill.classList.add("hidden-section");
+  }
+}
 
   /* =========================
      FONTS
@@ -1496,6 +1530,7 @@ async function onMergeToggle(enabled) {
   }
 
   document.getElementById("menu")?.classList.add("hidden");
+  updateModePill();
 }
 window.onMergeToggle = onMergeToggle;
     
@@ -1513,6 +1548,8 @@ window.onMergeToggle = onMergeToggle;
 
       CURRENT_PLAN = plan || "free";
       applyPlanToUI();
+      updateModePill();
+
 
       // If pro, initialize merge toggle UI state
 if (CURRENT_PLAN === "pro") {
@@ -1539,7 +1576,7 @@ if (CURRENT_PLAN === "pro") {
 
       wrap.classList.remove("hidden-section");
 
-      const activeDb = localStorage.getItem("activeDatabase");
+      const activeDb = localStorage.getItem(LS_ACTIVE_DB);
 
       // options
       select.innerHTML = "";
@@ -1553,8 +1590,8 @@ if (CURRENT_PLAN === "pro") {
       // selected
       const selected = activeDb || databases.find(d => d.is_primary)?.database_id || databases[0].database_id;
       select.value = selected;
-      localStorage.setItem("activeDatabase", selected);
-
+localStorage.setItem(LS_ACTIVE_DB, selected);
+      
       // change handler
      select.onchange = async () => {
   const mode = localStorage.getItem(LS_DB_MODE) || "single";
@@ -1620,6 +1657,7 @@ if (CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge")) {
 
       CURRENT_PLAN = plan || "free";
       applyPlanToUI();
+      updateModePill();
 
       ALL_POSTS = Array.isArray(posts) ? posts : [];
       sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
@@ -1911,8 +1949,8 @@ if (CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge")) {
 
       await loadDatabaseSwitcher();
 
-      const savedDb = localStorage.getItem("activeDatabase");
-      await loadPosts(savedDb);
+      const savedDb = localStorage.getItem(LS_ACTIVE_DB);
+await loadPosts(savedDb);
 
       syncUnderlineToActiveTab();
     } catch (e) {
@@ -1921,10 +1959,10 @@ if (CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge")) {
   }
 
   // Refresh click
-  document.querySelector(".refreshBtn").onclick = async function () {
-    const selectedDb = localStorage.getItem("activeDatabase");
-    await loadPosts(selectedDb, this);
-  };
+ document.querySelector(".refreshBtn").onclick = async function () {
+  const selectedDb = localStorage.getItem(LS_ACTIVE_DB);
+  await loadPosts(selectedDb, this);
+};
 
   // Close menu when clicking outside
   document.addEventListener("click", () => {
