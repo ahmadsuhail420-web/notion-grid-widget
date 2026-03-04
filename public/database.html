@@ -454,10 +454,10 @@ button.primary-btn {
   }
 
   function getPlanLimit(plan) {
-    if (plan === "free") return 1;
-     if (plan === "pro") return Infinity;
-  return 1;
-  }
+  if (plan === "free") return 1;
+  // pro (and anything else) => unlimited
+  return Infinity;
+}
 
   function nextAutoLabel() {
     return `Database ${DATABASES.length + 1}`;
@@ -874,9 +874,9 @@ nameInput.onkeydown = (e) => {
 
     const limit = getPlanLimit(CURRENT_PLAN);
     if (DATABASES.length >= limit) {
-      if (CURRENT_PLAN === "free") return alert("Free plan allows only 1 database.");
-      if (CURRENT_PLAN === "advanced") return alert("Advanced plan allows up to 3 databases.");
-    }
+  if (CURRENT_PLAN === "free") return alert("Free plan allows only 1 database.");
+  return alert("Database limit reached.");
+}
 
     const label = nextAutoLabel();
 
