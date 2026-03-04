@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const { token } = req.query;
 
   if (!token) {
@@ -14,4 +14,4 @@ export default async function handler(req, res) {
     `&state=${encodeURIComponent(token)}`;
 
   res.redirect(notionAuthUrl);
-}
+};
