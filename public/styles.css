@@ -364,69 +364,118 @@ h1 {
 
 /* Responsive */
 @media (max-width: 920px) {
+  /* keep hero centered and compact */
+  .bg {
+    height: 520px;
+  }
+
   .hero {
-    min-height: auto;
-    padding-top: 10px;
-    align-items: stretch;
+    min-height: 320px;
+    padding-top: 8px;
+    align-items: center;
   }
 
+  /* KEEP 2 COLUMNS (same visual) */
   .hero-card {
-    grid-template-columns: 1fr;
-    width: min(620px, 100%);
+    grid-template-columns: 1.25fr 0.75fr; /* still left+right */
+    width: min(640px, 100%);
+    padding: 14px;
+    gap: 12px;
   }
 
+  /* scale typography a bit */
+  h1 {
+    font-size: clamp(22px, 4.4vw, 34px);
+  }
+
+  .lead {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .btn {
+    padding: 10px 14px;
+  }
+
+  .btn-sm {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  /* widget smaller */
   .preview-wrap {
-    width: min(220px, 100%);
-    transform: none;
+    width: clamp(140px, 24vw, 200px);
+    padding: 5px;
+    transform: none; /* avoid tilt on smaller screens */
   }
 
-  .cards {
-    grid-template-columns: 1fr;
+  .preview-img {
+    max-height: 300px;
   }
 
-  .nav {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "left right"
-      "center center";
-  }
-
-  .nav-left {
-    grid-area: left;
-  }
-
-  .nav-right {
-    grid-area: right;
-  }
-
-  .nav-center {
-    grid-area: center;
-    text-align: center;
-    padding-top: 6px;
+  /* nav stays readable */
+  .nav-left a,
+  .nav-link {
+    font-size: 11px;
   }
 }
 
 @media (max-width: 520px) {
   .frame {
-    margin: 14px;
-    padding: 10px 14px 10px;
+    margin: 12px;
+    padding: 8px 10px 10px;
   }
 
+  .bg {
+    height: 480px;
+  }
+
+  .hero {
+    min-height: 300px;
+    padding: 0 0 8px;
+  }
+
+  /* still 2 columns, but tighter */
   .hero-card {
-    padding: 14px;
+    width: 100%;
+    grid-template-columns: 1.35fr 0.65fr;
+    padding: 12px;
+    gap: 10px;
   }
 
-  .nav-left a,
-  .nav-link {
+  .eyebrow {
+    font-size: 9px;
+  }
+
+  h1 {
+    font-size: 22px;
+    line-height: 1.05;
+  }
+
+  .lead {
+    font-size: 13px;
+  }
+
+  .micro {
     font-size: 11px;
+  }
+
+  .btn {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .preview-wrap {
+    width: 150px; /* fixed so it stays visible */
+    padding: 5px;
+  }
+
+  .preview-img {
+    max-height: 260px;
   }
 
   .preview-tag {
     font-size: 7px;
     padding: 4px 7px;
-  }
-
-  .preview-wrap {
-    width: min(200px, 100%);
   }
 }
