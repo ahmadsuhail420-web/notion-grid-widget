@@ -200,12 +200,12 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;     /* centers vertically within hero area */
-  min-height: 540px;       /* matches bg height so it centers on the image */
+  min-height: 420px;       /* matches bg height so it centers on the image */
   padding: 0 6px 12px;     /* remove extra top padding that pushed it down/out */
 }
 
 .hero-card {
-  width: min(900px, 100%);
+  width: min(700px, 100%);
   border-radius: 20px;
   padding: 22px;
   display: grid;
