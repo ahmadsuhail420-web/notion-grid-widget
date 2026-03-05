@@ -12,9 +12,22 @@
   </head>
 
   <body>
+    <!-- Background is ONLY for section 1 (hero) -->
     <div class="bg" aria-hidden="true"></div>
 
     <div class="frame">
+      <!-- Offer ticker ABOVE nav -->
+      <div class="offer" aria-label="Offer ticker">
+        <div class="offer-track">
+          <span>Limited offer: 20% off today • </span>
+          <span>One-time purchase • Instant access • </span>
+          <span>Works on mobile • No code • </span>
+          <span>Limited offer: 20% off today • </span>
+          <span>One-time purchase • Instant access • </span>
+          <span>Works on mobile • No code • </span>
+        </div>
+      </div>
+
       <header class="nav">
         <nav class="nav-left" aria-label="Primary">
           <a href="#top">Home</a>
@@ -31,7 +44,7 @@
 
       <main id="top">
         <!-- SECTION 1: HERO -->
-        <section class="hero">
+        <section class="hero hero-section">
           <div class="hero-card glass">
             <div class="hero-left">
               <div class="eyebrow">
@@ -48,9 +61,7 @@
 
               <div class="hero-actions">
                 <a class="btn btn-primary" href="#products">Buy Notion Grid</a>
-                <button class="btn btn-secondary" type="button" data-scroll="#products">
-                  View products
-                </button>
+                <a class="btn btn-secondary" href="#products">View products</a>
               </div>
 
               <div class="micro">One-time purchase • Responsive • Customizable</div>
@@ -71,43 +82,116 @@
           </div>
         </section>
 
-        <!-- SECTION 2: ESSENTIAL PRODUCTS (horizontal scroll, 1:1 tiles) -->
+        <!-- SECTION 2: ESSENTIAL PRODUCTS -->
         <section id="products" class="products-strip">
           <div class="products-strip-inner">
             <div class="products-head">
               <h2>Essential Products</h2>
-              <p>Swipe to browse. Tap a product to open its page.</p>
             </div>
 
             <div class="products-row" role="list" aria-label="Product list">
+              <!-- 1 -->
               <a class="product-tile" role="listitem" href="product-notion-grid.html">
                 <div class="product-thumb">
                   <img src="assets/products/notion-grid.png" alt="Notion Grid" loading="lazy" />
                 </div>
-                <div class="product-name">Notion Grid</div>
+                <div class="product-meta">
+                  <div class="product-name">Notion Grid</div>
+                  <div class="product-price">$19</div>
+                </div>
               </a>
 
+              <!-- 2 -->
               <a class="product-tile" role="listitem" href="product-creator-pack.html">
                 <div class="product-thumb">
                   <img src="assets/products/creator-pack.png" alt="Creator Pack" loading="lazy" />
                 </div>
-                <div class="product-name">Creator Pack</div>
+                <div class="product-meta">
+                  <div class="product-name">Creator Pack</div>
+                  <div class="product-price">$12</div>
+                </div>
               </a>
 
+              <!-- 3 -->
               <a class="product-tile" role="listitem" href="product-bundle.html">
                 <div class="product-thumb">
                   <img src="assets/products/bundle.png" alt="Bundle" loading="lazy" />
                 </div>
-                <div class="product-name">Bundle</div>
+                <div class="product-meta">
+                  <div class="product-name">Bundle</div>
+                  <div class="product-price">$29</div>
+                </div>
               </a>
 
-              <!-- Add more product tiles as needed -->
+              <!-- 4 -->
+              <a class="product-tile" role="listitem" href="product-starter.html">
+                <div class="product-thumb">
+                  <img src="assets/products/starter.png" alt="Starter" loading="lazy" />
+                </div>
+                <div class="product-meta">
+                  <div class="product-name">Starter</div>
+                  <div class="product-price">$9</div>
+                </div>
+              </a>
+
+              <!-- Add more cards; row will scroll -->
+              <a class="product-tile" role="listitem" href="product-pro.html">
+                <div class="product-thumb">
+                  <img src="assets/products/pro.png" alt="Pro" loading="lazy" />
+                </div>
+                <div class="product-meta">
+                  <div class="product-name">Pro</div>
+                  <div class="product-price">$39</div>
+                </div>
+              </a>
             </div>
           </div>
         </section>
       </main>
     </div>
 
-    <script src="app.js"></script>
+    <!-- small JS: center-card scale effect while scrolling -->
+    <script>
+      (function () {
+        const row = document.querySelector(".products-row");
+        if (!row) return;
+
+        const tiles = Array.from(row.querySelectorAll(".product-tile"));
+        if (!tiles.length) return;
+
+        function update() {
+          const rowRect = row.getBoundingClientRect();
+          const centerX = rowRect.left + rowRect.width / 2;
+
+          let closest = null;
+          let closestDist = Infinity;
+
+          for (const t of tiles) {
+            const r = t.getBoundingClientRect();
+            const mid = r.left + r.width / 2;
+            const d = Math.abs(mid - centerX);
+            if (d < closestDist) {
+              closestDist = d;
+              closest = t;
+            }
+          }
+
+          for (const t of tiles) t.classList.toggle("is-active", t === closest);
+        }
+
+        let raf = 0;
+        function onScroll() {
+          cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(update);
+        }
+
+        row.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        window.addEventListener("load", onScroll);
+
+        // initial
+        update();
+      })();
+    </script>
   </body>
 </html>
