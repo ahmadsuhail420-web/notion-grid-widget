@@ -267,6 +267,7 @@ h1 {
   position: relative;
   display: flex;
   justify-content: center;
+  min-width: 0;
 }
 
 .preview-tag {
@@ -286,12 +287,17 @@ h1 {
 }
 
 .preview-wrap {
-  width: min(330px, 100%);
+  /* responsive width: grows on large screens, shrinks on small */
+  width: clamp(240px, 28vw, 330px);
+
   padding: 8px;
   border-radius: 22px;
   border: 1px solid rgba(244, 241, 235, 0.25);
   box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45);
+
+  /* optional slight tilt (remove if you want perfectly straight) */
   transform: rotate(1.5deg);
+
   background: rgba(244, 241, 235, 0.06);
 }
 
@@ -602,6 +608,7 @@ h1 {
   }
 
   .preview-wrap {
+    width: min(280px, 100%);
     transform: none;
   }
 }
