@@ -1,76 +1,249 @@
-<body>
-  <div class="bg">
-    <!-- background image + overlay -->
-  </div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notion Grid — Embed beautiful grids in Notion</title>
+    <meta
+      name="description"
+      content="Notion Grid is a one-time purchase widget to embed images, link cards, resources, or product blocks in a clean, responsive grid—no code, just copy & paste."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-  <div class="frame">
-    <header class="nav">
-      <nav class="nav-left">
-        <a href="#features">Features</a>
-        <a href="#examples">Examples</a>
-        <a href="#faq">FAQ</a>
-      </nav>
+  <body>
+    <!--
+      ASSETS (replace these file paths with your images)
+      - Background (desktop display): assets/notion-bg.png  (your Image 3)
+      - Widget preview (right side): assets/widget-preview.png (your Image 2)
+    -->
 
-      <div class="nav-center">Notion Grid</div>
+    <div class="bg" aria-hidden="true"></div>
 
-      <div class="nav-right">
-        <a class="btn btn-primary" href="#pricing">Buy</a>
-      </div>
-    </header>
+    <div class="frame">
+      <header class="nav">
+        <nav class="nav-left" aria-label="Primary">
+          <a href="#features">Features</a>
+          <a href="#examples">Examples</a>
+          <a href="#faq">FAQ</a>
+        </nav>
 
-    <main>
-      <section class="hero">
-        <div class="hero-card glass">
-          <div class="hero-left">
-            <div class="eyebrow">Notion Widget</div>
-            <h1>Turn any Notion page into a beautiful grid.</h1>
-            <p>
-              Notion Grid is a one-time purchase widget that lets you embed clean,
-              visual cards for links, resources, products, or collections.
-            </p>
+        <a class="nav-center" href="#top" aria-label="Notion Grid Home">Notion Grid</a>
 
-            <div class="hero-actions">
-              <a class="btn btn-primary" href="#pricing">Buy Notion Grid</a>
-              <button class="btn btn-secondary" data-scroll="#examples">View demo</button>
-            </div>
-
-            <div class="micro">No code • Copy & paste embed • Responsive</div>
-          </div>
-
-          <div class="hero-right">
-            <div class="preview-tag">LIVE PREVIEW</div>
-            <div class="notion-preview">
-              <!-- fake Notion chrome + grid widget preview -->
-            </div>
-          </div>
+        <div class="nav-right">
+          <a class="btn btn-primary btn-sm" href="#pricing">Buy</a>
         </div>
-      </section>
+      </header>
 
-      <section id="features" class="section">
-        <!-- 3–6 feature cards (glass) -->
-      </section>
+      <main id="top">
+        <section class="hero">
+          <div class="hero-card glass">
+            <div class="hero-left">
+              <div class="eyebrow">
+                <span class="dot" aria-hidden="true"></span>
+                Notion Widget
+              </div>
 
-      <section id="examples" class="section">
-        <!-- demo previews / before-after -->
-      </section>
+              <h1>Embed beautiful grids in Notion.</h1>
 
-      <section id="pricing" class="section">
-        <!-- one-time purchase pricing card -->
-      </section>
+              <p class="lead">
+                Add images, link cards, resources, or product blocks in a clean, responsive grid—no
+                code, just copy &amp; paste.
+              </p>
 
-      <section id="faq" class="section">
-        <!-- FAQ accordion (JS) -->
-      </section>
+              <div class="hero-actions">
+                <a class="btn btn-primary" href="#pricing">Buy Notion Grid</a>
+                <button class="btn btn-secondary" type="button" data-scroll="#examples">
+                  View demo
+                </button>
+              </div>
 
-      <section class="final-cta">
-        <!-- glass CTA strip + Buy button -->
-      </section>
-    </main>
+              <div class="micro">One-time purchase • Responsive • Customizable</div>
+            </div>
 
-    <footer class="footer">
-      <!-- links -->
-    </footer>
-  </div>
+            <div class="hero-right">
+              <div class="preview-tag">LIVE PREVIEW</div>
 
-  <script src="app.js"></script>
-</body>
+              <div class="preview-wrap">
+                <img
+                  class="preview-img"
+                  src="assets/widget-preview.png"
+                  alt="Notion Grid widget preview"
+                  loading="eager"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" class="section">
+          <div class="section-head">
+            <h2>Designed for creators and Notion builders.</h2>
+            <p>Everything you need to make your pages feel modern and visual.</p>
+          </div>
+
+          <div class="grid cards">
+            <article class="card glass">
+              <h3>Mixed content grids</h3>
+              <p>Combine images, link cards, resources, and product-style blocks in one layout.</p>
+            </article>
+
+            <article class="card glass">
+              <h3>Clean card styling</h3>
+              <p>Control radius, spacing, shadows, and density to match your brand.</p>
+            </article>
+
+            <article class="card glass">
+              <h3>Theme controls</h3>
+              <p>Light/dark friendly design with accent highlights.</p>
+            </article>
+
+            <article class="card glass">
+              <h3>Mobile responsive</h3>
+              <p>Your grid adapts beautifully to phones and tablets.</p>
+            </article>
+
+            <article class="card glass">
+              <h3>Copy &amp; paste embed</h3>
+              <p>Generate a link, paste into Notion, and you’re done—no setup pain.</p>
+            </article>
+
+            <article class="card glass">
+              <h3>Fast + lightweight</h3>
+              <p>Optimized UI so your Notion pages stay quick and smooth.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="examples" class="section">
+          <div class="section-head">
+            <h2>See it in action.</h2>
+            <p>Three common ways people use Notion Grid.</p>
+          </div>
+
+          <div class="grid examples">
+            <article class="example glass">
+              <div class="example-title">Resource Library</div>
+              <div class="example-desc">Link cards + tags + clean browsing.</div>
+              <div class="example-mini">
+                <div class="mini-card"></div>
+                <div class="mini-card"></div>
+                <div class="mini-card"></div>
+              </div>
+            </article>
+
+            <article class="example glass">
+              <div class="example-title">Mini Storefront</div>
+              <div class="example-desc">Product-style cards with a CTA feel.</div>
+              <div class="example-mini">
+                <div class="mini-card"></div>
+                <div class="mini-card"></div>
+                <div class="mini-card"></div>
+              </div>
+            </article>
+
+            <article class="example glass">
+              <div class="example-title">Visual Gallery</div>
+              <div class="example-desc">Image grids that feel like a portfolio.</div>
+              <div class="example-mini">
+                <div class="mini-img"></div>
+                <div class="mini-img"></div>
+                <div class="mini-img"></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="pricing" class="section">
+          <div class="section-head">
+            <h2>One-time purchase.</h2>
+            <p>Buy once and start embedding grids immediately.</p>
+          </div>
+
+          <div class="pricing glass">
+            <div class="pricing-left">
+              <div class="pricing-name">Notion Grid</div>
+              <div class="pricing-desc">
+                The embeddable grid widget for links, images, and product-style blocks.
+              </div>
+
+              <ul class="pricing-list">
+                <li>Mixed content layouts</li>
+                <li>Responsive design</li>
+                <li>Custom spacing + styling</li>
+                <li>Simple embed flow</li>
+              </ul>
+            </div>
+
+            <div class="pricing-right">
+              <div class="price">
+                <span class="price-value">$—</span>
+                <span class="price-note">set your price</span>
+              </div>
+              <a class="btn btn-primary btn-wide" href="#top">Buy</a>
+              <div class="micro micro-center">Secure checkout • Instant access</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" class="section">
+          <div class="section-head">
+            <h2>FAQ</h2>
+            <p>Quick answers before you buy.</p>
+          </div>
+
+          <div class="faq">
+            <details class="faq-item glass">
+              <summary>Is Notion Grid a one-time purchase?</summary>
+              <p>Yes—this landing page is designed around a one-time payment model.</p>
+            </details>
+
+            <details class="faq-item glass">
+              <summary>Can I customize colors and spacing?</summary>
+              <p>Yes—Notion Grid is positioned as customizable so it can match your page style.</p>
+            </details>
+
+            <details class="faq-item glass">
+              <summary>Will it work on mobile?</summary>
+              <p>Yes—grids should reflow responsively for mobile devices.</p>
+            </details>
+
+            <details class="faq-item glass">
+              <summary>Does it slow down Notion?</summary>
+              <p>The UI is intended to be lightweight. (You can refine this claim once measured.)</p>
+            </details>
+
+            <details class="faq-item glass">
+              <summary>Can I use it on multiple pages?</summary>
+              <p>Usually yes, depending on your license terms (you can specify this later).</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="final-cta">
+          <div class="final-cta-card glass">
+            <div class="final-cta-left">
+              <h2>Ready to upgrade your Notion pages?</h2>
+              <p>Embed a grid that looks premium, loads fast, and works everywhere.</p>
+            </div>
+            <div class="final-cta-right">
+              <a class="btn btn-primary btn-wide" href="#pricing">Buy Notion Grid</a>
+              <div class="micro micro-center">One-time purchase • No code</div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-left">© <span id="year"></span> Notion Grid</div>
+        <div class="footer-right">
+          <a href="#faq">Support</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#top">Top</a>
+        </div>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
