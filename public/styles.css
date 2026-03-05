@@ -407,13 +407,14 @@ h1 {
     font-size: 13px;
   }
 
-  .preview-wrap {
-    width: clamp(140px, 24vw, 200px);
-    padding: 5px;
-    transform: none; /* remove tilt on small screens */
+   .preview-wrap {
+    width: clamp(190px, 34vw, 260px);
+    padding: 6px;
+    transform: none;
   }
 
-  .preview-img { max-height: 300px; }
+  .preview-img { max-height: 360px; }
+
 
   .preview-tag {
     font-size: 7px;
@@ -445,7 +446,7 @@ h1 {
   /* keep 2 columns even on small phones */
   .hero-card {
     width: 100%;
-    grid-template-columns: 1.35fr 0.65fr;
+    grid-template-columns: 1.1fr 0.8fr;
     padding: 12px;
     gap: 10px;
   }
@@ -472,11 +473,11 @@ h1 {
   }
 
   .preview-wrap {
-    width: 145px; /* keep widget visible */
-    padding: 4px;
+    width: clamp(210px, 44vw, 280px);
+    padding: 5px;
   }
 
-  .preview-img { max-height: 260px; }
+  .preview-img { max-height: 380px; }
 
   .preview-tag {
     font-size: 7px;
