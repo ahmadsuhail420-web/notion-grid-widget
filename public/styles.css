@@ -362,39 +362,44 @@ h1 {
   gap: 14px;
 }
 
-/* Responsive */
+/* Replace BOTH of your existing @media blocks with THESE TWO.
+   This keeps the SAME 2-column visual on mobile AND reduces text sizes. */
+
+/* Tablet + large phones */
 @media (max-width: 920px) {
-  /* keep hero centered and compact */
-  .bg {
-    height: 520px;
-  }
+  .bg { height: 520px; }
 
   .hero {
     min-height: 320px;
-    padding-top: 8px;
+    padding: 0 6px 8px;
     align-items: center;
   }
 
-  /* KEEP 2 COLUMNS (same visual) */
+  /* keep 2 columns */
   .hero-card {
-    grid-template-columns: 1.25fr 0.75fr; /* still left+right */
+    grid-template-columns: 1.25fr 0.75fr;
     width: min(640px, 100%);
     padding: 14px;
     gap: 12px;
   }
 
-  /* scale typography a bit */
+  .eyebrow { font-size: 9px; }
+
   h1 {
-    font-size: clamp(22px, 4.4vw, 34px);
+    font-size: clamp(22px, 4.6vw, 34px);
+    line-height: 1.05;
   }
 
   .lead {
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.55;
   }
 
+  .micro { font-size: 11.5px; }
+
   .btn {
     padding: 10px 14px;
+    font-size: 13px;
   }
 
   .btn-sm {
@@ -402,40 +407,42 @@ h1 {
     font-size: 13px;
   }
 
-  /* widget smaller */
   .preview-wrap {
     width: clamp(140px, 24vw, 200px);
     padding: 5px;
-    transform: none; /* avoid tilt on smaller screens */
+    transform: none; /* remove tilt on small screens */
   }
 
-  .preview-img {
-    max-height: 300px;
+  .preview-img { max-height: 300px; }
+
+  .preview-tag {
+    font-size: 7px;
+    padding: 4px 7px;
+    top: -6px;
+    left: 10px;
   }
 
-  /* nav stays readable */
   .nav-left a,
   .nav-link {
     font-size: 11px;
   }
 }
 
+/* Small phones */
 @media (max-width: 520px) {
   .frame {
     margin: 12px;
     padding: 8px 10px 10px;
   }
 
-  .bg {
-    height: 480px;
-  }
+  .bg { height: 480px; }
 
   .hero {
     min-height: 300px;
-    padding: 0 0 8px;
+    padding: 0 2px 8px;
   }
 
-  /* still 2 columns, but tighter */
+  /* keep 2 columns even on small phones */
   .hero-card {
     width: 100%;
     grid-template-columns: 1.35fr 0.65fr;
@@ -443,39 +450,55 @@ h1 {
     gap: 10px;
   }
 
-  .eyebrow {
-    font-size: 9px;
-  }
+  .eyebrow { font-size: 8px; }
 
   h1 {
-    font-size: 22px;
+    font-size: 20px; /* fixed so it doesn't get too large */
     line-height: 1.05;
   }
 
   .lead {
-    font-size: 13px;
+    font-size: 12.5px;
+    line-height: 1.5;
   }
 
-  .micro {
-    font-size: 11px;
-  }
+  .micro { font-size: 10.5px; }
+
+  .hero-actions { gap: 8px; }
 
   .btn {
-    padding: 9px 12px;
-    font-size: 13px;
+    padding: 8px 11px;
+    font-size: 12.5px;
   }
 
   .preview-wrap {
-    width: 150px; /* fixed so it stays visible */
-    padding: 5px;
+    width: 145px; /* keep widget visible */
+    padding: 4px;
   }
 
-  .preview-img {
-    max-height: 260px;
-  }
+  .preview-img { max-height: 260px; }
 
   .preview-tag {
     font-size: 7px;
     padding: 4px 7px;
+  }
+
+  /* nav */
+  .nav {
+    grid-template-columns: 1fr auto 1fr; /* keep same visual */
+  }
+
+  .nav-left a,
+  .nav-link {
+    font-size: 10px;
+  }
+
+  .nav-center {
+    font-size: 13px;
+  }
+
+  .btn-sm {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }
