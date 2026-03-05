@@ -200,7 +200,7 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;     /* centers vertically within hero area */
-  min-height: 600px;       /* matches bg height so it centers on the image */
+  min-height: 540px;       /* matches bg height so it centers on the image */
   padding: 0 6px 12px;     /* remove extra top padding that pushed it down/out */
 }
 
@@ -287,24 +287,20 @@ h1 {
 }
 
 .preview-wrap {
-  /* responsive width: grows on large screens, shrinks on small */
-  width: clamp(240px, 28vw, 330px);
+  /* smaller range than before */
+  width: clamp(190px, 24vw, 290px);
 
-  padding: 8px;
+  padding: 7px;
   border-radius: 22px;
   border: 1px solid rgba(244, 241, 235, 0.25);
   box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45);
-
-  /* optional slight tilt (remove if you want perfectly straight) */
   transform: rotate(1.5deg);
-
   background: rgba(244, 241, 235, 0.06);
 }
 
 .preview-img {
   width: 100%;
   height: auto;
-  max-height: 440px; /* adjust */
   display: block;
   border-radius: 18px;
   object-fit: contain;
@@ -590,14 +586,19 @@ h1 {
     padding-top: 26px;
   }
 
-  .hero-card {
-    padding: 18px;
-  }
+.hero-card {
+  width: min(820px, 100%);    /* smaller than 900px */
+  border-radius: 18px;
+  padding: 18px;              /* less padding */
+  display: grid;
 
-  .nav-left a {
-    font-size: 11px;
-  }
+  /* make right side smaller than before */
+  grid-template-columns: 1.25fr 0.75fr;
+
+  gap: 18px;
+  align-items: center;
 }
+  
 @media (max-width: 920px) {
   .hero {
     min-height: auto;
