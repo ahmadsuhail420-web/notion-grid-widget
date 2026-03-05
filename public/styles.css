@@ -200,7 +200,7 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;     /* centers vertically within hero area */
-  min-height: 420px;       /* matches bg height so it centers on the image */
+  min-height: 360px;       /* matches bg height so it centers on the image */
   padding: 0 6px 12px;     /* remove extra top padding that pushed it down/out */
 }
 
@@ -272,16 +272,19 @@ h1 {
 
 .preview-tag {
   position: absolute;
-  top: -10px;
-  left: 14px;              /* back to left corner */
-  transform: none;         /* remove center transform */
-  font-size: 11px;
+  top: -8px;
+  left: 12px;
+  transform: none;
+
+  font-size: 9px;           /* smaller */
   letter-spacing: 0.12em;
   text-transform: uppercase;
+
   color: rgba(244, 241, 235, 0.92);
-  background: rgba(18, 18, 18, 0.45);
-  border: 1px solid rgba(244, 241, 235, 0.2);
-  padding: 8px 12px;
+  background: rgba(18, 18, 18, 0.42);
+  border: 1px solid rgba(244, 241, 235, 0.18);
+
+  padding: 6px 9px;         /* smaller */
   border-radius: 999px;
   z-index: 2;
 }
@@ -530,12 +533,6 @@ h1 {
   color: rgba(244, 241, 235, 0.92);
 }
 
-/* Responsive */
-@media (max-width: 920px) {
-  .hero-card {
-    grid-template-columns: 1fr;
-  }
-
   .preview-wrap {
     transform: none;
   }
@@ -576,35 +573,19 @@ h1 {
   }
 }
 
-@media (max-width: 520px) {
-  .frame {
-    margin: 14px;
-    padding: 14px 14px 10px;
-  }
-
   .hero {
     padding-top: 26px;
   }
 
 .hero-card {
-  width: min(820px, 100%);    /* smaller than 900px */
+  width: min(700px, 100%);        /* your smaller card */
   border-radius: 18px;
-  padding: 18px;              /* less padding */
+  padding: 18px;                  /* slightly smaller padding */
   display: grid;
-
-  /* make right side smaller than before */
-  grid-template-columns: 1.25fr 0.75fr;
-
+  grid-template-columns: 1.25fr 0.75fr; /* right side smaller */
   gap: 18px;
   align-items: center;
 }
-  
-@media (max-width: 920px) {
-  .hero {
-    min-height: auto;
-    padding-top: 22px;
-    align-items: stretch;
-  }
 
   .hero-card {
     grid-template-columns: 1fr;
@@ -613,5 +594,53 @@ h1 {
   .preview-wrap {
     width: min(280px, 100%);
     transform: none;
+  }
+}
+
+@media (max-width: 920px) {
+  .hero {
+    min-height: auto;
+    padding-top: 14px;
+    align-items: stretch;
+  }
+
+  .hero-card {
+    grid-template-columns: 1fr;
+    width: min(620px, 100%);
+  }
+
+  .preview-wrap {
+    width: min(240px, 100%);
+    transform: none;
+  }
+
+  .cards,
+  .examples {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing,
+  .final-cta-card {
+    grid-template-columns: 1fr;
+  }
+
+  .price {
+    align-items: flex-start;
+  }
+
+  .nav {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "left right"
+      "center center";
+  }
+
+  .nav-left { grid-area: left; }
+  .nav-right { grid-area: right; }
+
+  .nav-center {
+    grid-area: center;
+    text-align: center;
+    padding-top: 8px;
   }
 }
