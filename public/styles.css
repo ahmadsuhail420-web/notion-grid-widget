@@ -58,6 +58,24 @@ a {
   transform: scale(1.05);
 }
 
+.nav-right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  align-items: center;
+}
+
+.nav-link {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.nav-link:hover {
+  opacity: 1;
+}
+
 .bg::after {
   content: "";
   position: absolute;
