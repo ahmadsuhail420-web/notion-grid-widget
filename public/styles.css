@@ -62,8 +62,8 @@ a {
   background-size: cover;
   background-position: center;
 
-  filter: blur(1px);
-  transform: scale(.05);
+  filter: none;
+  transform: none;
 }
 
 .nav-right {
