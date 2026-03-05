@@ -1,104 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Something Organized</title>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="/style.css">
-</head>
-
 <body>
-
-<!-- Announcement -->
-<div class="announcement">
-  10% off with minimum purchase of $10 — use code <strong>SOMETHING10</strong>
-</div>
-
-<!-- Header -->
-<header class="header">
-  <button class="icon-btn">☰</button>
-
-  <div class="brand">
-    <span>SOMETHING</span>
-    <span>ORGANIZED</span>
+  <div class="bg">
+    <!-- background image + overlay -->
   </div>
 
-  <div class="header-actions">
-    <button class="icon-btn">🔍</button>
-    <button class="icon-btn">👜</button>
+  <div class="frame">
+    <header class="nav">
+      <nav class="nav-left">
+        <a href="#features">Features</a>
+        <a href="#examples">Examples</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="nav-center">Notion Grid</div>
+
+      <div class="nav-right">
+        <a class="btn btn-primary" href="#pricing">Buy</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-card glass">
+          <div class="hero-left">
+            <div class="eyebrow">Notion Widget</div>
+            <h1>Turn any Notion page into a beautiful grid.</h1>
+            <p>
+              Notion Grid is a one-time purchase widget that lets you embed clean,
+              visual cards for links, resources, products, or collections.
+            </p>
+
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#pricing">Buy Notion Grid</a>
+              <button class="btn btn-secondary" data-scroll="#examples">View demo</button>
+            </div>
+
+            <div class="micro">No code • Copy & paste embed • Responsive</div>
+          </div>
+
+          <div class="hero-right">
+            <div class="preview-tag">LIVE PREVIEW</div>
+            <div class="notion-preview">
+              <!-- fake Notion chrome + grid widget preview -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <!-- 3–6 feature cards (glass) -->
+      </section>
+
+      <section id="examples" class="section">
+        <!-- demo previews / before-after -->
+      </section>
+
+      <section id="pricing" class="section">
+        <!-- one-time purchase pricing card -->
+      </section>
+
+      <section id="faq" class="section">
+        <!-- FAQ accordion (JS) -->
+      </section>
+
+      <section class="final-cta">
+        <!-- glass CTA strip + Buy button -->
+      </section>
+    </main>
+
+    <footer class="footer">
+      <!-- links -->
+    </footer>
   </div>
-</header>
 
-<!-- Hero -->
-<section class="hero">
-  <div class="hero-card">
-    <h1>Organize & Elevate Your Life</h1>
-    <p>With beautiful & functional productivity tools</p>
-    <a href="#products" class="primary-btn">SHOP NOW</a>
-  </div>
-</section>
-
-<!-- Products -->
-<section id="products" class="section">
-  <h2>Your Productivity Essentials</h2>
-
-  <div class="product-grid">
-
-    <article class="product-card">
-      <img src="/images/life-planner.jpg" alt="Life Planner">
-      <h3>Notion Life Planner</h3>
-      <span class="price">$7.99</span>
-      <a href="#" class="product-link">View product</a>
-    </article>
-
-    <article class="product-card">
-      <img src="/images/travel-planner.jpg" alt="Travel Planner">
-      <h3>Notion Travel Planner</h3>
-      <span class="price">$4.99</span>
-      <a href="#" class="product-link">View product</a>
-    </article>
-
-    <article class="product-card">
-      <img src="/images/finance.jpg" alt="Personal Finance">
-      <h3>Personal Finance</h3>
-      <span class="price">$12.00</span>
-      <a href="#" class="product-link">View product</a>
-    </article>
-
-  </div>
-</section>
-
-<!-- Newsletter -->
-<section class="newsletter">
-  <h2>Join the Newsletter & Get 10% Off</h2>
-  <p>Subscribe for exclusive offers, updates, and free templates.</p>
-
-  <form onsubmit="subscribe(event)">
-    <input type="email" placeholder="Email address" required>
-    <button type="submit">→</button>
-  </form>
-</section>
-
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-brand">
-    <h3>SOMETHING ORGANIZED</h3>
-    <p>Your favorite digital planning tools to level up your life.</p>
-  </div>
-
-  <nav class="footer-nav">
-    <a href="#">Shop</a>
-    <a href="#">Life</a>
-    <a href="#">Work</a>
-    <a href="#">Study</a>
-    <a href="#">Shop All</a>
-  </nav>
-</footer>
-
-<script src="/script.js"></script>
+  <script src="app.js"></script>
 </body>
-</html>
