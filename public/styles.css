@@ -644,3 +644,23 @@ h1 {
     padding-top: 8px;
   }
 }
+@media (max-width: 520px) {
+  .frame {
+    margin: 14px;
+    padding: 10px 14px 10px;
+  }
+
+  .hero-card {
+    padding: 16px;
+  }
+
+  .nav-left a,
+  .nav-link {
+    font-size: 11px;
+  }
+
+  .preview-tag {
+    font-size: 8px;
+    padding: 5px 8px;
+  }
+}
