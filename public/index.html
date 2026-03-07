@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notion Grid — Embed beautiful grids in Notion</title>
+    <title>Grid Planner — Embed beautiful grids in Notion</title>
     <meta
       name="description"
-      content="Notion Grid is a one-time purchase widget to embed images, link cards, resources, or product blocks in a clean, responsive grid—no code, just copy & paste."
+      content="Grid Planner is a one-time purchase widget to embed images, link cards, resources, or product blocks in a clean, responsive grid—no code, just copy & paste."
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -46,20 +46,31 @@
               </a>
             </div>
 
-            <div class="hero-preview" aria-label="Widget preview stack">
-              <div class="stack">
-                <img class="card c1" src="assets/widget-preview.png" alt="Preview 1" />
-                <img class="card c2" src="assets/widget-preview.png" alt="Preview 2" />
-                <img class="card c3" src="assets/widget-preview.png" alt="Preview 3" />
+            <!-- Swipe slider (stacked cards) -->
+            <div class="hero-preview" aria-label="Preview slider">
+              <div class="stack-slider" id="previewSlider">
+                <!-- Slides: use real images if you have multiple; can reuse same for now -->
+                <img class="slide is-active" src="assets/widget-preview.png" alt="Preview 1" />
+                <img class="slide" src="assets/widget-preview.png" alt="Preview 2" />
+                <img class="slide" src="assets/widget-preview.png" alt="Preview 3" />
+
+                <!-- Back cards (to match the reference big white stack) -->
+                <div class="back-card back-1" aria-hidden="true"></div>
+                <div class="back-card back-2" aria-hidden="true"></div>
               </div>
 
-              <div class="pager" aria-hidden="true">‹ <span>1 / 3</span> ›</div>
+              <!-- Center indicator like the reference -->
+              <div class="slider-indicator" aria-live="polite">
+                <button class="ind-btn" type="button" data-dir="-1" aria-label="Previous">‹</button>
+                <span class="ind-text"><span id="slideNow">1</span> / <span id="slideTotal">3</span></span>
+                <button class="ind-btn" type="button" data-dir="1" aria-label="Next">›</button>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Offer ticker at bottom of hero -->
-        <div class="offer">
+        <div class="offer" aria-hidden="true">
           <div class="offer-track">
             <span>
               LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
@@ -73,8 +84,8 @@
         </div>
       </header>
 
-      <!-- TOP PICKS -->
       <main>
+        <!-- TOP PICKS -->
         <section id="top-picks" class="section">
           <h2 class="section-title">Top Picks</h2>
 
@@ -116,7 +127,95 @@
             </article>
           </div>
         </section>
+
+        <!-- AFTER TOP PICKS (missing in previous) -->
+        <section class="feature-band">
+          <div class="feature-inner">
+            <div class="feature-media">
+              <img src="assets/feature.png" alt="Notion grid preview on desktop" />
+            </div>
+
+            <div class="feature-copy">
+              <h3>Notion Embeddable Grids</h3>
+              <p>Explanation about grid comes here</p>
+              <p>Explanation about grid comes here</p>
+              <p>Explanation about grid comes here</p>
+              <p>Explanation about grid comes here</p>
+              <div class="feature-price">$15</div>
+              <a class="feature-cta" href="#top-picks">SHOP NOW</a>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
+
+    <script>
+      (function () {
+        const slider = document.getElementById("previewSlider");
+        if (!slider) return;
+
+        const slides = Array.from(slider.querySelectorAll(".slide"));
+        const nowEl = document.getElementById("slideNow");
+        const totalEl = document.getElementById("slideTotal");
+        const indicator = document.querySelector(".slider-indicator");
+
+        let idx = 0;
+        const total = slides.length;
+
+        if (totalEl) totalEl.textContent = String(total);
+
+        function setActive(i) {
+          idx = (i + total) % total;
+          slides.forEach((s, k) => s.classList.toggle("is-active", k === idx));
+          if (nowEl) nowEl.textContent = String(idx + 1);
+        }
+
+        // buttons
+        indicator?.addEventListener("click", (e) => {
+          const btn = e.target.closest("button[data-dir]");
+          if (!btn) return;
+          const dir = Number(btn.dataset.dir || "0");
+          setActive(idx + dir);
+        });
+
+        // swipe
+        let startX = 0;
+        let startY = 0;
+        let dragging = false;
+
+        slider.addEventListener(
+          "touchstart",
+          (e) => {
+            const t = e.touches[0];
+            startX = t.clientX;
+            startY = t.clientY;
+            dragging = true;
+          },
+          { passive: true }
+        );
+
+        slider.addEventListener(
+          "touchend",
+          (e) => {
+            if (!dragging) return;
+            dragging = false;
+
+            const t = e.changedTouches[0];
+            const dx = t.clientX - startX;
+            const dy = t.clientY - startY;
+
+            // horizontal swipe only
+            if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+            if (dx < 0) setActive(idx + 1);
+            else setActive(idx - 1);
+          },
+          { passive: true }
+        );
+
+        // init
+        setActive(0);
+      })();
+    </script>
   </body>
 </html>
