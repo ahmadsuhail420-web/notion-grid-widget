@@ -58,7 +58,7 @@
               </a>
             </div>
 
-            <!-- NO placeholders: only the 2 uploaded widgets, slightly tilted -->
+            <!-- Only widget images, no background cards -->
             <div class="hero-preview" aria-label="Widget previews">
               <div class="widget-pair">
                 <img
@@ -73,11 +73,6 @@
                   alt="Widget preview 1"
                   loading="eager"
                 />
-              </div>
-
-              <!-- centered count like reference -->
-              <div class="slider-indicator" aria-hidden="true">
-                <span class="ind-text">1 / 2</span>
               </div>
             </div>
           </div>
@@ -99,46 +94,68 @@
       </header>
 
       <main>
-        <!-- TOP PICKS -->
+        <!-- TOP PICKS (auto sliding carousel + swipe) -->
         <section id="top-picks" class="section">
           <h2 class="section-title">Top Picks</h2>
 
-          <div class="picks-grid">
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/creator-pack.png" alt="Notion Social Media Planner" />
-              </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
+          <div class="carousel" aria-label="Top picks carousel">
+            <button class="car-btn car-prev" type="button" aria-label="Previous">‹</button>
 
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/bundle.png" alt="Notion Social Media Planner" />
-              </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
+            <div class="car-viewport" id="topPicksViewport">
+              <div class="car-track" id="topPicksTrack" role="list">
+                <a class="pick" role="listitem" href="product-1.html">
+                  <div class="pick-img">
+                    <img src="assets/products/creator-pack.png" alt="Notion Social Media Planner" />
+                  </div>
+                  <div class="pick-name">Notion Social Media Planner</div>
+                  <div class="pick-price">$19</div>
+                  <div class="pick-btn">Add to cart</div>
+                </a>
 
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/starter.png" alt="Notion Social Media Planner" />
-              </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
+                <a class="pick" role="listitem" href="product-2.html">
+                  <div class="pick-img">
+                    <img src="assets/products/bundle.png" alt="Notion Social Media Planner" />
+                  </div>
+                  <div class="pick-name">Notion Social Media Planner</div>
+                  <div class="pick-price">$19</div>
+                  <div class="pick-btn">Add to cart</div>
+                </a>
 
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/pro.png" alt="Notion Social Media Planner" />
+                <a class="pick" role="listitem" href="product-3.html">
+                  <div class="pick-img">
+                    <img src="assets/products/starter.png" alt="Notion Social Media Planner" />
+                  </div>
+                  <div class="pick-name">Notion Social Media Planner</div>
+                  <div class="pick-price">$19</div>
+                  <div class="pick-btn">Add to cart</div>
+                </a>
+
+                <a class="pick" role="listitem" href="product-4.html">
+                  <div class="pick-img">
+                    <img src="assets/products/pro.png" alt="Notion Social Media Planner" />
+                  </div>
+                  <div class="pick-name">Notion Social Media Planner</div>
+                  <div class="pick-price">$19</div>
+                  <div class="pick-btn">Add to cart</div>
+                </a>
+
+                <a class="pick" role="listitem" href="product-5.html">
+                  <div class="pick-img">
+                    <img src="assets/products/notion-grid.png" alt="Notion Social Media Planner" />
+                  </div>
+                  <div class="pick-name">Notion Social Media Planner</div>
+                  <div class="pick-price">$19</div>
+                  <div class="pick-btn">Add to cart</div>
+                </a>
               </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
+            </div>
+
+            <button class="car-btn car-next" type="button" aria-label="Next">›</button>
+          </div>
+
+          <!-- Center indicator like 1 / N -->
+          <div class="car-indicator" aria-live="polite">
+            <span id="carNow">1</span> / <span id="carTotal">5</span>
           </div>
         </section>
 
@@ -162,5 +179,86 @@
         </section>
       </main>
     </div>
+
+    <script>
+      (function () {
+        const viewport = document.getElementById("topPicksViewport");
+        const track = document.getElementById("topPicksTrack");
+        const prevBtn = document.querySelector(".car-prev");
+        const nextBtn = document.querySelector(".car-next");
+        const nowEl = document.getElementById("carNow");
+        const totalEl = document.getElementById("carTotal");
+
+        if (!viewport || !track) return;
+
+        const items = Array.from(track.querySelectorAll(".pick"));
+        const total = items.length;
+        if (totalEl) totalEl.textContent = String(total);
+
+        let idx = 0;
+        let timer = null;
+
+        function itemWidth() {
+          const first = items[0];
+          if (!first) return 0;
+          const r = first.getBoundingClientRect();
+          const gap = parseFloat(getComputedStyle(track).gap || "0");
+          return r.width + gap;
+        }
+
+        function go(i) {
+          if (!total) return;
+          idx = (i + total) % total;
+          const x = idx * itemWidth();
+          viewport.scrollTo({ left: x, behavior: "smooth" });
+          if (nowEl) nowEl.textContent = String(idx + 1);
+        }
+
+        function next() { go(idx + 1); }
+        function prev() { go(idx - 1); }
+
+        prevBtn?.addEventListener("click", prev);
+        nextBtn?.addEventListener("click", next);
+
+        // Sync index on manual scroll (swipe)
+        let raf = 0;
+        viewport.addEventListener(
+          "scroll",
+          () => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => {
+              const w = itemWidth();
+              if (!w) return;
+              const i = Math.round(viewport.scrollLeft / w);
+              idx = Math.max(0, Math.min(total - 1, i));
+              if (nowEl) nowEl.textContent = String(idx + 1);
+            });
+          },
+          { passive: true }
+        );
+
+        // Auto play
+        function start() {
+          stop();
+          timer = setInterval(next, 3200);
+        }
+        function stop() {
+          if (timer) clearInterval(timer);
+          timer = null;
+        }
+
+        // Pause on hover (desktop) / touch (mobile)
+        viewport.addEventListener("mouseenter", stop);
+        viewport.addEventListener("mouseleave", start);
+        viewport.addEventListener("touchstart", stop, { passive: true });
+        viewport.addEventListener("touchend", start, { passive: true });
+
+        window.addEventListener("resize", () => go(idx));
+        window.addEventListener("load", () => go(0));
+
+        go(0);
+        start();
+      })();
+    </script>
   </body>
 </html>
