@@ -36,13 +36,19 @@ a {
   min-height: 100vh;
 }
 
+/* Material symbols styling */
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24;
+  line-height: 1;
+}
+
 /* ===== HERO ===== */
 .hero {
   background: var(--bg-dark);
   color: var(--text-on-dark);
   position: relative;
   min-height: 680px;
-  padding-bottom: 56px; /* for offer ticker */
+  padding-bottom: 56px;
   overflow: hidden;
 }
 
@@ -93,7 +99,10 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 20px;
 }
 
 /* hero content */
@@ -142,11 +151,10 @@ a {
 }
 
 .btn-ic {
-  font-size: 14px;
-  line-height: 1;
+  font-size: 18px;
 }
 
-/* ===== Preview stack slider ===== */
+/* ===== 2-widget preview (no placeholders) ===== */
 .hero-preview {
   display: grid;
   justify-items: end;
@@ -154,58 +162,36 @@ a {
   position: relative;
 }
 
-/* big white stack like reference */
-.stack-slider {
+.widget-pair {
   position: relative;
   width: min(430px, 100%);
-  aspect-ratio: 1 / 1.02; /* looks like a square-ish stack */
-  touch-action: pan-y; /* allow vertical scroll, handle horizontal swipe */
+  aspect-ratio: 1 / 1.02;
 }
 
-/* back cards */
-.back-card {
+.widget {
   position: absolute;
-  inset: 0;
-  border-radius: 26px;
+  right: 0;
+  top: 0;
+  width: 86%;
+  height: 96%;
+  object-fit: contain;
   background: #ffffff;
-  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
-}
-
-.back-1 {
-  transform: rotate(-8deg) translate(-26px, 18px);
-  opacity: 0.9;
-}
-
-.back-2 {
-  transform: rotate(6deg) translate(18px, 14px);
-  opacity: 0.95;
-}
-
-/* slides sit on top */
-.slide {
-  position: absolute;
-  inset: 0;
   border-radius: 26px;
-  background: #ffffff;
-  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
   border: 3px solid rgba(255, 255, 255, 0.92);
-
-  /* IMPORTANT: match widget look/size better */
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* fill the big card like the reference */
-  padding: 26px;     /* gives inner margin so widget isn't tiny */
-  opacity: 0;
-  transform: translateY(10px) scale(0.99);
-  transition: opacity 220ms ease, transform 220ms ease;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
 }
 
-.slide.is-active {
-  opacity: 1;
-  transform: translateY(0) scale(1);
+.widget-back {
+  transform: rotate(-8deg) translate(-42px, 26px);
+  opacity: 0.96;
+  width: 88%;
 }
 
-/* Center indicator (same vibe as reference) */
+.widget-front {
+  transform: rotate(2deg) translate(0, 0);
+}
+
+/* count centered */
 .slider-indicator {
   position: absolute;
   left: 0;
@@ -213,29 +199,17 @@ a {
   bottom: -10px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-}
-
-.ind-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: transparent;
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
 }
 
 .ind-text {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  letter-spacing: 0.08em;
   min-width: 74px;
   text-align: center;
 }
 
-/* offer ticker at bottom */
+/* offer ticker */
 .offer {
   position: absolute;
   left: 0;
@@ -282,7 +256,6 @@ a {
   gap: 18px;
 }
 
-/* 1:1 placeholders */
 .pick-img {
   overflow: hidden;
   background: rgba(0, 0, 0, 0.06);
@@ -401,7 +374,7 @@ a {
     justify-items: center;
   }
 
-  .stack-slider {
+  .widget-pair {
     width: min(420px, 100%);
   }
 
