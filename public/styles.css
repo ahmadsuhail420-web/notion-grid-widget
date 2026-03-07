@@ -105,9 +105,26 @@ a {
   font-size: 20px;
 }
 
+/* Slider wrapper */
+.hero-slider {
+  margin-top: 34px;
+  position: relative;
+}
+
+.hero-slides {
+  position: relative;
+}
+
+/* slide show/hide */
+.hero-slide {
+  display: none;
+}
+.hero-slide.is-active {
+  display: block;
+}
+
 /* hero layout */
 .hero-grid {
-  margin-top: 34px;
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 34px;
@@ -154,66 +171,26 @@ a {
   font-size: 18px;
 }
 
-/* ===== HERO main swipe carousel (text-side) ===== */
-.hero-carousel {
-  margin-top: 26px;
-  max-width: 520px;
-}
-
-.hero-car-viewport {
-  overflow: hidden;
-}
-
-.hero-car-track {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 210px;
+/* Slide indicator (centered) */
+.hero-slide-indicator {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 12px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  padding: 2px 2px 10px;
-}
-
-.hero-car-track::-webkit-scrollbar {
-  display: none;
-}
-
-.hero-card {
-  scroll-snap-align: start;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 14px;
-  padding: 12px 12px;
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(255, 255, 255, 0.9);
-  display: grid;
-  gap: 6px;
-  transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
-}
-
-.hero-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.32);
-  transform: translateY(-1px);
-}
-
-.hero-card-title {
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.08em;
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
 }
 
-.hero-card-price {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.hero-car-indicator {
-  margin-top: 6px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.1em;
-  font-size: 12px;
+.hero-ind-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
 }
 
 /* ===== Widget images ONLY (no card/background) ===== */
@@ -223,10 +200,12 @@ a {
   position: relative;
 }
 
+/* Move widget UP a bit */
 .widget-stack {
   position: relative;
   width: min(520px, 100%);
-  height: 420px;
+  height: 440px;
+  transform: translateY(-26px); /* moved up */
 }
 
 .widget-img {
@@ -234,21 +213,20 @@ a {
   right: 0;
   top: 0;
 
-  /* keep only the PNG */
   background: transparent !important;
   border: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   filter: none !important;
 
-  width: 360px;
+  width: 420px;
   max-width: 100%;
   height: auto;
   display: block;
 }
 
 .widget-img--back {
-  transform: rotate(-9deg) translate(-70px, 62px);
+  transform: rotate(-9deg) translate(-110px, 88px);
   opacity: 0.95;
 }
 
@@ -423,18 +401,11 @@ a {
 
   .widget-stack {
     height: 360px;
+    transform: translateY(-18px);
   }
 
   .widget-img {
-    width: min(360px, 72vw);
-  }
-
-  .hero-carousel {
-    max-width: 100%;
-  }
-
-  .hero-car-track {
-    grid-auto-columns: 200px;
+    width: min(420px, 80vw);
   }
 
   .picks-grid {
@@ -448,7 +419,7 @@ a {
 
 @media (max-width: 520px) {
   .hero {
-    min-height: 620px;
+    min-height: 640px;
   }
 
   .brand {
@@ -461,10 +432,6 @@ a {
 
   .hero-copy h1 {
     font-size: 40px;
-  }
-
-  .hero-car-track {
-    grid-auto-columns: 180px;
   }
 
   .picks-grid {
