@@ -10,13 +10,14 @@
 
   --shadow: rgba(0, 0, 0, 0.35);
 
-  --r-card: 14px;
   --r-btn: 999px;
-
   --max: 1120px;
 
-  /* hero background visible height (section 1) */
+  /* Section 1 background height — section 2 will ALWAYS start after this */
   --hero-bg-h: 560px;
+
+  /* Keep hero card same size on all laptops/desktops */
+  --hero-card-max: 860px;
 }
 
 *,
@@ -43,7 +44,7 @@ a {
   text-decoration: none;
 }
 
-/* FULL-WIDTH background image (only behind section 1) */
+/* Full width background only behind section 1 */
 .bg {
   position: absolute;
   top: 0;
@@ -51,15 +52,11 @@ a {
   right: 0;
   height: var(--hero-bg-h);
   z-index: -2;
-
   background:
     linear-gradient(var(--overlay), var(--overlay)),
     url("assets/notion-bg.png");
   background-size: cover;
   background-position: center;
-
-  filter: none;
-  transform: none;
 }
 
 .bg::after {
@@ -74,18 +71,15 @@ a {
   pointer-events: none;
 }
 
-/* Content container stays limited on large displays */
+/* Content width stays stable on big monitors */
 .frame {
   width: min(var(--max), 100%);
-  margin: 0 auto;           /* center the whole layout on large screens */
-  border: 0;
-  border-radius: 0;
+  margin: 0 auto;
   padding: 0 18px 18px;
   position: relative;
-  overflow: visible;        /* prevent weird overlap clipping */
 }
 
-/* Offer ticker above nav */
+/* Offer ticker */
 .offer {
   margin-top: 10px;
   height: 34px;
@@ -93,7 +87,6 @@ a {
   align-items: center;
   overflow: hidden;
 }
-
 .offer-track {
   white-space: nowrap;
   display: inline-block;
@@ -102,11 +95,8 @@ a {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   opacity: 0.95;
-
-  animation: offer-marquee 18s linear infinite;
-  will-change: transform;
+  animation: offer-marquee 16s linear infinite;
 }
-
 @keyframes offer-marquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -118,15 +108,13 @@ a {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 12px;
-  padding: 0 6px 8px; /* nav moved up */
+  padding: 0 6px 8px;
 }
-
 .nav-left {
   display: flex;
   gap: 16px;
   align-items: center;
 }
-
 .nav-left a,
 .nav-link {
   font-size: 12px;
@@ -135,32 +123,16 @@ a {
   opacity: 0.9;
   color: rgba(244, 241, 235, 0.9);
 }
-
-.nav-left a:hover,
-.nav-link:hover {
-  opacity: 1;
-}
-
 .nav-center {
   font-weight: 600;
   letter-spacing: 0.02em;
   color: rgba(244, 241, 235, 0.95);
 }
-
 .nav-right {
   display: flex;
   justify-content: flex-end;
   gap: 14px;
   align-items: center;
-}
-
-/* Glass utility */
-.glass {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 18px 60px var(--shadow);
 }
 
 /* Buttons */
@@ -178,74 +150,62 @@ a {
     box-shadow 160ms ease, opacity 160ms ease;
   user-select: none;
 }
-
 .btn-sm {
   padding: 10px 14px;
   font-size: 14px;
 }
-
 .btn-primary {
   background: var(--accent);
   color: #121212;
   box-shadow: 0 10px 30px rgba(183, 196, 106, 0.22);
 }
-
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
   box-shadow: 0 16px 42px rgba(183, 196, 106, 0.28);
 }
-
 .btn-secondary {
   background: transparent;
   border-color: rgba(244, 241, 235, 0.35);
   color: rgba(244, 241, 235, 0.94);
 }
 
-.btn-secondary:hover {
-  transform: translateY(-1px);
-  border-color: rgba(244, 241, 235, 0.55);
+/* Glass */
+.glass {
+  background: rgba(244, 241, 235, 0.10);
+  border: 1px solid rgba(244, 241, 235, 0.18);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-/* SECTION 1 wrapper: ensure section 2 starts BELOW hero background */
+/* SECTION 1: fixed height so section 2 never overlaps */
 .hero-section {
-  /* pushes the next section down so it never overlaps */
-  padding-bottom: 26px;
+  height: var(--hero-bg-h);
+  display: grid;
+  align-items: center;
 }
 
-/* HERO (keep same size on large displays) */
+/* HERO card stays same size on large screens */
 .hero {
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* keep hero inside background height */
-  min-height: calc(var(--hero-bg-h) - 110px);
-  padding: 0 6px 10px;
 }
 
 .hero-card {
-  width: min(860px, 100%); /* lock a nice size on large displays */
+  width: min(var(--hero-card-max), 100%);
   border-radius: 18px;
   padding: 18px;
   display: grid;
   grid-template-columns: 1.25fr 0.75fr;
   gap: 18px;
   align-items: center;
-
   position: relative;
   overflow: hidden;
 }
 
-/* Hero transparency + texture */
-.hero-card.glass {
-  background: rgba(244, 241, 235, 0.10);
-  border-color: rgba(244, 241, 235, 0.18);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-}
-
+/* texture */
 .hero-card.glass::before {
   content: "";
   position: absolute;
@@ -273,18 +233,7 @@ a {
     100% 100%;
 }
 
-.hero-card.glass::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
-}
-
-/* Hero left text */
+/* hero text */
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -294,7 +243,6 @@ a {
   text-transform: uppercase;
   color: rgba(244, 241, 235, 0.78);
 }
-
 .dot {
   width: 10px;
   height: 10px;
@@ -302,7 +250,6 @@ a {
   background: var(--accent);
   box-shadow: 0 0 0 6px rgba(183, 196, 106, 0.12);
 }
-
 h1 {
   margin: 10px 0 10px;
   font-size: clamp(30px, 3.4vw, 54px);
@@ -312,7 +259,6 @@ h1 {
   font-weight: 600;
   color: rgba(244, 241, 235, 0.94);
 }
-
 .lead {
   margin: 0;
   color: rgba(244, 241, 235, 0.78);
@@ -320,7 +266,6 @@ h1 {
   line-height: 1.6;
   max-width: 46ch;
 }
-
 .hero-actions {
   display: flex;
   gap: 12px;
@@ -328,21 +273,19 @@ h1 {
   margin-top: 16px;
   flex-wrap: wrap;
 }
-
 .micro {
   margin-top: 10px;
   font-size: 12.5px;
   color: rgba(244, 241, 235, 0.72);
 }
 
-/* Hero right preview */
+/* preview */
 .hero-right {
   position: relative;
   display: flex;
   justify-content: center;
   min-width: 0;
 }
-
 .preview-tag {
   position: absolute;
   top: -7px;
@@ -357,7 +300,6 @@ h1 {
   border-radius: 999px;
   z-index: 2;
 }
-
 .preview-wrap {
   width: clamp(230px, 22vw, 320px);
   padding: 7px;
@@ -367,7 +309,6 @@ h1 {
   transform: rotate(1.2deg);
   background: rgba(244, 241, 235, 0.06);
 }
-
 .preview-img {
   width: 100%;
   height: auto;
@@ -377,142 +318,91 @@ h1 {
   max-height: 420px;
 }
 
-/* ===== SECTION 2: Essential Products ===== */
+/* SECTION 2 */
 .products-strip {
-  /* ensures section 2 is not on top of section 1 */
-  margin-top: 0;
   padding: 30px 0 24px;
-  background: var(--base);
 }
-
 .products-strip-inner {
   padding: 0 18px;
 }
-
-/* Remove the extra instruction line: only title */
 .products-head h2 {
   margin: 0;
   font-size: 30px;
-  letter-spacing: -0.01em;
   font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
   font-weight: 600;
-  color: #1a1a1a;
 }
 
-/* 4 cards visible on desktop (each ~ 1/4 width) */
+/* 4 cards visible on wide screens; others scroll */
 .products-row {
   margin-top: 16px;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: calc((min(100%, var(--max)) - 3 * 14px) / 4);
   gap: 14px;
-
   overflow-x: auto;
-  overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
-
-  padding: 10px 2px 18px;
   scroll-snap-type: x mandatory;
-  scroll-padding-left: 2px;
+  padding: 10px 2px 18px;
 }
-
-.products-row::-webkit-scrollbar {
-  height: 10px;
-}
-.products-row::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
-  border-radius: 999px;
-}
-.products-row::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.06);
-  border-radius: 999px;
-}
-
 .product-tile {
   scroll-snap-align: center;
   display: grid;
   gap: 10px;
-  color: inherit;
-  transition: transform 180ms ease, filter 180ms ease;
+  transition: transform 180ms ease;
   transform-origin: center;
 }
-
-/* active/center card slightly bigger */
 .product-tile.is-active {
   transform: scale(1.06);
 }
 
 /* 1:1 thumbnail */
 .product-thumb {
-  width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 16px;
   overflow: hidden;
-
   background: rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.10);
 }
-
 .product-thumb img {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
+  display: block;
 }
 
-/* name NOT bold + nicer style */
 .product-meta {
   display: grid;
   gap: 4px;
 }
-
 .product-name {
-  font-weight: 500; /* not bold */
+  font-weight: 500;
   font-size: 14px;
-  letter-spacing: 0.01em;
-  color: rgba(26, 26, 26, 0.92);
 }
-
 .product-price {
   font-size: 13px;
   color: rgba(26, 26, 26, 0.65);
 }
 
-/* Hover */
-.product-tile:hover .product-thumb {
-  border-color: rgba(0, 0, 0, 0.18);
-}
-
-/* ===== Responsive ===== */
+/* Responsive */
 @media (max-width: 920px) {
   :root {
     --hero-bg-h: 520px;
+    --hero-card-max: 860px; /* still fixed */
   }
-
   .hero-card {
-    width: min(780px, 100%);
     grid-template-columns: 1.1fr 0.9fr;
   }
-
   h1 {
     font-size: clamp(22px, 4.6vw, 34px);
   }
-
   .lead {
     font-size: 12.5px;
     line-height: 1.45;
   }
-
   .preview-wrap {
-    width: clamp(210px, 34vw, 300px);
     transform: none;
+    width: clamp(210px, 34vw, 300px);
   }
-
-  .preview-img {
-    max-height: 380px;
-  }
-
-  /* 2–3 visible cards on smaller widths */
   .products-row {
     grid-auto-columns: 220px;
   }
@@ -522,35 +412,24 @@ h1 {
   :root {
     --hero-bg-h: 480px;
   }
-
-  .frame {
-    padding: 0 12px 18px;
-  }
-
   .nav-left a,
   .nav-link {
     font-size: 10px;
   }
-
   .hero-card {
-    grid-template-columns: 1fr 1fr; /* keep same visual */
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-    padding: 12px;
   }
-
   h1 {
     font-size: 20px;
   }
-
   .lead {
     font-size: 11.5px;
     line-height: 1.4;
   }
-
   .preview-wrap {
     width: clamp(210px, 44vw, 280px);
   }
-
   .products-row {
     grid-auto-columns: 180px;
   }
