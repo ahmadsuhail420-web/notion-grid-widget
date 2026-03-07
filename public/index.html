@@ -12,186 +12,111 @@
   </head>
 
   <body>
-    <!-- Background only behind Section 1 (hero stage) -->
-    <div class="bg" aria-hidden="true"></div>
+    <div class="page">
+      <!-- HERO -->
+      <header class="hero" id="top">
+        <div class="hero-inner">
+          <div class="nav">
+            <div class="brand">Grid Planner</div>
 
-    <div class="frame">
-      <main>
-        <!-- SECTION 1 (fixed height stage) -->
-        <section class="hero-section" id="top">
-          <!-- Offer ticker ABOVE nav -->
-          <div class="offer" aria-label="Offer ticker">
-            <div class="offer-track">
-              <span>
-                LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
-                CODE •
-              </span>
-              <span>
-                LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
-                CODE •
-              </span>
-            </div>
-          </div>
-
-          <!-- NAV -->
-          <header class="nav">
-            <nav class="nav-left" aria-label="Primary">
+            <nav class="nav-links" aria-label="Primary">
               <a href="#top">Home</a>
-              <a href="#products">Shop</a>
+              <a href="#top-picks">Shop</a>
             </nav>
 
-            <a class="nav-center" href="#top" aria-label="Notion Grid Home">Notion Grid</a>
-
-            <nav class="nav-right" aria-label="Secondary">
-              <a class="nav-link" href="#products">Products</a>
-              <a class="btn btn-primary btn-sm" href="#products">Buy</a>
-            </nav>
-          </header>
-
-          <!-- HERO (centered in remaining space) -->
-          <div class="hero">
-            <div class="hero-card glass">
-              <div class="hero-left">
-                <div class="eyebrow">
-                  <span class="dot" aria-hidden="true"></span>
-                  Notion Widget
-                </div>
-
-                <h1>Embed beautiful grids in Notion.</h1>
-
-                <p class="lead">
-                  Add images, link cards, resources, or product blocks in a clean, responsive grid—no
-                  code, just copy &amp; paste.
-                </p>
-
-                <div class="hero-actions">
-                  <a class="btn btn-primary" href="#products">Buy Notion Grid</a>
-                  <a class="btn btn-secondary" href="#products">View products</a>
-                </div>
-
-                <div class="micro">One-time purchase • Responsive • Customizable</div>
-              </div>
-
-              <div class="hero-right">
-                <div class="preview-tag">PREVIEW</div>
-
-                <div class="preview-wrap">
-                  <img
-                    class="preview-img"
-                    src="assets/widget-preview.png"
-                    alt="Notion Grid widget preview"
-                    loading="eager"
-                  />
-                </div>
-              </div>
+            <div class="nav-icons" aria-label="Actions">
+              <a class="icon-btn" href="#top-picks" aria-label="Search">⌕</a>
+              <a class="icon-btn" href="#top-picks" aria-label="Cart">⎘</a>
+              <a class="icon-btn" href="#top-picks" aria-label="Account">⎇</a>
             </div>
           </div>
-        </section>
 
-        <!-- SECTION 2 -->
-        <section id="products" class="products-strip">
-          <div class="products-strip-inner">
-            <div class="products-head">
-              <h2>Essential Products</h2>
-            </div>
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <h1>Embed beautiful<br />grids in Notion.</h1>
 
-            <div class="products-row" role="list" aria-label="Product list">
-              <a class="product-tile" role="listitem" href="product-creator-pack.html">
-                <div class="product-thumb">
-                  <img src="assets/products/creator-pack.png" alt="Creator Pack" loading="lazy" />
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Creator Pack</div>
-                  <div class="product-price">$12</div>
-                </div>
-              </a>
+              <p class="hero-lead">
+                Add images, link cards, resources, or product blocks in a clean, responsive grid—no
+                code, just copy &amp; paste.
+              </p>
 
-              <a class="product-tile" role="listitem" href="product-bundle.html">
-                <div class="product-thumb">
-                  <img src="assets/products/bundle.png" alt="Bundle" loading="lazy" />
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Bundle</div>
-                  <div class="product-price">$29</div>
-                </div>
-              </a>
-
-              <a class="product-tile" role="listitem" href="product-starter.html">
-                <div class="product-thumb">
-                  <img src="assets/products/starter.png" alt="Starter" loading="lazy" />
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Starter</div>
-                  <div class="product-price">$9</div>
-                </div>
-              </a>
-
-              <a class="product-tile" role="listitem" href="product-pro.html">
-                <div class="product-thumb">
-                  <img src="assets/products/pro.png" alt="Pro" loading="lazy" />
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Pro</div>
-                  <div class="product-price">$39</div>
-                </div>
-              </a>
-
-              <!-- extra cards (scroll) -->
-              <a class="product-tile" role="listitem" href="product-notion-grid.html">
-                <div class="product-thumb">
-                  <img src="assets/products/notion-grid.png" alt="Notion Grid" loading="lazy" />
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Notion Grid</div>
-                  <div class="product-price">$19</div>
-                </div>
+              <a class="btn-outline" href="#top-picks">
+                <span class="btn-ic">🛍</span>
+                SHOP NOW
               </a>
             </div>
+
+            <div class="hero-preview" aria-label="Widget preview stack">
+              <div class="stack">
+                <img class="card c1" src="assets/widget-preview.png" alt="Preview 1" />
+                <img class="card c2" src="assets/widget-preview.png" alt="Preview 2" />
+                <img class="card c3" src="assets/widget-preview.png" alt="Preview 3" />
+              </div>
+
+              <div class="pager" aria-hidden="true">‹ <span>1 / 3</span> ›</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Offer ticker at bottom of hero -->
+        <div class="offer">
+          <div class="offer-track">
+            <span>
+              LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
+              CODE •
+            </span>
+            <span>
+              LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
+              CODE •
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <!-- TOP PICKS -->
+      <main>
+        <section id="top-picks" class="section">
+          <h2 class="section-title">Top Picks</h2>
+
+          <div class="picks-grid">
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/creator-pack.png" alt="Notion Social Media Planner" />
+              </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
+
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/bundle.png" alt="Notion Social Media Planner" />
+              </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
+
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/starter.png" alt="Notion Social Media Planner" />
+              </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
+
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/pro.png" alt="Notion Social Media Planner" />
+              </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
           </div>
         </section>
       </main>
     </div>
-
-    <!-- Center/active card scaling -->
-    <script>
-      (function () {
-        const row = document.querySelector(".products-row");
-        if (!row) return;
-
-        const tiles = Array.from(row.querySelectorAll(".product-tile"));
-        if (!tiles.length) return;
-
-        function update() {
-          const rr = row.getBoundingClientRect();
-          const cx = rr.left + rr.width / 2;
-
-          let best = null;
-          let bestD = Infinity;
-
-          for (const t of tiles) {
-            const r = t.getBoundingClientRect();
-            const mid = r.left + r.width / 2;
-            const d = Math.abs(mid - cx);
-            if (d < bestD) {
-              bestD = d;
-              best = t;
-            }
-          }
-
-          for (const t of tiles) t.classList.toggle("is-active", t === best);
-        }
-
-        let raf = 0;
-        function onScroll() {
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(update);
-        }
-
-        row.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll);
-        window.addEventListener("load", onScroll);
-        update();
-      })();
-    </script>
   </body>
 </html>
