@@ -19,7 +19,7 @@
 
   <body>
     <div class="page">
-      <!-- HERO -->
+      <!-- HERO (main section) -->
       <header class="hero" id="top">
         <div class="hero-inner">
           <div class="nav">
@@ -56,21 +56,52 @@
                 <span class="btn-ic material-symbols-outlined" aria-hidden="true">shopping_bag</span>
                 SHOP NOW
               </a>
+
+              <!-- MAIN SWIPE AREA (inside hero): featured products -->
+              <div class="hero-carousel" aria-label="Featured products in hero">
+                <div class="hero-car-viewport" id="heroCarViewport">
+                  <div class="hero-car-track" id="heroCarTrack" role="list">
+                    <a class="hero-card" role="listitem" href="product-1.html">
+                      <div class="hero-card-title">Creator Pack</div>
+                      <div class="hero-card-price">$12</div>
+                    </a>
+
+                    <a class="hero-card" role="listitem" href="product-2.html">
+                      <div class="hero-card-title">Bundle</div>
+                      <div class="hero-card-price">$29</div>
+                    </a>
+
+                    <a class="hero-card" role="listitem" href="product-3.html">
+                      <div class="hero-card-title">Starter</div>
+                      <div class="hero-card-price">$9</div>
+                    </a>
+
+                    <a class="hero-card" role="listitem" href="product-4.html">
+                      <div class="hero-card-title">Pro</div>
+                      <div class="hero-card-price">$39</div>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="hero-car-indicator" aria-live="polite">
+                  <span id="heroNow">1</span> / <span id="heroTotal">4</span>
+                </div>
+              </div>
             </div>
 
-            <!-- Only widget images, no background cards -->
+            <!-- Widgets (no background blocks) -->
             <div class="hero-preview" aria-label="Widget previews">
-              <div class="widget-pair">
+              <div class="widget-stack" aria-hidden="true">
                 <img
-                  class="widget widget-back"
+                  class="widget-img widget-img--back"
                   src="assets/widget-preview-2.png"
-                  alt="Widget preview 2"
+                  alt=""
                   loading="eager"
                 />
                 <img
-                  class="widget widget-front"
+                  class="widget-img widget-img--front"
                   src="assets/widget-preview-1.png"
-                  alt="Widget preview 1"
+                  alt=""
                   loading="eager"
                 />
               </div>
@@ -94,72 +125,49 @@
       </header>
 
       <main>
-        <!-- TOP PICKS (auto sliding carousel + swipe) -->
+        <!-- TOP PICKS (still here, unchanged title) -->
         <section id="top-picks" class="section">
           <h2 class="section-title">Top Picks</h2>
 
-          <div class="carousel" aria-label="Top picks carousel">
-            <button class="car-btn car-prev" type="button" aria-label="Previous">‹</button>
-
-            <div class="car-viewport" id="topPicksViewport">
-              <div class="car-track" id="topPicksTrack" role="list">
-                <a class="pick" role="listitem" href="product-1.html">
-                  <div class="pick-img">
-                    <img src="assets/products/creator-pack.png" alt="Notion Social Media Planner" />
-                  </div>
-                  <div class="pick-name">Notion Social Media Planner</div>
-                  <div class="pick-price">$19</div>
-                  <div class="pick-btn">Add to cart</div>
-                </a>
-
-                <a class="pick" role="listitem" href="product-2.html">
-                  <div class="pick-img">
-                    <img src="assets/products/bundle.png" alt="Notion Social Media Planner" />
-                  </div>
-                  <div class="pick-name">Notion Social Media Planner</div>
-                  <div class="pick-price">$19</div>
-                  <div class="pick-btn">Add to cart</div>
-                </a>
-
-                <a class="pick" role="listitem" href="product-3.html">
-                  <div class="pick-img">
-                    <img src="assets/products/starter.png" alt="Notion Social Media Planner" />
-                  </div>
-                  <div class="pick-name">Notion Social Media Planner</div>
-                  <div class="pick-price">$19</div>
-                  <div class="pick-btn">Add to cart</div>
-                </a>
-
-                <a class="pick" role="listitem" href="product-4.html">
-                  <div class="pick-img">
-                    <img src="assets/products/pro.png" alt="Notion Social Media Planner" />
-                  </div>
-                  <div class="pick-name">Notion Social Media Planner</div>
-                  <div class="pick-price">$19</div>
-                  <div class="pick-btn">Add to cart</div>
-                </a>
-
-                <a class="pick" role="listitem" href="product-5.html">
-                  <div class="pick-img">
-                    <img src="assets/products/notion-grid.png" alt="Notion Social Media Planner" />
-                  </div>
-                  <div class="pick-name">Notion Social Media Planner</div>
-                  <div class="pick-price">$19</div>
-                  <div class="pick-btn">Add to cart</div>
-                </a>
+          <div class="picks-grid">
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/creator-pack.png" alt="Notion Social Media Planner" />
               </div>
-            </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
 
-            <button class="car-btn car-next" type="button" aria-label="Next">›</button>
-          </div>
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/bundle.png" alt="Notion Social Media Planner" />
+              </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
 
-          <!-- Center indicator like 1 / N -->
-          <div class="car-indicator" aria-live="polite">
-            <span id="carNow">1</span> / <span id="carTotal">5</span>
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/starter.png" alt="Notion Social Media Planner" />
+              </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
+
+            <article class="pick">
+              <div class="pick-img">
+                <img src="assets/products/pro.png" alt="Notion Social Media Planner" />
+              </div>
+              <div class="pick-name">Notion Social Media Planner</div>
+              <div class="pick-price">$19</div>
+              <button class="pick-btn" type="button">Add to cart</button>
+            </article>
           </div>
         </section>
 
-        <!-- After Top Picks -->
         <section class="feature-band">
           <div class="feature-inner">
             <div class="feature-media">
@@ -182,23 +190,21 @@
 
     <script>
       (function () {
-        const viewport = document.getElementById("topPicksViewport");
-        const track = document.getElementById("topPicksTrack");
-        const prevBtn = document.querySelector(".car-prev");
-        const nextBtn = document.querySelector(".car-next");
-        const nowEl = document.getElementById("carNow");
-        const totalEl = document.getElementById("carTotal");
-
+        // HERO (main) carousel autoplay + swipe indicator
+        const viewport = document.getElementById("heroCarViewport");
+        const track = document.getElementById("heroCarTrack");
+        const nowEl = document.getElementById("heroNow");
+        const totalEl = document.getElementById("heroTotal");
         if (!viewport || !track) return;
 
-        const items = Array.from(track.querySelectorAll(".pick"));
+        const items = Array.from(track.querySelectorAll(".hero-card"));
         const total = items.length;
         if (totalEl) totalEl.textContent = String(total);
 
         let idx = 0;
         let timer = null;
 
-        function itemWidth() {
+        function step() {
           const first = items[0];
           if (!first) return 0;
           const r = first.getBoundingClientRect();
@@ -206,30 +212,26 @@
           return r.width + gap;
         }
 
-        function go(i) {
+        function go(i, behavior = "smooth") {
           if (!total) return;
           idx = (i + total) % total;
-          const x = idx * itemWidth();
-          viewport.scrollTo({ left: x, behavior: "smooth" });
+          viewport.scrollTo({ left: idx * step(), behavior });
           if (nowEl) nowEl.textContent = String(idx + 1);
         }
 
-        function next() { go(idx + 1); }
-        function prev() { go(idx - 1); }
+        function next() {
+          go(idx + 1);
+        }
 
-        prevBtn?.addEventListener("click", prev);
-        nextBtn?.addEventListener("click", next);
-
-        // Sync index on manual scroll (swipe)
         let raf = 0;
         viewport.addEventListener(
           "scroll",
           () => {
             cancelAnimationFrame(raf);
             raf = requestAnimationFrame(() => {
-              const w = itemWidth();
-              if (!w) return;
-              const i = Math.round(viewport.scrollLeft / w);
+              const s = step();
+              if (!s) return;
+              const i = Math.round(viewport.scrollLeft / s);
               idx = Math.max(0, Math.min(total - 1, i));
               if (nowEl) nowEl.textContent = String(idx + 1);
             });
@@ -237,27 +239,25 @@
           { passive: true }
         );
 
-        // Auto play
         function start() {
           stop();
-          timer = setInterval(next, 3200);
+          timer = setInterval(next, 2800);
         }
         function stop() {
           if (timer) clearInterval(timer);
           timer = null;
         }
 
-        // Pause on hover (desktop) / touch (mobile)
         viewport.addEventListener("mouseenter", stop);
         viewport.addEventListener("mouseleave", start);
         viewport.addEventListener("touchstart", stop, { passive: true });
         viewport.addEventListener("touchend", start, { passive: true });
 
-        window.addEventListener("resize", () => go(idx));
-        window.addEventListener("load", () => go(0));
-
-        go(0);
-        start();
+        window.addEventListener("resize", () => go(idx, "auto"));
+        window.addEventListener("load", () => {
+          go(0, "auto");
+          start();
+        });
       })();
     </script>
   </body>
