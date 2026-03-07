@@ -3,309 +3,268 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grid Planner — Embed beautiful grids in Notion</title>
-    <meta
-      name="description"
-      content="Grid Planner is a one-time purchase widget to embed images, link cards, resources, or product blocks in a clean, responsive grid—no code, just copy & paste."
-    />
+    <title>Grid Planner</title>
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- Google Material Symbols (icons) -->
+    <!-- Optional: icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200"
     />
   </head>
 
   <body>
-    <div class="page">
-      <!-- HERO (main section) -->
-      <header class="hero" id="top">
-        <div class="hero-inner">
-          <!-- NAV (fixed within hero, not sliding) -->
-          <div class="nav">
-            <div class="brand">Grid Planner</div>
+    <!-- Top Nav -->
+    <header class="site-header">
+      <div class="container nav">
+        <div class="brand">Grid Planner</div>
 
-            <nav class="nav-links" aria-label="Primary">
-              <a href="#top">Home</a>
-              <a href="#top-picks">Shop</a>
-            </nav>
+        <nav class="nav-links" aria-label="Primary">
+          <a class="nav-link" href="#">Home</a>
+          <a class="nav-link" href="#">Shop</a>
+        </nav>
 
-            <div class="nav-icons" aria-label="Actions">
-              <a class="icon-btn" href="#top-picks" aria-label="Search">
-                <span class="material-symbols-outlined" aria-hidden="true">search</span>
-              </a>
-              <a class="icon-btn" href="#top-picks" aria-label="Shopping bag">
-                <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-              </a>
-              <a class="icon-btn" href="#top-picks" aria-label="Account">
-                <span class="material-symbols-outlined" aria-hidden="true">person</span>
-              </a>
-            </div>
+        <div class="nav-actions" aria-label="Header actions">
+          <button class="icon-btn" aria-label="Search">
+            <!-- magnifier -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+
+          <button class="icon-btn" aria-label="Cart">
+            <!-- bag -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M7 8V7a5 5 0 0 1 10 0v1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+              <path
+                d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+
+          <button class="icon-btn" aria-label="Account">
+            <!-- user -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <path
+                d="M4.5 21a7.5 7.5 0 0 1 15 0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-left">
+          <h1 class="hero-title">
+            Embed<br />
+            beautiful grids<br />
+            in Notion.
+          </h1>
+
+          <p class="hero-subtitle">
+            Add images, link cards, resources, or product blocks in a<br />
+            clean, responsive grid—no code, just copy &amp; paste.
+          </p>
+
+          <a class="btn btn-outline" href="#">
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M7 8V7a5 5 0 0 1 10 0v1"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            SHOP NOW
+          </a>
+
+          <div class="hero-pager" aria-label="Hero pagination">
+            <span class="chev" aria-hidden="true">‹</span>
+            <span class="pager-text">1 / 3</span>
+            <span class="chev" aria-hidden="true">›</span>
           </div>
 
-          <!-- SLIDER (this part slides) -->
-          <div class="hero-slider" id="heroSlider" aria-label="Featured hero slides">
-            <div class="hero-slides" id="heroSlides">
-              <!-- Slide 1 -->
-              <section class="hero-slide is-active" role="group" aria-label="Slide 1">
-                <div class="hero-grid">
-                  <div class="hero-copy">
-                    <h1>Embed beautiful<br />grids in Notion.</h1>
-
-                    <p class="hero-lead">
-                      Add images, link cards, resources, or product blocks in a clean, responsive
-                      grid—no code, just copy &amp; paste.
-                    </p>
-
-                    <a class="btn-outline" href="#top-picks">
-                      <span class="btn-ic material-symbols-outlined" aria-hidden="true"
-                        >shopping_bag</span
-                      >
-                      SHOP NOW
-                    </a>
-                  </div>
-
-                  <div class="hero-preview" aria-label="Widget previews">
-                    <div class="widget-stack" aria-hidden="true">
-                      <img
-                        class="widget-img widget-img--back"
-                        src="assets/widget-preview-2.png"
-                        alt=""
-                        loading="eager"
-                      />
-                      <img
-                        class="widget-img widget-img--front"
-                        src="assets/widget-preview-1.png"
-                        alt=""
-                        loading="eager"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <!-- Slide 2 (example - change text later or remove until needed) -->
-              <section class="hero-slide" role="group" aria-label="Slide 2">
-                <div class="hero-grid">
-                  <div class="hero-copy">
-                    <h1>Turn Notion pages<br />into storefronts.</h1>
-
-                    <p class="hero-lead">
-                      Showcase products with clean cards, fast load, and responsive layout—copy &amp;
-                      paste into Notion.
-                    </p>
-
-                    <a class="btn-outline" href="#top-picks">
-                      <span class="btn-ic material-symbols-outlined" aria-hidden="true"
-                        >shopping_bag</span
-                      >
-                      SHOP NOW
-                    </a>
-                  </div>
-
-                  <div class="hero-preview" aria-label="Widget previews">
-                    <div class="widget-stack" aria-hidden="true">
-                      <img
-                        class="widget-img widget-img--back"
-                        src="assets/widget-preview-1.png"
-                        alt=""
-                        loading="eager"
-                      />
-                      <img
-                        class="widget-img widget-img--front"
-                        src="assets/widget-preview-2.png"
-                        alt=""
-                        loading="eager"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </div>
-
-            <!-- Center indicator 1 / N -->
-            <div class="hero-slide-indicator" aria-live="polite">
-              <button class="hero-ind-btn" type="button" data-dir="-1" aria-label="Previous slide">
-                ‹
-              </button>
-              <span class="hero-ind-text"><span id="heroNow">1</span> / <span id="heroTotal">2</span></span>
-              <button class="hero-ind-btn" type="button" data-dir="1" aria-label="Next slide">
-                ›
-              </button>
-            </div>
-          </div>
+          <p class="hero-strip">
+            LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
+          </p>
         </div>
 
-        <!-- Offer ticker at bottom of hero (fixed, not sliding) -->
-        <div class="offer" aria-hidden="true">
-          <div class="offer-track">
-            <span>
-              LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
-              CODE •
-            </span>
-            <span>
-              LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
-              CODE •
-            </span>
+        <div class="hero-right" aria-label="Widget preview">
+          <div class="widget-stack">
+            <!-- NOTE:
+              Replace these src paths with your uploaded images:
+              - widget-preview-1.png
+              - widget-preview-2.png
+            -->
+            <img
+              class="widget widget-back"
+              src="widget-preview-2.png"
+              alt="Widget preview back"
+              loading="lazy"
+            />
+            <img
+              class="widget widget-front"
+              src="widget-preview-1.png"
+              alt="Widget preview front"
+              loading="lazy"
+            />
           </div>
         </div>
-      </header>
+      </div>
+    </section>
 
-      <main>
-        <section id="top-picks" class="section">
-          <h2 class="section-title">Top Picks</h2>
+    <!-- Top Picks -->
+    <section class="section section-white">
+      <div class="container">
+        <h2 class="section-title">Top Picks</h2>
 
-          <div class="picks-grid">
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/creator-pack.png" alt="Notion Social Media Planner" />
-              </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
-
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/bundle.png" alt="Notion Social Media Planner" />
-              </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
-
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/starter.png" alt="Notion Social Media Planner" />
-              </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
-
-            <article class="pick">
-              <div class="pick-img">
-                <img src="assets/products/pro.png" alt="Notion Social Media Planner" />
-              </div>
-              <div class="pick-name">Notion Social Media Planner</div>
-              <div class="pick-price">$19</div>
-              <button class="pick-btn" type="button">Add to cart</button>
-            </article>
-          </div>
-        </section>
-
-        <section class="feature-band">
-          <div class="feature-inner">
-            <div class="feature-media">
-              <img src="assets/feature.png" alt="Notion grid preview on desktop" />
+        <div class="products-grid">
+          <article class="product-card">
+            <div class="product-img img-1" aria-hidden="true"></div>
+            <div class="product-meta">
+              <div class="product-name">Notion Social Media Planner</div>
+              <div class="product-price">$19</div>
             </div>
+            <button class="btn btn-pill" type="button">Add to cart</button>
+          </article>
 
-            <div class="feature-copy">
-              <h3>Notion Embeddable Grids</h3>
-              <p>Explanation about grid comes here</p>
-              <p>Explanation about grid comes here</p>
-              <p>Explanation about grid comes here</p>
-              <p>Explanation about grid comes here</p>
-              <div class="feature-price">$15</div>
-              <a class="feature-cta" href="#top-picks">SHOP NOW</a>
+          <article class="product-card">
+            <div class="product-img img-2" aria-hidden="true"></div>
+            <div class="product-meta">
+              <div class="product-name">Notion Social Media Planner</div>
+              <div class="product-price">$19</div>
             </div>
+            <button class="btn btn-pill" type="button">Add to cart</button>
+          </article>
+
+          <article class="product-card">
+            <div class="product-img img-3" aria-hidden="true"></div>
+            <div class="product-meta">
+              <div class="product-name">Notion Social Media Planner</div>
+              <div class="product-price">$19</div>
+            </div>
+            <button class="btn btn-pill" type="button">Add to cart</button>
+          </article>
+
+          <article class="product-card">
+            <div class="product-img img-4" aria-hidden="true"></div>
+            <div class="product-meta">
+              <div class="product-name">Notion Social Media Planner</div>
+              <div class="product-price">$19</div>
+            </div>
+            <button class="btn btn-pill" type="button">Add to cart</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature block -->
+    <section class="section section-dark">
+      <div class="container feature">
+        <div class="feature-left">
+          <div class="feature-image" aria-hidden="true"></div>
+        </div>
+
+        <div class="feature-right">
+          <h3 class="feature-title">Notion Embeddable Grids</h3>
+          <p class="feature-lines">
+            Explanation About grid comes here<br />
+            Explanation About grid comes here<br />
+            Explanation About grid comes here<br />
+            Explanation About grid comes here<br />
+            Explanation About grid comes here
+          </p>
+
+          <div class="feature-price">$&nbsp;&nbsp;15</div>
+
+          <a class="btn btn-light" href="#">
+            <span class="btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M7 8V7a5 5 0 0 1 10 0v1"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            SHOP NOW
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Collections -->
+    <section class="section section-white">
+      <div class="container">
+        <h2 class="section-title">Our Collections</h2>
+
+        <div class="collections-grid">
+          <div class="collection-card">
+            <div class="collection-img cimg-1" aria-hidden="true"></div>
+            <div class="collection-name">Grid Widget</div>
           </div>
-        </section>
-      </main>
-    </div>
 
-    <script>
-      (function () {
-        const slider = document.getElementById("heroSlider");
-        const slidesWrap = document.getElementById("heroSlides");
-        const slides = Array.from(slidesWrap?.querySelectorAll(".hero-slide") || []);
-        const nowEl = document.getElementById("heroNow");
-        const totalEl = document.getElementById("heroTotal");
-        const indicator = slider?.querySelector(".hero-slide-indicator");
+          <div class="collection-card">
+            <div class="collection-img cimg-2" aria-hidden="true"></div>
+            <div class="collection-name">Notion Template</div>
+          </div>
 
-        if (!slider || !slidesWrap || slides.length === 0) return;
-
-        let idx = 0;
-        const total = slides.length;
-        if (totalEl) totalEl.textContent = String(total);
-
-        let timer = null;
-
-        function setActive(i) {
-          idx = (i + total) % total;
-          slides.forEach((s, k) => s.classList.toggle("is-active", k === idx));
-          if (nowEl) nowEl.textContent = String(idx + 1);
-        }
-
-        function next() {
-          setActive(idx + 1);
-        }
-
-        function prev() {
-          setActive(idx - 1);
-        }
-
-        indicator?.addEventListener("click", (e) => {
-          const btn = e.target.closest("button[data-dir]");
-          if (!btn) return;
-          const dir = Number(btn.dataset.dir || "0");
-          if (dir === 1) next();
-          if (dir === -1) prev();
-        });
-
-        // Swipe
-        let startX = 0;
-        let startY = 0;
-        let active = false;
-
-        slidesWrap.addEventListener(
-          "touchstart",
-          (e) => {
-            const t = e.touches[0];
-            startX = t.clientX;
-            startY = t.clientY;
-            active = true;
-          },
-          { passive: true }
-        );
-
-        slidesWrap.addEventListener(
-          "touchend",
-          (e) => {
-            if (!active) return;
-            active = false;
-
-            const t = e.changedTouches[0];
-            const dx = t.clientX - startX;
-            const dy = t.clientY - startY;
-
-            if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-
-            if (dx < 0) next();
-            else prev();
-          },
-          { passive: true }
-        );
-
-        function start() {
-          stop();
-          timer = setInterval(next, 4500);
-        }
-
-        function stop() {
-          if (timer) clearInterval(timer);
-          timer = null;
-        }
-
-        slider.addEventListener("mouseenter", stop);
-        slider.addEventListener("mouseleave", start);
-        slider.addEventListener("touchstart", stop, { passive: true });
-        slider.addEventListener("touchend", start, { passive: true });
-
-        setActive(0);
-        start();
-      })();
-    </script>
+          <div class="collection-card">
+            <div class="collection-img cimg-3" aria-hidden="true"></div>
+            <div class="collection-name">Notion Template</div>
+          </div>
+        </div>
+      </div>
+    </section>
   </body>
 </html>
