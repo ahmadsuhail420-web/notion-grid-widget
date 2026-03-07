@@ -12,33 +12,43 @@
   </head>
 
   <body>
-    <!-- Background only for section 1 height -->
+    <!-- Background only behind Section 1 (hero stage) -->
     <div class="bg" aria-hidden="true"></div>
 
     <div class="frame">
-      <!-- Offer ticker -->
-      <section class="hero-section" id="top">
-      <div class="offer" aria-label="Offer ticker">
-        <div class="offer-track">
-          <span>LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE • </span>
-          <span>LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE • </span>
-        </div>
-      </div>
+      <main>
+        <!-- SECTION 1 (fixed height stage) -->
+        <section class="hero-section" id="top">
+          <!-- Offer ticker ABOVE nav -->
+          <div class="offer" aria-label="Offer ticker">
+            <div class="offer-track">
+              <span>
+                LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
+                CODE •
+              </span>
+              <span>
+                LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO
+                CODE •
+              </span>
+            </div>
+          </div>
 
-      <header class="nav">
-        <nav class="nav-left" aria-label="Primary">
-          <a href="#top">Home</a>
-          <a href="#products">Shop</a>
-        </nav>
+          <!-- NAV -->
+          <header class="nav">
+            <nav class="nav-left" aria-label="Primary">
+              <a href="#top">Home</a>
+              <a href="#products">Shop</a>
+            </nav>
 
-        <a class="nav-center" href="#top" aria-label="Notion Grid Home">Notion Grid</a>
+            <a class="nav-center" href="#top" aria-label="Notion Grid Home">Notion Grid</a>
 
-        <nav class="nav-right" aria-label="Secondary">
-          <a class="nav-link" href="#products">Products</a>
-          <a class="btn btn-primary btn-sm" href="#products">Buy</a>
-        </nav>
-      </header>
+            <nav class="nav-right" aria-label="Secondary">
+              <a class="nav-link" href="#products">Products</a>
+              <a class="btn btn-primary btn-sm" href="#products">Buy</a>
+            </nav>
+          </header>
 
+          <!-- HERO (centered in remaining space) -->
           <div class="hero">
             <div class="hero-card glass">
               <div class="hero-left">
@@ -126,7 +136,7 @@
                 </div>
               </a>
 
-              <!-- More (scroll) -->
+              <!-- extra cards (scroll) -->
               <a class="product-tile" role="listitem" href="product-notion-grid.html">
                 <div class="product-thumb">
                   <img src="assets/products/notion-grid.png" alt="Notion Grid" loading="lazy" />
