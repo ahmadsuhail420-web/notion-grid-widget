@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Products</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      :root { --card:#fff; --line:rgba(0,0,0,.12); --muted:rgba(16,18,20,.7); }
+      body { background:#f4f1eb; color:#101214; }
+
+      .admin-wrap { width: min(1020px, 100%); margin: 0 auto; padding: 28px 18px 60px; }
+      .admin-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+      .admin-head h1 { margin:0; font-size: 26px; letter-spacing: -0.01em; }
+
+      .admin-grid { display:grid; grid-template-columns: 1.05fr 0.95fr; gap:16px; margin-top: 16px; }
+      .admin-card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; }
+      .admin-card h2 { margin:0 0 10px; font-size: 16px; }
+
+      .field { display:grid; gap:6px; margin-top: 10px; }
+      .field label { font-size: 12px; color: var(--muted); }
+      .field input, .field textarea {
+        width:100%; padding:10px 12px; border-radius:12px;
+        border:1px solid rgba(0,0,0,.18); font: inherit;
+        background:#fff;
+      }
+      .field textarea { min-height: 90px; resize: vertical; }
+
+      .row { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+      .admin-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top: 14px; }
+      .btn-lite {
+        padding:10px 14px; border-radius:999px; cursor:pointer;
+        border:1px solid rgba(0,0,0,.22); background:transparent;
+      }
+      .btn-dark {
+        padding:10px 14px; border-radius:999px; cursor:pointer;
+        border:1px solid transparent; background:#1f2a33; color:#fff;
+      }
+
+      .hint { margin:12px 0 0; font-size:12px; color: var(--muted); line-height: 1.5; }
+
+      .upload {
+        display:grid; grid-template-columns: 96px 1fr; gap:12px; align-items:center;
+        padding:10px; border:1px dashed rgba(0,0,0,.22); border-radius:14px;
+        background: rgba(0,0,0,.02);
+      }
+      .preview {
+        width:96px; height:96px; border-radius:14px; overflow:hidden;
+        border:1px solid rgba(0,0,0,.12); background: rgba(0,0,0,.06);
+        display:grid; place-items:center;
+      }
+      .preview img { width:100%; height:100%; object-fit:cover; display:block; }
+      .upload small { color: var(--muted); display:block; margin-top: 4px; }
+
+      .list { margin-top: 16px; display:grid; gap: 10px; }
+      .item {
+        display:grid; grid-template-columns: 64px 1fr auto; gap:12px; align-items:center;
+        padding:10px; border:1px solid var(--line); border-radius:14px; background:#fff;
+      }
+      .thumb { width:64px; height:64px; border-radius:12px; overflow:hidden; border:1px solid rgba(0,0,0,.12); background: rgba(0,0,0,.06); }
+      .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+      .meta { min-width: 0; }
+      .meta .name { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .meta .sub { font-size: 12px; color: var(--muted); margin-top: 3px; display:flex; gap:8px; flex-wrap:wrap; }
+      .strike { text-decoration: line-through; opacity: .7; }
+      .mini-actions { display:flex; gap:8px; }
+      .pill { font-size: 11px; border:1px solid rgba(0,0,0,.18); padding:3px 8px; border-radius:999px; }
+
+      @media (max-width: 900px) {
+        .admin-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="admin-wrap">
+      <div class="admin-head">
+        <h1>Products Manager</h1>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn-lite" href="index.html">← Back to site</a>
+          <button class="btn-lite" id="seedBtn" type="button">Seed sample</button>
+          <button class="btn-lite" id="clearBtn" type="button">Clear all</button>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h2>Add / Edit product</h2>
+
+          <div class="upload">
+            <div class="preview" id="imgPreviewBox" aria-label="Image preview">
+              <span style="font-size:12px; color:rgba(16,18,20,.6);" id="imgPreviewText">No image</span>
+              <img id="imgPreview" alt="" style="display:none;" />
+            </div>
+
+            <div>
+              <div class="field" style="margin-top:0;">
+                <label>Upload image</label>
+                <input id="imageFile" type="file" accept="image/*" />
+              </div>
+              <small>
+                Tip: keep images under ~500KB for best performance. (Saved in localStorage on this device.)
+              </small>
+            </div>
+          </div>
+
+          <!-- Hidden field that stores the Data URL -->
+          <input id="imageData" type="hidden" />
+
+          <div class="field">
+            <label>Product name</label>
+            <input id="name" placeholder="Notion Social Media Planner" />
+          </div>
+
+          <div class="field">
+            <label>Description</label>
+            <textarea id="desc" placeholder="Short description..."></textarea>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Price</label>
+              <input id="price" placeholder="19" />
+            </div>
+            <div class="field">
+              <label>Offer price (optional)</label>
+              <input id="offerPrice" placeholder="15" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Product page link (optional)</label>
+            <input id="href" placeholder="product-1.html or https://..." />
+          </div>
+
+          <div class="admin-actions">
+            <button class="btn-dark" id="saveBtn" type="button">Save product</button>
+            <button class="btn-lite" id="resetBtn" type="button">Reset form</button>
+          </div>
+
+          <p class="hint">
+            This admin saves products to <b>localStorage</b>. That means it works on the device/browser you used to add products.
+            If you need products shared across devices, you’ll need a backend (Supabase/Firebase/etc.).
+          </p>
+        </div>
+
+        <div class="admin-card">
+          <h2>All products</h2>
+          <div class="list" id="list"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const KEY = "gridplanner_products_v1";
+      let editingId = null;
+
+      const $ = (id) => document.getElementById(id);
+
+      function load() {
+        try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+        catch { return []; }
+      }
+
+      function saveAll(items) {
+        localStorage.setItem(KEY, JSON.stringify(items));
+      }
+
+      function money(n) {
+        const x = String(n ?? "").trim();
+        if (!x) return "";
+        const num = Number(x);
+        if (Number.isFinite(num)) return "$" + num.toFixed(0);
+        return x.startsWith("$") ? x : "$" + x;
+      }
+
+      function setPreview(dataUrl) {
+        const img = $("imgPreview");
+        const txt = $("imgPreviewText");
+        if (!dataUrl) {
+          img.style.display = "none";
+          img.src = "";
+          txt.style.display = "block";
+          return;
+        }
+        txt.style.display = "none";
+        img.style.display = "block";
+        img.src = dataUrl;
+      }
+
+      function resetForm() {
+        editingId = null;
+        $("imageFile").value = "";
+        $("imageData").value = "";
+        setPreview("");
+        $("name").value = "";
+        $("desc").value = "";
+        $("price").value = "";
+        $("offerPrice").value = "";
+        $("href").value = "";
+        $("saveBtn").textContent = "Save product";
+      }
+
+      // Read file -> Data URL
+      $("imageFile").addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+          alert("Please upload an image file.");
+          return;
+        }
+
+        // Guardrail: localStorage is limited (~5MB). Large images will break saving.
+        if (file.size > 900 * 1024) {
+          const ok = confirm("This image is larger than 900KB. It may fail to save in localStorage. Continue?");
+          if (!ok) {
+            $("imageFile").value = "";
+            return;
+          }
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = String(reader.result || "");
+          $("imageData").value = dataUrl;
+          setPreview(dataUrl);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function upsert() {
+        const items = load();
+
+        const product = {
+          id: editingId || crypto.randomUUID(),
+          imageData: $("imageData").value.trim(), // Data URL
+          name: $("name").value.trim(),
+          desc: $("desc").value.trim(),
+          price: $("price").value.trim(),
+          offerPrice: $("offerPrice").value.trim(),
+          href: $("href").value.trim() || "#",
+          createdAt: new Date().toISOString()
+        };
+
+        if (!product.imageData) return alert("Please upload an image.");
+        if (!product.name) return alert("Product name is required.");
+        if (!product.price) return alert("Price is required.");
+
+        const idx = items.findIndex((p) => p.id === product.id);
+        if (idx >= 0) items[idx] = product;
+        else items.unshift(product);
+
+        saveAll(items);
+        resetForm();
+        render();
+      }
+
+      function edit(id) {
+        const items = load();
+        const p = items.find((x) => x.id === id);
+        if (!p) return;
+
+        editingId = p.id;
+        $("imageFile").value = "";
+        $("imageData").value = p.imageData || "";
+        setPreview(p.imageData || "");
+        $("name").value = p.name || "";
+        $("desc").value = p.desc || "";
+        $("price").value = p.price || "";
+        $("offerPrice").value = p.offerPrice || "";
+        $("href").value = p.href || "";
+        $("saveBtn").textContent = "Update product";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function del(id) {
+        const items = load().filter((p) => p.id !== id);
+        saveAll(items);
+        render();
+      }
+
+      function seed() {
+        // Uses existing local assets (no upload) by converting them to Data URLs is not possible without fetching,
+        // so seed will create items with placeholder imageData only if you upload at least once.
+        alert("Seed works best after you upload at least one image. Add products manually with upload.");
+      }
+
+      function render() {
+        const items = load();
+        const list = $("list");
+        list.innerHTML = "";
+
+        if (!items.length) {
+          list.innerHTML =
+            '<div style="color:rgba(16,18,20,.7); font-size:13px;">No products yet. Upload an image + fill the form to add one.</div>';
+          return;
+        }
+
+        for (const p of items) {
+          const el = document.createElement("div");
+          el.className = "item";
+
+          const hasOffer = !!String(p.offerPrice || "").trim();
+          const priceHtml = hasOffer
+            ? `<span class="strike">${money(p.price)}</span><span>${money(p.offerPrice)}</span><span class="pill">Offer</span>`
+            : `<span>${money(p.price)}</span>`;
+
+          el.innerHTML = `
+            <div class="thumb"><img src="${p.imageData}" alt="" /></div>
+            <div class="meta">
+              <div class="name">${p.name}</div>
+              <div class="sub">${priceHtml}</div>
+            </div>
+            <div class="mini-actions">
+              <button class="btn-lite" data-edit="${p.id}" type="button">Edit</button>
+              <button class="btn-lite" data-del="${p.id}" type="button">Delete</button>
+            </div>
+          `;
+          list.appendChild(el);
+        }
+
+        list.querySelectorAll("[data-edit]").forEach((b) =>
+          b.addEventListener("click", () => edit(b.dataset.edit))
+        );
+        list.querySelectorAll("[data-del]").forEach((b) =>
+          b.addEventListener("click", () => del(b.dataset.del))
+        );
+      }
+
+      $("saveBtn").addEventListener("click", upsert);
+      $("resetBtn").addEventListener("click", resetForm);
+      $("seedBtn").addEventListener("click", seed);
+      $("clearBtn").addEventListener("click", () => {
+        if (!confirm("Clear all products?")) return;
+        localStorage.removeItem(KEY);
+        resetForm();
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>
