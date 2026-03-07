@@ -9,6 +9,12 @@
       content="Grid Planner is a one-time purchase widget to embed images, link cards, resources, or product blocks in a clean, responsive grid—no code, just copy & paste."
     />
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- Google Material Symbols (icons) -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200"
+    />
   </head>
 
   <body>
@@ -25,9 +31,15 @@
             </nav>
 
             <div class="nav-icons" aria-label="Actions">
-              <a class="icon-btn" href="#top-picks" aria-label="Search">⌕</a>
-              <a class="icon-btn" href="#top-picks" aria-label="Cart">⎘</a>
-              <a class="icon-btn" href="#top-picks" aria-label="Account">⎇</a>
+              <a class="icon-btn" href="#top-picks" aria-label="Search">
+                <span class="material-symbols-outlined" aria-hidden="true">search</span>
+              </a>
+              <a class="icon-btn" href="#top-picks" aria-label="Shopping bag">
+                <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+              </a>
+              <a class="icon-btn" href="#top-picks" aria-label="Account">
+                <span class="material-symbols-outlined" aria-hidden="true">person</span>
+              </a>
             </div>
           </div>
 
@@ -41,29 +53,31 @@
               </p>
 
               <a class="btn-outline" href="#top-picks">
-                <span class="btn-ic">🛍</span>
+                <span class="btn-ic material-symbols-outlined" aria-hidden="true">shopping_bag</span>
                 SHOP NOW
               </a>
             </div>
 
-            <!-- Swipe slider (stacked cards) -->
-            <div class="hero-preview" aria-label="Preview slider">
-              <div class="stack-slider" id="previewSlider">
-                <!-- Slides: use real images if you have multiple; can reuse same for now -->
-                <img class="slide is-active" src="assets/widget-preview.png" alt="Preview 1" />
-                <img class="slide" src="assets/widget-preview.png" alt="Preview 2" />
-                <img class="slide" src="assets/widget-preview.png" alt="Preview 3" />
-
-                <!-- Back cards (to match the reference big white stack) -->
-                <div class="back-card back-1" aria-hidden="true"></div>
-                <div class="back-card back-2" aria-hidden="true"></div>
+            <!-- NO placeholders: only the 2 uploaded widgets, slightly tilted -->
+            <div class="hero-preview" aria-label="Widget previews">
+              <div class="widget-pair">
+                <img
+                  class="widget widget-back"
+                  src="assets/widget-preview-2.png"
+                  alt="Widget preview 2"
+                  loading="eager"
+                />
+                <img
+                  class="widget widget-front"
+                  src="assets/widget-preview-1.png"
+                  alt="Widget preview 1"
+                  loading="eager"
+                />
               </div>
 
-              <!-- Center indicator like the reference -->
-              <div class="slider-indicator" aria-live="polite">
-                <button class="ind-btn" type="button" data-dir="-1" aria-label="Previous">‹</button>
-                <span class="ind-text"><span id="slideNow">1</span> / <span id="slideTotal">3</span></span>
-                <button class="ind-btn" type="button" data-dir="1" aria-label="Next">›</button>
+              <!-- centered count like reference -->
+              <div class="slider-indicator" aria-hidden="true">
+                <span class="ind-text">1 / 2</span>
               </div>
             </div>
           </div>
@@ -128,7 +142,7 @@
           </div>
         </section>
 
-        <!-- AFTER TOP PICKS (missing in previous) -->
+        <!-- After Top Picks -->
         <section class="feature-band">
           <div class="feature-inner">
             <div class="feature-media">
@@ -148,74 +162,5 @@
         </section>
       </main>
     </div>
-
-    <script>
-      (function () {
-        const slider = document.getElementById("previewSlider");
-        if (!slider) return;
-
-        const slides = Array.from(slider.querySelectorAll(".slide"));
-        const nowEl = document.getElementById("slideNow");
-        const totalEl = document.getElementById("slideTotal");
-        const indicator = document.querySelector(".slider-indicator");
-
-        let idx = 0;
-        const total = slides.length;
-
-        if (totalEl) totalEl.textContent = String(total);
-
-        function setActive(i) {
-          idx = (i + total) % total;
-          slides.forEach((s, k) => s.classList.toggle("is-active", k === idx));
-          if (nowEl) nowEl.textContent = String(idx + 1);
-        }
-
-        // buttons
-        indicator?.addEventListener("click", (e) => {
-          const btn = e.target.closest("button[data-dir]");
-          if (!btn) return;
-          const dir = Number(btn.dataset.dir || "0");
-          setActive(idx + dir);
-        });
-
-        // swipe
-        let startX = 0;
-        let startY = 0;
-        let dragging = false;
-
-        slider.addEventListener(
-          "touchstart",
-          (e) => {
-            const t = e.touches[0];
-            startX = t.clientX;
-            startY = t.clientY;
-            dragging = true;
-          },
-          { passive: true }
-        );
-
-        slider.addEventListener(
-          "touchend",
-          (e) => {
-            if (!dragging) return;
-            dragging = false;
-
-            const t = e.changedTouches[0];
-            const dx = t.clientX - startX;
-            const dy = t.clientY - startY;
-
-            // horizontal swipe only
-            if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-
-            if (dx < 0) setActive(idx + 1);
-            else setActive(idx - 1);
-          },
-          { passive: true }
-        );
-
-        // init
-        setActive(0);
-      })();
-    </script>
   </body>
 </html>
