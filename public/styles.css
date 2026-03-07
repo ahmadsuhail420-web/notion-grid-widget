@@ -386,7 +386,6 @@ h1 {
 /* Responsive */
 @media (max-width: 920px) {
   :root {
-    --hero-bg-h: 520px;
     --hero-card-max: 860px; /* still fixed */
   }
   .hero-card {
