@@ -154,18 +154,17 @@ a {
   font-size: 18px;
 }
 
-/* ===== 2-widget preview (no placeholders) ===== */
+/* ===== widget images only (no background) ===== */
 .hero-preview {
   display: grid;
   justify-items: end;
-  gap: 14px;
   position: relative;
 }
 
 .widget-pair {
   position: relative;
-  width: min(430px, 100%);
-  aspect-ratio: 1 / 1.02;
+  width: min(440px, 100%);
+  aspect-ratio: 1 / 1.05;
 }
 
 .widget {
@@ -173,40 +172,21 @@ a {
   right: 0;
   top: 0;
   width: 86%;
-  height: 96%;
+  height: auto;
   object-fit: contain;
-  background: #ffffff;
-  border-radius: 26px;
-  border: 3px solid rgba(255, 255, 255, 0.92);
+  border-radius: 22px;
   box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
+  background: transparent; /* important: no background */
 }
 
 .widget-back {
-  transform: rotate(-8deg) translate(-42px, 26px);
-  opacity: 0.96;
+  transform: rotate(-8deg) translate(-38px, 26px);
+  opacity: 0.95;
   width: 88%;
 }
 
 .widget-front {
   transform: rotate(2deg) translate(0, 0);
-}
-
-/* count centered */
-.slider-indicator {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -10px;
-  display: flex;
-  justify-content: center;
-}
-
-.ind-text {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  min-width: 74px;
-  text-align: center;
 }
 
 /* offer ticker */
@@ -234,7 +214,7 @@ a {
   to { transform: translateX(-50%); }
 }
 
-/* ===== TOP PICKS ===== */
+/* ===== TOP PICKS CAROUSEL ===== */
 .section {
   width: min(var(--max), 100%);
   margin: 0 auto;
@@ -250,17 +230,54 @@ a {
   letter-spacing: -0.01em;
 }
 
-.picks-grid {
+.carousel {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 42px 1fr 42px;
+  gap: 10px;
+  align-items: center;
+}
+
+.car-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 18, 20, 0.2);
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.car-viewport {
+  overflow: hidden;
+}
+
+.car-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 3 * 18px) / 4); /* 4 visible on desktop */
   gap: 18px;
+  padding: 4px 2px 8px;
+  scroll-snap-type: x mandatory;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.car-track::-webkit-scrollbar {
+  display: none;
+}
+
+.pick {
+  scroll-snap-align: start;
+  display: grid;
+  gap: 10px;
+  color: inherit;
 }
 
 .pick-img {
   overflow: hidden;
   background: rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.12);
-  aspect-ratio: 1 / 1; /* requested */
+  aspect-ratio: 1 / 1;
 }
 
 .pick-img img {
@@ -271,34 +288,40 @@ a {
 }
 
 .pick-name {
-  margin-top: 10px;
+  margin-top: 2px;
   font-size: 13px;
   font-weight: 400;
   color: rgba(16, 18, 20, 0.9);
 }
 
 .pick-price {
-  margin-top: 4px;
+  margin-top: -4px;
   font-size: 13px;
   color: rgba(16, 18, 20, 0.7);
 }
 
 .pick-btn {
-  margin-top: 10px;
+  margin-top: 6px;
   width: 100%;
   padding: 10px 12px;
   border-radius: 999px;
   border: 1px solid rgba(16, 18, 20, 0.22);
+  text-align: center;
   background: transparent;
-  color: rgba(16, 18, 20, 0.9);
-  cursor: pointer;
 }
 
-.pick-btn:hover {
+.pick:hover .pick-btn {
   background: rgba(16, 18, 20, 0.04);
 }
 
-/* ===== After Top Picks section (dark band) ===== */
+.car-indicator {
+  margin-top: 14px;
+  text-align: center;
+  color: rgba(16, 18, 20, 0.6);
+  letter-spacing: 0.08em;
+}
+
+/* ===== After Top Picks (dark band) ===== */
 .feature-band {
   background: var(--bg-dark);
   color: rgba(255, 255, 255, 0.92);
@@ -374,12 +397,8 @@ a {
     justify-items: center;
   }
 
-  .widget-pair {
-    width: min(420px, 100%);
-  }
-
-  .picks-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .car-track {
+    grid-auto-columns: 220px;
   }
 
   .feature-inner {
@@ -404,7 +423,15 @@ a {
     font-size: 40px;
   }
 
-  .picks-grid {
-    grid-template-columns: 1fr;
+  .carousel {
+    grid-template-columns: 1fr; /* hide arrow buttons on small screens */
+  }
+
+  .car-btn {
+    display: none;
+  }
+
+  .car-track {
+    grid-auto-columns: 180px;
   }
 }
