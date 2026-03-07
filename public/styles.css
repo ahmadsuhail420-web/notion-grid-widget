@@ -219,14 +219,14 @@ a {
   box-shadow: none !important;
   filter: none !important;
 
-  width: 420px;
+  width: 380px;
   max-width: 100%;
   height: auto;
   display: block;
 }
 
 .widget-img--back {
-  transform: rotate(-9deg) translate(-110px, 88px);
+  transform: rotate(-9deg) translate(-70px, 62px);
   opacity: 0.95;
 }
 
