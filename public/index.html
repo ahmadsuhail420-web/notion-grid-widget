@@ -22,6 +22,7 @@
       <!-- HERO (main section) -->
       <header class="hero" id="top">
         <div class="hero-inner">
+          <!-- NAV (fixed within hero, not sliding) -->
           <div class="nav">
             <div class="brand">Grid Planner</div>
 
@@ -43,73 +44,100 @@
             </div>
           </div>
 
-          <div class="hero-grid">
-            <div class="hero-copy">
-              <h1>Embed beautiful<br />grids in Notion.</h1>
+          <!-- SLIDER (this part slides) -->
+          <div class="hero-slider" id="heroSlider" aria-label="Featured hero slides">
+            <div class="hero-slides" id="heroSlides">
+              <!-- Slide 1 -->
+              <section class="hero-slide is-active" role="group" aria-label="Slide 1">
+                <div class="hero-grid">
+                  <div class="hero-copy">
+                    <h1>Embed beautiful<br />grids in Notion.</h1>
 
-              <p class="hero-lead">
-                Add images, link cards, resources, or product blocks in a clean, responsive grid—no
-                code, just copy &amp; paste.
-              </p>
+                    <p class="hero-lead">
+                      Add images, link cards, resources, or product blocks in a clean, responsive
+                      grid—no code, just copy &amp; paste.
+                    </p>
 
-              <a class="btn-outline" href="#top-picks">
-                <span class="btn-ic material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-                SHOP NOW
-              </a>
-
-              <!-- MAIN SWIPE AREA (inside hero): featured products -->
-              <div class="hero-carousel" aria-label="Featured products in hero">
-                <div class="hero-car-viewport" id="heroCarViewport">
-                  <div class="hero-car-track" id="heroCarTrack" role="list">
-                    <a class="hero-card" role="listitem" href="product-1.html">
-                      <div class="hero-card-title">Creator Pack</div>
-                      <div class="hero-card-price">$12</div>
-                    </a>
-
-                    <a class="hero-card" role="listitem" href="product-2.html">
-                      <div class="hero-card-title">Bundle</div>
-                      <div class="hero-card-price">$29</div>
-                    </a>
-
-                    <a class="hero-card" role="listitem" href="product-3.html">
-                      <div class="hero-card-title">Starter</div>
-                      <div class="hero-card-price">$9</div>
-                    </a>
-
-                    <a class="hero-card" role="listitem" href="product-4.html">
-                      <div class="hero-card-title">Pro</div>
-                      <div class="hero-card-price">$39</div>
+                    <a class="btn-outline" href="#top-picks">
+                      <span class="btn-ic material-symbols-outlined" aria-hidden="true"
+                        >shopping_bag</span
+                      >
+                      SHOP NOW
                     </a>
                   </div>
-                </div>
 
-                <div class="hero-car-indicator" aria-live="polite">
-                  <span id="heroNow">1</span> / <span id="heroTotal">4</span>
+                  <div class="hero-preview" aria-label="Widget previews">
+                    <div class="widget-stack" aria-hidden="true">
+                      <img
+                        class="widget-img widget-img--back"
+                        src="assets/widget-preview-2.png"
+                        alt=""
+                        loading="eager"
+                      />
+                      <img
+                        class="widget-img widget-img--front"
+                        src="assets/widget-preview-1.png"
+                        alt=""
+                        loading="eager"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </section>
+
+              <!-- Slide 2 (example - change text later or remove until needed) -->
+              <section class="hero-slide" role="group" aria-label="Slide 2">
+                <div class="hero-grid">
+                  <div class="hero-copy">
+                    <h1>Turn Notion pages<br />into storefronts.</h1>
+
+                    <p class="hero-lead">
+                      Showcase products with clean cards, fast load, and responsive layout—copy &amp;
+                      paste into Notion.
+                    </p>
+
+                    <a class="btn-outline" href="#top-picks">
+                      <span class="btn-ic material-symbols-outlined" aria-hidden="true"
+                        >shopping_bag</span
+                      >
+                      SHOP NOW
+                    </a>
+                  </div>
+
+                  <div class="hero-preview" aria-label="Widget previews">
+                    <div class="widget-stack" aria-hidden="true">
+                      <img
+                        class="widget-img widget-img--back"
+                        src="assets/widget-preview-1.png"
+                        alt=""
+                        loading="eager"
+                      />
+                      <img
+                        class="widget-img widget-img--front"
+                        src="assets/widget-preview-2.png"
+                        alt=""
+                        loading="eager"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
 
-            <!-- Widgets (no background blocks) -->
-            <div class="hero-preview" aria-label="Widget previews">
-              <div class="widget-stack" aria-hidden="true">
-                <img
-                  class="widget-img widget-img--back"
-                  src="assets/widget-preview-2.png"
-                  alt=""
-                  loading="eager"
-                />
-                <img
-                  class="widget-img widget-img--front"
-                  src="assets/widget-preview-1.png"
-                  alt=""
-                  loading="eager"
-                />
-              </div>
+            <!-- Center indicator 1 / N -->
+            <div class="hero-slide-indicator" aria-live="polite">
+              <button class="hero-ind-btn" type="button" data-dir="-1" aria-label="Previous slide">
+                ‹
+              </button>
+              <span class="hero-ind-text"><span id="heroNow">1</span> / <span id="heroTotal">2</span></span>
+              <button class="hero-ind-btn" type="button" data-dir="1" aria-label="Next slide">
+                ›
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Offer ticker at bottom of hero -->
+        <!-- Offer ticker at bottom of hero (fixed, not sliding) -->
         <div class="offer" aria-hidden="true">
           <div class="offer-track">
             <span>
@@ -125,7 +153,6 @@
       </header>
 
       <main>
-        <!-- TOP PICKS (still here, unchanged title) -->
         <section id="top-picks" class="section">
           <h2 class="section-title">Top Picks</h2>
 
@@ -190,74 +217,94 @@
 
     <script>
       (function () {
-        // HERO (main) carousel autoplay + swipe indicator
-        const viewport = document.getElementById("heroCarViewport");
-        const track = document.getElementById("heroCarTrack");
+        const slider = document.getElementById("heroSlider");
+        const slidesWrap = document.getElementById("heroSlides");
+        const slides = Array.from(slidesWrap?.querySelectorAll(".hero-slide") || []);
         const nowEl = document.getElementById("heroNow");
         const totalEl = document.getElementById("heroTotal");
-        if (!viewport || !track) return;
+        const indicator = slider?.querySelector(".hero-slide-indicator");
 
-        const items = Array.from(track.querySelectorAll(".hero-card"));
-        const total = items.length;
-        if (totalEl) totalEl.textContent = String(total);
+        if (!slider || !slidesWrap || slides.length === 0) return;
 
         let idx = 0;
+        const total = slides.length;
+        if (totalEl) totalEl.textContent = String(total);
+
         let timer = null;
 
-        function step() {
-          const first = items[0];
-          if (!first) return 0;
-          const r = first.getBoundingClientRect();
-          const gap = parseFloat(getComputedStyle(track).gap || "0");
-          return r.width + gap;
-        }
-
-        function go(i, behavior = "smooth") {
-          if (!total) return;
+        function setActive(i) {
           idx = (i + total) % total;
-          viewport.scrollTo({ left: idx * step(), behavior });
+          slides.forEach((s, k) => s.classList.toggle("is-active", k === idx));
           if (nowEl) nowEl.textContent = String(idx + 1);
         }
 
         function next() {
-          go(idx + 1);
+          setActive(idx + 1);
         }
 
-        let raf = 0;
-        viewport.addEventListener(
-          "scroll",
-          () => {
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(() => {
-              const s = step();
-              if (!s) return;
-              const i = Math.round(viewport.scrollLeft / s);
-              idx = Math.max(0, Math.min(total - 1, i));
-              if (nowEl) nowEl.textContent = String(idx + 1);
-            });
+        function prev() {
+          setActive(idx - 1);
+        }
+
+        indicator?.addEventListener("click", (e) => {
+          const btn = e.target.closest("button[data-dir]");
+          if (!btn) return;
+          const dir = Number(btn.dataset.dir || "0");
+          if (dir === 1) next();
+          if (dir === -1) prev();
+        });
+
+        // Swipe
+        let startX = 0;
+        let startY = 0;
+        let active = false;
+
+        slidesWrap.addEventListener(
+          "touchstart",
+          (e) => {
+            const t = e.touches[0];
+            startX = t.clientX;
+            startY = t.clientY;
+            active = true;
+          },
+          { passive: true }
+        );
+
+        slidesWrap.addEventListener(
+          "touchend",
+          (e) => {
+            if (!active) return;
+            active = false;
+
+            const t = e.changedTouches[0];
+            const dx = t.clientX - startX;
+            const dy = t.clientY - startY;
+
+            if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+
+            if (dx < 0) next();
+            else prev();
           },
           { passive: true }
         );
 
         function start() {
           stop();
-          timer = setInterval(next, 2800);
+          timer = setInterval(next, 4500);
         }
+
         function stop() {
           if (timer) clearInterval(timer);
           timer = null;
         }
 
-        viewport.addEventListener("mouseenter", stop);
-        viewport.addEventListener("mouseleave", start);
-        viewport.addEventListener("touchstart", stop, { passive: true });
-        viewport.addEventListener("touchend", start, { passive: true });
+        slider.addEventListener("mouseenter", stop);
+        slider.addEventListener("mouseleave", start);
+        slider.addEventListener("touchstart", stop, { passive: true });
+        slider.addEventListener("touchend", start, { passive: true });
 
-        window.addEventListener("resize", () => go(idx, "auto"));
-        window.addEventListener("load", () => {
-          go(0, "auto");
-          start();
-        });
+        setActive(0);
+        start();
       })();
     </script>
   </body>
