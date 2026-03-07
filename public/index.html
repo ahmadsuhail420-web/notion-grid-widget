@@ -12,19 +12,15 @@
   </head>
 
   <body>
-    <!-- Background is ONLY for section 1 (hero) -->
+    <!-- Background only for section 1 height -->
     <div class="bg" aria-hidden="true"></div>
 
     <div class="frame">
-      <!-- Offer ticker ABOVE nav -->
+      <!-- Offer ticker -->
       <div class="offer" aria-label="Offer ticker">
         <div class="offer-track">
-          <span>Limited offer: 20% off today • </span>
-          <span>One-time purchase • Instant access • </span>
-          <span>Works on mobile • No code • </span>
-          <span>Limited offer: 20% off today • </span>
-          <span>One-time purchase • Instant access • </span>
-          <span>Works on mobile • No code • </span>
+          <span>LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE • </span>
+          <span>LIMITED OFFER: 20% OFF TODAY • ONE‑TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE • </span>
         </div>
       </div>
 
@@ -43,46 +39,48 @@
       </header>
 
       <main id="top">
-        <!-- SECTION 1: HERO -->
-        <section class="hero hero-section">
-          <div class="hero-card glass">
-            <div class="hero-left">
-              <div class="eyebrow">
-                <span class="dot" aria-hidden="true"></span>
-                Notion Widget
+        <!-- SECTION 1 -->
+        <section class="hero-section">
+          <div class="hero">
+            <div class="hero-card glass">
+              <div class="hero-left">
+                <div class="eyebrow">
+                  <span class="dot" aria-hidden="true"></span>
+                  Notion Widget
+                </div>
+
+                <h1>Embed beautiful grids in Notion.</h1>
+
+                <p class="lead">
+                  Add images, link cards, resources, or product blocks in a clean, responsive grid—no
+                  code, just copy &amp; paste.
+                </p>
+
+                <div class="hero-actions">
+                  <a class="btn btn-primary" href="#products">Buy Notion Grid</a>
+                  <a class="btn btn-secondary" href="#products">View products</a>
+                </div>
+
+                <div class="micro">One-time purchase • Responsive • Customizable</div>
               </div>
 
-              <h1>Embed beautiful grids in Notion.</h1>
+              <div class="hero-right">
+                <div class="preview-tag">PREVIEW</div>
 
-              <p class="lead">
-                Add images, link cards, resources, or product blocks in a clean, responsive grid—no
-                code, just copy &amp; paste.
-              </p>
-
-              <div class="hero-actions">
-                <a class="btn btn-primary" href="#products">Buy Notion Grid</a>
-                <a class="btn btn-secondary" href="#products">View products</a>
-              </div>
-
-              <div class="micro">One-time purchase • Responsive • Customizable</div>
-            </div>
-
-            <div class="hero-right">
-              <div class="preview-tag">PREVIEW</div>
-
-              <div class="preview-wrap">
-                <img
-                  class="preview-img"
-                  src="assets/widget-preview.png"
-                  alt="Notion Grid widget preview"
-                  loading="eager"
-                />
+                <div class="preview-wrap">
+                  <img
+                    class="preview-img"
+                    src="assets/widget-preview.png"
+                    alt="Notion Grid widget preview"
+                    loading="eager"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- SECTION 2: ESSENTIAL PRODUCTS -->
+        <!-- SECTION 2 -->
         <section id="products" class="products-strip">
           <div class="products-strip-inner">
             <div class="products-head">
@@ -90,18 +88,6 @@
             </div>
 
             <div class="products-row" role="list" aria-label="Product list">
-              <!-- 1 -->
-              <a class="product-tile" role="listitem" href="product-notion-grid.html">
-                <div class="product-thumb">
-                  <img src="assets/products/notion-grid.png" alt="Notion Grid" loading="lazy" />
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Notion Grid</div>
-                  <div class="product-price">$19</div>
-                </div>
-              </a>
-
-              <!-- 2 -->
               <a class="product-tile" role="listitem" href="product-creator-pack.html">
                 <div class="product-thumb">
                   <img src="assets/products/creator-pack.png" alt="Creator Pack" loading="lazy" />
@@ -112,7 +98,6 @@
                 </div>
               </a>
 
-              <!-- 3 -->
               <a class="product-tile" role="listitem" href="product-bundle.html">
                 <div class="product-thumb">
                   <img src="assets/products/bundle.png" alt="Bundle" loading="lazy" />
@@ -123,7 +108,6 @@
                 </div>
               </a>
 
-              <!-- 4 -->
               <a class="product-tile" role="listitem" href="product-starter.html">
                 <div class="product-thumb">
                   <img src="assets/products/starter.png" alt="Starter" loading="lazy" />
@@ -134,7 +118,6 @@
                 </div>
               </a>
 
-              <!-- Add more cards; row will scroll -->
               <a class="product-tile" role="listitem" href="product-pro.html">
                 <div class="product-thumb">
                   <img src="assets/products/pro.png" alt="Pro" loading="lazy" />
@@ -144,13 +127,24 @@
                   <div class="product-price">$39</div>
                 </div>
               </a>
+
+              <!-- More (scroll) -->
+              <a class="product-tile" role="listitem" href="product-notion-grid.html">
+                <div class="product-thumb">
+                  <img src="assets/products/notion-grid.png" alt="Notion Grid" loading="lazy" />
+                </div>
+                <div class="product-meta">
+                  <div class="product-name">Notion Grid</div>
+                  <div class="product-price">$19</div>
+                </div>
+              </a>
             </div>
           </div>
         </section>
       </main>
     </div>
 
-    <!-- small JS: center-card scale effect while scrolling -->
+    <!-- Center/active card scaling -->
     <script>
       (function () {
         const row = document.querySelector(".products-row");
@@ -160,23 +154,23 @@
         if (!tiles.length) return;
 
         function update() {
-          const rowRect = row.getBoundingClientRect();
-          const centerX = rowRect.left + rowRect.width / 2;
+          const rr = row.getBoundingClientRect();
+          const cx = rr.left + rr.width / 2;
 
-          let closest = null;
-          let closestDist = Infinity;
+          let best = null;
+          let bestD = Infinity;
 
           for (const t of tiles) {
             const r = t.getBoundingClientRect();
             const mid = r.left + r.width / 2;
-            const d = Math.abs(mid - centerX);
-            if (d < closestDist) {
-              closestDist = d;
-              closest = t;
+            const d = Math.abs(mid - cx);
+            if (d < bestD) {
+              bestD = d;
+              best = t;
             }
           }
 
-          for (const t of tiles) t.classList.toggle("is-active", t === closest);
+          for (const t of tiles) t.classList.toggle("is-active", t === best);
         }
 
         let raf = 0;
@@ -188,8 +182,6 @@
         row.addEventListener("scroll", onScroll, { passive: true });
         window.addEventListener("resize", onScroll);
         window.addEventListener("load", onScroll);
-
-        // initial
         update();
       })();
     </script>
