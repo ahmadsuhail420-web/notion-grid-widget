@@ -1,11 +1,10 @@
 :root {
-  --bg-dark: #1f2a33;      /* hero background like reference */
+  --bg-dark: #1f2a33;
   --text-on-dark: rgba(255, 255, 255, 0.92);
   --muted-on-dark: rgba(255, 255, 255, 0.72);
 
   --base: #f4f1eb;
   --ink: #101214;
-  --muted: rgba(16, 18, 20, 0.72);
 
   --max: 1120px;
 }
@@ -42,7 +41,9 @@ a {
   background: var(--bg-dark);
   color: var(--text-on-dark);
   position: relative;
-  padding-bottom: 56px; /* space for offer ticker */
+  min-height: 680px;
+  padding-bottom: 56px; /* for offer ticker */
+  overflow: hidden;
 }
 
 .hero-inner {
@@ -51,7 +52,7 @@ a {
   padding: 18px 18px 26px;
 }
 
-/* NAV (simple, no wrapping) */
+/* NAV */
 .nav {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -75,6 +76,7 @@ a {
 .nav-links a {
   font-size: 13px;
   opacity: 0.9;
+  white-space: nowrap;
 }
 
 .nav-icons {
@@ -84,11 +86,11 @@ a {
 }
 
 .icon-btn {
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
@@ -105,7 +107,7 @@ a {
 
 .hero-copy h1 {
   margin: 0;
-  font-size: clamp(40px, 5.1vw, 62px);
+  font-size: clamp(44px, 5.2vw, 72px);
   line-height: 1.02;
   letter-spacing: -0.02em;
   font-family: ui-serif, Georgia, "Times New Roman", Times, serif;
@@ -114,7 +116,7 @@ a {
 
 .hero-lead {
   margin: 16px 0 0;
-  max-width: 52ch;
+  max-width: 54ch;
   color: var(--muted-on-dark);
   line-height: 1.7;
   font-size: 14px;
@@ -144,40 +146,93 @@ a {
   line-height: 1;
 }
 
-/* stacked preview */
+/* ===== Preview stack slider ===== */
 .hero-preview {
   display: grid;
   justify-items: end;
   gap: 14px;
-}
-
-.stack {
   position: relative;
-  width: min(340px, 100%);
-  aspect-ratio: 3 / 4;
 }
 
-.card {
+/* big white stack like reference */
+.stack-slider {
+  position: relative;
+  width: min(430px, 100%);
+  aspect-ratio: 1 / 1.02; /* looks like a square-ish stack */
+  touch-action: pan-y; /* allow vertical scroll, handle horizontal swipe */
+}
+
+/* back cards */
+.back-card {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-
-  border-radius: 18px;
+  border-radius: 26px;
   background: #ffffff;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
-  border: 3px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
 }
 
-.c1 { transform: rotate(-8deg) translate(-18px, 10px); opacity: 0.96; }
-.c2 { transform: rotate(4deg) translate(10px, 8px); opacity: 0.98; }
-.c3 { transform: rotate(-1deg) translate(0, 0); opacity: 1; }
+.back-1 {
+  transform: rotate(-8deg) translate(-26px, 18px);
+  opacity: 0.9;
+}
 
-.pager {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 14px;
+.back-2 {
+  transform: rotate(6deg) translate(18px, 14px);
+  opacity: 0.95;
+}
+
+/* slides sit on top */
+.slide {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  background: #ffffff;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
+  border: 3px solid rgba(255, 255, 255, 0.92);
+
+  /* IMPORTANT: match widget look/size better */
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fill the big card like the reference */
+  padding: 26px;     /* gives inner margin so widget isn't tiny */
+  opacity: 0;
+  transform: translateY(10px) scale(0.99);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.slide.is-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Center indicator (same vibe as reference) */
+.slider-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
   letter-spacing: 0.08em;
+}
+
+.ind-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+
+.ind-text {
+  min-width: 74px;
+  text-align: center;
 }
 
 /* offer ticker at bottom */
@@ -209,7 +264,7 @@ a {
 .section {
   width: min(var(--max), 100%);
   margin: 0 auto;
-  padding: 34px 18px 40px;
+  padding: 34px 18px 44px;
 }
 
 .section-title {
@@ -227,12 +282,12 @@ a {
   gap: 18px;
 }
 
+/* 1:1 placeholders */
 .pick-img {
-  border-radius: 0;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.12);
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1; /* requested */
 }
 
 .pick-img img {
@@ -245,7 +300,7 @@ a {
 .pick-name {
   margin-top: 10px;
   font-size: 13px;
-  font-weight: 400; /* not bold */
+  font-weight: 400;
   color: rgba(16, 18, 20, 0.9);
 }
 
@@ -270,32 +325,110 @@ a {
   background: rgba(16, 18, 20, 0.04);
 }
 
-/* ===== Responsive ===== */
+/* ===== After Top Picks section (dark band) ===== */
+.feature-band {
+  background: var(--bg-dark);
+  color: rgba(255, 255, 255, 0.92);
+  padding: 46px 0;
+}
+
+.feature-inner {
+  width: min(var(--max), 100%);
+  margin: 0 auto;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: center;
+}
+
+.feature-media {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.feature-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.feature-copy h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.feature-copy p {
+  margin: 6px 0;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+}
+
+.feature-price {
+  margin-top: 14px;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+}
+
+.feature-cta {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f1418;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+/* Responsive */
 @media (max-width: 920px) {
   .hero-grid {
     grid-template-columns: 1fr;
+    gap: 26px;
   }
 
   .hero-preview {
     justify-items: center;
   }
 
-  .stack {
-    width: min(320px, 100%);
+  .stack-slider {
+    width: min(420px, 100%);
   }
 
   .picks-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .feature-inner {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 520px) {
+  .hero {
+    min-height: 620px;
+  }
+
   .brand {
     font-size: 18px;
   }
 
   .nav-links {
     gap: 14px;
+  }
+
+  .hero-copy h1 {
+    font-size: 40px;
   }
 
   .picks-grid {
