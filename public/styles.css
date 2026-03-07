@@ -13,10 +13,8 @@
   --r-btn: 999px;
   --max: 1120px;
 
-  /* Section 1 background height — section 2 will ALWAYS start after this */
   --hero-bg-h: 560px;
 
-  /* Keep hero card same size on all laptops/desktops */
   --hero-card-max: 860px;
 }
 
@@ -183,14 +181,16 @@ a {
 .hero-section {
   height: var(--hero-bg-h);
   display: grid;
-  align-items: center;
+  grid-template-rows: auto 1fr; /* row1: offer+nav, row2: hero */
 }
 
 /* HERO card stays same size on large screens */
 .hero {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  grid-row: 2;
+  display: grid;
+  place-items: center;
+  padding: 0 6px 10px;
+  margin: 0; /* important: no margin-top guessing */
 }
 
 .hero-card {
