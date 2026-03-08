@@ -185,7 +185,7 @@ body{
 /* ---------- Hero ---------- */
 .hero{
   background: var(--bg-dark);
-  padding: 26px 0 34px;
+  padding: 0 0 34px;
 }
 
 .hero-grid{
@@ -196,7 +196,7 @@ body{
 }
 
 .hero-left{
-  padding: 10px 0 0;
+  padding: 36px 0 0;
 }
 
 .hero-title{
