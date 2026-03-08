@@ -248,7 +248,7 @@ body{
   justify-content:flex-end;
   padding-right: 10px;
   align-items: flex-start;
-  padding-top: -22px;
+  padding-top: 0px;
 }
 
 .widget-stack{
