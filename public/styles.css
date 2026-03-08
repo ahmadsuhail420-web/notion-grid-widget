@@ -247,12 +247,14 @@ body{
   display:flex;
   justify-content:flex-end;
   padding-right: 10px;
+  align-items: flex-start;
 }
 
 .widget-stack{
   position: relative;
   width: 360px;
   height: 360px;
+  transform: translateY(-18px);
 }
 
 .widget{
@@ -417,6 +419,6 @@ body{
   .hero-title{ font-size: 44px; }
   .products-grid{ grid-template-columns: 1fr; }
   .collections-grid{ grid-template-columns: 1fr; }
-  .widget-stack{ width: 320px; height: 320px; }
+  .widget-stack{ width: 320px; height: 320px; transform: translateY(-14px); }
   .widget{ width: 285px; }
 }
