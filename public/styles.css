@@ -248,14 +248,13 @@ body{
   justify-content:flex-end;
   padding-right: 10px;
   align-items: flex-start;
-  padding-top: 0px;
+  padding-top: -30px;
 }
 
 .widget-stack{
   position: relative;
   width: 360px;
   height: 360px;
-  transform: translateY(-18px);
 }
 
 .widget{
