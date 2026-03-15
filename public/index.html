@@ -78,7 +78,7 @@
       </div>
     </header>
 
-    <!-- Hero (top area / bottom nav / wave offer line) -->
+    <!-- Hero (top area / bottom nav / WAVY offer strip at bottom) -->
     <section class="hero hero--light" aria-label="Hero slider">
       <div class="container hero-shell" data-hero-slider>
         <!-- Part 1: Top area (2 columns) -->
@@ -215,7 +215,7 @@
           </div>
         </div>
 
-        <!-- Part 2: Bottom nav (ABOVE offer line, centered) -->
+        <!-- Part 2: Bottom nav (ABOVE offer strip, centered) -->
         <div class="hero-bottom-nav" aria-label="Hero navigation">
           <button class="hero-nav-btn hero-nav-btn-plain" type="button" data-hero-prev aria-label="Previous slide">
             ‹
@@ -232,14 +232,18 @@
           </button>
         </div>
 
-        <!-- Part 3: Wave offer line (TEXT INSIDE + wavy underline animation) -->
-        <div class="hero-wavebar" aria-label="Limited offer">
-          <div class="hero-wavebar-inner">
-            <div class="hero-wavebar-track">
-              <span class="hero-wavebar-item hero-wave">
+        <!-- Part 3: WAVY offer strip (the strip itself is wavy) -->
+        <div class="offer-wave" aria-label="Limited offer">
+          <!-- Wavy top edge + background -->
+          <div class="offer-wave-bg" aria-hidden="true"></div>
+
+          <!-- Moving text inside strip -->
+          <div class="offer-wave-marquee" role="presentation">
+            <div class="offer-wave-track">
+              <span class="offer-wave-text">
                 LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
               </span>
-              <span class="hero-wavebar-item hero-wave" aria-hidden="true">
+              <span class="offer-wave-text" aria-hidden="true">
                 LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
               </span>
             </div>
