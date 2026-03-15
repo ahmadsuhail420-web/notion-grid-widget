@@ -7,9 +7,16 @@
   const btnPrev = root.querySelector("[data-hero-prev]");
   const btnNext = root.querySelector("[data-hero-next]");
 
+  const currentEl = root.querySelector("[data-hero-current]");
+  const totalEl = root.querySelector("[data-hero-total]");
+
   let index = 0;
   let timer = null;
   const AUTOPLAY_MS = 5000;
+
+  function pad2(n) {
+    return String(n).padStart(2, "0");
+  }
 
   function setActive(nextIndex) {
     index = (nextIndex + slides.length) % slides.length;
@@ -21,6 +28,9 @@
     });
 
     dots.forEach((d, i) => d.classList.toggle("is-active", i === index));
+
+    if (currentEl) currentEl.textContent = pad2(index + 1);
+    if (totalEl) totalEl.textContent = pad2(slides.length);
   }
 
   function next() {
