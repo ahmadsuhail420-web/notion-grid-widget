@@ -195,11 +195,11 @@ body{
   color: #0f141a;
 }
 
-/* hero parts: top / bottom nav / wave offer */
+/* hero parts: top / bottom nav / offer wave */
 .hero-shell{
   min-height: 780px;
   display:grid;
-  grid-template-rows: 1fr auto auto; /* top / nav / wave */
+  grid-template-rows: 1fr auto auto; /* top / nav / offer */
   padding: 36px 0 0;
 }
 
@@ -212,7 +212,6 @@ body{
   padding-bottom: 8px;
 }
 
-/* Left: text */
 .hero-left{
   display:flex;
   align-items:center;
@@ -259,7 +258,6 @@ body{
   line-height: 1.6;
 }
 
-/* Right: widget/image */
 .hero-right{
   display:flex;
   align-items:center;
@@ -280,7 +278,6 @@ body{
   max-width: 100%;
 }
 
-/* ✅ Widget width = 380 */
 .widget{
   position:absolute;
   right: 0;
@@ -301,7 +298,7 @@ body{
   transform: rotate(-2deg) translate(-10px, -2px);
 }
 
-/* Part 2: bottom navigation row (ABOVE offer) */
+/* Part 2: bottom navigation row (ABOVE offer strip) */
 .hero-bottom-nav{
   height: 54px;
   display:flex;
@@ -312,7 +309,6 @@ body{
   color: #0f141a;
 }
 
-/* Plain arrows (no circle) */
 .hero-nav-btn{
   border: 0;
   background: transparent;
@@ -348,77 +344,67 @@ body{
   opacity: .9;
 }
 
-/* Part 3: Wavy underline strip with TEXT INSIDE */
-.hero-wavebar{
-  height: 54px;
-  background: #3b3f45;
+/* ---------- WAVY offer strip (the STRIP is wavy) ---------- */
+.offer-wave{
+  position: relative;
+  height: 70px;          /* overall reserved space */
   overflow: hidden;
 }
 
-/* marquee container */
-.hero-wavebar-inner{
+/* The actual dark strip with a wavy TOP edge */
+.offer-wave-bg{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 54px;          /* strip height */
+  background: #3b3f45;
+  border-top: 1px solid rgba(255,255,255,.18);
+
+  /* Wavy top edge (bigger/smoother) */
+  -webkit-mask-image: radial-gradient(26px 16px at 26px 0, transparent 56%, #000 57%);
+  -webkit-mask-size: 52px 22px;
+  -webkit-mask-repeat: repeat-x;
+  -webkit-mask-position: 0 0;
+  mask-image: radial-gradient(26px 16px at 26px 0, transparent 56%, #000 57%);
+  mask-size: 52px 22px;
+  mask-repeat: repeat-x;
+  mask-position: 0 0;
+}
+
+/* Text area sits inside the strip */
+.offer-wave-marquee{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   height: 54px;
   display:flex;
   align-items:center;
   overflow: hidden;
 }
 
-/* move text right -> left */
-.hero-wavebar-track{
+.offer-wave-track{
   display:flex;
   gap: 44px;
   white-space: nowrap;
   will-change: transform;
-  animation: wavebar-rtl 11s linear infinite;
+  animation: offer-rtl 11s linear infinite;
 }
 
-@keyframes wavebar-rtl{
-  from{ transform: translateX(0); }
-  to{ transform: translateX(-50%); }
-}
-
-/* text styling */
-.hero-wavebar-item{
+.offer-wave-text{
   display:inline-block;
   color: rgba(255,255,255,.92);
   font-size: 12px;
-  letter-spacing: .9px;
+  letter-spacing: .8px;
   text-transform: uppercase;
-  padding: 0 18px;
+  padding-left: 18px;
   line-height: 54px;
 }
 
-/*
-  Wavy underline (your sample idea):
-  - Draw a wavy underline UNDER the offer text
-  - Animate the underline by moving it
-*/
-.hero-wave{
-  position: relative;
-  text-decoration-line: underline;
-  text-decoration-style: wavy;
-  text-decoration-thickness: 3px;
-  text-decoration-color: rgba(255,255,255,.95);
-  text-underline-offset: 14px;
-}
-
-/* Animate the underline “phase” by shifting background position trick */
-.hero-wave::after{
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 10px; /* aligns wave under text */
-  height: 10px;
-  background:
-    radial-gradient(10px 6px at 10px 5px, rgba(255,255,255,.95) 55%, transparent 56%) 0 0/20px 10px repeat-x;
-  opacity: .95;
-  animation: underline-wave 0.9s linear infinite;
-}
-
-@keyframes underline-wave{
-  from{ background-position: 0 0; }
-  to{ background-position: -20px 0; }
+@keyframes offer-rtl{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-50%); }
 }
 
 /* ---------- Products (Top Picks) ---------- */
@@ -590,4 +576,9 @@ body{
 
   .products-grid{ grid-template-columns: 1fr; }
   .collections-grid{ grid-template-columns: 1fr; }
+
+  .offer-wave{ height: 64px; }
+  .offer-wave-bg{ height: 48px; }
+  .offer-wave-marquee{ height: 48px; }
+  .offer-wave-text{ line-height: 48px; }
 }
