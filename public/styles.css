@@ -195,12 +195,12 @@ body{
   color: #0f141a;
 }
 
-/* Hero wrapper: defines the 3 parts */
+/* hero parts: top / bottom nav / wave offer */
 .hero-shell{
   min-height: 780px;
   display:grid;
-  grid-template-rows: 1fr auto auto; /* top area / wave / bottom nav */
-  padding: 36px 0 24px;
+  grid-template-rows: 1fr auto auto; /* top / nav / wave */
+  padding: 36px 0 18px;
 }
 
 /* Part 1: top area */
@@ -214,7 +214,7 @@ body{
 /* Left: text */
 .hero-left{
   display:flex;
-  align-items:center;     /* vertical alignment within top area */
+  align-items:center;
 }
 
 .hero-slides{
@@ -261,7 +261,7 @@ body{
 /* Right: widget/image */
 .hero-right{
   display:flex;
-  align-items:center;   /* vertically centered */
+  align-items:center;
   justify-content:flex-end;
 }
 
@@ -283,7 +283,7 @@ body{
   position:absolute;
   right: 0;
   top: 0;
-  width: 380px;
+  width: 470px;
   max-width: 100%;
   height: auto;
   border-radius: 18px;
@@ -299,67 +299,7 @@ body{
   transform: rotate(-2deg) translate(-10px, -2px);
 }
 
-/* Part 2: curved wave offer line (animated right -> left) */
-.hero-wavebar{
-  position: relative;
-  height: 66px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.hero-wavebar-shape{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 56px;
-  background: #3b3f45;
-  border-top: 1px solid rgba(255,255,255,.18);
-
-  /* Wavy top edge */
-  -webkit-mask-image: radial-gradient(22px 12px at 22px 0, transparent 55%, #000 56%);
-  -webkit-mask-size: 44px 18px;
-  -webkit-mask-repeat: repeat-x;
-  -webkit-mask-position: 0 0;
-  mask-image: radial-gradient(22px 12px at 22px 0, transparent 55%, #000 56%);
-  mask-size: 44px 18px;
-  mask-repeat: repeat-x;
-  mask-position: 0 0;
-}
-
-.hero-wavebar-marquee{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 56px;
-  display:flex;
-  align-items:center;
-  overflow: hidden;
-}
-
-.hero-wavebar-track{
-  display:flex;
-  gap: 44px;
-  white-space: nowrap;
-  will-change: transform;
-  animation: wavebar-rtl 12s linear infinite;
-}
-
-.hero-wavebar-text{
-  color: rgba(255,255,255,.92);
-  font-size: 12px;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  padding-left: 18px;
-}
-
-@keyframes wavebar-rtl{
-  from{ transform: translateX(0); }
-  to{ transform: translateX(-50%); }
-}
-
-/* Part 3: bottom navigation row (centered) */
+/* Part 2: bottom navigation row (ABOVE offer) */
 .hero-bottom-nav{
   height: 54px;
   display:flex;
@@ -370,21 +310,23 @@ body{
   color: #0f141a;
 }
 
+/* Plain arrows (no circle) */
 .hero-nav-btn{
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(15,20,26,.18);
-  background: #ffffff;
-  color: rgba(15,20,26,.85);
-  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: rgba(15,20,26,.75);
   cursor: pointer;
-  display:grid;
-  place-items:center;
+  padding: 6px 10px;
+  font-size: 18px;
   line-height: 1;
 }
 
 .hero-nav-btn:hover{
-  background: rgba(15,20,26,.04);
+  color: rgba(15,20,26,.95);
+}
+
+.hero-nav-btn-plain{
+  border-radius: 6px;
 }
 
 .hero-count{
@@ -406,6 +348,66 @@ body{
 
 .hero-count-total{
   opacity: .9;
+}
+
+/* Part 3: curved wave offer line (BOTTOM EDGE of hero) */
+.hero-wavebar{
+  position: relative;
+  height: 62px;
+  overflow: hidden;
+}
+
+/* Make the wave fill full width and sit cleanly at the very bottom */
+.hero-wavebar-shape{
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  bottom: 0;
+  height: 56px;
+  background: #3b3f45;
+  border-top: 1px solid rgba(255,255,255,.18);
+
+  /* Bigger, smoother wave */
+  -webkit-mask-image: radial-gradient(24px 14px at 24px 0, transparent 56%, #000 57%);
+  -webkit-mask-size: 48px 20px;
+  -webkit-mask-repeat: repeat-x;
+  -webkit-mask-position: 0 0;
+  mask-image: radial-gradient(24px 14px at 24px 0, transparent 56%, #000 57%);
+  mask-size: 48px 20px;
+  mask-repeat: repeat-x;
+  mask-position: 0 0;
+}
+
+.hero-wavebar-marquee{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  display:flex;
+  align-items:center;
+  overflow: hidden;
+}
+
+.hero-wavebar-track{
+  display:flex;
+  gap: 44px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: wavebar-rtl 11s linear infinite;
+}
+
+.hero-wavebar-text{
+  color: rgba(255,255,255,.92);
+  font-size: 12px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  padding-left: 18px;
+}
+
+@keyframes wavebar-rtl{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-50%); }
 }
 
 /* ---------- Products (Top Picks) ---------- */
@@ -527,7 +529,7 @@ body{
 @media (max-width: 980px){
   .hero-shell{
     min-height: unset;
-    padding: 24px 0 18px;
+    padding: 24px 0 12px;
   }
 
   .hero-top{
