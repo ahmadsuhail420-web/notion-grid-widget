@@ -3,7 +3,6 @@
   if (!root) return;
 
   const slides = Array.from(root.querySelectorAll(".hero-slide"));
-  const dots = Array.from(root.querySelectorAll("[data-hero-dot]"));
   const btnPrev = root.querySelector("[data-hero-prev]");
   const btnNext = root.querySelector("[data-hero-next]");
 
@@ -14,10 +13,6 @@
   let timer = null;
   const AUTOPLAY_MS = 5200;
 
-  function pad2(n) {
-    return String(n).padStart(2, "0");
-  }
-
   function setActive(nextIndex) {
     index = (nextIndex + slides.length) % slides.length;
 
@@ -27,10 +22,8 @@
       s.setAttribute("aria-hidden", active ? "false" : "true");
     });
 
-    dots.forEach((d, i) => d.classList.toggle("is-active", i === index));
-
-    if (currentEl) currentEl.textContent = pad2(index + 1);
-    if (totalEl) totalEl.textContent = pad2(slides.length);
+    if (currentEl) currentEl.textContent = String(index + 1);
+    if (totalEl) totalEl.textContent = String(slides.length);
   }
 
   function next() {
@@ -59,14 +52,6 @@
   btnPrev?.addEventListener("click", () => {
     prev();
     start();
-  });
-
-  dots.forEach((dot) => {
-    dot.addEventListener("click", () => {
-      const n = Number(dot.getAttribute("data-hero-dot") || "0");
-      setActive(n);
-      start();
-    });
   });
 
   root.addEventListener("mouseenter", stop);
