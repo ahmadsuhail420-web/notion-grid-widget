@@ -197,7 +197,7 @@ body{
 /* ---------- Hero ---------- */
 .hero{
   background: var(--bg-dark);
-  padding: 0 0 34px;
+  padding: 0;
 }
 
 .hero--light{
@@ -210,10 +210,27 @@ body{
   grid-template-columns: 1.1fr .9fr;
   align-items:center;
   gap: 24px;
+  padding-bottom: 26px; /* keep content clear of the offer strip */
 }
 
 .hero-left{
-  padding: 36px 0 0;
+  padding: 46px 0 0;
+}
+
+/* Make right side never overflow out of hero */
+.hero-right{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  padding: 46px 0 0;
+  overflow: hidden;
+}
+
+.widget-wrap{
+  width: 100%;
+  max-width: 460px;
+  display:flex;
+  justify-content:flex-end;
 }
 
 .hero-title{
@@ -222,45 +239,16 @@ body{
   font-size: 62px;
   line-height: 1.02;
   letter-spacing: .2px;
+  color: #0f141a;
 }
 
 .hero-subtitle{
   margin: 0 0 22px;
-  color: var(--muted);
+  color: rgba(15,20,26,.72);
   font-size: 13px;
   line-height: 1.55;
   letter-spacing: .2px;
 }
-
-/* override existing hero text colors inside light hero */
-.hero--light .hero-title{ color: #0f141a; }
-.hero--light .hero-subtitle{ color: rgba(15,20,26,.72); }
-
-.hero-pager{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap: 14px;
-  margin: 22px 0 18px;
-  color: rgba(255,255,255,.65);
-  font-size: 14px;
-}
-
-.hero--light .hero-pager{ color: rgba(15,20,26,.65); }
-
-.hero-strip{
-  margin: 22px 0 0;
-  text-align:center;
-  color: rgba(255,255,255,.5);
-  font-size: 11px;
-  letter-spacing: .6px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.hero--light .hero-strip{ color: rgba(15,20,26,.55); }
 
 /* Slider layout */
 .hero-slider{
@@ -269,7 +257,7 @@ body{
 
 .hero-slides{
   position: relative;
-  min-height: 260px;
+  min-height: 300px;
 }
 
 .hero-slide{
@@ -288,18 +276,28 @@ body{
   position: relative;
 }
 
-/* Navigation buttons + dots */
+/* Center + small nav */
+.hero-nav{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+/* Small circle arrows like screenshot */
 .hero-nav-btn{
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border: 1px solid rgba(15,20,26,.18);
   background: transparent;
-  color: rgba(15,20,26,.8);
+  color: rgba(15,20,26,.85);
   border-radius: 999px;
   cursor: pointer;
   display: grid;
   place-items: center;
   line-height: 1;
+  font-size: 14px;
 }
 
 .hero-nav-btn:hover{
@@ -325,28 +323,24 @@ body{
   background: rgba(15,20,26,.75);
 }
 
-/* Widget stack */
-.hero-right{
-  display:flex;
-  justify-content:flex-end;
-  padding-right: 10px;
-}
-
+/* Widget stack (constrained to right column) */
 .widget-stack{
   position: relative;
-  width: 360px;
-  height: 360px;
+  width: 420px;
+  height: 420px;
+  max-width: 100%;
 }
 
 .widget{
   position:absolute;
   right: 0;
   top: 0;
-  width: 320px;
+  width: 360px;
+  max-width: 100%;
   height: auto;
   border-radius: 18px;
   transform-origin: center;
-  filter: drop-shadow(0 18px 28px rgba(0,0,0,.35));
+  filter: drop-shadow(0 18px 28px rgba(0,0,0,.28));
 }
 
 .widget-back{
@@ -356,6 +350,48 @@ body{
 
 .widget-front{
   transform: rotate(-2deg) translate(-6px, -2px);
+}
+
+/* Offer line AFTER hero - "waves" feeling (marquee + slight vertical wobble) */
+.hero-offer{
+  position: relative;
+  background: #ffffff;
+  border-top: 1px solid rgba(15,20,26,.10);
+  border-bottom: 1px solid rgba(15,20,26,.10);
+  overflow: hidden;
+}
+
+.hero-offer-track{
+  display: flex;
+  gap: 42px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: hero-marquee 18s linear infinite;
+}
+
+.hero-offer-text{
+  display: inline-block;
+  padding: 14px 0;
+  font-size: 11px;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: rgba(15,20,26,.55);
+  animation: hero-wave 2.6s ease-in-out infinite;
+}
+
+/* second line out of phase so it looks like moving wave */
+.hero-offer-text:nth-child(2){
+  animation-delay: -1.3s;
+}
+
+@keyframes hero-marquee{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-50%); }
+}
+
+@keyframes hero-wave{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(-2px); }
 }
 
 /* ---------- Products (Top Picks) ---------- */
@@ -477,18 +513,27 @@ body{
 @media (max-width: 980px){
   .hero-grid{
     grid-template-columns: 1fr;
-    gap: 26px;
+    gap: 18px;
+    padding-bottom: 14px;
   }
+
   .hero-right{
     justify-content:center;
-    padding-right: 0;
+    padding: 0 0 14px;
   }
+
+  .widget-wrap{
+    justify-content:center;
+  }
+
   .hero-title{
     font-size: 52px;
   }
+
   .products-grid{
     grid-template-columns: repeat(2, 1fr);
   }
+
   .feature{
     grid-template-columns: 1fr;
     gap: 26px;
@@ -500,6 +545,7 @@ body{
   .hero-title{ font-size: 44px; }
   .products-grid{ grid-template-columns: 1fr; }
   .collections-grid{ grid-template-columns: 1fr; }
-  .widget-stack{ width: 320px; height: 320px; transform: translateY(-14px); }
+
+  .widget-stack{ width: 320px; height: 320px; }
   .widget{ width: 285px; }
 }
