@@ -344,7 +344,7 @@ body{
   opacity: .9;
 }
 
-/* ---------- WAVY offer strip (SVG ribbon + text moves on curved path) ---------- */
+/* ---------- WAVY offer strip (strip + text move together like a snake) ---------- */
 .offer-wave{
   position: relative;
   overflow: hidden;
@@ -358,6 +358,7 @@ body{
   display: block;
 }
 
+/* Thick black ribbon */
 .offer-wave__ribbon{
   fill: none;
   stroke: #000;
@@ -365,6 +366,7 @@ body{
   stroke-linecap: round;
 }
 
+/* White centered text */
 .offer-wave__text{
   fill: #fff;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -374,17 +376,27 @@ body{
   text-transform: uppercase;
 }
 
-.offer-wave__scroll{
-  animation: offerWaveScroll 7s linear infinite;
+/* Each snake is 1200 units wide (matches viewBox width) */
+.offer-wave__snake--a{
+  transform: translateX(0);
+  animation: snakeMove 6s linear infinite;
 }
 
-@keyframes offerWaveScroll{
-  from{ start-offset: 100%; }
-  to{ start-offset: 0%; }
+.offer-wave__snake--b{
+  transform: translateX(1200px);
+  animation: snakeMove 6s linear infinite;
+}
+
+@keyframes snakeMove{
+  from{ transform: translateX(1200px); }
+  to{ transform: translateX(-1200px); }
 }
 
 @media (prefers-reduced-motion: reduce){
-  .offer-wave__scroll{ animation: none; }
+  .offer-wave__snake--a,
+  .offer-wave__snake--b{
+    animation: none;
+  }
 }
 
 /* ---------- Products (Top Picks) ---------- */
