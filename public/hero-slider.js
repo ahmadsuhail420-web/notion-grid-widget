@@ -12,7 +12,7 @@
 
   let index = 0;
   let timer = null;
-  const AUTOPLAY_MS = 5000;
+  const AUTOPLAY_MS = 5200;
 
   function pad2(n) {
     return String(n).padStart(2, "0");
