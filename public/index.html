@@ -82,47 +82,72 @@
       </div>
     </header>
 
-    <!-- Hero -->
-    <section class="hero">
+    <!-- Hero Slider -->
+    <section class="hero hero--light" aria-label="Hero slider">
       <div class="container hero-grid">
         <div class="hero-left">
-          <h1 class="hero-title">
-            Embed<br />
-            beautiful grids<br />
-            in Notion.
-          </h1>
+          <div class="hero-slider" data-hero-slider>
+            <div class="hero-slides">
+              <!-- Slide 1 -->
+              <article class="hero-slide is-active" aria-hidden="false">
+                <h1 class="hero-title">
+                  Embed<br />
+                  beautiful grids<br />
+                  in Notion.
+                </h1>
 
-          <p class="hero-subtitle">
-            Add images, link cards, resources, or product blocks in a<br />
-            clean, responsive grid—no code, just copy &amp; paste.
-          </p>
+                <p class="hero-subtitle">
+                  Add images, link cards, resources, or product blocks in a<br />
+                  clean, responsive grid—no code, just copy &amp; paste.
+                </p>
 
-          <a class="btn btn-outline" href="#">
-            <span class="btn-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M7 8V7a5 5 0 0 1 10 0v1"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </span>
-            SHOP NOW
-          </a>
+                <a class="btn btn-primary" href="#">SHOP NOW</a>
+              </article>
 
-          <div class="hero-pager" aria-label="Hero pagination">
-            <span class="chev" aria-hidden="true">‹</span>
-            <span class="pager-text">1 / 3</span>
-            <span class="chev" aria-hidden="true">›</span>
+              <!-- Slide 2 -->
+              <article class="hero-slide" aria-hidden="true">
+                <h1 class="hero-title">
+                  Plan<br />
+                  your content<br />
+                  faster.
+                </h1>
+
+                <p class="hero-subtitle">
+                  Drag-and-drop layouts that look great on desktop and mobile.<br />
+                  Build once, reuse everywhere.
+                </p>
+
+                <a class="btn btn-primary" href="#">VIEW TEMPLATES</a>
+              </article>
+
+              <!-- Slide 3 -->
+              <article class="hero-slide" aria-hidden="true">
+                <h1 class="hero-title">
+                  Share<br />
+                  a polished<br />
+                  storefront.
+                </h1>
+
+                <p class="hero-subtitle">
+                  Create product grids and link cards that feel like a real shop.<br />
+                  No code required.
+                </p>
+
+                <a class="btn btn-primary" href="#">GET STARTED</a>
+              </article>
+            </div>
+
+            <div class="hero-pager" aria-label="Hero pagination">
+              <button class="hero-nav-btn" type="button" data-hero-prev aria-label="Previous slide">‹</button>
+
+              <div class="hero-dots" role="tablist" aria-label="Hero slides">
+                <button class="hero-dot is-active" type="button" data-hero-dot="0" aria-label="Go to slide 1"></button>
+                <button class="hero-dot" type="button" data-hero-dot="1" aria-label="Go to slide 2"></button>
+                <button class="hero-dot" type="button" data-hero-dot="2" aria-label="Go to slide 3"></button>
+              </div>
+
+              <button class="hero-nav-btn" type="button" data-hero-next aria-label="Next slide">›</button>
+            </div>
           </div>
 
           <p class="hero-strip">
@@ -152,6 +177,8 @@
           </div>
         </div>
       </div>
+
+      <script defer src="hero-slider.js"></script>
     </section>
 
     <!-- Top Picks -->
