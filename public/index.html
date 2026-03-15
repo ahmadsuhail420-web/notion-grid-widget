@@ -85,6 +85,7 @@
     <!-- Hero Slider -->
     <section class="hero hero--light" aria-label="Hero slider">
       <div class="container hero-grid">
+        <!-- Left: text/slider -->
         <div class="hero-left">
           <div class="hero-slider" data-hero-slider>
             <div class="hero-slides">
@@ -137,7 +138,8 @@
               </article>
             </div>
 
-            <div class="hero-pager" aria-label="Hero pagination">
+            <!-- Center + small navigation (like your screenshot) -->
+            <div class="hero-nav" aria-label="Hero navigation">
               <button class="hero-nav-btn" type="button" data-hero-prev aria-label="Previous slide">‹</button>
 
               <div class="hero-dots" role="tablist" aria-label="Hero slides">
@@ -149,32 +151,38 @@
               <button class="hero-nav-btn" type="button" data-hero-next aria-label="Next slide">›</button>
             </div>
           </div>
-
-          <p class="hero-strip">
-            LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
-          </p>
         </div>
 
+        <!-- Right: widget/image (kept inside hero) -->
         <div class="hero-right" aria-label="Widget preview">
-          <div class="widget-stack">
-            <!-- NOTE:
-              Replace these src paths with your uploaded images:
-              - widget-preview-1.png
-              - widget-preview-2.png
-            -->
-            <img
-              class="widget widget-back"
-              src="/assets/widget-preview-2.png"
-              alt="Widget preview back"
-              loading="lazy"
-            />
-            <img
-              class="widget widget-front"
-              src="/assets/widget-preview-1.png"
-              alt="Widget preview front"
-              loading="lazy"
-            />
+          <div class="widget-wrap">
+            <div class="widget-stack">
+              <img
+                class="widget widget-back"
+                src="/assets/widget-preview-2.png"
+                alt="Widget preview back"
+                loading="lazy"
+              />
+              <img
+                class="widget widget-front"
+                src="/assets/widget-preview-1.png"
+                alt="Widget preview front"
+                loading="lazy"
+              />
+            </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Offer line AFTER hero (marquee / wave movement) -->
+      <div class="hero-offer" aria-label="Limited offer">
+        <div class="hero-offer-track">
+          <span class="hero-offer-text">
+            LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
+          </span>
+          <span class="hero-offer-text" aria-hidden="true">
+            LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
+          </span>
         </div>
       </div>
 
