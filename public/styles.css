@@ -182,10 +182,27 @@ body{
   background: rgba(255,255,255,.92);
 }
 
+/* Primary green button */
+.btn-primary{
+  background: #58655A;
+  color: #ffffff;
+  border: 1px solid #58655A;
+  width: 150px;
+}
+
+.btn-primary:hover{
+  filter: brightness(0.95);
+}
+
 /* ---------- Hero ---------- */
 .hero{
   background: var(--bg-dark);
   padding: 0 0 34px;
+}
+
+.hero--light{
+  background: #ffffff;
+  color: #0f141a;
 }
 
 .hero-grid{
@@ -215,6 +232,10 @@ body{
   letter-spacing: .2px;
 }
 
+/* override existing hero text colors inside light hero */
+.hero--light .hero-title{ color: #0f141a; }
+.hero--light .hero-subtitle{ color: rgba(15,20,26,.72); }
+
 .hero-pager{
   display:flex;
   align-items:center;
@@ -225,10 +246,7 @@ body{
   font-size: 14px;
 }
 
-.chev{
-  font-size: 18px;
-  transform: translateY(-1px);
-}
+.hero--light .hero-pager{ color: rgba(15,20,26,.65); }
 
 .hero-strip{
   margin: 22px 0 0;
@@ -240,6 +258,71 @@ body{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.hero--light .hero-strip{ color: rgba(15,20,26,.55); }
+
+/* Slider layout */
+.hero-slider{
+  width: 100%;
+}
+
+.hero-slides{
+  position: relative;
+  min-height: 260px;
+}
+
+.hero-slide{
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 260ms ease, transform 260ms ease;
+  pointer-events: none;
+}
+
+.hero-slide.is-active{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  position: relative;
+}
+
+/* Navigation buttons + dots */
+.hero-nav-btn{
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(15,20,26,.18);
+  background: transparent;
+  color: rgba(15,20,26,.8);
+  border-radius: 999px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.hero-nav-btn:hover{
+  background: rgba(0,0,0,.04);
+}
+
+.hero-dots{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-dot{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(15,20,26,.25);
+  cursor: pointer;
+}
+
+.hero-dot.is-active{
+  background: rgba(15,20,26,.75);
 }
 
 /* Widget stack */
