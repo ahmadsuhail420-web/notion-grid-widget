@@ -28,7 +28,6 @@
 
         <div class="nav-actions" aria-label="Header actions">
           <button class="icon-btn" aria-label="Search">
-            <!-- magnifier -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
@@ -41,7 +40,6 @@
           </button>
 
           <button class="icon-btn" aria-label="Cart">
-            <!-- bag -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M7 8V7a5 5 0 0 1 10 0v1"
@@ -61,7 +59,6 @@
           </button>
 
           <button class="icon-btn" aria-label="Account">
-            <!-- user -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
@@ -83,7 +80,11 @@
     </header>
 
     <!-- Hero Slider -->
-    <section class="hero hero--light" aria-label="Hero slider">
+    <section class="hero hero--light hero--premium" aria-label="Hero slider">
+      <!-- Decorative blobs (adds life) -->
+      <div class="hero-decor hero-decor-a" aria-hidden="true"></div>
+      <div class="hero-decor hero-decor-b" aria-hidden="true"></div>
+
       <div class="container hero-grid">
         <!-- Left: text/slider -->
         <div class="hero-left">
@@ -91,6 +92,8 @@
             <div class="hero-slides">
               <!-- Slide 1 -->
               <article class="hero-slide is-active" aria-hidden="false">
+                <div class="hero-kicker">NOTION · GRIDS · NO CODE</div>
+
                 <h1 class="hero-title">
                   Embed<br />
                   beautiful grids<br />
@@ -98,15 +101,26 @@
                 </h1>
 
                 <p class="hero-subtitle">
-                  Add images, link cards, resources, or product blocks in a<br />
+                  Add images, link cards, resources, or product blocks in a
                   clean, responsive grid—no code, just copy &amp; paste.
                 </p>
 
-                <a class="btn btn-primary" href="#">SHOP NOW</a>
+                <div class="hero-cta">
+                  <a class="btn btn-primary" href="#">SHOP NOW</a>
+                  <a class="btn btn-ghost" href="#">See demo</a>
+                </div>
+
+                <div class="hero-badges" aria-label="Highlights">
+                  <span class="hero-badge">Instant access</span>
+                  <span class="hero-badge">Mobile friendly</span>
+                  <span class="hero-badge">Copy &amp; paste</span>
+                </div>
               </article>
 
               <!-- Slide 2 -->
               <article class="hero-slide" aria-hidden="true">
+                <div class="hero-kicker">PLAN · SCHEDULE · PUBLISH</div>
+
                 <h1 class="hero-title">
                   Plan<br />
                   your content<br />
@@ -114,15 +128,26 @@
                 </h1>
 
                 <p class="hero-subtitle">
-                  Drag-and-drop layouts that look great on desktop and mobile.<br />
+                  Drag-and-drop layouts that look great on desktop and mobile.
                   Build once, reuse everywhere.
                 </p>
 
-                <a class="btn btn-primary" href="#">VIEW TEMPLATES</a>
+                <div class="hero-cta">
+                  <a class="btn btn-primary" href="#">VIEW TEMPLATES</a>
+                  <a class="btn btn-ghost" href="#">What’s included?</a>
+                </div>
+
+                <div class="hero-badges" aria-label="Highlights">
+                  <span class="hero-badge">3 layouts</span>
+                  <span class="hero-badge">Clean design</span>
+                  <span class="hero-badge">Fast setup</span>
+                </div>
               </article>
 
               <!-- Slide 3 -->
               <article class="hero-slide" aria-hidden="true">
+                <div class="hero-kicker">LINK CARDS · PRODUCT BLOCKS</div>
+
                 <h1 class="hero-title">
                   Share<br />
                   a polished<br />
@@ -130,11 +155,20 @@
                 </h1>
 
                 <p class="hero-subtitle">
-                  Create product grids and link cards that feel like a real shop.<br />
+                  Create product grids and link cards that feel like a real shop.
                   No code required.
                 </p>
 
-                <a class="btn btn-primary" href="#">GET STARTED</a>
+                <div class="hero-cta">
+                  <a class="btn btn-primary" href="#">GET STARTED</a>
+                  <a class="btn btn-ghost" href="#">Pricing</a>
+                </div>
+
+                <div class="hero-badges" aria-label="Highlights">
+                  <span class="hero-badge">Modern UI</span>
+                  <span class="hero-badge">Fast load</span>
+                  <span class="hero-badge">Reusable</span>
+                </div>
               </article>
             </div>
 
@@ -180,7 +214,7 @@
         </div>
       </div>
 
-      <!-- Offer line AFTER hero: right-to-left with wave path -->
+      <!-- Offer line AFTER hero: right-to-left wave -->
       <div class="hero-offer" aria-label="Limited offer">
         <div class="hero-offer-wave" aria-hidden="true"></div>
 
