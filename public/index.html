@@ -232,32 +232,40 @@
           </button>
         </div>
 
-        <!-- Part 3: WAVY offer strip (SVG ribbon + text moves on curved path) -->
+        <!-- Part 3: WAVY offer strip (strip + text move together like a snake) -->
         <div class="offer-wave" aria-label="Limited offer">
-          <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" role="img">
+          <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" role="img" aria-hidden="true">
             <defs>
               <path
-                id="offerWavePath"
-                d="M -120 130
-                   C 140 30, 360 30, 620 130
-                   S 980 230, 1320 130"
-              />
-              <path
-                id="offerRibbonPath"
-                d="M -120 130
-                   C 140 30, 360 30, 620 130
-                   S 980 230, 1320 130"
+                id="snakePath"
+                d="M 0 130
+                   C 200 40, 400 40, 600 130
+                   S 1000 220, 1200 130"
               />
             </defs>
 
-            <use href="#offerRibbonPath" class="offer-wave__ribbon" />
+            <!-- We render 2 identical snakes and slide them left for a seamless loop -->
+            <g class="offer-wave__lane">
+              <!-- Snake 1 -->
+              <g class="offer-wave__snake offer-wave__snake--a">
+                <use href="#snakePath" class="offer-wave__ribbon" />
+                <text class="offer-wave__text">
+                  <textPath href="#snakePath" startOffset="50%" text-anchor="middle">
+                    LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
+                  </textPath>
+                </text>
+              </g>
 
-            <text class="offer-wave__text">
-              <textPath class="offer-wave__scroll" href="#offerWavePath" startOffset="100%">
-                LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE • LIMITED
-                OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
-              </textPath>
-            </text>
+              <!-- Snake 2 -->
+              <g class="offer-wave__snake offer-wave__snake--b">
+                <use href="#snakePath" class="offer-wave__ribbon" />
+                <text class="offer-wave__text">
+                  <textPath href="#snakePath" startOffset="50%" text-anchor="middle">
+                    LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
+                  </textPath>
+                </text>
+              </g>
+            </g>
           </svg>
         </div>
       </div>
