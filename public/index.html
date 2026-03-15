@@ -28,7 +28,6 @@
 
         <div class="nav-actions" aria-label="Header actions">
           <button class="icon-btn" aria-label="Search">
-            <!-- magnifier -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
@@ -41,7 +40,6 @@
           </button>
 
           <button class="icon-btn" aria-label="Cart">
-            <!-- bag -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M7 8V7a5 5 0 0 1 10 0v1"
@@ -61,7 +59,6 @@
           </button>
 
           <button class="icon-btn" aria-label="Account">
-            <!-- user -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
@@ -82,7 +79,7 @@
       </div>
     </header>
 
-    <!-- Hero (3 parts: top area / wave / bottom nav) -->
+    <!-- Hero (3 parts: top area / bottom nav / wave offer line) -->
     <section class="hero hero--light" aria-label="Hero slider">
       <div class="container hero-shell" data-hero-slider>
         <!-- Part 1: Top area (2 columns) -->
@@ -221,7 +218,24 @@
           </div>
         </div>
 
-        <!-- Part 2: Curved wave offer line (above bottom nav) -->
+        <!-- Part 2: Bottom nav (ABOVE offer line, centered) -->
+        <div class="hero-bottom-nav" aria-label="Hero navigation">
+          <button class="hero-nav-btn hero-nav-btn-plain" type="button" data-hero-prev aria-label="Previous slide">
+            ‹
+          </button>
+
+          <div class="hero-count" aria-label="Slide count">
+            <span class="hero-count-current" data-hero-current>1</span>
+            <span class="hero-count-sep">/</span>
+            <span class="hero-count-total" data-hero-total>3</span>
+          </div>
+
+          <button class="hero-nav-btn hero-nav-btn-plain" type="button" data-hero-next aria-label="Next slide">
+            ›
+          </button>
+        </div>
+
+        <!-- Part 3: Curved wave offer line (BOTTOM EDGE of hero) -->
         <div class="hero-wavebar" aria-label="Limited offer">
           <div class="hero-wavebar-shape" aria-hidden="true"></div>
 
@@ -235,19 +249,6 @@
               </span>
             </div>
           </div>
-        </div>
-
-        <!-- Part 3: Bottom nav (center of hero width) -->
-        <div class="hero-bottom-nav" aria-label="Hero navigation">
-          <button class="hero-nav-btn" type="button" data-hero-prev aria-label="Previous slide">‹</button>
-
-          <div class="hero-count" aria-label="Slide count">
-            <span class="hero-count-current" data-hero-current>1</span>
-            <span class="hero-count-sep">/</span>
-            <span class="hero-count-total" data-hero-total>3</span>
-          </div>
-
-          <button class="hero-nav-btn" type="button" data-hero-next aria-label="Next slide">›</button>
         </div>
       </div>
 
