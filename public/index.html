@@ -232,22 +232,33 @@
           </button>
         </div>
 
-        <!-- Part 3: WAVY offer strip (the strip itself is wavy) -->
+        <!-- Part 3: WAVY offer strip (SVG ribbon + text moves on curved path) -->
         <div class="offer-wave" aria-label="Limited offer">
-          <!-- Wavy top edge + background -->
-          <div class="offer-wave-bg" aria-hidden="true"></div>
+          <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" role="img">
+            <defs>
+              <path
+                id="offerWavePath"
+                d="M -120 130
+                   C 140 30, 360 30, 620 130
+                   S 980 230, 1320 130"
+              />
+              <path
+                id="offerRibbonPath"
+                d="M -120 130
+                   C 140 30, 360 30, 620 130
+                   S 980 230, 1320 130"
+              />
+            </defs>
 
-          <!-- Moving text inside strip -->
-          <div class="offer-wave-marquee" role="presentation">
-            <div class="offer-wave-track">
-              <span class="offer-wave-text">
-                LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
-              </span>
-              <span class="offer-wave-text" aria-hidden="true">
-                LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
-              </span>
-            </div>
-          </div>
+            <use href="#offerRibbonPath" class="offer-wave__ribbon" />
+
+            <text class="offer-wave__text">
+              <textPath class="offer-wave__scroll" href="#offerWavePath" startOffset="100%">
+                LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE • LIMITED
+                OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
+              </textPath>
+            </text>
+          </svg>
         </div>
       </div>
 
