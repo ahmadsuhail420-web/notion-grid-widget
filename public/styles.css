@@ -205,30 +205,33 @@ body{
   color: #0f141a;
 }
 
+/* Increase hero height so widget isn't cut */
 .hero-grid{
   display:grid;
   grid-template-columns: 1.1fr .9fr;
-  align-items:center;
+  align-items:stretch;
   gap: 24px;
-  padding-bottom: 26px; /* keep content clear of the offer strip */
+  min-height: 640px;
+  padding: 34px 0 26px;
 }
 
 .hero-left{
-  padding: 46px 0 0;
+  display:flex;
+  flex-direction: column;
+  justify-content:center;
 }
 
-/* Make right side never overflow out of hero */
+/* Right side never cut */
 .hero-right{
   display:flex;
   justify-content:flex-end;
   align-items:center;
-  padding: 46px 0 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .widget-wrap{
   width: 100%;
-  max-width: 460px;
+  max-width: 520px;
   display:flex;
   justify-content:flex-end;
 }
@@ -253,11 +256,13 @@ body{
 /* Slider layout */
 .hero-slider{
   width: 100%;
+  position: relative;
+  padding-bottom: 60px; /* space for bottom-centered nav */
 }
 
 .hero-slides{
   position: relative;
-  min-height: 300px;
+  min-height: 320px;
 }
 
 .hero-slide{
@@ -276,16 +281,20 @@ body{
   position: relative;
 }
 
-/* Center + small nav */
+/* Bottom-center nav inside the hero (center of left column) */
 .hero-nav{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display:flex;
   align-items:center;
   justify-content:center;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 0;
 }
 
-/* Small circle arrows like screenshot */
+/* Small circle arrows */
 .hero-nav-btn{
   width: 32px;
   height: 32px;
@@ -323,11 +332,31 @@ body{
   background: rgba(15,20,26,.75);
 }
 
-/* Widget stack (constrained to right column) */
+/* Number navigation */
+.hero-numbers{
+  display:flex;
+  align-items:center;
+  gap: 6px;
+  margin-left: 6px;
+  color: rgba(15,20,26,.55);
+  font-size: 12px;
+  letter-spacing: .3px;
+  user-select: none;
+}
+
+.hero-num{
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-num-sep{
+  opacity: .7;
+}
+
+/* Widget stack */
 .widget-stack{
   position: relative;
-  width: 420px;
-  height: 420px;
+  width: 520px;
+  height: 520px;
   max-width: 100%;
 }
 
@@ -335,7 +364,7 @@ body{
   position:absolute;
   right: 0;
   top: 0;
-  width: 360px;
+  width: 440px;
   max-width: 100%;
   height: auto;
   border-radius: 18px;
@@ -352,12 +381,10 @@ body{
   transform: rotate(-2deg) translate(-6px, -2px);
 }
 
-/* Offer line AFTER hero - "waves" feeling (marquee + slight vertical wobble) */
+/* Offer line AFTER hero: black bg, small height, wave + marquee */
 .hero-offer{
   position: relative;
-  background: #ffffff;
-  border-top: 1px solid rgba(15,20,26,.10);
-  border-bottom: 1px solid rgba(15,20,26,.10);
+  background: #0f141a;
   overflow: hidden;
 }
 
@@ -366,22 +393,21 @@ body{
   gap: 42px;
   white-space: nowrap;
   will-change: transform;
-  animation: hero-marquee 18s linear infinite;
+  animation: hero-marquee 16s linear infinite;
 }
 
 .hero-offer-text{
   display: inline-block;
-  padding: 14px 0;
-  font-size: 11px;
-  letter-spacing: .6px;
+  padding: 10px 0; /* small height */
+  font-size: 10px;
+  letter-spacing: .8px;
   text-transform: uppercase;
-  color: rgba(15,20,26,.55);
-  animation: hero-wave 2.6s ease-in-out infinite;
+  color: rgba(255,255,255,.72);
+  animation: hero-wave 2.4s ease-in-out infinite;
 }
 
-/* second line out of phase so it looks like moving wave */
 .hero-offer-text:nth-child(2){
-  animation-delay: -1.3s;
+  animation-delay: -1.2s;
 }
 
 @keyframes hero-marquee{
@@ -391,7 +417,7 @@ body{
 
 @keyframes hero-wave{
   0%,100%{ transform: translateY(0); }
-  50%{ transform: translateY(-2px); }
+  50%{ transform: translateY(-3px); }
 }
 
 /* ---------- Products (Top Picks) ---------- */
@@ -514,16 +540,21 @@ body{
   .hero-grid{
     grid-template-columns: 1fr;
     gap: 18px;
-    padding-bottom: 14px;
+    min-height: unset;
+    padding: 22px 0 18px;
+  }
+
+  .hero-left{
+    justify-content:flex-start;
   }
 
   .hero-right{
     justify-content:center;
-    padding: 0 0 14px;
   }
 
   .widget-wrap{
     justify-content:center;
+    max-width: 520px;
   }
 
   .hero-title{
@@ -546,6 +577,6 @@ body{
   .products-grid{ grid-template-columns: 1fr; }
   .collections-grid{ grid-template-columns: 1fr; }
 
-  .widget-stack{ width: 320px; height: 320px; }
+  .widget-stack{ width: 320px; height: 360px; }
   .widget{ width: 285px; }
 }
