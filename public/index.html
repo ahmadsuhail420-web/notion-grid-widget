@@ -10,13 +10,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
   </head>
 
   <body>
-    <!-- Top Nav -->
+    <!-- Top Nav (outside hero) -->
     <header class="site-header">
       <div class="container nav">
         <div class="brand">Grid Planner</div>
@@ -28,6 +28,7 @@
 
         <div class="nav-actions" aria-label="Header actions">
           <button class="icon-btn" aria-label="Search">
+            <!-- magnifier -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
@@ -40,6 +41,7 @@
           </button>
 
           <button class="icon-btn" aria-label="Cart">
+            <!-- bag -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M7 8V7a5 5 0 0 1 10 0v1"
@@ -59,6 +61,7 @@
           </button>
 
           <button class="icon-btn" aria-label="Account">
+            <!-- user -->
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
@@ -79,23 +82,24 @@
       </div>
     </header>
 
-    <!-- Hero Slider (match screenshot style) -->
-    <section class="hero hero--light hero--centered" aria-label="Hero slider">
-      <div class="container hero-grid hero-grid-centered">
-        <!-- Left: centered text -->
-        <div class="hero-left hero-left-centered">
-          <div class="hero-slider" data-hero-slider>
+    <!-- Hero (3 parts: top area / wave / bottom nav) -->
+    <section class="hero hero--light" aria-label="Hero slider">
+      <div class="container hero-shell" data-hero-slider>
+        <!-- Part 1: Top area (2 columns) -->
+        <div class="hero-top">
+          <!-- Left: text -->
+          <div class="hero-left">
             <div class="hero-slides">
               <!-- Slide 1 -->
               <article class="hero-slide is-active" aria-hidden="false">
-                <h1 class="hero-title hero-title-centered">
+                <h1 class="hero-title">
                   Embed<br />
                   beautiful grids<br />
                   in Notion.
                 </h1>
 
-                <p class="hero-subtitle hero-subtitle-centered">
-                  Add images, link cards, resources, or product blocks in a<br />
+                <p class="hero-subtitle">
+                  Add images, link cards, resources, or product blocks in a
                   clean, responsive grid—no code, just copy &amp; paste.
                 </p>
 
@@ -124,14 +128,14 @@
 
               <!-- Slide 2 -->
               <article class="hero-slide" aria-hidden="true">
-                <h1 class="hero-title hero-title-centered">
+                <h1 class="hero-title">
                   Plan<br />
                   your content<br />
                   faster.
                 </h1>
 
-                <p class="hero-subtitle hero-subtitle-centered">
-                  Drag-and-drop layouts that look great on desktop and mobile.<br />
+                <p class="hero-subtitle">
+                  Drag-and-drop layouts that look great on desktop and mobile.
                   Build once, reuse everywhere.
                 </p>
 
@@ -160,14 +164,14 @@
 
               <!-- Slide 3 -->
               <article class="hero-slide" aria-hidden="true">
-                <h1 class="hero-title hero-title-centered">
+                <h1 class="hero-title">
                   Share<br />
                   a polished<br />
                   storefront.
                 </h1>
 
-                <p class="hero-subtitle hero-subtitle-centered">
-                  Create product grids and link cards that feel like a real shop.<br />
+                <p class="hero-subtitle">
+                  Create product grids and link cards that feel like a real shop.
                   No code required.
                 </p>
 
@@ -194,60 +198,56 @@
                 </a>
               </article>
             </div>
+          </div>
 
-            <!-- Navigation like screenshot: <  1 / 3  > -->
-            <div class="hero-nav hero-nav-centered" aria-label="Hero navigation">
-              <button class="hero-nav-btn hero-nav-btn-min" type="button" data-hero-prev aria-label="Previous slide">
-                ‹
-              </button>
-
-              <div class="hero-nav-inline" aria-label="Slide count">
-                <span class="hero-nav-inline-current" data-hero-current>1</span>
-                <span class="hero-nav-inline-sep">/</span>
-                <span class="hero-nav-inline-total" data-hero-total>3</span>
+          <!-- Right: widget -->
+          <div class="hero-right" aria-label="Widget preview">
+            <div class="widget-wrap">
+              <div class="widget-stack">
+                <img
+                  class="widget widget-back"
+                  src="/assets/widget-preview-2.png"
+                  alt="Widget preview back"
+                  loading="lazy"
+                />
+                <img
+                  class="widget widget-front"
+                  src="/assets/widget-preview-1.png"
+                  alt="Widget preview front"
+                  loading="lazy"
+                />
               </div>
-
-              <button class="hero-nav-btn hero-nav-btn-min" type="button" data-hero-next aria-label="Next slide">
-                ›
-              </button>
             </div>
           </div>
         </div>
 
-        <!-- Right: widget -->
-        <div class="hero-right hero-right-centered" aria-label="Widget preview">
-          <div class="widget-wrap">
-            <div class="widget-stack widget-stack-clean">
-              <img
-                class="widget widget-back"
-                src="/assets/widget-preview-2.png"
-                alt="Widget preview back"
-                loading="lazy"
-              />
-              <img
-                class="widget widget-front"
-                src="/assets/widget-preview-1.png"
-                alt="Widget preview front"
-                loading="lazy"
-              />
+        <!-- Part 2: Curved wave offer line (above bottom nav) -->
+        <div class="hero-wavebar" aria-label="Limited offer">
+          <div class="hero-wavebar-shape" aria-hidden="true"></div>
+
+          <div class="hero-wavebar-marquee" role="presentation">
+            <div class="hero-wavebar-track">
+              <span class="hero-wavebar-text">
+                LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
+              </span>
+              <span class="hero-wavebar-text" aria-hidden="true">
+                LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
+              </span>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Curved wave offer line (like screenshot) -->
-      <div class="hero-wavebar" aria-label="Limited offer wave bar">
-        <div class="hero-wavebar-svg" aria-hidden="true"></div>
+        <!-- Part 3: Bottom nav (center of hero width) -->
+        <div class="hero-bottom-nav" aria-label="Hero navigation">
+          <button class="hero-nav-btn" type="button" data-hero-prev aria-label="Previous slide">‹</button>
 
-        <div class="hero-wavebar-marquee" role="presentation">
-          <div class="hero-wavebar-track">
-            <span class="hero-wavebar-text">
-              LIMITED OFFER: 20% OFF TODAY ONE-TIME PURCHASE LIMITED OFFER: 20% OFF TODAY ONE-TIME PURCHASE
-            </span>
-            <span class="hero-wavebar-text" aria-hidden="true">
-              LIMITED OFFER: 20% OFF TODAY ONE-TIME PURCHASE LIMITED OFFER: 20% OFF TODAY ONE-TIME PURCHASE
-            </span>
+          <div class="hero-count" aria-label="Slide count">
+            <span class="hero-count-current" data-hero-current>1</span>
+            <span class="hero-count-sep">/</span>
+            <span class="hero-count-total" data-hero-total>3</span>
           </div>
+
+          <button class="hero-nav-btn" type="button" data-hero-next aria-label="Next slide">›</button>
         </div>
       </div>
 
