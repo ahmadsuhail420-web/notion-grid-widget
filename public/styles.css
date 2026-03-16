@@ -4,7 +4,7 @@
   --bg-darker: #141b22;
   --text: #ffffff;
   --muted: rgba(255,255,255,.72);
-  --muted-2: rgba(255,255,255,.55);
+  --muted-2: rgba(255,,255,.55);
   --line: rgba(255,255,255,.22);
   --btn: rgba(255,255,255,.08);
   --white: #ffffff;
@@ -344,12 +344,12 @@ body{
   opacity: .9;
 }
 
-/* ---------- WAVY offer strip (strip + text move together like a snake) ---------- */
+/* ---------- WAVY offer strip (SVG snake) ---------- */
 .offer-wave{
   position: relative;
   overflow: hidden;
   height: 110px;
-  background: #ffffff; /* matches hero background */
+  background: #ffffff;
 }
 
 .offer-wave__svg{
@@ -376,25 +376,19 @@ body{
   text-transform: uppercase;
 }
 
-/* Each snake is 1200 units wide (matches viewBox width) */
-.offer-wave__snake--a{
-  transform: translateX(0);
-  animation: snakeMove 6s linear infinite;
+/* Animate the whole lane for a seamless loop */
+.offer-wave__lane{
+  animation: snakeLane 6s linear infinite;
+  will-change: transform;
 }
 
-.offer-wave__snake--b{
-  transform: translateX(1200px);
-  animation: snakeMove 6s linear infinite;
-}
-
-@keyframes snakeMove{
-  from{ transform: translateX(1200px); }
+@keyframes snakeLane{
+  from{ transform: translateX(0); }
   to{ transform: translateX(-1200px); }
 }
 
 @media (prefers-reduced-motion: reduce){
-  .offer-wave__snake--a,
-  .offer-wave__snake--b{
+  .offer-wave__lane{
     animation: none;
   }
 }
