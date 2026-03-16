@@ -234,10 +234,11 @@
 
         <!-- Part 3: WAVY offer strip (strip + text move together like a snake) -->
 
+<!-- Replace ONLY the offer-wave block with this (no background container color) -->
 <div class="offer-wave" aria-label="Limited offer">
   <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" aria-hidden="true">
     <defs>
-      <!-- Animated wave path (d changes => real up/down wave motion) -->
+      <!-- animated wave path (gives real up/down motion) -->
       <path id="snakePath">
         <animate
           attributeName="d"
@@ -252,7 +253,7 @@
       </path>
     </defs>
 
-    <!-- One moving lane (right->left) containing two copies for seamless loop -->
+    <!-- animate one lane for smooth loop -->
     <g class="offer-wave__lane">
       <g class="offer-wave__snake" transform="translate(0 0)">
         <use href="#snakePath" class="offer-wave__ribbon" />
