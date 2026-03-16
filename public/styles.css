@@ -347,17 +347,21 @@ body{
 /* ---------- WAVY offer strip (SVG snake) ---------- */
 /* Replace ONLY the offer-strip CSS with this */
 
-/* ---------- WAVY offer strip (no background) ---------- */
+/* Replace ONLY the offer strip CSS with this */
+
 .offer-wave{
   position: relative;
   overflow: hidden;
-  height: 70px;
-  background: transparent; /* ✅ removed background */
+  height: 72px;
+  background: transparent;
 }
 
+/* SVG ribbon (behind) */
 .offer-wave__svg{
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: 70px;
+  height: 72px;
   display: block;
 }
 
@@ -365,49 +369,73 @@ body{
 .offer-wave__ribbon{
   fill: none;
   stroke: #000;
-  stroke-width: 64;
+  stroke-width: 62;
   stroke-linecap: round;
 }
 
-/*
-  Text looked "stretched" because letter-spacing was high + large font on a curve.
-  Make it normal:
-  - smaller font
-  - NO extra letter-spacing
-  - normal weight
-*/
-.offer-wave__text{
-  fill: #fff;
-  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 600;
-  font-size: 18px;        /* smaller, more natural */
-  letter-spacing: 0;      /* ✅ remove stretch feel */
-  text-transform: uppercase;
-}
-
-/* right -> left movement */
+/* ribbon moves right->left smoothly */
 .offer-wave__lane{
-  animation: snakeLane 9s linear infinite;
+  animation: ribbonLane 9s linear infinite;
   will-change: transform;
 }
 
-@keyframes snakeLane{
+@keyframes ribbonLane{
   from{ transform: translateX(0); }
   to{ transform: translateX(-1200px); }
 }
 
+/* HTML marquee text (on top, crisp) */
+.offer-wave__marquee{
+  position: relative;
+  z-index: 2;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  /* helps keep text sharp */
+  transform: translateZ(0);
+}
+
+.offer-wave__track{
+  display: flex;
+  gap: 44px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: textLane 9s linear infinite;
+}
+
+@keyframes textLane{
+  from{ transform: translateX(0); }
+  to{ transform: translateX(-50%); }
+}
+
+.offer-wave__text{
+  color: #fff;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0 18px;
+  /* tiny shadow improves readability */
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+
 @media (prefers-reduced-motion: reduce){
-  .offer-wave__lane{ animation: none; }
+  .offer-wave__lane,
+  .offer-wave__track{
+    animation: none;
+  }
 }
 
-/* mobile */
 @media (max-width: 520px){
-  .offer-wave{ height: 58px; }
-  .offer-wave__svg{ height: 58px; }
-  .offer-wave__ribbon{ stroke-width: 56; }
-  .offer-wave__text{ font-size: 14px; }
+  .offer-wave{ height: 60px; }
+  .offer-wave__svg{ height: 60px; }
+  .offer-wave__ribbon{ stroke-width: 54; }
+  .offer-wave__text{ font-size: 12px; }
 }
-
 /* ---------- Products (Top Picks) ---------- */
 .products-grid{
   display:grid;
