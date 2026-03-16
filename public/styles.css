@@ -345,14 +345,14 @@ body{
 }
 
 /* ---------- WAVY offer strip (SVG snake) ---------- */
-/* Replace ONLY the offer strip CSS section with this */
+/* Replace ONLY the offer-strip CSS with this */
 
-/* ---------- WAVY offer strip (SVG snake) ---------- */
+/* ---------- WAVY offer strip (no background) ---------- */
 .offer-wave{
   position: relative;
   overflow: hidden;
-  height: 70px;              /* thinner area */
-  background: #ffffff;       /* hero bg */
+  height: 70px;
+  background: transparent; /* ✅ removed background */
 }
 
 .offer-wave__svg{
@@ -361,27 +361,33 @@ body{
   display: block;
 }
 
-/* Thinner ribbon */
+/* thinner ribbon */
 .offer-wave__ribbon{
   fill: none;
   stroke: #000;
-  stroke-width: 64;          /* was 120 (too thick) */
+  stroke-width: 64;
   stroke-linecap: round;
 }
 
-/* Text: smaller + less spacing so it doesn't look stretched */
+/*
+  Text looked "stretched" because letter-spacing was high + large font on a curve.
+  Make it normal:
+  - smaller font
+  - NO extra letter-spacing
+  - normal weight
+*/
 .offer-wave__text{
   fill: #fff;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 700;
-  font-size: 22px;           /* was 52 */
-  letter-spacing: 0.4px;     /* was 1.5 */
+  font-weight: 600;
+  font-size: 18px;        /* smaller, more natural */
+  letter-spacing: 0;      /* ✅ remove stretch feel */
   text-transform: uppercase;
 }
 
-/* Right -> left movement */
+/* right -> left movement */
 .offer-wave__lane{
-  animation: snakeLane 8s linear infinite; /* slower so it feels smooth */
+  animation: snakeLane 9s linear infinite;
   will-change: transform;
 }
 
@@ -394,12 +400,12 @@ body{
   .offer-wave__lane{ animation: none; }
 }
 
-/* Mobile tuning */
+/* mobile */
 @media (max-width: 520px){
   .offer-wave{ height: 58px; }
   .offer-wave__svg{ height: 58px; }
   .offer-wave__ribbon{ stroke-width: 56; }
-  .offer-wave__text{ font-size: 16px; letter-spacing: 0.2px; }
+  .offer-wave__text{ font-size: 14px; }
 }
 
 /* ---------- Products (Top Picks) ---------- */
