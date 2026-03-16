@@ -345,40 +345,43 @@ body{
 }
 
 /* ---------- WAVY offer strip (SVG snake) ---------- */
+/* Replace ONLY the offer strip CSS section with this */
+
+/* ---------- WAVY offer strip (SVG snake) ---------- */
 .offer-wave{
   position: relative;
   overflow: hidden;
-  height: 110px;
-  background: #ffffff;
+  height: 70px;              /* thinner area */
+  background: #ffffff;       /* hero bg */
 }
 
 .offer-wave__svg{
   width: 100%;
-  height: 110px;
+  height: 70px;
   display: block;
 }
 
-/* Thick black ribbon */
+/* Thinner ribbon */
 .offer-wave__ribbon{
   fill: none;
   stroke: #000;
-  stroke-width: 120;
+  stroke-width: 64;          /* was 120 (too thick) */
   stroke-linecap: round;
 }
 
-/* White centered text */
+/* Text: smaller + less spacing so it doesn't look stretched */
 .offer-wave__text{
   fill: #fff;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 800;
-  font-size: 52px;
-  letter-spacing: 1.5px;
+  font-weight: 700;
+  font-size: 22px;           /* was 52 */
+  letter-spacing: 0.4px;     /* was 1.5 */
   text-transform: uppercase;
 }
 
-/* Animate the whole lane for a seamless loop */
+/* Right -> left movement */
 .offer-wave__lane{
-  animation: snakeLane 6s linear infinite;
+  animation: snakeLane 8s linear infinite; /* slower so it feels smooth */
   will-change: transform;
 }
 
@@ -388,9 +391,15 @@ body{
 }
 
 @media (prefers-reduced-motion: reduce){
-  .offer-wave__lane{
-    animation: none;
-  }
+  .offer-wave__lane{ animation: none; }
+}
+
+/* Mobile tuning */
+@media (max-width: 520px){
+  .offer-wave{ height: 58px; }
+  .offer-wave__svg{ height: 58px; }
+  .offer-wave__ribbon{ stroke-width: 56; }
+  .offer-wave__text{ font-size: 16px; letter-spacing: 0.2px; }
 }
 
 /* ---------- Products (Top Picks) ---------- */
