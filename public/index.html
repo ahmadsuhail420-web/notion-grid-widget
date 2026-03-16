@@ -233,13 +233,12 @@
         </div>
 
         <!-- Part 3: WAVY offer strip (strip + text move together like a snake) -->
-
-<!-- Replace ONLY the offer-wave block with this (no background container color) -->
+<!-- Replace ONLY Part 3 with this -->
 <div class="offer-wave" aria-label="Limited offer">
+  <!-- Ribbon (SVG only) -->
   <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" aria-hidden="true">
     <defs>
-      <!-- animated wave path (gives real up/down motion) -->
-      <path id="snakePath">
+      <path id="snakeRibbon">
         <animate
           attributeName="d"
           dur="1.6s"
@@ -253,27 +252,28 @@
       </path>
     </defs>
 
-    <!-- animate one lane for smooth loop -->
+    <!-- Two ribbons, animate the lane -->
     <g class="offer-wave__lane">
-      <g class="offer-wave__snake" transform="translate(0 0)">
-        <use href="#snakePath" class="offer-wave__ribbon" />
-        <text class="offer-wave__text">
-          <textPath href="#snakePath" startOffset="50%" text-anchor="middle">
-            LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
-          </textPath>
-        </text>
+      <g transform="translate(0 0)">
+        <use href="#snakeRibbon" class="offer-wave__ribbon" />
       </g>
-
-      <g class="offer-wave__snake" transform="translate(1200 0)">
-        <use href="#snakePath" class="offer-wave__ribbon" />
-        <text class="offer-wave__text">
-          <textPath href="#snakePath" startOffset="50%" text-anchor="middle">
-            LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
-          </textPath>
-        </text>
+      <g transform="translate(1200 0)">
+        <use href="#snakeRibbon" class="offer-wave__ribbon" />
       </g>
     </g>
   </svg>
+
+  <!-- Crisp HTML text overlay -->
+  <div class="offer-wave__marquee" aria-hidden="false">
+    <div class="offer-wave__track">
+      <span class="offer-wave__text">
+        LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
+      </span>
+      <span class="offer-wave__text" aria-hidden="true">
+        LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
+      </span>
+    </div>
+  </div>
 </div>
 
       <script defer src="hero-slider.js"></script>
