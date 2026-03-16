@@ -234,7 +234,7 @@
 
         <!-- Part 3: WAVY offer strip (strip + text move together like a snake) -->
         <div class="offer-wave" aria-label="Limited offer">
-          <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" role="img" aria-hidden="true">
+          <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <path
                 id="snakePath"
@@ -244,10 +244,10 @@
               />
             </defs>
 
-            <!-- We render 2 identical snakes and slide them left for a seamless loop -->
+            <!-- One animated lane that contains TWO snakes (0 and +1200) -->
             <g class="offer-wave__lane">
-              <!-- Snake 1 -->
-              <g class="offer-wave__snake offer-wave__snake--a">
+              <!-- Snake A at x=0 -->
+              <g class="offer-wave__snake" transform="translate(0 0)">
                 <use href="#snakePath" class="offer-wave__ribbon" />
                 <text class="offer-wave__text">
                   <textPath href="#snakePath" startOffset="50%" text-anchor="middle">
@@ -256,8 +256,8 @@
                 </text>
               </g>
 
-              <!-- Snake 2 -->
-              <g class="offer-wave__snake offer-wave__snake--b">
+              <!-- Snake B at x=+1200 -->
+              <g class="offer-wave__snake" transform="translate(1200 0)">
                 <use href="#snakePath" class="offer-wave__ribbon" />
                 <text class="offer-wave__text">
                   <textPath href="#snakePath" startOffset="50%" text-anchor="middle">
