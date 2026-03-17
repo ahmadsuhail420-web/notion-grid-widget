@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grid Planner</title>
+    <title>Split Collage Scroll</title>
     <link rel="stylesheet" href="styles.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -12,379 +12,87 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
+    <!-- A display serif similar vibe; change if you want -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
-    <!-- Top Nav (outside hero) -->
+    <!-- Header (outside scene) -->
     <header class="site-header">
       <div class="container nav">
-        <div class="brand">Grid Planner</div>
+        <div class="brand">CUC?NNO</div>
 
         <nav class="nav-links" aria-label="Primary">
-          <a class="nav-link" href="#">Home</a>
-          <a class="nav-link" href="#">Shop</a>
+          <a class="nav-link" href="#">Contact</a>
         </nav>
 
-        <div class="nav-actions" aria-label="Header actions">
-          <button class="icon-btn" aria-label="Search">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
-
-          <button class="icon-btn" aria-label="Cart">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M7 8V7a5 5 0 0 1 10 0v1"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              />
-              <path
-                d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-
-          <button class="icon-btn" aria-label="Account">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-              />
-              <path
-                d="M4.5 21a7.5 7.5 0 0 1 15 0"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
+        <div class="nav-actions">
+          <a class="btn btn-outline" href="#">FREE STRATEGY SESSION ↗</a>
         </div>
       </div>
     </header>
 
-    <!-- Hero (top area / bottom nav / WAVY offer strip at bottom) -->
-    <section class="hero hero--light" aria-label="Hero slider">
-      <div class="container hero-shell" data-hero-slider>
-        <!-- Part 1: Top area (2 columns) -->
-        <div class="hero-top">
-          <!-- Left: text -->
-          <div class="hero-left">
-            <div class="hero-slides">
-              <!-- Slide 1 -->
-              <article class="hero-slide is-active" aria-hidden="false">
-                <h1 class="hero-title">
-                  Embed<br />
-                  beautiful grids<br />
-                  in Notion.
-                </h1>
+    <!-- Scroll scene -->
+    <section class="split-scene" data-split-scene>
+      <div class="split-sticky">
+        <!-- Collage layer -->
+        <div class="collage" aria-label="Collage">
+          <!-- 8 tiles (use your own images) -->
+          <div class="tile tile--1"><img src="/assets/collage-1.jpg" alt="" /></div>
+          <div class="tile tile--2"><img src="/assets/collage-2.jpg" alt="" /></div>
+          <div class="tile tile--3"><img src="/assets/collage-3.jpg" alt="" /></div>
+          <div class="tile tile--4"><img src="/assets/collage-4.jpg" alt="" /></div>
+          <div class="tile tile--5"><img src="/assets/collage-5.jpg" alt="" /></div>
+          <div class="tile tile--6"><img src="/assets/collage-6.jpg" alt="" /></div>
+          <div class="tile tile--7"><img src="/assets/collage-7.jpg" alt="" /></div>
+          <div class="tile tile--8"><img src="/assets/collage-8.jpg" alt="" /></div>
+        </div>
 
-                <p class="hero-subtitle">
-                  Add images, link cards, resources, or product blocks in a clean, responsive grid—no code, just copy
-                  &amp; paste.
-                </p>
+        <!-- Content layer (final look like image 5) -->
+        <div class="hero-content" aria-label="Hero content">
+          <div class="hero-grid">
+            <h1 class="hero-title">
+              <span class="hero-title__left">
+                Building<br />
+                and<br />
+                Brands<br />
+                Creators<br />
+                Coaches
+              </span>
 
-                <a class="btn btn-outline-dark" href="#">
-                  <span class="btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <path
-                        d="M7 8V7a5 5 0 0 1 10 0v1"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                      />
-                      <path
-                        d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  SHOP NOW
-                </a>
-              </article>
+              <span class="hero-title__right">
+                <span class="italic">Physical</span><br />
+                <span class="italic">Digital</span><br />
+                for<br />
+                &amp;
+              </span>
+            </h1>
 
-              <!-- Slide 2 -->
-              <article class="hero-slide" aria-hidden="true">
-                <h1 class="hero-title">
-                  Plan<br />
-                  your content<br />
-                  faster.
-                </h1>
-
-                <p class="hero-subtitle">
-                  Drag-and-drop layouts that look great on desktop and mobile. Build once, reuse everywhere.
-                </p>
-
-                <a class="btn btn-outline-dark" href="#">
-                  <span class="btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <path
-                        d="M7 8V7a5 5 0 0 1 10 0v1"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                      />
-                      <path
-                        d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  VIEW TEMPLATES
-                </a>
-              </article>
-
-              <!-- Slide 3 -->
-              <article class="hero-slide" aria-hidden="true">
-                <h1 class="hero-title">
-                  Share<br />
-                  a polished<br />
-                  storefront.
-                </h1>
-
-                <p class="hero-subtitle">
-                  Create product grids and link cards that feel like a real shop. No code required.
-                </p>
-
-                <a class="btn btn-outline-dark" href="#">
-                  <span class="btn-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">
-                      <path
-                        d="M7 8V7a5 5 0 0 1 10 0v1"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                      />
-                      <path
-                        d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </span>
-                  GET STARTED
-                </a>
-              </article>
-            </div>
-          </div>
-
-          <!-- Right: widget -->
-          <div class="hero-right" aria-label="Widget preview">
-            <div class="widget-wrap">
-              <div class="widget-stack">
-                <img
-                  class="widget widget-back"
-                  src="/assets/widget-preview-2.png"
-                  alt="Widget preview back"
-                  loading="lazy"
-                />
-                <img
-                  class="widget widget-front"
-                  src="/assets/widget-preview-1.png"
-                  alt="Widget preview front"
-                  loading="lazy"
-                />
-              </div>
-            </div>
+            <p class="hero-paragraph">
+              A UK &amp; Spain based design studio dedicated to serving female-led businesses worldwide. Specializing in
+              website design, branding strategy, social media templates, ad creatives, packaging design &amp; content
+              creation to scale your business and build a strong brand presence.
+            </p>
           </div>
         </div>
 
-        <!-- Part 2: Bottom nav (ABOVE offer strip, centered) -->
-        <div class="hero-bottom-nav" aria-label="Hero navigation">
-          <button class="hero-nav-btn hero-nav-btn-plain" type="button" data-hero-prev aria-label="Previous slide">
-            ‹
-          </button>
-
-          <div class="hero-count" aria-label="Slide count">
-            <span class="hero-count-current" data-hero-current>1</span>
-            <span class="hero-count-sep">/</span>
-            <span class="hero-count-total" data-hero-total>3</span>
-          </div>
-
-          <button class="hero-nav-btn hero-nav-btn-plain" type="button" data-hero-next aria-label="Next slide">
-            ›
-          </button>
-        </div>
-
-        <!-- Part 3: WAVY offer strip (strip + text move together like a snake) -->
-<!-- Replace ONLY Part 3 offer-wave block with this -->
-<div class="offer-wave" aria-label="Limited offer">
-  <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" aria-hidden="true">
-    <defs>
-      <!-- Base wave path -->
-      <path id="wavePath">
-        <animate
-          attributeName="d"
-          dur="1.6s"
-          repeatCount="indefinite"
-          values="
-            M 0 140 C 200 70, 400 70, 600 140 S 1000 210, 1200 140;
-            M 0 140 C 200 40, 400 100, 600 140 S 1000 180, 1200 140;
-            M 0 140 C 200 70, 400 70, 600 140 S 1000 210, 1200 140
-          "
-        />
-      </path>
-    </defs>
-
-    <!-- Ribbon: animate dash offset so it "moves" without transforming the SVG -->
-    <use href="#wavePath" class="offer-wave__ribbon" />
-
-    <!-- Text follows the SAME path -->
-    <text class="offer-wave__text">
-      <textPath href="#wavePath" startOffset="0%">
-        LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
-      </textPath>
-    </text>
-
-    <!-- Duplicate text for continuous loop -->
-    <text class="offer-wave__text" aria-hidden="true">
-      <textPath href="#wavePath" startOffset="50%">
-        LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
-      </textPath>
-    </text>
-  </svg>
-</div>
-
-      <script defer src="hero-slider.js"></script>
-    </section>
-
-    <!-- Top Picks -->
-    <section class="section section-white">
-      <div class="container">
-        <h2 class="section-title">Top Picks</h2>
-
-        <div class="products-grid">
-          <article class="product-card">
-            <div class="product-img img-1" aria-hidden="true"></div>
-            <div class="product-meta">
-              <div class="product-name">Notion Social Media Planner</div>
-              <div class="product-price">$19</div>
-            </div>
-            <button class="btn btn-pill" type="button">Add to cart</button>
-          </article>
-
-          <article class="product-card">
-            <div class="product-img img-2" aria-hidden="true"></div>
-            <div class="product-meta">
-              <div class="product-name">Notion Social Media Planner</div>
-              <div class="product-price">$19</div>
-            </div>
-            <button class="btn btn-pill" type="button">Add to cart</button>
-          </article>
-
-          <article class="product-card">
-            <div class="product-img img-3" aria-hidden="true"></div>
-            <div class="product-meta">
-              <div class="product-name">Notion Social Media Planner</div>
-              <div class="product-price">$19</div>
-            </div>
-            <button class="btn btn-pill" type="button">Add to cart</button>
-          </article>
-
-          <article class="product-card">
-            <div class="product-img img-4" aria-hidden="true"></div>
-            <div class="product-meta">
-              <div class="product-name">Notion Social Media Planner</div>
-              <div class="product-price">$19</div>
-            </div>
-            <button class="btn btn-pill" type="button">Add to cart</button>
-          </article>
-        </div>
+        <!-- Beige next section teaser (like image 5 bottom) -->
+        <div class="below-band" aria-hidden="true"></div>
       </div>
     </section>
 
-    <!-- Feature block -->
-    <section class="section section-dark">
-      <div class="container feature">
-        <div class="feature-left">
-          <div class="feature-image" aria-hidden="true"></div>
-        </div>
-
-        <div class="feature-right">
-          <h3 class="feature-title">Notion Embeddable Grids</h3>
-          <p class="feature-lines">
-            Explanation About grid comes here<br />
-            Explanation About grid comes here<br />
-            Explanation About grid comes here<br />
-            Explanation About grid comes here<br />
-            Explanation About grid comes here
-          </p>
-
-          <div class="feature-price">$&nbsp;&nbsp;15</div>
-
-          <a class="btn btn-light" href="#">
-            <span class="btn-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M7 8V7a5 5 0 0 1 10 0v1"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                />
-                <path
-                  d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </span>
-            SHOP NOW
-          </a>
-        </div>
+    <section class="next-section" aria-label="Next section">
+      <div class="container next-inner">
+        <div class="next-kicker">TAKE A LOOK <span class="muted">( PORTFOLIO )</span></div>
+        <div class="next-title">Projects</div>
       </div>
     </section>
 
-    <!-- Our Collections -->
-    <section class="section section-white">
-      <div class="container">
-        <h2 class="section-title">Our Collections</h2>
-
-        <div class="collections-grid">
-          <div class="collection-card">
-            <div class="collection-img cimg-1" aria-hidden="true"></div>
-            <div class="collection-name">Grid Widget</div>
-          </div>
-
-          <div class="collection-card">
-            <div class="collection-img cimg-2" aria-hidden="true"></div>
-            <div class="collection-name">Notion Template</div>
-          </div>
-
-          <div class="collection-card">
-            <div class="collection-img cimg-3" aria-hidden="true"></div>
-            <div class="collection-name">Notion Template</div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <script defer src="split-scroll.js"></script>
   </body>
 </html>
