@@ -19,7 +19,7 @@
   </head>
 
   <body>
-    <!-- Header: logo left, icons right -->
+    <!-- Header -->
     <header class="site-header" data-site-header>
       <div class="container nav">
         <div class="brand">Grid Planner</div>
@@ -80,7 +80,7 @@
     <!-- Scroll scene -->
     <section class="split-scene" data-split-scene>
       <div class="split-sticky">
-        <!-- Collage layer -->
+        <!-- Collage -->
         <div class="collage" aria-label="Collage">
           <div class="tile tile--1"><img src="/assets/collage-1.jpg" alt="" /></div>
           <div class="tile tile--2"><img src="/assets/collage-2.jpg" alt="" /></div>
@@ -92,24 +92,12 @@
           <div class="tile tile--8"><img src="/assets/collage-8.jpg" alt="" /></div>
         </div>
 
-        <!-- Content layer (centered vertically) -->
+        <!-- Content (centered block) -->
         <div class="hero-content" aria-label="Hero content">
-          <div class="hero-grid">
+          <div class="hero-center">
             <h1 class="hero-title">
-              <span class="hero-title__left">
-                Building<br />
-                and<br />
-                Brands<br />
-                Creators<br />
-                Coaches
-              </span>
-
-              <span class="hero-title__right">
-                <span class="italic">Physical</span><br />
-                <span class="italic">Digital</span><br />
-                for<br />
-                &amp;
-              </span>
+              Building <span class="italic">Physical</span> and <span class="italic">Digital</span> Brands<br />
+              for Creators &amp; Coaches
             </h1>
 
             <p class="hero-paragraph">
@@ -119,12 +107,12 @@
             </p>
           </div>
         </div>
+      </div>
 
-        <!-- Overlay tile that should sit ABOVE the second section -->
-        <div class="bottom-overlay-slot" aria-hidden="true">
-          <div class="tile tile--bottomOverlay">
-            <img src="/assets/collage-7.jpg" alt="" />
-          </div>
+      <!-- Overlay tile that sits ABOVE the beige section (outside sticky) -->
+      <div class="overlay-wrap" aria-hidden="true">
+        <div class="overlay-tile">
+          <img src="/assets/collage-7.jpg" alt="" />
         </div>
       </div>
     </section>
