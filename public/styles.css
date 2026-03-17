@@ -40,50 +40,36 @@ body{
 }
 
 .brand{
-  font-family: "Playfair Display", serif;
-  font-weight: 600;
-  letter-spacing: .5px;
-  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  font-size: 22px;
 }
 
-.nav-links{
+.nav-actions{
   display:flex;
-  gap: 18px;
-  margin-left: auto;
-  margin-right: 18px;
+  gap: 14px;
 }
 
-.nav-link{
-  text-decoration: none;
-  color: rgba(17,17,17,.65);
-  font-weight: 500;
-}
-
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding: 12px 18px;
-  border-radius: 0;
-  text-decoration:none;
-  font-size: 12px;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-}
-
-.btn-outline{
-  border: 1px solid rgba(17,17,17,.18);
-  color: rgba(17,17,17,.78);
+.icon-btn{
+  width: 34px;
+  height: 34px;
+  display:grid;
+  place-items:center;
+  border: 0;
   background: transparent;
+  color: rgba(17,17,17,.78);
+  cursor:pointer;
+  padding:0;
 }
+
+.icon-btn svg{ width: 18px; height: 18px; }
 
 /* ---------- scroll scene ---------- */
-/* Total scroll distance for the animation */
+/* shorter scroll distance so split happens faster */
 .split-scene{
-  height: 260vh; /* scroll length */
+  height: 165vh; /* was 260vh */
 }
 
-/* Sticky viewport while animation plays */
 .split-sticky{
   position: sticky;
   top: 0;
@@ -92,7 +78,6 @@ body{
   background: #fff;
 }
 
-/* Collage layer */
 .collage{
   position: absolute;
   inset: 0;
@@ -102,12 +87,12 @@ body{
 
 .tile{
   position:absolute;
-  width: 180px;
+  /* each tile stays 1:1 using aspect-ratio */
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: #eee;
   transform: translate(-50%, -50%);
-  will-change: transform, opacity;
+  will-change: transform, opacity, width;
   box-shadow: 0 18px 40px rgba(0,0,0,.08);
 }
 
@@ -128,6 +113,9 @@ body{
   justify-content:center;
   padding-top: 58px;
   pointer-events: none;
+
+  opacity: 0;
+  transform: translateY(14px);
 }
 
 .hero-grid{
@@ -135,7 +123,6 @@ body{
   position: relative;
 }
 
-/* Large editorial title */
 .hero-title{
   margin: 0;
   display:grid;
@@ -148,18 +135,8 @@ body{
   font-size: clamp(54px, 6.2vw, 112px);
 }
 
-.hero-title__left,
-.hero-title__right{
-  display:block;
-}
-
-.hero-title__right{
-  text-align: right;
-}
-
-.italic{
-  font-style: italic;
-}
+.hero-title__right{ text-align: right; }
+.italic{ font-style: italic; }
 
 .hero-paragraph{
   margin: 18px 0 0;
@@ -170,67 +147,49 @@ body{
   color: rgba(17,17,17,.74);
 }
 
-/* Beige band hinting next section */
-.below-band{
+/* Divider at bottom of white scene */
+.scene-divider{
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 28vh;
+  height: 0;
+  border-top: 0 solid transparent;
+}
+
+/* Second section */
+.second-section{
   background: var(--beige);
-  z-index: 1;
+  padding: 70px 0 140px;
 }
 
-/* Next section */
-.next-section{
-  background: var(--beige);
-  padding: 62px 0 120px;
-}
+.second-inner{ text-align:center; }
 
-.next-inner{
-  text-align:center;
-}
-
-.next-kicker{
+.second-kicker{
   font-size: 12px;
   letter-spacing: .9px;
   font-weight: 700;
   color: rgba(17,17,17,.8);
 }
 
-.next-kicker .muted{
+.second-kicker .muted{
   font-weight: 500;
   color: rgba(17,17,17,.6);
 }
 
-.next-title{
+.second-title{
   margin-top: 12px;
   font-family: "Playfair Display", serif;
   font-size: 72px;
   letter-spacing: -0.8px;
 }
 
-/* ---------- initial state tuning (JS will animate) ---------- */
-/* We start with content hidden and tiles stacked at center in JS, but these help no-js fallback */
-.hero-content{
-  opacity: 0;
-  transform: translateY(14px);
-}
-
 @media (max-width: 980px){
-  .hero-title{
-    grid-template-columns: 1fr;
-  }
-  .hero-title__right{
-    text-align: left;
-  }
-  .hero-paragraph{
-    width: min(620px, 100%);
-  }
+  .hero-title{ grid-template-columns: 1fr; }
+  .hero-title__right{ text-align: left; }
+  .hero-paragraph{ width: min(620px, 100%); }
 }
 
 @media (max-width: 520px){
-  .brand{ font-size: 26px; }
-  .nav-links{ display:none; }
-  .tile{ width: 120px; }
+  .brand{ font-size: 20px; }
 }
