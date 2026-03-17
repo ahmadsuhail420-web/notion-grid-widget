@@ -2,27 +2,24 @@
   const scene = document.querySelector("[data-split-scene]");
   if (!scene) return;
 
-  const sticky = scene.querySelector(".split-sticky");
   const tiles = Array.from(scene.querySelectorAll(".tile"));
   const content = scene.querySelector(".hero-content");
 
-  // Configure final collage positions (percent of viewport)
-  // These are tuned to resemble image 5.
-  // x,y are in vw/vh units relative to viewport center.
+  // Final collage positions + sizes (all remain 1:1 due to aspect-ratio).
+  // x/y are vw/vh offsets from viewport center.
   const final = [
-    { x: -44, y: -18, s: 0.95, r: 0 }, // 1 top-left small
-    { x:  46, y: -18, s: 0.95, r: 0 }, // 2 top-right small
-    { x: -40, y:   6, s: 1.10, r: 0 }, // 3 left-mid
-    { x:  40, y:   6, s: 1.10, r: 0 }, // 4 right-mid
-    { x: -26, y:  25, s: 0.95, r: 0 }, // 5 bottom-left small
-    { x:  26, y:  25, s: 0.95, r: 0 }, // 6 bottom-right small
-    { x: -42, y:  34, s: 1.55, r: 0 }, // 7 big bottom-left (projects)
-    { x:  10, y:  38, s: 1.15, r: 0 }, // 8 bottom-mid (projects image)
+    { x: -46, y: -16, size: 70,  r: 0 }, // 1 small corner
+    { x:  46, y: -16, size: 70,  r: 0 }, // 2 small corner
+    { x: -44, y:   9, size: 150, r: 0 }, // 3 left-mid bigger
+    { x:  44, y:   9, size: 150, r: 0 }, // 4 right-mid bigger
+    { x: -28, y:  27, size: 82,  r: 0 }, // 5 small
+    { x:  28, y:  27, size: 82,  r: 0 }, // 6 small
+    { x: -44, y:  40, size: 240, r: 0 }, // 7 big bottom-left
+    { x:  10, y:  42, size: 180, r: 0 }, // 8 big bottom-mid
   ];
 
-  // Initial stacked state: all tiles centered 1:1
-  // One tile is visible, others hidden until scroll begins.
-  const center = { x: 0, y: 0, s: 1.35, r: 0 };
+  // Initial state: one center 1:1 tile, others stacked and hidden
+  const start = { x: 0, y: 0, size: 220, r: 0 };
 
   function clamp01(n) {
     return Math.min(1, Math.max(0, n));
@@ -32,34 +29,8 @@
     return a + (b - a) * t;
   }
 
-  function easeInOut(t) {
-    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  }
-
-  function apply(progress) {
-    const t = easeInOut(progress);
-
-    tiles.forEach((tile, i) => {
-      const f = final[i] || final[final.length - 1];
-
-      // tiles split outward as you scroll
-      const x = lerp(center.x, f.x, t);
-      const y = lerp(center.y, f.y, t);
-      const s = lerp(center.s, f.s, t);
-      const r = lerp(center.r, f.r, t);
-
-      tile.style.transform = `translate(calc(50vw + ${x}vw), calc(50vh + ${y}vh)) translate(-50%, -50%) scale(${s}) rotate(${r}deg)`;
-
-      // only first tile visible at very start; others fade in quickly
-      const fadeStart = i === 0 ? 0 : 0.05;
-      const fade = clamp01((progress - fadeStart) / 0.15);
-      tile.style.opacity = String(i === 0 ? 1 : fade);
-    });
-
-    // content reveal: starts after split begins
-    const contentT = clamp01((progress - 0.18) / 0.28);
-    content.style.opacity = String(contentT);
-    content.style.transform = `translateY(${lerp(14, 0, easeInOut(contentT))}px)`;
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
   }
 
   function getProgress() {
@@ -70,11 +41,43 @@
     return clamp01(scrolled / total);
   }
 
+  function apply(progress) {
+    // split should complete faster (first ~55% of scroll)
+    const splitT = clamp01(progress / 0.55);
+    const t = easeOutCubic(splitT);
+
+    tiles.forEach((tile, i) => {
+      const f = final[i] || final[final.length - 1];
+
+      const x = lerp(start.x, f.x, t);
+      const y = lerp(start.y, f.y, t);
+      const size = lerp(start.size, f.size, t);
+      const r = lerp(start.r, f.r, t);
+
+      tile.style.width = `${size}px`;
+      tile.style.transform =
+        `translate(calc(50vw + ${x}vw), calc(50vh + ${y}vh)) translate(-50%, -50%) rotate(${r}deg)`;
+
+      // opacity: center tile visible immediately; others fade in quickly
+      if (i === 0) {
+        tile.style.opacity = "1";
+      } else {
+        const fade = clamp01((splitT - 0.06) / 0.18);
+        tile.style.opacity = String(fade);
+      }
+    });
+
+    // content reveal begins shortly after split starts
+    const contentT = clamp01((progress - 0.18) / 0.25);
+    content.style.opacity = String(contentT);
+    content.style.transform = `translateY(${lerp(14, 0, easeOutCubic(contentT))}px)`;
+  }
+
   function onScroll() {
     apply(getProgress());
   }
 
-  // Initial paint
+  // init
   apply(0);
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
