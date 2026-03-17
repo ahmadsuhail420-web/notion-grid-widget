@@ -1,24 +1,26 @@
 (function () {
   const scene = document.querySelector("[data-split-scene]");
+  const header = document.querySelector("[data-site-header]");
   if (!scene) return;
 
-  const tiles = Array.from(scene.querySelectorAll(".tile"));
+  const tiles = Array.from(scene.querySelectorAll(".collage .tile"));
   const content = scene.querySelector(".hero-content");
+  const overlayTile = scene.querySelector(".tile--bottomOverlay");
 
-  // Final collage positions + sizes (all remain 1:1 due to aspect-ratio).
-  // x/y are vw/vh offsets from viewport center.
+  // Final positions spread TOP + LEFT + RIGHT + BOTTOM (not only sides/bottom)
+  // size in px; still 1:1 due to aspect-ratio
   const final = [
-    { x: -46, y: -16, size: 70,  r: 0 }, // 1 small corner
-    { x:  46, y: -16, size: 70,  r: 0 }, // 2 small corner
-    { x: -44, y:   9, size: 150, r: 0 }, // 3 left-mid bigger
-    { x:  44, y:   9, size: 150, r: 0 }, // 4 right-mid bigger
-    { x: -28, y:  27, size: 82,  r: 0 }, // 5 small
-    { x:  28, y:  27, size: 82,  r: 0 }, // 6 small
-    { x: -44, y:  40, size: 240, r: 0 }, // 7 big bottom-left
-    { x:  10, y:  42, size: 180, r: 0 }, // 8 big bottom-mid
+    { x: -46, y: -26, size: 64,  r: 0 },  // 1 top-left corner
+    { x:  46, y: -26, size: 64,  r: 0 },  // 2 top-right corner
+    { x: -40, y:  -6, size: 160, r: 0 },  // 3 left-upper
+    { x:  40, y:  -6, size: 160, r: 0 },  // 4 right-upper
+    { x: -30, y:  16, size: 92,  r: 0 },  // 5 mid-left small
+    { x:  30, y:  16, size: 92,  r: 0 },  // 6 mid-right small
+    { x: -44, y:  42, size: 240, r: 0 },  // 7 bottom-left big
+    { x:  12, y:  44, size: 180, r: 0 },  // 8 bottom-mid big
   ];
 
-  // Initial state: one center 1:1 tile, others stacked and hidden
+  // Initial: one centered tile visible; others stacked/hide
   const start = { x: 0, y: 0, size: 220, r: 0 };
 
   function clamp01(n) {
@@ -42,7 +44,10 @@
   }
 
   function apply(progress) {
-    // split should complete faster (first ~55% of scroll)
+    // Hide header as soon as scrolling starts
+    if (header) header.classList.toggle("is-hidden", progress > 0.02);
+
+    // split completes fast: first 55% of scene scroll
     const splitT = clamp01(progress / 0.55);
     const t = easeOutCubic(splitT);
 
@@ -58,26 +63,36 @@
       tile.style.transform =
         `translate(calc(50vw + ${x}vw), calc(50vh + ${y}vh)) translate(-50%, -50%) rotate(${r}deg)`;
 
-      // opacity: center tile visible immediately; others fade in quickly
+      // show center immediately, others fade in quickly
       if (i === 0) {
         tile.style.opacity = "1";
       } else {
-        const fade = clamp01((splitT - 0.06) / 0.18);
+        const fade = clamp01((splitT - 0.06) / 0.16);
         tile.style.opacity = String(fade);
       }
     });
 
-    // content reveal begins shortly after split starts
-    const contentT = clamp01((progress - 0.18) / 0.25);
+    // Content reveal centered: starts early and finishes by mid scroll
+    const contentT = clamp01((progress - 0.12) / 0.24);
     content.style.opacity = String(contentT);
     content.style.transform = `translateY(${lerp(14, 0, easeOutCubic(contentT))}px)`;
+
+    // Bottom overlay: appears near the end and sits into next section
+    if (overlayTile) {
+      const o = clamp01((progress - 0.58) / 0.18);
+      overlayTile.style.opacity = String(o);
+
+      // position overlay tile (center-ish like ref)
+      const size = lerp(220, 260, easeOutCubic(o));
+      overlayTile.style.width = `${size}px`;
+      overlayTile.style.transform = `translateX(-50%) translateY(${lerp(30, 0, easeOutCubic(o))}px)`;
+    }
   }
 
   function onScroll() {
     apply(getProgress());
   }
 
-  // init
   apply(0);
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
