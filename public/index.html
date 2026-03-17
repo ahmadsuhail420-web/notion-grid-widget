@@ -12,9 +12,6 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-    <!-- A display serif similar vibe; change if you want -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
       rel="stylesheet"
@@ -22,17 +19,60 @@
   </head>
 
   <body>
-    <!-- Header (outside scene) -->
+    <!-- Header: logo left, icons right (like before) -->
     <header class="site-header">
       <div class="container nav">
-        <div class="brand">CUC?NNO</div>
+        <div class="brand">Grid Planner</div>
 
-        <nav class="nav-links" aria-label="Primary">
-          <a class="nav-link" href="#">Contact</a>
-        </nav>
+        <div class="nav-actions" aria-label="Header actions">
+          <button class="icon-btn" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
 
-        <div class="nav-actions">
-          <a class="btn btn-outline" href="#">FREE STRATEGY SESSION ↗</a>
+          <button class="icon-btn" aria-label="Cart">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M7 8V7a5 5 0 0 1 10 0v1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+              <path
+                d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+
+          <button class="icon-btn" aria-label="Account">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <path
+                d="M4.5 21a7.5 7.5 0 0 1 15 0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </header>
@@ -42,7 +82,6 @@
       <div class="split-sticky">
         <!-- Collage layer -->
         <div class="collage" aria-label="Collage">
-          <!-- 8 tiles (use your own images) -->
           <div class="tile tile--1"><img src="/assets/collage-1.jpg" alt="" /></div>
           <div class="tile tile--2"><img src="/assets/collage-2.jpg" alt="" /></div>
           <div class="tile tile--3"><img src="/assets/collage-3.jpg" alt="" /></div>
@@ -53,7 +92,7 @@
           <div class="tile tile--8"><img src="/assets/collage-8.jpg" alt="" /></div>
         </div>
 
-        <!-- Content layer (final look like image 5) -->
+        <!-- Content layer -->
         <div class="hero-content" aria-label="Hero content">
           <div class="hero-grid">
             <h1 class="hero-title">
@@ -81,15 +120,16 @@
           </div>
         </div>
 
-        <!-- Beige next section teaser (like image 5 bottom) -->
-        <div class="below-band" aria-hidden="true"></div>
+        <!-- White scene should end and next section begins (beige) -->
+        <div class="scene-divider" aria-hidden="true"></div>
       </div>
     </section>
 
-    <section class="next-section" aria-label="Next section">
-      <div class="container next-inner">
-        <div class="next-kicker">TAKE A LOOK <span class="muted">( PORTFOLIO )</span></div>
-        <div class="next-title">Projects</div>
+    <!-- Second section (beige) -->
+    <section class="second-section" aria-label="Projects section">
+      <div class="container second-inner">
+        <div class="second-kicker">TAKE A LOOK <span class="muted">( PORTFOLIO )</span></div>
+        <div class="second-title">Projects</div>
       </div>
     </section>
 
