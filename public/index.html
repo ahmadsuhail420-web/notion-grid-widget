@@ -19,8 +19,8 @@
   </head>
 
   <body>
-    <!-- Header: logo left, icons right (like before) -->
-    <header class="site-header">
+    <!-- Header: logo left, icons right -->
+    <header class="site-header" data-site-header>
       <div class="container nav">
         <div class="brand">Grid Planner</div>
 
@@ -92,7 +92,7 @@
           <div class="tile tile--8"><img src="/assets/collage-8.jpg" alt="" /></div>
         </div>
 
-        <!-- Content layer -->
+        <!-- Content layer (centered vertically) -->
         <div class="hero-content" aria-label="Hero content">
           <div class="hero-grid">
             <h1 class="hero-title">
@@ -120,12 +120,16 @@
           </div>
         </div>
 
-        <!-- White scene should end and next section begins (beige) -->
-        <div class="scene-divider" aria-hidden="true"></div>
+        <!-- Overlay tile that should sit ABOVE the second section -->
+        <div class="bottom-overlay-slot" aria-hidden="true">
+          <div class="tile tile--bottomOverlay">
+            <img src="/assets/collage-7.jpg" alt="" />
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Second section (beige) -->
+    <!-- Second section -->
     <section class="second-section" aria-label="Projects section">
       <div class="container second-inner">
         <div class="second-kicker">TAKE A LOOK <span class="muted">( PORTFOLIO )</span></div>
