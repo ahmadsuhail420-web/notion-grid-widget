@@ -16,7 +16,7 @@ body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ---------- header ---------- */
+/* header */
 .container{
   width: min(var(--container), calc(100% - 48px));
   margin-inline: auto;
@@ -25,7 +25,7 @@ body{
 .site-header{
   position: sticky;
   top: 0;
-  z-index: 60;
+  z-index: 80;
   background: rgba(255,255,255,.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--hairline);
@@ -45,16 +45,9 @@ body{
   padding: 18px 0;
 }
 
-.brand{
-  font-weight: 800;
-  letter-spacing: .2px;
-  font-size: 22px;
-}
+.brand{ font-weight: 800; letter-spacing: .2px; font-size: 22px; }
 
-.nav-actions{
-  display:flex;
-  gap: 14px;
-}
+.nav-actions{ display:flex; gap: 14px; }
 
 .icon-btn{
   width: 34px;
@@ -67,12 +60,16 @@ body{
   cursor:pointer;
   padding:0;
 }
-
 .icon-btn svg{ width: 18px; height: 18px; }
 
-/* ---------- scroll scene ---------- */
+/* scene
+   - split happens early
+   - then we keep scrolling (reading time) while holding final layout
+*/
 .split-scene{
-  height: 165vh; /* fast split */
+  height: 220vh; /* enough room to read after split */
+  position: relative;
+  z-index: 2; /* above second section bg boundary */
 }
 
 .split-sticky{
@@ -83,6 +80,7 @@ body{
   background: #fff;
 }
 
+/* collage tiles */
 .collage{
   position: absolute;
   inset: 0;
@@ -107,77 +105,81 @@ body{
   display:block;
 }
 
-/* Content layer: center middle */
+/* centered content */
 .hero-content{
   position: absolute;
   inset: 0;
   z-index: 2;
   display:flex;
-  align-items:center;           /* ✅ middle */
+  align-items:center;
   justify-content:center;
-  padding: 0;
   pointer-events: none;
 
   opacity: 0;
   transform: translateY(14px);
 }
 
-.hero-grid{
-  width: min(1120px, calc(100% - 80px));
-  position: relative;
+.hero-center{
+  width: min(980px, calc(100% - 80px));
+  text-align: center;
 }
 
 .hero-title{
   margin: 0;
-  display:grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: 28px;
   font-family: "Playfair Display", serif;
   font-weight: 400;
   line-height: 0.92;
   letter-spacing: -0.8px;
-  font-size: clamp(54px, 6.2vw, 112px);
+  font-size: clamp(48px, 6vw, 104px);
 }
 
-.hero-title__right{ text-align: right; }
 .italic{ font-style: italic; }
 
 .hero-paragraph{
-  margin: 18px 0 0;
-  width: min(560px, 95%);
+  margin: 18px auto 0;
+  width: min(620px, 95%);
   font-family: "Playfair Display", serif;
   font-size: 16px;
   line-height: 1.35;
   color: rgba(17,17,17,.74);
 }
 
-/* Bottom overlay that sits above the second section */
-.bottom-overlay-slot{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -80px;       /* ✅ pushes into next section */
-  height: 0;
-  z-index: 40;         /* above second section */
+/* overlay tile sits above second section
+   - outside sticky so it overlaps boundary correctly
+*/
+.overlay-wrap{
+  position: sticky;
+  top: 0;
+  height: 0;     /* anchor only */
+  z-index: 70;   /* above second section */
   pointer-events: none;
 }
 
-/* We will position this tile with JS at the end */
-.tile--bottomOverlay{
+.overlay-tile{
   position: absolute;
   left: 50%;
-  top: 0;
-  width: 260px;
-  transform: translateX(-50%);
+  top: calc(100vh - 56px); /* sits near bottom edge */
+  width: 190px;            /* ✅ smaller */
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, 0);
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0,0,0,.10);
   opacity: 0;
 }
 
-/* Second section */
+.overlay-tile img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display:block;
+}
+
+/* second section */
 .second-section{
   position: relative;
   z-index: 1;
   background: var(--beige);
-  padding: 120px 0 160px;
+  padding: 140px 0 200px;
 }
 
 .second-inner{ text-align:center; }
@@ -189,10 +191,7 @@ body{
   color: rgba(17,17,17,.8);
 }
 
-.second-kicker .muted{
-  font-weight: 500;
-  color: rgba(17,17,17,.6);
-}
+.second-kicker .muted{ font-weight: 500; color: rgba(17,17,17,.6); }
 
 .second-title{
   margin-top: 12px;
@@ -201,12 +200,7 @@ body{
   letter-spacing: -0.8px;
 }
 
-@media (max-width: 980px){
-  .hero-title{ grid-template-columns: 1fr; }
-  .hero-title__right{ text-align: left; }
-}
-
 @media (max-width: 520px){
   .brand{ font-size: 20px; }
-  .tile--bottomOverlay{ width: 200px; }
+  .overlay-tile{ width: 150px; }
 }
