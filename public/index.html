@@ -233,12 +233,12 @@
         </div>
 
         <!-- Part 3: WAVY offer strip (strip + text move together like a snake) -->
-<!-- Replace ONLY Part 3 with this -->
+<!-- Replace ONLY Part 3 offer-wave block with this -->
 <div class="offer-wave" aria-label="Limited offer">
-  <!-- Ribbon (SVG only) -->
   <svg class="offer-wave__svg" viewBox="0 0 1200 260" preserveAspectRatio="none" aria-hidden="true">
     <defs>
-      <path id="snakeRibbon">
+      <!-- Base wave path -->
+      <path id="wavePath">
         <animate
           attributeName="d"
           dur="1.6s"
@@ -252,28 +252,23 @@
       </path>
     </defs>
 
-    <!-- Two ribbons, animate the lane -->
-    <g class="offer-wave__lane">
-      <g transform="translate(0 0)">
-        <use href="#snakeRibbon" class="offer-wave__ribbon" />
-      </g>
-      <g transform="translate(1200 0)">
-        <use href="#snakeRibbon" class="offer-wave__ribbon" />
-      </g>
-    </g>
-  </svg>
+    <!-- Ribbon: animate dash offset so it "moves" without transforming the SVG -->
+    <use href="#wavePath" class="offer-wave__ribbon" />
 
-  <!-- Crisp HTML text overlay -->
-  <div class="offer-wave__marquee" aria-hidden="false">
-    <div class="offer-wave__track">
-      <span class="offer-wave__text">
-        LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
-      </span>
-      <span class="offer-wave__text" aria-hidden="true">
-        LIMITED OFFER: 20% OFF TODAY · ONE-TIME PURCHASE · INSTANT ACCESS · WORKS ON MOBILE · NO CODE ·
-      </span>
-    </div>
-  </div>
+    <!-- Text follows the SAME path -->
+    <text class="offer-wave__text">
+      <textPath href="#wavePath" startOffset="0%">
+        LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
+      </textPath>
+    </text>
+
+    <!-- Duplicate text for continuous loop -->
+    <text class="offer-wave__text" aria-hidden="true">
+      <textPath href="#wavePath" startOffset="50%">
+        LIMITED OFFER: 20% OFF TODAY • ONE-TIME PURCHASE • INSTANT ACCESS • WORKS ON MOBILE • NO CODE •
+      </textPath>
+    </text>
+  </svg>
 </div>
 
       <script defer src="hero-slider.js"></script>
