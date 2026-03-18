@@ -67,7 +67,7 @@ body{
    - then we keep scrolling (reading time) while holding final layout
 */
 .split-scene{
-  height: 220vh; /* enough room to read after split */
+  height: 140vh; /* enough room to read after split */
   position: relative;
   z-index: 2; /* above second section bg boundary */
 }
