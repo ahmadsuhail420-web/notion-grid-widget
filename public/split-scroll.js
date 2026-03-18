@@ -5,36 +5,36 @@
 
   const tiles = Array.from(scene.querySelectorAll(".collage .tile"));
   const content = scene.querySelector(".hero-content");
-  const overlay = scene.querySelector(".overlay-tile");
+  const cross = scene.querySelector(".cross-tile, .overlay-tile");
 
-  // Spread into top + sides + bottom with different sizes (1:1 always).
+  // Layout closer to image 7: tiles spread all around (top band + mid sides + bottom)
   const final = [
-    { x: -46, y: -26, size: 64,  r: 0 },  // top-left tiny
-    { x:  46, y: -26, size: 64,  r: 0 },  // top-right tiny
-    { x: -40, y:  -6, size: 160, r: 0 },  // left upper
-    { x:  40, y:  -6, size: 160, r: 0 },  // right upper
-    { x: -30, y:  16, size: 92,  r: 0 },  // mid-left
-    { x:  30, y:  16, size: 92,  r: 0 },  // mid-right
-    { x: -44, y:  42, size: 240, r: 0 },  // bottom-left big
-    { x:  12, y:  44, size: 180, r: 0 },  // bottom-mid
+    { x: -26, y: -30, size: 150 }, // top-left (glass)
+    { x:   0, y: -34, size: 160 }, // top-center (shoes)
+    { x:  26, y: -30, size: 150 }, // top-right (ring)
+    { x: -34, y:   8, size: 240 }, // left big (shoes w/ tag)
+    { x:  34, y:  10, size: 220 }, // right big (book)
+    { x: -12, y:  36, size: 140 }, // bottom-mid-left (calla)
+    { x:  30, y:  38, size: 160 }, // bottom-right (flower)
+    { x:   0, y:  16, size: 1 },   // placeholder if you keep 8 tiles; ignored visually
   ];
 
-  // Initial: one centered tile visible
-  const start = { x: 0, y: 0, size: 230, r: 0 };
+  const start = { x: 0, y: 0, size: 240 };
 
-  // Split completes early, then we hold.
-  const splitEnd = 0.35;   // ✅ fast split
-  const contentStart = 0.24;
-  const contentEnd = 0.40; // content fully visible after split is basically done
+  // ✅ Make split + content appear quickly (about 3 wheel scrolls)
+  const splitEnd = 0.22;        // split finishes very early
+  const contentStart = 0.18;    // content starts right after split begins
+  const contentEnd = 0.28;      // content fully visible quickly
+
+  const crossStart = 0.62;
+  const crossEnd = 0.74;
 
   function clamp01(n) {
     return Math.min(1, Math.max(0, n));
   }
-
   function lerp(a, b, t) {
     return a + (b - a) * t;
   }
-
   function easeOutCubic(t) {
     return 1 - Math.pow(1 - t, 3);
   }
@@ -48,15 +48,21 @@
   }
 
   function apply(progress) {
-    // header hides immediately on scroll
+    // Header hides immediately
     if (header) header.classList.toggle("is-hidden", progress > 0.02);
 
-    // Split phase
+    // Split quick
     const splitT = clamp01(progress / splitEnd);
     const t = easeOutCubic(splitT);
 
     tiles.forEach((tile, i) => {
       const f = final[i] || final[final.length - 1];
+
+      // If a tile is not used (size 1), hide it
+      if (f.size <= 2) {
+        tile.style.opacity = "0";
+        return;
+      }
 
       const x = lerp(start.x, f.x, t);
       const y = lerp(start.y, f.y, t);
@@ -66,21 +72,19 @@
       tile.style.transform =
         `translate(calc(50vw + ${x}vw), calc(50vh + ${y}vh)) translate(-50%, -50%)`;
 
-      // only tile 0 visible at top; others fade in during split
-      if (i === 0) tile.style.opacity = "1";
-      else tile.style.opacity = String(clamp01((splitT - 0.08) / 0.18));
+      // first tile visible at start, others fade in almost instantly
+      tile.style.opacity = i === 0 ? "1" : String(clamp01((splitT - 0.04) / 0.10));
     });
 
-    // Content reveal AFTER split completes (your requirement)
+    // Content appears after split is basically done
     const contentT = clamp01((progress - contentStart) / (contentEnd - contentStart));
     content.style.opacity = String(contentT);
-    content.style.transform = `translateY(${lerp(14, 0, easeOutCubic(contentT))}px)`;
+    content.style.transform = `translateY(${lerp(10, 0, easeOutCubic(contentT))}px)`;
 
-    // Overlay tile appears near end of scene so it overlaps into second section
-    if (overlay) {
-      const o = clamp01((progress - 0.70) / 0.15);
-      overlay.style.opacity = String(o);
-      overlay.style.transform = `translate(-50%, ${lerp(18, 0, easeOutCubic(o))}px)`;
+    // Optional crossing tile (if present)
+    if (cross) {
+      const ct = clamp01((progress - crossStart) / (crossEnd - crossStart));
+      cross.style.opacity = String(ct);
     }
   }
 
