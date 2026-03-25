@@ -16,7 +16,7 @@ body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* header */
+/* ---------- header ---------- */
 .container{
   width: min(var(--container), calc(100% - 48px));
   margin-inline: auto;
@@ -45,9 +45,16 @@ body{
   padding: 18px 0;
 }
 
-.brand{ font-weight: 800; letter-spacing: .2px; font-size: 22px; }
+.brand{
+  font-weight: 800;
+  letter-spacing: .2px;
+  font-size: 22px;
+}
 
-.nav-actions{ display:flex; gap: 14px; }
+.nav-actions{
+  display:flex;
+  gap: 14px;
+}
 
 .icon-btn{
   width: 34px;
@@ -62,21 +69,18 @@ body{
 }
 .icon-btn svg{ width: 18px; height: 18px; }
 
-/* scene
-   - split happens early
-   - then we keep scrolling (reading time) while holding final layout
-*/
+/* ---------- scroll scene ---------- */
+/* Shorter scene so split+content happens fast (~3 wheel scrolls depending on mouse settings) */
 .split-scene{
-  height: 140vh; /* enough room to read after split */
+  height: 140vh;
   position: relative;
-  z-index: 2; /* above second section bg boundary */
 }
 
 .split-sticky{
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow: hidden;
+  overflow: hidden; /* ✅ prevents any image from crossing into section 2 */
   background: #fff;
 }
 
@@ -95,7 +99,7 @@ body{
   background: #eee;
   transform: translate(-50%, -50%);
   will-change: transform, opacity, width;
-  box-shadow: 0 18px 40px rgba(0,0,0,.08);
+  box-shadow: 0 14px 32px rgba(0,0,0,.07);
 }
 
 .tile img{
@@ -115,13 +119,14 @@ body{
   justify-content:center;
   pointer-events: none;
 
-  opacity: 0;
-  transform: translateY(14px);
+  opacity: 0;                 /* JS reveals */
+  transform: translateY(10px); /* JS animates */
 }
 
 .hero-center{
   width: min(980px, calc(100% - 80px));
   text-align: center;
+  transform: translateY(-38px); /* like the reference (slightly higher) */
 }
 
 .hero-title{
@@ -130,54 +135,38 @@ body{
   font-weight: 400;
   line-height: 0.92;
   letter-spacing: -0.8px;
-  font-size: clamp(48px, 6vw, 104px);
+  font-size: clamp(44px, 5.2vw, 92px);
 }
 
 .italic{ font-style: italic; }
 
 .hero-paragraph{
-  margin: 18px auto 0;
-  width: min(620px, 95%);
+  margin: 16px auto 0;
+  width: min(520px, 95%);
   font-family: "Playfair Display", serif;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.35;
   color: rgba(17,17,17,.74);
 }
 
-/* overlay tile sits above second section
-   - outside sticky so it overlaps boundary correctly
-*/
-.overlay-wrap{
-  position: sticky;
-  top: 0;
-  height: 0;     /* anchor only */
-  z-index: 70;   /* above second section */
-  pointer-events: none;
+.hero-cta{
+  margin: 18px auto 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 12px;
+  letter-spacing: .9px;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: rgba(17,17,17,.72);
+  border: 1px solid rgba(17,17,17,.14);
+  background: transparent;
+  pointer-events: auto; /* allow click */
 }
 
-.overlay-tile{
-  position: absolute;
-  left: 50%;
-  top: calc(100vh - 56px); /* sits near bottom edge */
-  width: 190px;            /* ✅ smaller */
-  aspect-ratio: 1 / 1;
-  transform: translate(-50%, 0);
-  overflow: hidden;
-  box-shadow: 0 18px 40px rgba(0,0,0,.10);
-  opacity: 0;
-}
-
-.overlay-tile img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display:block;
-}
-
-/* second section */
+/* section 2 */
 .second-section{
-  position: relative;
-  z-index: 1;
   background: var(--beige);
   padding: 140px 0 200px;
 }
@@ -191,7 +180,10 @@ body{
   color: rgba(17,17,17,.8);
 }
 
-.second-kicker .muted{ font-weight: 500; color: rgba(17,17,17,.6); }
+.second-kicker .muted{
+  font-weight: 500;
+  color: rgba(17,17,17,.6);
+}
 
 .second-title{
   margin-top: 12px;
@@ -200,7 +192,13 @@ body{
   letter-spacing: -0.8px;
 }
 
+@media (max-width: 980px){
+  .hero-center{
+    transform: translateY(-18px);
+  }
+}
+
 @media (max-width: 520px){
   .brand{ font-size: 20px; }
-  .overlay-tile{ width: 150px; }
+  .hero-title{ font-size: 44px; }
 }
