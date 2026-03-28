@@ -6,18 +6,31 @@
   const tiles = Array.from(scene.querySelectorAll(".collage .tile"));
   const content = scene.querySelector(".hero-content");
 
- const final = [
-    { x: -41, y: -30, size: 105 }, // 1) top-left small
-    { x: -14, y: -44, size: 80  }, // 2) top-mid-left tiny (near top)
-    { x:  16, y: -44, size: 80  }, // 3) top-mid-right tiny (near top)
-    { x:  41, y: -30, size: 120 }, // 4) top-right medium
-
-    { x: -42, y:  12, size: 150 }, // 5) mid-left medium (left of text block)
-    { x:  42, y:   8, size: 150 }, // 6) mid-right medium (right of paragraph)
-
-    { x: -18, y:  40, size: 110 }, // 7) bottom-mid-left small
-    { x:  41, y:  42, size: 120 }, // 8) bottom-right small
+  const layoutDesktop = [
+    { x: -41, y: -30, size: 105 },
+    { x: -14, y: -44, size: 80  },
+    { x:  16, y: -44, size: 80  },
+    { x:  41, y: -30, size: 120 },
+    { x: -42, y:  12, size: 150 },
+    { x:  42, y:   8, size: 150 },
+    { x: -18, y:  40, size: 110 },
+    { x:  41, y:  42, size: 120 },
   ];
+
+  const layoutMobile = [
+    { x: -34, y: -30, size: 86  },
+    { x: -10, y: -44, size: 62  },
+    { x:  12, y: -44, size: 62  },
+    { x:  34, y: -30, size: 92  },
+    { x: -34, y:  10, size: 110 },
+    { x:  34, y:   8, size: 110 },
+    { x: -10, y:  40, size: 82  },
+    { x:  34, y:  42, size: 92  },
+  ];
+
+  function getLayout() {
+    return window.innerWidth < 520 ? layoutMobile : layoutDesktop;
+  }
 
   const start = { x: 0, y: 0, size: 190 };
 
@@ -45,6 +58,7 @@
   function apply(progress) {
     if (header) header.classList.toggle("is-hidden", progress > 0.02);
 
+    const final = getLayout();
     const splitT = clamp01(progress / splitEnd);
     const t = easeOutCubic(splitT);
 
@@ -62,7 +76,7 @@
 
       tile.style.width = `${size}px`;
       tile.style.transform =
-  `translate(calc(50% + ${x}vw), calc(50% + ${y}vh)) translate(-50%, -50%)`;
+        `translate(calc(50% + ${x}vw), calc(50% + ${y}vh)) translate(-50%, -50%)`;
 
       tile.style.opacity = i === 0 ? "1" : String(clamp01((splitT - 0.04) / 0.10));
     });
