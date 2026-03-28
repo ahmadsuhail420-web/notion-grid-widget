@@ -6,15 +6,17 @@
   const tiles = Array.from(scene.querySelectorAll(".collage .tile"));
   const content = scene.querySelector(".hero-content");
 
-  const final = [
-    { x: -26, y: -34, size: 90 },
-    { x:   0, y: -38, size: 100 },
-    { x:  26, y: -34, size: 80 },
-    { x: -36, y:   4, size: 150 },
-    { x:  36, y:   6, size: 140 },
-    { x: -10, y:  34, size: 85 },
-    { x:  34, y:  36, size: 95 },
-    { x:  20, y:  22, size: 1 },
+ const final = [
+    { x: -41, y: -30, size: 105 }, // 1) top-left small
+    { x: -14, y: -44, size: 80  }, // 2) top-mid-left tiny (near top)
+    { x:  16, y: -44, size: 80  }, // 3) top-mid-right tiny (near top)
+    { x:  41, y: -30, size: 120 }, // 4) top-right medium
+
+    { x: -42, y:  12, size: 150 }, // 5) mid-left medium (left of text block)
+    { x:  42, y:   8, size: 150 }, // 6) mid-right medium (right of paragraph)
+
+    { x: -18, y:  40, size: 110 }, // 7) bottom-mid-left small
+    { x:  41, y:  42, size: 120 }, // 8) bottom-right small
   ];
 
   const start = { x: 0, y: 0, size: 190 };
