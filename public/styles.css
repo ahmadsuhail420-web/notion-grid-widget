@@ -107,6 +107,19 @@ a{ color: inherit; }
   z-index: 5;
 }
 
+.collage,
+.hero-content{
+  position: absolute;
+  inset: 0;
+}
+
+.stage{
+  position: relative;
+  height: 100%;
+  width: min(1180px, calc(100% - 48px)); /* adjust 1180px to taste */
+  margin-inline: auto;
+}
+
 .tile{
   position:absolute;
   aspect-ratio: 1 / 1;
