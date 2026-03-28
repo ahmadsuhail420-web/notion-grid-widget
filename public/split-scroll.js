@@ -7,17 +7,17 @@
   const content = scene.querySelector(".hero-content");
 
   const final = [
-    { x: -26, y: -34, size: 120 },
-    { x:   0, y: -38, size: 130 },
-    { x:  26, y: -34, size: 120 },
-    { x: -36, y:   4, size: 220 },
-    { x:  36, y:   6, size: 200 },
-    { x: -10, y:  34, size: 120 },
-    { x:  34, y:  36, size: 125 },
+    { x: -26, y: -34, size: 90 },
+    { x:   0, y: -38, size: 100 },
+    { x:  26, y: -34, size: 80 },
+    { x: -36, y:   4, size: 150 },
+    { x:  36, y:   6, size: 140 },
+    { x: -10, y:  34, size: 85 },
+    { x:  34, y:  36, size: 95 },
     { x:  20, y:  22, size: 1 },
   ];
 
-  const start = { x: 0, y: 0, size: 240 };
+  const start = { x: 0, y: 0, size: 190 };
 
   const splitEnd = 0.22;
   const contentStart = 0.18;
