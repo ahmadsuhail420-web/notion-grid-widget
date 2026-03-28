@@ -6,22 +6,19 @@
   const tiles = Array.from(scene.querySelectorAll(".collage .tile"));
   const content = scene.querySelector(".hero-content");
 
-  // Final positions/sizes tuned to your Image 7 (smaller, spaced around content).
   const final = [
-    { x: -26, y: -34, size: 120 }, // top-left
-    { x:   0, y: -38, size: 130 }, // top-center
-    { x:  26, y: -34, size: 120 }, // top-right
-    { x: -36, y:   4, size: 220 }, // left big
-    { x:  36, y:   6, size: 200 }, // right big
-    { x: -10, y:  34, size: 120 }, // bottom-mid-left
-    { x:  34, y:  36, size: 125 }, // bottom-right
-    { x:  20, y:  22, size: 1 },   // unused (keeps 8 tiles safe)
+    { x: -26, y: -34, size: 120 },
+    { x:   0, y: -38, size: 130 },
+    { x:  26, y: -34, size: 120 },
+    { x: -36, y:   4, size: 220 },
+    { x:  36, y:   6, size: 200 },
+    { x: -10, y:  34, size: 120 },
+    { x:  34, y:  36, size: 125 },
+    { x:  20, y:  22, size: 1 },
   ];
 
-  // Initial: stacked in the center
   const start = { x: 0, y: 0, size: 240 };
 
-  // Fast interaction: feels like ~3 wheel scroll steps on a typical mouse.
   const splitEnd = 0.22;
   const contentStart = 0.18;
   const contentEnd = 0.28;
@@ -44,10 +41,8 @@
   }
 
   function apply(progress) {
-    // Hide header as soon as scroll starts
     if (header) header.classList.toggle("is-hidden", progress > 0.02);
 
-    // Split phase
     const splitT = clamp01(progress / splitEnd);
     const t = easeOutCubic(splitT);
 
@@ -67,18 +62,24 @@
       tile.style.transform =
         `translate(calc(50vw + ${x}vw), calc(50vh + ${y}vh)) translate(-50%, -50%)`;
 
-      // Center visible, others fade in quickly
       tile.style.opacity = i === 0 ? "1" : String(clamp01((splitT - 0.04) / 0.10));
     });
 
-    // Content reveal after split is basically done
-    const contentT = clamp01((progress - contentStart) / (contentEnd - contentStart));
-    content.style.opacity = String(contentT);
-    content.style.transform = `translateY(${lerp(10, 0, easeOutCubic(contentT))}px)`;
+    if (content) {
+      const contentT = clamp01((progress - contentStart) / (contentEnd - contentStart));
+      content.style.opacity = String(contentT);
+      content.style.transform = `translateY(${lerp(10, 0, easeOutCubic(contentT))}px)`;
+    }
   }
 
+  let ticking = false;
   function onScroll() {
-    apply(getProgress());
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      apply(getProgress());
+    });
   }
 
   apply(0);
