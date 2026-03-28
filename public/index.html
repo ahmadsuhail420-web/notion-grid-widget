@@ -19,10 +19,16 @@
   </head>
 
   <body>
-    <!-- Header: logo left, icons right -->
     <header class="site-header" data-site-header>
       <div class="container nav">
-        <div class="brand">Grid Planner</div>
+        <a class="brand" href="/" aria-label="Grid Planner Home">Grid Planner</a>
+
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#work">Work</a>
+          <a href="#shop">Shop</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </nav>
 
         <div class="nav-actions" aria-label="Header actions">
           <button class="icon-btn" aria-label="Search">
@@ -95,28 +101,63 @@
         <!-- Content layer -->
         <div class="hero-content" aria-label="Hero content">
           <div class="hero-center">
+            <div class="hero-kicker">A design-led commerce studio</div>
+
             <h1 class="hero-title">
-              Building <span class="italic">Physical</span> and <span class="italic">Digital</span> Brands<br />
-              for Creators &amp; Coaches.
+              Building <span class="italic">Physical</span> and <span class="italic">Digital</span> goods
+              <br />
+              for creators &amp; coaches.
             </h1>
 
             <p class="hero-paragraph">
-              A UK &amp; Spain based design studio dedicated to serving female-led businesses worldwide. Specializing in
-              website design, branding strategy, social media templates, ad creatives, packaging design &amp; content
-              creation to scale your business and build a strong brand presence.
+              A calm, minimal storefront with an editorial home page—made to highlight product stories, not clutter.
             </p>
 
-            <a class="hero-cta" href="#">BOOK YOUR SPOT ↗</a>
+            <div class="hero-ctas">
+              <a class="hero-cta hero-cta--primary" href="#shop">Shop now</a>
+              <a class="hero-cta hero-cta--ghost" href="#work">View work</a>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Section 2 (no overlap by images) -->
-    <section class="second-section" aria-label="Projects section">
+    <!-- Section 2 -->
+    <section class="second-section" id="work" aria-label="Projects section">
       <div class="container second-inner">
-        <div class="second-kicker">TAKE A LOOK <span class="muted">( PORTFOLIO )</span></div>
-        <div class="second-title">Projects</div>
+        <div class="second-head">
+          <div class="second-kicker">TAKE A LOOK <span class="muted">( SELECTED )</span></div>
+          <h2 class="second-title">Projects</h2>
+        </div>
+
+        <div class="project-list" role="list">
+          <a class="project-row" href="#" role="listitem">
+            <div class="num">01.</div>
+            <div class="meta">
+              <div class="name">Brand system</div>
+              <div class="desc">Identity, art direction, packaging</div>
+            </div>
+            <div class="tag">2026</div>
+          </a>
+
+          <a class="project-row" href="#" role="listitem">
+            <div class="num">02.</div>
+            <div class="meta">
+              <div class="name">Ecommerce build</div>
+              <div class="desc">Home, shop, product pages, checkout</div>
+            </div>
+            <div class="tag">2026</div>
+          </a>
+
+          <a class="project-row" href="#" role="listitem">
+            <div class="num">03.</div>
+            <div class="meta">
+              <div class="name">Content templates</div>
+              <div class="desc">Social kits, ads, launch graphics</div>
+            </div>
+            <div class="tag">2026</div>
+          </a>
+        </div>
       </div>
     </section>
 
