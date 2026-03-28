@@ -62,7 +62,7 @@
 
       tile.style.width = `${size}px`;
       tile.style.transform =
-        `translate(calc(50vw + ${x}vw), calc(50vh + ${y}vh)) translate(-50%, -50%)`;
+  `translate(calc(50% + ${x}vw), calc(50% + ${y}vh)) translate(-50%, -50%)`;
 
       tile.style.opacity = i === 0 ? "1" : String(clamp01((splitT - 0.04) / 0.10));
     });
