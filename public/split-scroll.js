@@ -19,9 +19,9 @@
 
   const start = { x: 0, y: 0, size: 190 };
 
-  const splitEnd = 0.22;
-  const contentStart = 0.18;
-  const contentEnd = 0.28;
+  const splitEnd = 1.0;
+  const contentStart = 0.35;
+  const contentEnd = 0.75;
 
   function clamp01(n) {
     return Math.min(1, Math.max(0, n));
