@@ -1,8 +1,8 @@
 :root{
   --container: 1180px;
   --bg: #ffffff;
-  --ink: #111;
-  --muted: rgba(17,17,17,.62);
+  --ink: #0f0f10;
+  --muted: rgba(15,15,16,.62);
   --beige: #e6d8c6;
   --hairline: rgba(0,0,0,.10);
 }
@@ -16,18 +16,19 @@ body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ---------- header ---------- */
+a{ color: inherit; }
 .container{
   width: min(var(--container), calc(100% - 48px));
   margin-inline: auto;
 }
 
+/* ---------- header ---------- */
 .site-header{
   position: sticky;
   top: 0;
   z-index: 80;
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--hairline);
   transition: transform 220ms ease, opacity 220ms ease;
 }
@@ -41,36 +42,51 @@ body{
   display:flex;
   align-items:center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 16px;
   padding: 18px 0;
 }
 
 .brand{
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: .2px;
-  font-size: 22px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.nav-links{
+  display:flex;
+  gap: 18px;
+  font-size: 13px;
+  color: rgba(15,15,16,.70);
+}
+
+.nav-links a{
+  text-decoration: none;
+}
+.nav-links a:hover{
+  color: rgba(15,15,16,.95);
 }
 
 .nav-actions{
   display:flex;
-  gap: 14px;
+  gap: 12px;
 }
 
 .icon-btn{
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display:grid;
   place-items:center;
   border: 0;
   background: transparent;
-  color: rgba(17,17,17,.78);
+  color: rgba(15,15,16,.62);
   cursor:pointer;
   padding:0;
 }
+.icon-btn:hover{ color: rgba(15,15,16,.9); }
 .icon-btn svg{ width: 18px; height: 18px; }
 
 /* ---------- scroll scene ---------- */
-/* Shorter scene so split+content happens fast (~3 wheel scrolls depending on mouse settings) */
 .split-scene{
   height: 140vh;
   position: relative;
@@ -80,11 +96,10 @@ body{
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow: hidden; /* ✅ prevents any image from crossing into section 2 */
+  overflow: hidden; /* prevent collage bleeding into section 2 */
   background: #fff;
 }
 
-/* collage tiles */
 .collage{
   position: absolute;
   inset: 0;
@@ -99,7 +114,8 @@ body{
   background: #eee;
   transform: translate(-50%, -50%);
   will-change: transform, opacity, width;
-  box-shadow: 0 14px 32px rgba(0,0,0,.07);
+  border-radius: 18px;
+  box-shadow: 0 16px 44px rgba(0,0,0,.06);
 }
 
 .tile img{
@@ -107,6 +123,7 @@ body{
   height: 100%;
   object-fit: cover;
   display:block;
+  filter: saturate(.98) contrast(.98);
 }
 
 /* centered content */
@@ -126,79 +143,162 @@ body{
 .hero-center{
   width: min(980px, calc(100% - 80px));
   text-align: center;
-  transform: translateY(-38px); /* like the reference (slightly higher) */
+  transform: translateY(-44px);
+}
+
+.hero-kicker{
+  font-size: 11px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(15,15,16,.58);
+  margin-bottom: 18px;
 }
 
 .hero-title{
   margin: 0;
   font-family: "Playfair Display", serif;
   font-weight: 400;
-  line-height: 0.92;
-  letter-spacing: -0.8px;
+  line-height: 0.94;
+  letter-spacing: -1.0px;
   font-size: clamp(44px, 5.2vw, 92px);
 }
 
 .italic{ font-style: italic; }
 
 .hero-paragraph{
-  margin: 16px auto 0;
-  width: min(520px, 95%);
-  font-family: "Playfair Display", serif;
-  font-size: 15px;
-  line-height: 1.35;
-  color: rgba(17,17,17,.74);
+  margin: 18px auto 0;
+  width: min(540px, 95%);
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(15,15,16,.68);
+}
+
+.hero-ctas{
+  margin-top: 24px;
+  display:flex;
+  gap: 10px;
+  justify-content:center;
+  pointer-events: auto;
 }
 
 .hero-cta{
-  margin: 18px auto 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 11px 18px;
   font-size: 12px;
-  letter-spacing: .9px;
+  letter-spacing: .08em;
   text-decoration: none;
   text-transform: uppercase;
-  color: rgba(17,17,17,.72);
-  border: 1px solid rgba(17,17,17,.14);
+  border-radius: 999px;
+  border: 1px solid rgba(15,15,16,.16);
   background: transparent;
-  pointer-events: auto; /* allow click */
+  color: rgba(15,15,16,.75);
+}
+.hero-cta:hover{
+  border-color: rgba(15,15,16,.28);
+  color: rgba(15,15,16,.92);
+}
+
+.hero-cta--primary{
+  background: #0f0f10;
+  border-color: #0f0f10;
+  color: #fff;
+}
+.hero-cta--primary:hover{
+  background: #1a1a1c;
+  border-color: #1a1a1c;
+  color: #fff;
+}
+
+.hero-cta--ghost{
+  background: rgba(255,255,255,.55);
 }
 
 /* section 2 */
 .second-section{
   background: var(--beige);
-  padding: 140px 0 200px;
+  padding: 120px 0 160px;
 }
 
-.second-inner{ text-align:center; }
+.second-inner{
+  text-align: left;
+}
+
+.second-head{
+  text-align:center;
+}
 
 .second-kicker{
   font-size: 12px;
-  letter-spacing: .9px;
+  letter-spacing: .24em;
   font-weight: 700;
-  color: rgba(17,17,17,.8);
+  color: rgba(15,15,16,.78);
 }
 
 .second-kicker .muted{
   font-weight: 500;
-  color: rgba(17,17,17,.6);
+  color: rgba(15,15,16,.58);
 }
 
 .second-title{
-  margin-top: 12px;
+  margin: 14px 0 0;
   font-family: "Playfair Display", serif;
-  font-size: 72px;
+  font-size: clamp(44px, 6vw, 74px);
   letter-spacing: -0.8px;
+  font-weight: 400;
+}
+
+.project-list{
+  margin-top: 44px;
+  border-top: 1px solid rgba(15,15,16,.16);
+  border-bottom: 1px solid rgba(15,15,16,.16);
+}
+
+.project-row{
+  display:grid;
+  grid-template-columns: 74px 1fr auto;
+  gap: 18px;
+  padding: 22px 8px;
+  text-decoration:none;
+  color: rgba(15,15,16,.9);
+  border-top: 1px solid rgba(15,15,16,.14);
+  transition: background 160ms ease;
+}
+.project-row:first-child{ border-top: 0; }
+.project-row:hover{
+  background: rgba(255,255,255,.35);
+}
+
+.num{
+  color: rgba(15,15,16,.62);
+  font-variant-numeric: tabular-nums;
+}
+
+.meta .name{
+  font-weight: 500;
+  letter-spacing: -0.2px;
+}
+
+.meta .desc{
+  margin-top: 4px;
+  font-size: 13px;
+  color: rgba(15,15,16,.65);
+}
+
+.tag{
+  font-size: 12px;
+  color: rgba(15,15,16,.62);
 }
 
 @media (max-width: 980px){
-  .hero-center{
-    transform: translateY(-18px);
-  }
+  .hero-center{ transform: translateY(-22px); }
+  .nav-links{ display:none; } /* keeps header clean on mobile */
 }
 
 @media (max-width: 520px){
-  .brand{ font-size: 20px; }
   .hero-title{ font-size: 44px; }
+  .hero-center{ width: min(980px, calc(100% - 40px)); }
+  .project-row{ grid-template-columns: 60px 1fr; }
+  .tag{ display:none; }
 }
