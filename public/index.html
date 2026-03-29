@@ -20,18 +20,21 @@
 
   <body>
     <header class="site-header" data-site-header>
-      <div class="container nav">
-        <a class="brand" href="/" aria-label="Grid Planner Home">Grid Planner</a>
+      <div class="header-inner">
+        <a class="brand" href="/" aria-label="Grid Planner Home">
+          <!-- Upload your logo here: public/assets/logo.svg (recommended) -->
+          <img class="brand-logo" src="assets/logo.svg" alt="Grid Planner" />
+        </a>
 
         <nav class="nav-links" aria-label="Primary navigation">
-          <a href="#work">Work</a>
-          <a href="#shop">Shop</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
+          <!-- Not required / no links -->
+          <span>Shop All</span>
+          <span>About</span>
+          <span>Contact</span>
         </nav>
 
         <div class="nav-actions" aria-label="Header actions">
-          <button class="icon-btn" aria-label="Search">
+          <button class="icon-btn" aria-label="Search" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
@@ -43,7 +46,7 @@
             </svg>
           </button>
 
-          <button class="icon-btn" aria-label="Cart">
+          <button class="icon-btn" aria-label="Cart" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M7 8V7a5 5 0 0 1 10 0v1"
@@ -62,7 +65,7 @@
             </svg>
           </button>
 
-          <button class="icon-btn" aria-label="Account">
+          <button class="icon-btn" aria-label="Account" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
@@ -83,35 +86,32 @@
       </div>
     </header>
 
-    <!-- Scroll scene -->
     <section class="split-scene" data-split-scene>
       <div class="split-sticky">
         <div class="stage">
-          <!-- Collage layer -->
           <div class="collage" aria-label="Collage">
-            <div class="tile tile--1"><img src="/assets/collage-1.jpg" alt="" /></div>
-            <div class="tile tile--2"><img src="/assets/collage-2.jpg" alt="" /></div>
-            <div class="tile tile--3"><img src="/assets/collage-3.jpg" alt="" /></div>
-            <div class="tile tile--4"><img src="/assets/collage-4.jpg" alt="" /></div>
-            <div class="tile tile--5"><img src="/assets/collage-5.jpg" alt="" /></div>
-            <div class="tile tile--6"><img src="/assets/collage-6.jpg" alt="" /></div>
-            <div class="tile tile--7"><img src="/assets/collage-7.jpg" alt="" /></div>
-            <div class="tile tile--8"><img src="/assets/collage-8.jpg" alt="" /></div>
+            <div class="tile tile--1"><img src="assets/collage-1.jpg" alt="" /></div>
+            <div class="tile tile--2"><img src="assets/collage-2.jpg" alt="" /></div>
+            <div class="tile tile--3"><img src="assets/collage-3.jpg" alt="" /></div>
+            <div class="tile tile--4"><img src="assets/collage-4.jpg" alt="" /></div>
+            <div class="tile tile--5"><img src="assets/collage-5.jpg" alt="" /></div>
+            <div class="tile tile--6"><img src="assets/collage-6.jpg" alt="" /></div>
+            <div class="tile tile--7"><img src="assets/collage-7.jpg" alt="" /></div>
+            <div class="tile tile--8"><img src="assets/collage-8.jpg" alt="" /></div>
           </div>
 
-          <!-- Content layer -->
           <div class="hero-content" aria-label="Hero content">
             <div class="hero-center">
               <h1 class="hero-title">
-                <span class="t1">Building</span>
-                <span class="t2"><span class="italic">Physical</span></span>
-                <span class="t3">and</span>
+                <span>Building</span>
+                <span><span class="italic">Physical</span></span>
+                <span>and</span>
 
-                <span class="t4"><span class="italic">Digital</span></span>
-                <span class="t5">Brands</span>
-                <span class="t6">for</span>
+                <span><span class="italic">Digital</span></span>
+                <span>Brands</span>
+                <span>for</span>
 
-                <span class="t7">Creators &amp; Coaches.</span>
+                <span>Creators &amp; Coaches.</span>
               </h1>
 
               <p class="hero-paragraph">
@@ -120,14 +120,13 @@
                 content creation to scale your business and build a strong brand presence.
               </p>
 
-              <a class="hero-cta hero-cta--outline" href="#contact">BOOK YOUR SPOT ↗</a>
+              <a class="hero-cta" href="javascript:void(0)">BOOK YOUR SPOT ↗</a>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Section 2 -->
     <section class="second-section" id="work" aria-label="Projects section">
       <div class="container second-inner">
         <div class="second-head">
@@ -136,7 +135,7 @@
         </div>
 
         <div class="project-list" role="list">
-          <a class="project-row" href="#" role="listitem">
+          <a class="project-row" href="javascript:void(0)" role="listitem">
             <div class="num">01.</div>
             <div class="meta">
               <div class="name">Brand system</div>
@@ -145,7 +144,7 @@
             <div class="tag">2026</div>
           </a>
 
-          <a class="project-row" href="#" role="listitem">
+          <a class="project-row" href="javascript:void(0)" role="listitem">
             <div class="num">02.</div>
             <div class="meta">
               <div class="name">Ecommerce build</div>
@@ -154,7 +153,7 @@
             <div class="tag">2026</div>
           </a>
 
-          <a class="project-row" href="#" role="listitem">
+          <a class="project-row" href="javascript:void(0)" role="listitem">
             <div class="num">03.</div>
             <div class="meta">
               <div class="name">Content templates</div>
