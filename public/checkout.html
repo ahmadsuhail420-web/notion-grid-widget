@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout • Generic Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/store/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">GS</span>
+        <span class="brand-text">Generic Store</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="shop.html" class="nav-link">Shop</a>
+        <a href="checkout.html" class="nav-link is-active">Checkout</a>
+      </nav>
+
+      <div class="header-actions">
+        <label class="currency">
+          <select id="currencySelect" aria-label="Currency">
+            <option value="USD" selected>USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="PKR">PKR (Rs)</option>
+            <option value="INR">INR (₹)</option>
+            <option value="AED">AED (د.إ)</option>
+          </select>
+        </label>
+
+        <a class="cart-btn" href="cart.html" aria-label="Cart">
+          <span class="cart-ico">🛒</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="section-head">
+        <h1>Checkout</h1>
+        <p class="muted">Demo checkout form (no real payment).</p>
+      </div>
+
+      <div class="checkout-layout">
+        <section class="card">
+          <div class="card-head">
+            <div class="card-title">Shipping details</div>
+          </div>
+
+          <form id="checkoutForm" class="form">
+            <div class="form-row">
+              <div>
+                <label class="label">Full name</label>
+                <input class="input" name="name" required />
+              </div>
+              <div>
+                <label class="label">Email</label>
+                <input class="input" type="email" name="email" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label class="label">Address</label>
+                <input class="input" name="address" required />
+              </div>
+              <div>
+                <label class="label">City</label>
+                <input class="input" name="city" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label class="label">Country</label>
+                <input class="input" name="country" placeholder="United States" required />
+              </div>
+              <div>
+                <label class="label">Postal code</label>
+                <input class="input" name="zip" required />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label class="label">Payment method</label>
+                <select class="input" name="payment">
+                  <option>Card (demo)</option>
+                  <option>Cash on delivery (demo)</option>
+                </select>
+              </div>
+              <div>
+                <label class="label">Note</label>
+                <input class="input" name="note" placeholder="Optional" />
+              </div>
+            </div>
+
+            <button class="btn btn-primary w-full" type="submit">Place order</button>
+
+            <p class="muted small mt-12">
+              This is a static demo. To take real payments, integrate Stripe/PayPal + a backend.
+            </p>
+          </form>
+        </section>
+
+        <aside class="card">
+          <div class="card-head">
+            <div class="card-title">Order summary</div>
+          </div>
+
+          <div class="summary">
+            <div class="summary-row">
+              <span class="muted">Subtotal</span>
+              <span id="checkoutSubtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span class="muted">Shipping</span>
+              <span id="checkoutShipping">$0.00</span>
+            </div>
+            <div class="summary-row">
+              <span class="muted">Tax</span>
+              <span id="checkoutTax">$0.00</span>
+            </div>
+            <div class="summary-row summary-total">
+              <span>Total</span>
+              <span id="checkoutTotal">$0.00</span>
+            </div>
+
+            <div class="muted small mt-12" id="checkoutEmptyNote" hidden>
+              Your cart is empty. Go back to the shop to add items.
+            </div>
+
+            <a class="btn btn-ghost w-full mt-12" href="cart.html">Back to cart</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="footer-brand">Generic Store</div>
+        <div class="muted">© <span id="year"></span> Generic Store.</div>
+      </div>
+      <div class="footer-links">
+        <a href="shop.html">Shop</a>
+        <a href="cart.html">Cart</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/store/products.js"></script>
+  <script src="assets/store/app.js"></script>
+</body>
+</html>
