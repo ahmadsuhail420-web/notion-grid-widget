@@ -3,50 +3,51 @@
   const header = document.querySelector("[data-site-header]");
   if (!scene) return;
 
-  const stage = scene.querySelector(".stage"); // IMPORTANT
+  const stage = scene.querySelector(".stage");
   const tiles = Array.from(scene.querySelectorAll(".collage .tile"));
   const content = scene.querySelector(".hero-content");
   if (!stage || tiles.length === 0) return;
 
-  // Layout is now in STAGE-PERCENT units (px derived each frame)
-  // x/y are offsets from center, expressed as % of stage width/height
+  // Spread around hero after split
   const layoutDesktop = [
-    { x: -44, y: -32, size: 105 }, // top-left
-    { x: -16, y: -46, size: 80  }, // top-mid-left
-    { x:  16, y: -46, size: 80  }, // top-mid-right
-    { x:  44, y: -32, size: 120 }, // top-right
-    { x: -46, y:  10, size: 150 }, // mid-left
-    { x:  46, y:   8, size: 150 }, // mid-right
-    { x: -18, y:  42, size: 110 }, // bottom-mid-left
-    { x:  44, y:  44, size: 120 }, // bottom-right
+    { x: -44, y: -32, size: 110 },
+    { x: -16, y: -50, size: 90  },
+    { x:  16, y: -50, size: 90  },
+    { x:  44, y: -32, size: 140 },
+
+    { x: -46, y:  10, size: 190 },
+    { x:  46, y:  10, size: 165 },
+
+    { x: -18, y:  46, size: 115 },
+    { x:  44, y:  48, size: 130 },
   ];
 
   const layoutMobile = [
     { x: -40, y: -30, size: 86  },
-    { x: -14, y: -46, size: 62  },
-    { x:  14, y: -46, size: 62  },
+    { x: -14, y: -48, size: 62  },
+    { x:  14, y: -48, size: 62  },
     { x:  40, y: -30, size: 92  },
-    { x: -40, y:  10, size: 110 },
-    { x:  40, y:   8, size: 110 },
-    { x: -12, y:  42, size: 82  },
-    { x:  40, y:  44, size: 92  },
+
+    { x: -40, y:  10, size: 120 },
+    { x:  40, y:  10, size: 110 },
+
+    { x: -12, y:  46, size: 82  },
+    { x:  40, y:  48, size: 92  },
   ];
 
   function getLayout() {
     return window.innerWidth < 520 ? layoutMobile : layoutDesktop;
   }
 
-  // Start = single centered image
   const startSize = 260;
 
-  // Progress timing
+  // Smoothness tuning
   const splitEnd = 1.0;
-
-  const contentStart = 0.10;
-  const contentEnd = 0.34;
-
   const tilesInStart = 0.10;
-  const tilesInEnd = 0.30;
+  const tilesInEnd = 0.38;
+
+  const contentStart = 0.06;
+  const contentEnd = 0.30;
 
   function clamp01(n) {
     return Math.min(1, Math.max(0, n));
@@ -54,8 +55,8 @@
   function lerp(a, b, t) {
     return a + (b - a) * t;
   }
-  function easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
   function getProgress() {
@@ -70,13 +71,12 @@
 
     const layout = getLayout();
     const splitT = clamp01(progress / splitEnd);
-    const t = easeOutCubic(splitT);
+    const t = easeInOutCubic(splitT);
 
-    const tilesInT = easeOutCubic(
+    const tilesInT = easeInOutCubic(
       clamp01((progress - tilesInStart) / (tilesInEnd - tilesInStart))
     );
 
-    // Stage geometry (center point)
     const sw = stage.clientWidth;
     const sh = stage.clientHeight;
     const cx = sw / 2;
@@ -85,36 +85,34 @@
     tiles.forEach((tile, i) => {
       const f = layout[i] || layout[layout.length - 1];
 
-      // Convert stage-% offsets to px offsets
       const fx = (f.x / 100) * sw;
       const fy = (f.y / 100) * sh;
 
-      // Start at exact center (0,0 offset)
       const x = lerp(0, fx, t);
       const y = lerp(0, fy, t);
       const size = lerp(startSize, f.size, t);
 
-      tile.style.width = `${size}px`;
+      // Add subtle scale-in for smoothness on non-primary tiles
+      const appearScale = i === 0 ? 1 : lerp(0.92, 1, tilesInT);
 
-      // Absolute positioning inside .stage
+      tile.style.width = `${size}px`;
       tile.style.left = `${cx + x}px`;
       tile.style.top = `${cy + y}px`;
-      tile.style.transform = "translate(-50%, -50%)";
+      tile.style.transform = `translate(-50%, -50%) scale(${appearScale})`;
 
-      // Visibility behavior
       if (i === 0) {
-        tile.style.opacity = "1"; // only one visible at start
+        tile.style.opacity = "1";
       } else {
         tile.style.opacity = String(tilesInT);
       }
     });
 
     if (content) {
-      const contentT = easeOutCubic(
+      const contentT = easeInOutCubic(
         clamp01((progress - contentStart) / (contentEnd - contentStart))
       );
       content.style.opacity = String(contentT);
-      content.style.transform = `translateY(${lerp(10, 0, contentT)}px)`;
+      content.style.transform = `translateY(${lerp(14, 0, contentT)}px)`;
     }
   }
 
@@ -128,9 +126,7 @@
     });
   }
 
-  // Ensure centered state is correct immediately (even before any scroll)
   apply(0);
-
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", onScroll);
 })();
