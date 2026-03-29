@@ -1,170 +1,195 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grid Planner</title>
-    <link rel="stylesheet" href="styles.css" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generic Store</title>
+  <meta name="description" content="A clean, responsive e-commerce website (HTML/CSS/JS)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/store/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">GS</span>
+        <span class="brand-text">Generic Store</span>
+      </a>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+      <nav class="nav">
+        <a href="index.html" class="nav-link is-active">Home</a>
+        <a href="shop.html" class="nav-link">Shop</a>
+        <a href="product.html?id=p001" class="nav-link">Product</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
 
-  <body>
-    <header class="site-header" data-site-header>
-      <div class="header-inner">
-        <a class="brand" href="/" aria-label="Grid Planner Home">
-          <!-- Upload your logo here: public/assets/logo.svg (recommended) -->
-          <img class="brand-logo" src="assets/logo.svg" alt="Grid Planner" />
+      <div class="header-actions">
+        <label class="currency">
+          <span class="sr-only">Currency</span>
+          <select id="currencySelect" aria-label="Currency">
+            <option value="USD" selected>USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="PKR">PKR (Rs)</option>
+            <option value="INR">INR (₹)</option>
+            <option value="AED">AED (د.إ)</option>
+          </select>
+        </label>
+
+        <a class="cart-btn" href="cart.html" aria-label="Cart">
+          <span class="cart-ico">🛒</span>
+          <span class="cart-count" id="cartCount">0</span>
         </a>
-
-        <nav class="nav-links" aria-label="Primary navigation">
-          <!-- Not required / no links -->
-          <span>Shop All</span>
-          <span>About</span>
-          <span>Contact</span>
-        </nav>
-
-        <div class="nav-actions" aria-label="Header actions">
-          <button class="icon-btn" aria-label="Search" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Zm6.1-1.4L21 21"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
-
-          <button class="icon-btn" aria-label="Cart" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M7 8V7a5 5 0 0 1 10 0v1"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              />
-              <path
-                d="M6.5 8.5h11L18.6 21H5.4L6.5 8.5Z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </button>
-
-          <button class="icon-btn" aria-label="Account" type="button">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-              />
-              <path
-                d="M4.5 21a7.5 7.5 0 0 1 15 0"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-              />
-            </svg>
-          </button>
-        </div>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <section class="split-scene" data-split-scene>
-      <div class="split-sticky">
-        <div class="stage">
-          <div class="collage" aria-label="Collage">
-            <div class="tile tile--1"><img src="assets/collage-1.jpg" alt="" /></div>
-            <div class="tile tile--2"><img src="assets/collage-2.jpg" alt="" /></div>
-            <div class="tile tile--3"><img src="assets/collage-3.jpg" alt="" /></div>
-            <div class="tile tile--4"><img src="assets/collage-4.jpg" alt="" /></div>
-            <div class="tile tile--5"><img src="assets/collage-5.jpg" alt="" /></div>
-            <div class="tile tile--6"><img src="assets/collage-6.jpg" alt="" /></div>
-            <div class="tile tile--7"><img src="assets/collage-7.jpg" alt="" /></div>
-            <div class="tile tile--8"><img src="assets/collage-8.jpg" alt="" /></div>
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="badge">New Season • Best Sellers</p>
+          <h1>Simple, modern products for everyday life.</h1>
+          <p class="muted">
+            Browse curated essentials. Fast shipping, secure checkout, and easy returns.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="shop.html">Shop Now</a>
+            <a class="btn btn-ghost" href="#featured">Featured</a>
           </div>
 
-          <div class="hero-content" aria-label="Hero content">
-            <div class="hero-center">
-              <h1 class="hero-title">
-                <span>Building</span>
-                <span><span class="italic">Physical</span></span>
-                <span>and</span>
-
-                <span><span class="italic">Digital</span></span>
-                <span>Brands</span>
-                <span>for</span>
-
-                <span>Creators &amp; Coaches.</span>
-              </h1>
-
-              <p class="hero-paragraph">
-                A UK &amp; Spain based design studio dedicated to serving female-led businesses worldwide. Specializing
-                in website design, branding strategy, social media templates, ad creatives, packaging design &amp;
-                content creation to scale your business and build a strong brand presence.
-              </p>
-
-              <a class="hero-cta" href="javascript:void(0)">BOOK YOUR SPOT ↗</a>
+          <div class="hero-perks">
+            <div class="perk">
+              <div class="perk-title">Free Shipping</div>
+              <div class="perk-text">On orders over $50</div>
             </div>
+            <div class="perk">
+              <div class="perk-title">Easy Returns</div>
+              <div class="perk-text">30-day return policy</div>
+            </div>
+            <div class="perk">
+              <div class="perk-title">Secure Payments</div>
+              <div class="perk-text">Trusted providers</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="hero-card-top">
+            <div class="hero-card-chip">Featured</div>
+            <div class="hero-card-title">Minimal Desk Setup</div>
+            <div class="hero-card-sub">Upgrade your workspace</div>
+          </div>
+          <div class="hero-card-img" role="img" aria-label="Product collage"></div>
+          <div class="hero-card-bottom">
+            <a class="btn btn-dark" href="product.html?id=p003">View Product</a>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="second-section" id="work" aria-label="Projects section">
-      <div class="container second-inner">
-        <div class="second-head">
-          <div class="second-kicker">TAKE A LOOK <span class="muted">( SELECTED )</span></div>
-          <h2 class="second-title">Projects</h2>
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>Shop by category</h2>
+          <p class="muted">Find what you need, faster.</p>
         </div>
 
-        <div class="project-list" role="list">
-          <a class="project-row" href="javascript:void(0)" role="listitem">
-            <div class="num">01.</div>
-            <div class="meta">
-              <div class="name">Brand system</div>
-              <div class="desc">Identity, art direction, packaging</div>
-            </div>
-            <div class="tag">2026</div>
+        <div class="grid grid-3">
+          <a class="tile" href="shop.html?category=Accessories">
+            <div class="tile-kicker">Accessories</div>
+            <div class="tile-title">Carry &amp; Organize</div>
+            <div class="tile-cta">Shop Accessories →</div>
           </a>
-
-          <a class="project-row" href="javascript:void(0)" role="listitem">
-            <div class="num">02.</div>
-            <div class="meta">
-              <div class="name">Ecommerce build</div>
-              <div class="desc">Home, shop, product pages, checkout</div>
-            </div>
-            <div class="tag">2026</div>
+          <a class="tile" href="shop.html?category=Home">
+            <div class="tile-kicker">Home</div>
+            <div class="tile-title">Clean &amp; Minimal</div>
+            <div class="tile-cta">Shop Home →</div>
           </a>
-
-          <a class="project-row" href="javascript:void(0)" role="listitem">
-            <div class="num">03.</div>
-            <div class="meta">
-              <div class="name">Content templates</div>
-              <div class="desc">Social kits, ads, launch graphics</div>
-            </div>
-            <div class="tag">2026</div>
+          <a class="tile" href="shop.html?category=Tech">
+            <div class="tile-kicker">Tech</div>
+            <div class="tile-title">Daily Essentials</div>
+            <div class="tile-cta">Shop Tech →</div>
           </a>
         </div>
       </div>
     </section>
 
-    <script defer src="split-scroll.js"></script>
-  </body>
+    <section class="section section-soft" id="featured">
+      <div class="container">
+        <div class="section-head row">
+          <div>
+            <h2>Featured products</h2>
+            <p class="muted">Popular picks this week.</p>
+          </div>
+          <a class="link" href="shop.html">View all →</a>
+        </div>
+
+        <div class="products" id="featuredProducts"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container promo">
+        <div class="promo-copy">
+          <h3>Get 10% off your first order</h3>
+          <p class="muted">Join our newsletter for early access to new drops.</p>
+          <form class="newsletter" onsubmit="event.preventDefault(); alert('Thanks! (demo form)');">
+            <input class="input" type="email" placeholder="Email address" required />
+            <button class="btn btn-primary" type="submit">Subscribe</button>
+          </form>
+        </div>
+        <div class="promo-card">
+          <div class="promo-card-title">Use code</div>
+          <div class="promo-card-code">WELCOME10</div>
+          <div class="promo-card-note muted">*Demo only</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="contact">
+      <div class="container">
+        <div class="section-head">
+          <h2>Contact</h2>
+          <p class="muted">Questions? We’re here to help.</p>
+        </div>
+
+        <div class="contact">
+          <div class="contact-card">
+            <div class="contact-title">Support</div>
+            <p class="muted">Email: support@example.com</p>
+            <p class="muted">Hours: Mon–Fri, 9am–5pm</p>
+          </div>
+          <div class="contact-card">
+            <div class="contact-title">Shipping</div>
+            <p class="muted">Fast delivery in select regions. International supported (demo).</p>
+          </div>
+          <div class="contact-card">
+            <div class="contact-title">Returns</div>
+            <p class="muted">30-day returns. Items must be unused and in original packaging.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="footer-brand">Generic Store</div>
+        <div class="muted">© <span id="year"></span> Generic Store. All rights reserved.</div>
+      </div>
+      <div class="footer-links">
+        <a href="shop.html">Shop</a>
+        <a href="cart.html">Cart</a>
+        <a href="checkout.html">Checkout</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/store/products.js"></script>
+  <script src="assets/store/app.js"></script>
+</body>
 </html>
