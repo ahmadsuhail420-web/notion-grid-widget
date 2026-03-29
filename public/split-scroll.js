@@ -46,8 +46,8 @@
   const tilesInStart = 0.10;
   const tilesInEnd = 0.38;
 
-  const contentStart = 0.06;
-  const contentEnd = 0.30;
+  const contentStart = 0.80;
+  const contentEnd = 0.98;
 
   function clamp01(n) {
     return Math.min(1, Math.max(0, n));
