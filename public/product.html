@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product • Generic Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/store/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">GS</span>
+        <span class="brand-text">Generic Store</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="shop.html" class="nav-link">Shop</a>
+        <a href="product.html?id=p001" class="nav-link is-active">Product</a>
+      </nav>
+
+      <div class="header-actions">
+        <label class="currency">
+          <select id="currencySelect" aria-label="Currency">
+            <option value="USD" selected>USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="PKR">PKR (Rs)</option>
+            <option value="INR">INR (₹)</option>
+            <option value="AED">AED (د.إ)</option>
+          </select>
+        </label>
+
+        <a class="cart-btn" href="cart.html" aria-label="Cart">
+          <span class="cart-ico">🛒</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <a class="link" href="shop.html">← Back to shop</a>
+
+      <div class="product" id="productView"></div>
+
+      <section class="section section-soft mt-24">
+        <div class="section-head row">
+          <div>
+            <h2>You may also like</h2>
+            <p class="muted">More popular picks.</p>
+          </div>
+          <a class="link" href="shop.html">View all →</a>
+        </div>
+        <div class="products" id="relatedProducts"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="footer-brand">Generic Store</div>
+        <div class="muted">© <span id="year"></span> Generic Store.</div>
+      </div>
+      <div class="footer-links">
+        <a href="shop.html">Shop</a>
+        <a href="cart.html">Cart</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/store/products.js"></script>
+  <script src="assets/store/app.js"></script>
+</body>
+</html>
