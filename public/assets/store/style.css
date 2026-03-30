@@ -10,6 +10,10 @@
   --danger:#dc2626;
   --radius:16px;
   --shadow: 0 10px 30px rgba(2,8,23,.08);
+
+  /* New theme accents */
+  --amber:#d6a24a;
+  --amber-dark:#b88735;
 }
 
 *{box-sizing:border-box}
@@ -20,7 +24,6 @@ body{
   color:var(--text);
   background:var(--bg);
 }
-
 a{color:inherit;text-decoration:none}
 .container{width:min(1100px, 92%); margin:0 auto;}
 .muted{color:var(--muted)}
@@ -30,27 +33,49 @@ a{color:inherit;text-decoration:none}
 .w-full{width:100%}
 .sr-only{position:absolute;left:-9999px}
 
+/* Serif headings like the screenshot */
+h1,h2,h3,.hero-title{
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+/* Header */
 .site-header{
   position:sticky; top:0; z-index:10;
-  background:rgba(255,255,255,.8);
+  background:rgba(255,255,255,.88);
   backdrop-filter: blur(10px);
   border-bottom:1px solid var(--border);
 }
+.site-header.is-overlay{
+  position:absolute;
+  left:0; right:0; top:0;
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: 1px solid rgba(255,255,255,.18);
+}
+
 .header-inner{
   display:flex; align-items:center; justify-content:space-between;
   padding:14px 0;
   gap:16px;
 }
+
 .brand{display:flex; align-items:center; gap:10px; font-weight:700}
-.brand-mark{
-  width:36px;height:36px;border-radius:10px;
-  display:grid;place-items:center;
-  background: linear-gradient(135deg, var(--brand), var(--brand2));
-  color:white;
+.brand-logo-only{gap:0}
+.brand-logo{
+  height:30px;
+  width:auto;
+  display:block;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,.25));
 }
+
 .nav{display:flex; gap:18px; align-items:center}
 .nav-link{color:var(--muted); font-weight:600}
 .nav-link.is-active, .nav-link:hover{color:var(--text)}
+
+.site-header.is-overlay .nav-link{color: rgba(255,255,255,.92)}
+.site-header.is-overlay .nav-link.is-active,
+.site-header.is-overlay .nav-link:hover{color:#fff}
+
 .header-actions{display:flex; gap:12px; align-items:center}
 .currency select{
   border:1px solid var(--border);
@@ -59,6 +84,12 @@ a{color:inherit;text-decoration:none}
   border-radius:12px;
   font-weight:600;
 }
+.site-header.is-overlay .currency select{
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.22);
+  color:#fff;
+}
+
 .cart-btn{
   display:flex; align-items:center; gap:8px;
   border:1px solid var(--border);
@@ -66,6 +97,12 @@ a{color:inherit;text-decoration:none}
   border-radius:12px;
   background:white;
 }
+.site-header.is-overlay .cart-btn{
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.22);
+  color:#fff;
+}
+
 .cart-count{
   min-width:22px;height:22px;border-radius:999px;
   display:grid;place-items:center;
@@ -73,6 +110,7 @@ a{color:inherit;text-decoration:none}
   font-size:.8rem; font-weight:700;
 }
 
+/* Sections */
 .section{padding:56px 0}
 .section-soft{background:var(--soft)}
 .section-head{margin-bottom:22px}
@@ -81,76 +119,40 @@ a{color:inherit;text-decoration:none}
 .link{color:var(--brand); font-weight:700}
 .link.danger{color:var(--danger)}
 
-.hero{
-  padding:48px 0 34px 0;
-  background:
-    radial-gradient(900px 500px at 10% 10%, rgba(37,99,235,.15), transparent 60%),
-    radial-gradient(800px 450px at 90% 20%, rgba(14,165,233,.15), transparent 60%),
-    linear-gradient(to bottom, #fff, #fff);
-}
-.hero-inner{
-  display:grid;
-  grid-template-columns: 1.3fr .9fr;
-  gap:26px;
-  align-items:stretch;
-}
-.badge{
-  display:inline-flex;
-  padding:6px 10px;
-  border-radius:999px;
-  background:#eef2ff;
-  color:#3730a3;
-  font-weight:700;
-  font-size:.85rem;
-  margin:0 0 10px 0;
-}
-.hero h1{margin:0 0 10px 0; font-size:clamp(2rem, 3.6vw, 3rem); line-height:1.1}
-.hero-cta{display:flex; gap:12px; margin-top:18px; flex-wrap:wrap}
-.hero-perks{
-  margin-top:24px;
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:10px;
-}
-.perk{
-  border:1px solid var(--border);
-  background:white;
-  border-radius:14px;
-  padding:12px;
-}
-.perk-title{font-weight:800; font-size:.95rem}
-.perk-text{color:var(--muted); font-size:.9rem}
-
-.hero-card{
-  border:1px solid var(--border);
-  border-radius: var(--radius);
-  background:white;
-  overflow:hidden;
-  box-shadow: var(--shadow);
+/* New full hero */
+.hero-full{
+  min-height: 92vh;
   display:flex;
-  flex-direction:column;
-}
-.hero-card-top{padding:16px}
-.hero-card-chip{
-  display:inline-flex;
-  padding:6px 10px;
-  border-radius:999px;
-  background:#ecfeff;
-  color:#155e75;
-  font-weight:800;
-  font-size:.8rem;
-}
-.hero-card-title{margin-top:10px; font-weight:900; font-size:1.15rem}
-.hero-card-sub{color:var(--muted); margin-top:4px}
-.hero-card-img{
-  flex:1;
-  min-height:210px;
-  background:
-    radial-gradient(120px 120px at 30% 30%, rgba(255,255,255,.6), transparent 60%),
-    linear-gradient(135deg, #0ea5e9, #2563eb);
-}
-.hero-card-bottom{padding:16px}
+  align-items:center;
+  position:relative;
+  color:#fff;
 
+  /* Update if your hero file name differs */
+  background-image: url("../hero.jpg");
+  background-size: cover;
+  background-position: center;
+}
+.hero-full::before{
+  content:"";
+  position:absolute; inset:0;
+  background: rgba(0,0,0,.45);
+}
+.hero-full .container{position:relative; z-index:1}
+.hero-full-inner{padding-top: 90px; text-align:center}
+.hero-kicker{
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  font-weight:800;
+  font-size:.85rem;
+  margin:0;
+}
+.hero-title{
+  margin:16px 0 18px 0;
+  font-size: clamp(2.3rem, 5vw, 4.2rem);
+  line-height:1.05;
+}
+
+/* Grid tiles */
 .grid{display:grid; gap:14px}
 .grid-3{grid-template-columns:repeat(3, 1fr)}
 .tile{
@@ -164,6 +166,7 @@ a{color:inherit;text-decoration:none}
 .tile-title{margin-top:6px; font-size:1.25rem; font-weight:900}
 .tile-cta{margin-top:16px; color:var(--brand); font-weight:800}
 
+/* Products */
 .products{
   display:grid;
   grid-template-columns: repeat(4, 1fr);
@@ -202,6 +205,7 @@ a{color:inherit;text-decoration:none}
   font-size:.78rem;
 }
 
+/* Buttons */
 .btn{
   border:1px solid var(--border);
   background:white;
@@ -220,7 +224,17 @@ a{color:inherit;text-decoration:none}
 .btn-dark{background:var(--dark); color:white; border-color:var(--dark)}
 .btn-ghost{background:transparent}
 .btn:hover{filter:brightness(.98)}
+.btn-amber{
+  background: var(--amber);
+  border-color: var(--amber);
+  color:#fff;
+}
+.btn-amber:hover{
+  background: var(--amber-dark);
+  border-color: var(--amber-dark);
+}
 
+/* Inputs */
 .input{
   width:100%;
   border:1px solid var(--border);
@@ -231,6 +245,7 @@ a{color:inherit;text-decoration:none}
 }
 .label{display:block; font-weight:800; margin-bottom:8px}
 
+/* Promo */
 .promo{
   border:1px solid var(--border);
   border-radius:var(--radius);
@@ -254,10 +269,7 @@ a{color:inherit;text-decoration:none}
 .promo-card-code{font-weight:900; font-size:1.8rem; margin-top:10px; letter-spacing:1px}
 .promo-card-note{margin-top:6px}
 
-.contact{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
-.contact-card{border:1px solid var(--border); border-radius:var(--radius); background:white; padding:18px}
-.contact-title{font-weight:900; margin-bottom:8px}
-
+/* Footer */
 .site-footer{
   border-top:1px solid var(--border);
   padding:26px 0;
@@ -367,7 +379,7 @@ a{color:inherit;text-decoration:none}
 .checkout-layout{display:grid; grid-template-columns: 1.1fr .9fr; gap:16px; align-items:start}
 .form .form-row{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; margin-bottom:12px}
 
-/* Gradient helpers */
+/* Gradient helpers used by sample products */
 .gradient-1{background: linear-gradient(135deg, #f97316, #ef4444)}
 .gradient-2{background: linear-gradient(135deg, #22c55e, #0ea5e9)}
 .gradient-3{background: linear-gradient(135deg, #6366f1, #0ea5e9)}
@@ -377,10 +389,8 @@ a{color:inherit;text-decoration:none}
 
 /* Responsive */
 @media (max-width: 980px){
-  .hero-inner{grid-template-columns:1fr}
   .products{grid-template-columns:repeat(3, 1fr)}
   .grid-3{grid-template-columns:1fr}
-  .contact{grid-template-columns:1fr}
   .promo{grid-template-columns:1fr}
   .shop-layout{grid-template-columns:1fr}
   .filters{position:relative; top:auto}
@@ -391,7 +401,6 @@ a{color:inherit;text-decoration:none}
 @media (max-width: 640px){
   .products{grid-template-columns:repeat(2, 1fr)}
   .nav{display:none}
-  .hero-perks{grid-template-columns:1fr}
   .cart-item{grid-template-columns: 64px 1fr; }
   .cart-price{text-align:left}
   .form .form-row{grid-template-columns:1fr}
