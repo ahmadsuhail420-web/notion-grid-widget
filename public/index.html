@@ -1,89 +1,40 @@
-:root{
-  --border: rgba(255,255,255,.22);
-  --text: rgba(255,255,255,.95);
-  --text-muted: rgba(255,255,255,.80);
-}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home</title>
 
-*{ box-sizing:border-box; }
-html,body{ height:100%; }
-body{
-  margin:0;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-/* page background (temporary demo) */
-.header-demo-bg{
-  min-height: 95vh;
-  background:
-    radial-gradient(900px 500px at 20% 20%, rgba(255,255,255,.12), transparent 55%),
-    linear-gradient(135deg, #0f172a, #111827);
-}
+  <link rel="stylesheet" href="assets/store/style.css" />
+</head>
+<body class="home">
 
-/* Header */
-.container{ width:min(1120px, 92%); margin:0 auto; }
+  <header class="site-header is-overlay">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Home">
+        <img class="brand-logo" src="assets/logo.png" alt="Logo" />
+      </a>
 
-.site-header{
-  position:absolute;
-  top:0; left:0; right:0;
-  z-index:10;
-  border-bottom: 1px solid var(--border);
-  background: transparent;
-}
-.header-inner{
-  height:72px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:18px;
-}
+      <nav class="nav" aria-label="Main navigation">
+        <a class="nav-link is-active" href="index.html">Home</a>
+        <a class="nav-link" href="shop.html">Shop</a>
+        <a class="nav-link" href="about.html">About</a>
+        <a class="nav-link" href="contact.html">Contact</a>
+      </nav>
 
-.brand{ display:flex; align-items:center; }
-.brand-logo{
-  height:28px;
-  width:auto;
-  display:block;
-}
+      <a class="cart-btn" href="cart.html" aria-label="Cart">
+        <span class="cart-ico" aria-hidden="true">🛒</span>
+        <span class="cart-count" id="cartCount">0</span>
+      </a>
+    </div>
+  </header>
 
-/* Nav */
-.nav{ display:flex; gap:22px; align-items:center; }
-.nav-link{
-  color: var(--text-muted);
-  text-decoration:none;
-  font-size: 0.95rem;        /* smaller text */
-  font-weight: 600;
-  letter-spacing: .01em;
-}
-.nav-link:hover,
-.nav-link.is-active{
-  color: var(--text);
-}
+  <!-- Temporary filler so you can see transparent header clearly -->
+  <div class="header-demo-bg"></div>
 
-/* Cart */
-.cart-btn{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color: var(--text);
-  text-decoration:none;
-
-  padding:8px 10px;
-  border-radius: 999px;
-  border:1px solid var(--border);
-  background: rgba(0,0,0,.18);
-}
-.cart-count{
-  min-width:22px;
-  height:22px;
-  border-radius:999px;
-  display:grid;
-  place-items:center;
-  background: rgba(255,255,255,.92);
-  color:#111827;
-  font-size:.8rem;
-  font-weight: 800;
-}
-
-/* Responsive: stack/hide nav on small screens */
-@media (max-width: 720px){
-  .nav{ display:none; }
-}
+</body>
+</html>
