@@ -1,137 +1,89 @@
-<header class="site-header is-overlay">
-  <div class="container header-inner">
-    <a class="brand brand-logo-only" href="index.html" aria-label="Home">
-      <!-- TODO: put your logo path -->
-      <img class="brand-logo" src="assets/logo.png" alt="Logo" />
-    </a>
+:root{
+  --border: rgba(255,255,255,.22);
+  --text: rgba(255,255,255,.95);
+  --text-muted: rgba(255,255,255,.80);
+}
 
-    <nav class="nav nav-hero">
-      <a href="index.html" class="nav-link is-active">Home</a>
-      <a href="shop.html" class="nav-link">Shop</a>
-      <a href="about.html" class="nav-link">About</a>
-      <a href="#contact" class="nav-link">Contact</a>
-    </nav>
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
 
-    <div class="header-actions">
-      <a class="cart-btn" href="cart.html" aria-label="Cart">
-        <span class="cart-ico">🛒</span>
-        <span class="cart-count" id="cartCount">0</span>
-      </a>
-    </div>
+/* page background (temporary demo) */
+.header-demo-bg{
+  min-height: 95vh;
+  background:
+    radial-gradient(900px 500px at 20% 20%, rgba(255,255,255,.12), transparent 55%),
+    linear-gradient(135deg, #0f172a, #111827);
+}
 
-    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" id="navToggle">
-      ☰
-    </button>
-  </div>
+/* Header */
+.container{ width:min(1120px, 92%); margin:0 auto; }
 
-  <div class="mobile-nav" id="mobileNav" hidden>
-    <a href="index.html">Home</a>
-    <a href="shop.html">Shop</a>
-    <a href="about.html">About</a>
-    <a href="#contact">Contact</a>
-  </div>
-</header>
+.site-header{
+  position:absolute;
+  top:0; left:0; right:0;
+  z-index:10;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+.header-inner{
+  height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+}
 
-<section class="hero-slider" aria-label="Hero slider">
-  <div class="hero-track" id="heroTrack">
-    <!-- Slide 1 -->
-    <article class="hero-slide" style="--bg:url('../assets/hero-1.jpg')">
-      <div class="hero-overlay"></div>
-      <div class="container hero-content">
-        <p class="hero-kicker">WELCOME</p>
-        <h1 class="hero-title">Discover the Beauty of<br/>Nature at Your Fingertips</h1>
-        <a class="btn btn-amber" href="shop.html">Shop Now</a>
-      </div>
-    </article>
+.brand{ display:flex; align-items:center; }
+.brand-logo{
+  height:28px;
+  width:auto;
+  display:block;
+}
 
-    <!-- Slide 2 -->
-    <article class="hero-slide" style="--bg:url('../assets/hero-2.jpg')">
-      <div class="hero-overlay"></div>
-      <div class="container hero-content">
-        <p class="hero-kicker">NEW ARRIVALS</p>
-        <h2 class="hero-title">Greenery that makes<br/>your home feel alive</h2>
-        <a class="btn btn-amber" href="shop.html?category=Home">Explore</a>
-      </div>
-    </article>
+/* Nav */
+.nav{ display:flex; gap:22px; align-items:center; }
+.nav-link{
+  color: var(--text-muted);
+  text-decoration:none;
+  font-size: 0.95rem;        /* smaller text */
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.nav-link:hover,
+.nav-link.is-active{
+  color: var(--text);
+}
 
-    <!-- Slide 3 -->
-    <article class="hero-slide" style="--bg:url('../assets/hero-3.jpg')">
-      <div class="hero-overlay"></div>
-      <div class="container hero-content">
-        <p class="hero-kicker">BEST SELLERS</p>
-        <h2 class="hero-title">Minimal planters &amp;<br/>indoor essentials</h2>
-        <a class="btn btn-amber" href="shop.html?category=Accessories">Shop Best Sellers</a>
-      </div>
-    </article>
-  </div>
+/* Cart */
+.cart-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color: var(--text);
+  text-decoration:none;
 
-  <button class="hero-arrow left" type="button" aria-label="Previous slide" id="heroPrev">‹</button>
-  <button class="hero-arrow right" type="button" aria-label="Next slide" id="heroNext">›</button>
+  padding:8px 10px;
+  border-radius: 999px;
+  border:1px solid var(--border);
+  background: rgba(0,0,0,.18);
+}
+.cart-count{
+  min-width:22px;
+  height:22px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background: rgba(255,255,255,.92);
+  color:#111827;
+  font-size:.8rem;
+  font-weight: 800;
+}
 
-  <div class="hero-dots" id="heroDots" aria-label="Slide navigation"></div>
-</section>
-
-<script>
-/* Header mobile toggle */
-(() => {
-  const btn = document.getElementById('navToggle');
-  const panel = document.getElementById('mobileNav');
-  if (!btn || !panel) return;
-
-  btn.addEventListener('click', () => {
-    const open = panel.hidden === false;
-    panel.hidden = open;
-    btn.setAttribute('aria-expanded', String(!open));
-  });
-})();
-</script>
-
-<script>
-/* Sliding hero (autoplay + arrows + dots) */
-(() => {
-  const track = document.getElementById('heroTrack');
-  const prev = document.getElementById('heroPrev');
-  const next = document.getElementById('heroNext');
-  const dotsRoot = document.getElementById('heroDots');
-  if (!track || !prev || !next || !dotsRoot) return;
-
-  const slides = Array.from(track.querySelectorAll('.hero-slide'));
-  let index = 0;
-  let timer = null;
-  const AUTOPLAY_MS = 4500;
-
-  function renderDots() {
-    dotsRoot.innerHTML = slides.map((_, i) =>
-      `<button class="dot ${i === index ? 'is-active' : ''}" type="button" aria-label="Go to slide ${i+1}" data-i="${i}"></button>`
-    ).join('');
-    dotsRoot.querySelectorAll('[data-i]').forEach(b => {
-      b.addEventListener('click', () => goTo(parseInt(b.getAttribute('data-i'), 10)));
-    });
-  }
-
-  function goTo(i) {
-    index = (i + slides.length) % slides.length;
-    track.style.transform = `translateX(-${index * 100}%)`;
-    renderDots();
-    restart();
-  }
-
-  function restart() {
-    if (timer) clearInterval(timer);
-    timer = setInterval(() => goTo(index + 1), AUTOPLAY_MS);
-  }
-
-  prev.addEventListener('click', () => goTo(index - 1));
-  next.addEventListener('click', () => goTo(index + 1));
-
-  // Pause on hover (desktop)
-  const slider = track.closest('.hero-slider');
-  slider.addEventListener('mouseenter', () => timer && clearInterval(timer));
-  slider.addEventListener('mouseleave', () => restart());
-
-  // Init
-  track.style.transform = 'translateX(0%)';
-  renderDots();
-  restart();
-})();
-</script>
+/* Responsive: stack/hide nav on small screens */
+@media (max-width: 720px){
+  .nav{ display:none; }
+}
