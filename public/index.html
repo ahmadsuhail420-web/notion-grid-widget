@@ -14,24 +14,31 @@
 <body class="home">
 
   <header class="site-header is-overlay">
-    <div class="container header-inner">
-      <a class="brand" href="index.html" aria-label="Home">
-        <img class="brand-logo" src="assets/logo.png" alt="Logo" />
-      </a>
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Home">
+      <img class="brand-logo" src="assets/logo.png" alt="Logo" />
+    </a>
 
-      <nav class="nav" aria-label="Main navigation">
-        <a class="nav-link is-active" href="index.html">Home</a>
-        <a class="nav-link" href="shop.html">Shop</a>
-        <a class="nav-link" href="about.html">About</a>
-        <a class="nav-link" href="contact.html">Contact</a>
-      </nav>
+    <nav class="nav" aria-label="Main navigation">
+      <a class="nav-link is-active" href="index.html">Home</a>
+      <span class="nav-sep">|</span>
+      <a class="nav-link" href="shop.html">Shop</a>
+      <span class="nav-sep">|</span>
+      <a class="nav-link" href="about.html">About</a>
+      <span class="nav-sep">|</span>
+      <a class="nav-link" href="contact.html">Contact</a>
+      <span class="nav-sep">|</span>
 
-      <a class="cart-btn" href="cart.html" aria-label="Cart">
+      <a class="icon-link" href="shop.html" aria-label="Search">⌕</a>
+      <a class="icon-link" href="account.html" aria-label="Account">👤</a>
+
+      <a class="icon-link cart-link" href="cart.html" aria-label="Cart">
         <span class="cart-ico" aria-hidden="true">🛒</span>
-        <span class="cart-count" id="cartCount">0</span>
+        <span class="cart-badge" id="cartCount">0</span>
       </a>
-    </div>
-  </header>
+    </nav>
+  </div>
+</header>
 
   <!-- Temporary filler so you can see transparent header clearly -->
   <div class="header-demo-bg"></div>
