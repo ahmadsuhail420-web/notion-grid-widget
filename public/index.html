@@ -1,139 +1,137 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Store</title>
-  <meta name="description" content="A clean, responsive e-commerce website (HTML/CSS/JS)." />
+<header class="site-header is-overlay">
+  <div class="container header-inner">
+    <a class="brand brand-logo-only" href="index.html" aria-label="Home">
+      <!-- TODO: put your logo path -->
+      <img class="brand-logo" src="assets/logo.png" alt="Logo" />
+    </a>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <nav class="nav nav-hero">
+      <a href="index.html" class="nav-link is-active">Home</a>
+      <a href="shop.html" class="nav-link">Shop</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
 
-  <link rel="stylesheet" href="assets/store/style.css" />
-</head>
-<body class="home">
-  <header class="site-header is-overlay">
-    <div class="container header-inner">
-      <a class="brand brand-logo-only" href="index.html" aria-label="Home">
-        <!-- Update this if your logo file name differs -->
-        <img class="brand-logo" src="assets/logo.png" alt="Logo" />
+    <div class="header-actions">
+      <a class="cart-btn" href="cart.html" aria-label="Cart">
+        <span class="cart-ico">🛒</span>
+        <span class="cart-count" id="cartCount">0</span>
       </a>
-
-      <nav class="nav">
-        <a href="index.html" class="nav-link is-active">Home</a>
-        <a href="shop.html" class="nav-link">Shop</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="#contact" class="nav-link">Contact</a>
-      </nav>
-
-      <div class="header-actions">
-        <label class="currency">
-          <span class="sr-only">Currency</span>
-          <select id="currencySelect" aria-label="Currency">
-            <option value="USD" selected>USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-            <option value="PKR">PKR (Rs)</option>
-            <option value="INR">INR (₹)</option>
-            <option value="AED">AED (د.إ)</option>
-          </select>
-        </label>
-
-        <a class="cart-btn" href="cart.html" aria-label="Cart">
-          <span class="cart-ico">🛒</span>
-          <span class="cart-count" id="cartCount">0</span>
-        </a>
-      </div>
     </div>
-  </header>
 
-  <main>
-    <section class="hero-full">
-      <div class="container hero-full-inner">
+    <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" id="navToggle">
+      ☰
+    </button>
+  </div>
+
+  <div class="mobile-nav" id="mobileNav" hidden>
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="about.html">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</header>
+
+<section class="hero-slider" aria-label="Hero slider">
+  <div class="hero-track" id="heroTrack">
+    <!-- Slide 1 -->
+    <article class="hero-slide" style="--bg:url('../assets/hero-1.jpg')">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
         <p class="hero-kicker">WELCOME</p>
         <h1 class="hero-title">Discover the Beauty of<br/>Nature at Your Fingertips</h1>
         <a class="btn btn-amber" href="shop.html">Shop Now</a>
       </div>
-    </section>
+    </article>
 
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <h2>Shop by category</h2>
-          <p class="muted">Find what you love, faster.</p>
-        </div>
-
-        <div class="grid grid-3">
-          <a class="tile" href="shop.html?category=Accessories">
-            <div class="tile-kicker">Accessories</div>
-            <div class="tile-title">Carry &amp; Organize</div>
-            <div class="tile-cta">Shop Accessories →</div>
-          </a>
-          <a class="tile" href="shop.html?category=Home">
-            <div class="tile-kicker">Home</div>
-            <div class="tile-title">Warm &amp; Minimal</div>
-            <div class="tile-cta">Shop Home →</div>
-          </a>
-          <a class="tile" href="shop.html?category=Tech">
-            <div class="tile-kicker">Tech</div>
-            <div class="tile-title">Daily Essentials</div>
-            <div class="tile-cta">Shop Tech →</div>
-          </a>
-        </div>
+    <!-- Slide 2 -->
+    <article class="hero-slide" style="--bg:url('../assets/hero-2.jpg')">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <p class="hero-kicker">NEW ARRIVALS</p>
+        <h2 class="hero-title">Greenery that makes<br/>your home feel alive</h2>
+        <a class="btn btn-amber" href="shop.html?category=Home">Explore</a>
       </div>
-    </section>
+    </article>
 
-    <section class="section section-soft" id="featured">
-      <div class="container">
-        <div class="section-head row">
-          <div>
-            <h2>Featured products</h2>
-            <p class="muted">Popular picks this week.</p>
-          </div>
-          <a class="link" href="shop.html">View all →</a>
-        </div>
-
-        <div class="products" id="featuredProducts"></div>
+    <!-- Slide 3 -->
+    <article class="hero-slide" style="--bg:url('../assets/hero-3.jpg')">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <p class="hero-kicker">BEST SELLERS</p>
+        <h2 class="hero-title">Minimal planters &amp;<br/>indoor essentials</h2>
+        <a class="btn btn-amber" href="shop.html?category=Accessories">Shop Best Sellers</a>
       </div>
-    </section>
+    </article>
+  </div>
 
-    <section class="section" id="contact">
-      <div class="container promo">
-        <div class="promo-copy">
-          <h3>Get updates & offers</h3>
-          <p class="muted">Join our newsletter for early access to new drops.</p>
-          <form class="newsletter" onsubmit="event.preventDefault(); alert('Thanks! (demo form)');">
-            <input class="input" type="email" placeholder="Email address" required />
-            <button class="btn btn-primary" type="submit">Subscribe</button>
-          </form>
-          <p class="muted small mt-12">Support: support@example.com</p>
-        </div>
+  <button class="hero-arrow left" type="button" aria-label="Previous slide" id="heroPrev">‹</button>
+  <button class="hero-arrow right" type="button" aria-label="Next slide" id="heroNext">›</button>
 
-        <div class="promo-card">
-          <div class="promo-card-title">Use code</div>
-          <div class="promo-card-code">WELCOME10</div>
-          <div class="promo-card-note muted">*Demo only</div>
-        </div>
-      </div>
-    </section>
-  </main>
+  <div class="hero-dots" id="heroDots" aria-label="Slide navigation"></div>
+</section>
 
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <div>
-        <div class="footer-brand">Store</div>
-        <div class="muted">© <span id="year"></span> All rights reserved.</div>
-      </div>
-      <div class="footer-links">
-        <a href="shop.html">Shop</a>
-        <a href="cart.html">Cart</a>
-        <a href="checkout.html">Checkout</a>
-      </div>
-    </div>
-  </footer>
+<script>
+/* Header mobile toggle */
+(() => {
+  const btn = document.getElementById('navToggle');
+  const panel = document.getElementById('mobileNav');
+  if (!btn || !panel) return;
 
-  <script src="assets/store/products.js"></script>
-  <script src="assets/store/app.js"></script>
-</body>
-</html>
+  btn.addEventListener('click', () => {
+    const open = panel.hidden === false;
+    panel.hidden = open;
+    btn.setAttribute('aria-expanded', String(!open));
+  });
+})();
+</script>
+
+<script>
+/* Sliding hero (autoplay + arrows + dots) */
+(() => {
+  const track = document.getElementById('heroTrack');
+  const prev = document.getElementById('heroPrev');
+  const next = document.getElementById('heroNext');
+  const dotsRoot = document.getElementById('heroDots');
+  if (!track || !prev || !next || !dotsRoot) return;
+
+  const slides = Array.from(track.querySelectorAll('.hero-slide'));
+  let index = 0;
+  let timer = null;
+  const AUTOPLAY_MS = 4500;
+
+  function renderDots() {
+    dotsRoot.innerHTML = slides.map((_, i) =>
+      `<button class="dot ${i === index ? 'is-active' : ''}" type="button" aria-label="Go to slide ${i+1}" data-i="${i}"></button>`
+    ).join('');
+    dotsRoot.querySelectorAll('[data-i]').forEach(b => {
+      b.addEventListener('click', () => goTo(parseInt(b.getAttribute('data-i'), 10)));
+    });
+  }
+
+  function goTo(i) {
+    index = (i + slides.length) % slides.length;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    renderDots();
+    restart();
+  }
+
+  function restart() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => goTo(index + 1), AUTOPLAY_MS);
+  }
+
+  prev.addEventListener('click', () => goTo(index - 1));
+  next.addEventListener('click', () => goTo(index + 1));
+
+  // Pause on hover (desktop)
+  const slider = track.closest('.hero-slider');
+  slider.addEventListener('mouseenter', () => timer && clearInterval(timer));
+  slider.addEventListener('mouseleave', () => restart());
+
+  // Init
+  track.style.transform = 'translateX(0%)';
+  renderDots();
+  restart();
+})();
+</script>
