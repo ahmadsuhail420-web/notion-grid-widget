@@ -3,25 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Generic Store</title>
+  <title>Store</title>
   <meta name="description" content="A clean, responsive e-commerce website (HTML/CSS/JS)." />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="assets/store/style.css" />
 </head>
-<body>
-  <header class="site-header">
+<body class="home">
+  <header class="site-header is-overlay">
     <div class="container header-inner">
-      <a class="brand" href="index.html">
-        <span class="brand-mark">GS</span>
-        <span class="brand-text">Generic Store</span>
+      <a class="brand brand-logo-only" href="index.html" aria-label="Home">
+        <!-- Update this if your logo file name differs -->
+        <img class="brand-logo" src="assets/logo.png" alt="Logo" />
       </a>
 
       <nav class="nav">
         <a href="index.html" class="nav-link is-active">Home</a>
         <a href="shop.html" class="nav-link">Shop</a>
-        <a href="product.html?id=p001" class="nav-link">Product</a>
+        <a href="about.html" class="nav-link">About</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
 
@@ -47,46 +49,11 @@
   </header>
 
   <main>
-    <section class="hero">
-      <div class="container hero-inner">
-        <div class="hero-copy">
-          <p class="badge">New Season • Best Sellers</p>
-          <h1>Simple, modern products for everyday life.</h1>
-          <p class="muted">
-            Browse curated essentials. Fast shipping, secure checkout, and easy returns.
-          </p>
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="shop.html">Shop Now</a>
-            <a class="btn btn-ghost" href="#featured">Featured</a>
-          </div>
-
-          <div class="hero-perks">
-            <div class="perk">
-              <div class="perk-title">Free Shipping</div>
-              <div class="perk-text">On orders over $50</div>
-            </div>
-            <div class="perk">
-              <div class="perk-title">Easy Returns</div>
-              <div class="perk-text">30-day return policy</div>
-            </div>
-            <div class="perk">
-              <div class="perk-title">Secure Payments</div>
-              <div class="perk-text">Trusted providers</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-card">
-          <div class="hero-card-top">
-            <div class="hero-card-chip">Featured</div>
-            <div class="hero-card-title">Minimal Desk Setup</div>
-            <div class="hero-card-sub">Upgrade your workspace</div>
-          </div>
-          <div class="hero-card-img" role="img" aria-label="Product collage"></div>
-          <div class="hero-card-bottom">
-            <a class="btn btn-dark" href="product.html?id=p003">View Product</a>
-          </div>
-        </div>
+    <section class="hero-full">
+      <div class="container hero-full-inner">
+        <p class="hero-kicker">WELCOME</p>
+        <h1 class="hero-title">Discover the Beauty of<br/>Nature at Your Fingertips</h1>
+        <a class="btn btn-amber" href="shop.html">Shop Now</a>
       </div>
     </section>
 
@@ -94,7 +61,7 @@
       <div class="container">
         <div class="section-head">
           <h2>Shop by category</h2>
-          <p class="muted">Find what you need, faster.</p>
+          <p class="muted">Find what you love, faster.</p>
         </div>
 
         <div class="grid grid-3">
@@ -105,7 +72,7 @@
           </a>
           <a class="tile" href="shop.html?category=Home">
             <div class="tile-kicker">Home</div>
-            <div class="tile-title">Clean &amp; Minimal</div>
+            <div class="tile-title">Warm &amp; Minimal</div>
             <div class="tile-cta">Shop Home →</div>
           </a>
           <a class="tile" href="shop.html?category=Tech">
@@ -131,45 +98,22 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="contact">
       <div class="container promo">
         <div class="promo-copy">
-          <h3>Get 10% off your first order</h3>
+          <h3>Get updates & offers</h3>
           <p class="muted">Join our newsletter for early access to new drops.</p>
           <form class="newsletter" onsubmit="event.preventDefault(); alert('Thanks! (demo form)');">
             <input class="input" type="email" placeholder="Email address" required />
             <button class="btn btn-primary" type="submit">Subscribe</button>
           </form>
+          <p class="muted small mt-12">Support: support@example.com</p>
         </div>
+
         <div class="promo-card">
           <div class="promo-card-title">Use code</div>
           <div class="promo-card-code">WELCOME10</div>
           <div class="promo-card-note muted">*Demo only</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-soft" id="contact">
-      <div class="container">
-        <div class="section-head">
-          <h2>Contact</h2>
-          <p class="muted">Questions? We’re here to help.</p>
-        </div>
-
-        <div class="contact">
-          <div class="contact-card">
-            <div class="contact-title">Support</div>
-            <p class="muted">Email: support@example.com</p>
-            <p class="muted">Hours: Mon–Fri, 9am–5pm</p>
-          </div>
-          <div class="contact-card">
-            <div class="contact-title">Shipping</div>
-            <p class="muted">Fast delivery in select regions. International supported (demo).</p>
-          </div>
-          <div class="contact-card">
-            <div class="contact-title">Returns</div>
-            <p class="muted">30-day returns. Items must be unused and in original packaging.</p>
-          </div>
         </div>
       </div>
     </section>
@@ -178,8 +122,8 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <div>
-        <div class="footer-brand">Generic Store</div>
-        <div class="muted">© <span id="year"></span> Generic Store. All rights reserved.</div>
+        <div class="footer-brand">Store</div>
+        <div class="muted">© <span id="year"></span> All rights reserved.</div>
       </div>
       <div class="footer-links">
         <a href="shop.html">Shop</a>
