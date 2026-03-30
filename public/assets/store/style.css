@@ -90,6 +90,129 @@ h1,h2,h3,.hero-title{
   color:#fff;
 }
 
+/* Smaller header typography */
+.nav-hero .nav-link{
+  font-size: 0.92rem;
+  letter-spacing: .02em;
+}
+.brand-logo{height:28px}
+
+/* Hide burger on desktop, show on mobile */
+.nav-toggle{
+  display:none;
+  border:1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.10);
+  color:#fff;
+  padding:8px 10px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:900;
+}
+.mobile-nav{
+  display:none;
+  border-top:1px solid rgba(255,255,255,.18);
+  padding:10px 0 14px 0;
+}
+.mobile-nav a{
+  display:block;
+  padding:10px 0;
+  color: rgba(255,255,255,.92);
+  font-weight:700;
+}
+
+/* Slider layout */
+.hero-slider{
+  position:relative;
+  overflow:hidden;
+  min-height: 92vh;
+}
+.hero-track{
+  display:flex;
+  width:100%;
+  height: 92vh;
+  transition: transform 600ms ease;
+  will-change: transform;
+}
+.hero-slide{
+  min-width:100%;
+  height:100%;
+  position:relative;
+  color:#fff;
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
+}
+.hero-overlay{
+  position:absolute; inset:0;
+  background: rgba(0,0,0,.45);
+}
+.hero-content{
+  position:relative;
+  z-index:1;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding-top: 90px; /* space for header */
+}
+.hero-kicker{
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  font-weight:800;
+  font-size:.85rem;
+  margin:0;
+}
+.hero-title{
+  margin:16px 0 18px 0;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  line-height:1.05;
+}
+
+/* Arrows + dots */
+.hero-arrow{
+  position:absolute;
+  top:50%;
+  transform: translateY(-50%);
+  width:44px; height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.30);
+  background: rgba(0,0,0,.25);
+  color:#fff;
+  font-size:28px;
+  cursor:pointer;
+}
+.hero-arrow.left{left:16px}
+.hero-arrow.right{right:16px}
+.hero-arrow:hover{background: rgba(0,0,0,.35)}
+
+.hero-dots{
+  position:absolute;
+  left:0; right:0; bottom:18px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+.dot{
+  width:10px; height:10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.45);
+  background: rgba(255,255,255,.25);
+  cursor:pointer;
+}
+.dot.is-active{
+  background: rgba(255,255,255,.95);
+}
+
+/* Responsive header menu */
+@media (max-width: 720px){
+  .nav{display:none}
+  .nav-toggle{display:inline-flex}
+  .mobile-nav{display:block}
+  .site-header .header-inner{position:relative}
+}
+
 .cart-btn{
   display:flex; align-items:center; gap:8px;
   border:1px solid var(--border);
