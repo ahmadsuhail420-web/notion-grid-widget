@@ -1,47 +1,412 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Home</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Brand</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts (similar vibe to screenshot: modern sans + italic serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
 
-  <link rel="stylesheet" href="assets/store/style.css" />
-</head>
-<body class="home">
+    <style>
+      :root {
+        --bg: #efebe2;
+        --text: #0d0d0d;
+        --muted: rgba(13, 13, 13, 0.62);
+        --card: #ffffff;
+        --border: rgba(13, 13, 13, 0.12);
+        --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        --radius: 22px;
 
-  <header class="site-header is-overlay">
-  <div class="container header-inner">
-    <a class="brand" href="index.html" aria-label="Home">
-      <img class="brand-logo" src="assets/logo.png" alt="Logo" />
-    </a>
+        --container: 1160px;
+      }
 
-    <nav class="nav" aria-label="Main navigation">
-      <a class="nav-link is-active" href="index.html">Home</a>
-      <span class="nav-sep">|</span>
-      <a class="nav-link" href="shop.html">Shop</a>
-      <span class="nav-sep">|</span>
-      <a class="nav-link" href="about.html">About</a>
-      <span class="nav-sep">|</span>
-      <a class="nav-link" href="contact.html">Contact</a>
-      <span class="nav-sep">|</span>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+      }
 
-      <a class="icon-link" href="shop.html" aria-label="Search">⌕</a>
-      <a class="icon-link" href="account.html" aria-label="Account">👤</a>
+      a { color: inherit; text-decoration: none; }
+      .container {
+        max-width: var(--container);
+        margin: 0 auto;
+        padding: 0 20px;
+      }
 
-      <a class="icon-link cart-link" href="cart.html" aria-label="Cart">
-        <span class="cart-ico" aria-hidden="true">🛒</span>
-        <span class="cart-badge" id="cartCount">0</span>
-      </a>
-    </nav>
-  </div>
-</header>
+      /* Header */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(to bottom, rgba(239,235,226,0.9), rgba(239,235,226,0.55));
+        backdrop-filter: blur(10px);
+      }
 
-  <!-- Temporary filler so you can see transparent header clearly -->
-  <div class="header-demo-bg"></div>
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 0;
+      }
 
-</body>
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .brand-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: #0d0d0d;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+        align-items: center;
+        font-weight: 500;
+        color: rgba(13,13,13,0.78);
+      }
+      .nav-links a { padding: 8px 10px; border-radius: 10px; }
+      .nav-links a:hover { background: rgba(13,13,13,0.06); }
+
+      .nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      .btn-primary {
+        background: #0d0d0d;
+        color: #fff;
+      }
+      .btn-primary:hover { opacity: 0.92; }
+
+      .btn-ghost {
+        background: transparent;
+        border-color: rgba(13,13,13,0.18);
+        color: rgba(13,13,13,0.85);
+      }
+      .btn-ghost:hover { background: rgba(13,13,13,0.06); }
+
+      .menu-btn {
+        display: none;
+      }
+
+      /* Mobile menu */
+      .mobile-drawer {
+        display: none;
+        padding: 0 0 18px;
+      }
+      .mobile-drawer a {
+        display: block;
+        padding: 12px 10px;
+        border-radius: 12px;
+        color: rgba(13,13,13,0.84);
+        font-weight: 600;
+      }
+      .mobile-drawer a:hover { background: rgba(13,13,13,0.06); }
+
+      /* Hero */
+      .hero {
+        padding: 48px 0 72px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 44px;
+        align-items: center;
+      }
+
+      .social-row {
+        display: inline-flex;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.28);
+        margin-bottom: 18px;
+      }
+      .social-row a {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        color: rgba(13,13,13,0.85);
+      }
+      .social-row a:hover { background: rgba(13,13,13,0.06); }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: clamp(44px, 5vw, 78px);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+      }
+      .italic {
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .subtext {
+        margin: 0 0 22px;
+        max-width: 46ch;
+        font-size: 16px;
+        line-height: 1.7;
+        color: var(--muted);
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .media-card {
+        position: relative;
+        background: rgba(255,255,255,0.65);
+        border: 1px solid rgba(255,255,255,0.8);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+        padding: 10px;
+      }
+
+      .media-frame {
+        border-radius: 22px;
+        overflow: hidden;
+        background: #111;
+        aspect-ratio: 3 / 4.1; /* tall phone-like */
+        position: relative;
+      }
+
+      .media-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .story-top {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+      }
+
+      .story-top span {
+        height: 3px;
+        flex: 1;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.6);
+      }
+
+      .story-meta {
+        position: absolute;
+        top: 22px;
+        left: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255,255,255,0.92);
+        font-weight: 600;
+        font-size: 13px;
+        text-shadow: 0 2px 14px rgba(0,0,0,0.25);
+      }
+
+      .avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.35);
+        overflow: hidden;
+        background: rgba(255,255,255,0.15);
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+      }
+
+      .floating-badge {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -18px;
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: #0d0d0d;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+        border: 1px solid rgba(255,255,255,0.12);
+      }
+
+      .floating-badge svg {
+        width: 26px;
+        height: 26px;
+        fill: #fff;
+        opacity: 0.95;
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+        .media-card {
+          max-width: 420px;
+          margin: 0 auto;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .nav-links { display: none; }
+        .menu-btn { display: inline-flex; }
+
+        .mobile-drawer[aria-hidden="false"] { display: block; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="container">
+        <div class="nav">
+          <!-- Replace with your logo -->
+          <a class="brand" href="#">
+            <span class="brand-badge">✳</span>
+            <span>YourBrand</span>
+          </a>
+
+          <nav class="nav-links" aria-label="Primary">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#case-studies">Case Studies</a>
+            <a href="#blog">Blog</a>
+          </nav>
+
+          <div class="nav-cta">
+            <a class="btn btn-primary" href="#contact">Book a call</a>
+            <button class="btn btn-ghost menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer">
+              Menu
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile drawer -->
+        <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#case-studies">Case Studies</a>
+          <a href="#blog">Blog</a>
+          <a class="btn btn-primary" style="margin-top: 10px; width: 100%;" href="#contact">Book a call</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="hero" id="home">
+      <div class="container">
+        <div class="hero-grid">
+          <section>
+            <div class="social-row" aria-label="Social links">
+              <!-- Replace links + icons if needed -->
+              <a href="#" title="Instagram">⌁</a>
+              <a href="#" title="LinkedIn">in</a>
+              <a href="#" title="Facebook">f</a>
+              <a href="#" title="TikTok">♪</a>
+              <a href="#" title="X">x</a>
+            </div>
+
+            <h1>
+              Your headline<br />
+              done <span class="italic">right</span>
+            </h1>
+
+            <p class="subtext">
+              Add your short paragraph here describing what you do and who you help. Keep it to 2–3 lines for the same look.
+            </p>
+
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#contact">Get in touch</a>
+              <a class="btn btn-ghost" href="#case-studies">View work</a>
+            </div>
+          </section>
+
+          <aside>
+            <div class="media-card">
+              <div class="media-frame">
+                <!-- Replace with your hero image -->
+                <img
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80"
+                  alt="Hero visual"
+                />
+
+                <div class="story-top" aria-hidden="true">
+                  <span></span><span></span><span></span>
+                </div>
+
+                <div class="story-meta">
+                  <div class="avatar">U</div>
+                  <span>yourbrand</span>
+                  <span style="opacity:0.75; font-weight:500;">· 6h</span>
+                </div>
+              </div>
+
+              <div class="floating-badge" aria-hidden="true">
+                <!-- simple star mark -->
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2l1.6 6.1L20 6l-3.9 4.9L20 16l-6.4-2.1L12 20l-1.6-6.1L4 16l3.9-5.1L4 6l6.4 2.1L12 2z"/>
+                </svg>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const menuBtn = document.getElementById("menuBtn");
+      const drawer = document.getElementById("mobileDrawer");
+
+      menuBtn?.addEventListener("click", () => {
+        const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+        menuBtn.setAttribute("aria-expanded", String(!expanded));
+        drawer.setAttribute("aria-hidden", String(expanded));
+      });
+    </script>
+  </body>
 </html>
