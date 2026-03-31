@@ -299,6 +299,49 @@
 
         .mobile-drawer[aria-hidden="false"] { display: block; }
       }
+
+      /* Smaller pill */
+.ticker{
+  width: fit-content;          /* shrink to content */
+  max-width: 320px;            /* <-- make bar a little less (change as you like) */
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.28);
+  overflow: hidden;            /* hides moving text outside the pill */
+}
+
+/* Marquee */
+.ticker__track{
+  display: inline-flex;
+  gap: 28px;
+  white-space: nowrap;
+  will-change: transform;
+  animation: ticker-move 10s linear infinite;
+}
+
+/* Text style */
+.ticker__item{
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(13,13,13,0.85);
+}
+
+@keyframes ticker-move{
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); } /* because we repeated the item 3x */
+}
+
+/* Optional: pause on hover */
+.ticker:hover .ticker__track{
+  animation-play-state: paused;
+}
+
+/* Optional: respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .ticker__track{ animation: none; }
+}
+      
     </style>
   </head>
 
@@ -342,14 +385,14 @@
       <div class="container">
         <div class="hero-grid">
           <section>
-            <div class="social-row" aria-label="Social links">
-              <!-- Replace links + icons if needed -->
-              <a href="#" title="Instagram">⌁</a>
-              <a href="#" title="LinkedIn">in</a>
-              <a href="#" title="Facebook">f</a>
-              <a href="#" title="TikTok">♪</a>
-              <a href="#" title="X">x</a>
-            </div>
+            
+            <div class="ticker" aria-label="Announcement">
+  <div class="ticker__track">
+    <span class="ticker__item">Notion Grid Widget</span>
+    <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
+    <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
+  </div>
+</div>
 
             <h1>
               Your headline<br />
