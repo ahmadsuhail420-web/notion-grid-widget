@@ -60,45 +60,38 @@
       .nav-links a { padding: 8px 10px; border-radius: 10px; }
       .nav-links a:hover { background: rgba(13, 13, 13, 0.06); }
 
-      .nav-cta { display: inline-flex; align-items: center; gap: 10px; }
+      .nav-cta { display: inline-flex; align-items: center; gap: 14px; }
 
-      .icon-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 999px;
-        border: 1px solid rgba(13,13,13,0.18);
-        background: rgba(255,255,255,0.25);
-        display: inline-grid;
-        place-items: center;
-        cursor: pointer;
-      }
-      .icon-btn:hover { background: rgba(13,13,13,0.06); }
-
-      .icon { width: 18px; height: 18px; stroke: rgba(13,13,13,0.88); }
-
-      .btn {
-        border: 1px solid transparent;
-        border-radius: 999px;
-        padding: 10px 16px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
+      /* Icons: NO circle */
+      .icon-btn{
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        white-space: nowrap;
-      }
-      .btn-primary { background: #0d0d0d; color: #fff; }
-      .btn-primary:hover { opacity: 0.92; }
-      .btn-ghost {
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 0;
         background: transparent;
-        border-color: rgba(13, 13, 13, 0.18);
-        color: rgba(13, 13, 13, 0.85);
+        cursor: pointer;
       }
-      .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
+      .icon-btn:hover{ opacity: 0.72; }
 
-      .menu-btn { display: none; }
+      .icon{
+        width: 20px;
+        height: 20px;
+        stroke: rgba(13,13,13,0.9);
+      }
+
+      /* Menu button: hidden on desktop, shown only on mobile */
+      .menu-btn{
+        display: none; /* desktop: hidden */
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+      }
 
       .mobile-drawer {
         display: none;
@@ -164,6 +157,28 @@
       }
 
       .hero-actions { display: flex; gap: 12px; align-items: center; }
+
+      .btn {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+      .btn-primary { background: #0d0d0d; color: #fff; }
+      .btn-primary:hover { opacity: 0.92; }
+      .btn-ghost {
+        background: transparent;
+        border-color: rgba(13, 13, 13, 0.18);
+        color: rgba(13, 13, 13, 0.85);
+      }
+      .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
 
       /* ticker */
       .ticker {
@@ -309,6 +324,11 @@
 
       @media (max-width: 760px) {
         .nav-links { display: none; }
+
+        /* hide desktop icons on mobile */
+        .nav-cta .icon-btn { display: none; }
+
+        /* show hamburger on mobile */
         .menu-btn { display: inline-flex; }
 
         .mobile-drawer { padding: 0 20px 18px; }
@@ -321,7 +341,6 @@
     <header>
       <div class="nav">
         <a class="brand" href="index.html" aria-label="Home">
-          <!-- Save your uploaded logo as assets/logo.png -->
           <img class="brand-logo" src="assets/logo.png" alt="Sync & Style logo" />
         </a>
 
@@ -356,8 +375,13 @@
             </svg>
           </a>
 
-          <button class="btn btn-ghost menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer">
-            Menu
+          <!-- Mobile-only hamburger -->
+          <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Open menu">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
           </button>
         </div>
       </div>
