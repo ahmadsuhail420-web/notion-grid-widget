@@ -134,25 +134,34 @@
         min-width: 0;
       }
 
-      h1 {
-        margin: 0;
-        font-size: clamp(46px, 6.5vw, 140px);
-        line-height: 0.95;
-        letter-spacing: -0.04em;
-      }
+    h1{
+  margin: 0;
+  font-size: 56px;        /* mobile size */
+  line-height: 0.90;
+  letter-spacing: -0.05em;
+  font-weight: 500;       /* not too bold */
+}
 
+      @media (min-width: 768px){
+  h1{ font-size: 86px; }
+}
+
+/* Laptop / Desktop (won't shrink as you resize) */
+@media (min-width: 1200px){
+  h1{ font-size: 118px; }
+}
+      
       .italic {
         font-family: "Playfair Display", serif;
         font-style: italic;
-        font-weight: 200;
+        font-weight: 500;
         letter-spacing: -0.02em;
       }
 
       .subtext {
-        margin: 0;
         max-width: 46ch;
         font-size: 19px;
-        line-height: 1.7;
+        line-height: 1.8;
         color: var(--muted);
       }
 
