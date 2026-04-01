@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Brand</title>
 
-    <!-- Fonts (similar vibe to screenshot: modern sans + italic serif) -->
+    <!-- Fonts (modern sans + italic serif for “right”) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,15 +18,14 @@
         --bg: #efebe2;
         --text: #0d0d0d;
         --muted: rgba(13, 13, 13, 0.62);
-        --card: #ffffff;
         --border: rgba(13, 13, 13, 0.12);
-        --shadow: 0 10px 30px rgba(0,0,0,0.08);
-        --radius: 22px;
-
-        --container: 1160px;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
       }
 
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         margin: 0;
         font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -34,27 +33,28 @@
         background: var(--bg);
       }
 
-      a { color: inherit; text-decoration: none; }
-      .container {
-        max-width: var(--container);
-        margin: 0 auto;
-        padding: 0 20px;
+      a {
+        color: inherit;
+        text-decoration: none;
       }
 
-      /* Header */
+      /* ===== Header (Framer-ish) ===== */
       header {
         position: sticky;
         top: 0;
         z-index: 20;
-        background: linear-gradient(to bottom, rgba(239,235,226,0.9), rgba(239,235,226,0.55));
+        background: linear-gradient(to bottom, rgba(239, 235, 226, 0.9), rgba(239, 235, 226, 0.55));
         backdrop-filter: blur(10px);
       }
 
       .nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 64px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 18px 0;
+        gap: 20px;
       }
 
       .brand {
@@ -74,6 +74,7 @@
         place-items: center;
         color: #fff;
         font-size: 14px;
+        line-height: 1;
       }
 
       .nav-links {
@@ -81,10 +82,17 @@
         gap: 22px;
         align-items: center;
         font-weight: 500;
-        color: rgba(13,13,13,0.78);
+        color: rgba(13, 13, 13, 0.78);
       }
-      .nav-links a { padding: 8px 10px; border-radius: 10px; }
-      .nav-links a:hover { background: rgba(13,13,13,0.06); }
+
+      .nav-links a {
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
+
+      .nav-links a:hover {
+        background: rgba(13, 13, 13, 0.06);
+      }
 
       .nav-cta {
         display: inline-flex;
@@ -110,70 +118,67 @@
         background: #0d0d0d;
         color: #fff;
       }
-      .btn-primary:hover { opacity: 0.92; }
+      .btn-primary:hover {
+        opacity: 0.92;
+      }
 
       .btn-ghost {
         background: transparent;
-        border-color: rgba(13,13,13,0.18);
-        color: rgba(13,13,13,0.85);
+        border-color: rgba(13, 13, 13, 0.18);
+        color: rgba(13, 13, 13, 0.85);
       }
-      .btn-ghost:hover { background: rgba(13,13,13,0.06); }
+      .btn-ghost:hover {
+        background: rgba(13, 13, 13, 0.06);
+      }
 
       .menu-btn {
         display: none;
       }
 
-      /* Mobile menu */
       .mobile-drawer {
         display: none;
-        padding: 0 0 18px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 64px 18px;
       }
+
       .mobile-drawer a {
         display: block;
         padding: 12px 10px;
         border-radius: 12px;
-        color: rgba(13,13,13,0.84);
+        color: rgba(13, 13, 13, 0.84);
         font-weight: 600;
       }
-      .mobile-drawer a:hover { background: rgba(13,13,13,0.06); }
 
-      /* Hero */
-      .hero {
-        padding: 48px 0 72px;
+      .mobile-drawer a:hover {
+        background: rgba(13, 13, 13, 0.06);
       }
 
-      .hero-grid {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 44px;
+      /* ===== Hero (matches inspected Framer container) ===== */
+      .hero-inner {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+
+        display: flex;
+        flex-flow: row;
         align-items: center;
+        justify-content: center;
+        gap: 64px;
+
+        padding: 120px 64px 80px;
+        position: relative;
+        overflow: hidden;
       }
 
-      .social-row {
-        display: inline-flex;
-        gap: 10px;
-        padding: 8px 10px;
-        border-radius: 999px;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.28);
-        margin-bottom: 18px;
-      }
-      .social-row a {
-        width: 30px;
-        height: 30px;
-        display: grid;
-        place-items: center;
-        border-radius: 10px;
-        color: rgba(13,13,13,0.85);
-      }
-      .social-row a:hover { background: rgba(13,13,13,0.06); }
-
+      /* Left content */
       h1 {
         margin: 0 0 16px;
         font-size: clamp(44px, 5vw, 78px);
         line-height: 0.95;
         letter-spacing: -0.04em;
       }
+
       .italic {
         font-family: "Playfair Display", serif;
         font-style: italic;
@@ -182,7 +187,7 @@
       }
 
       .subtext {
-        margin: 0 0 22px;
+        margin: 14px 0 22px;
         max-width: 46ch;
         font-size: 16px;
         line-height: 1.7;
@@ -195,69 +200,114 @@
         align-items: center;
       }
 
+      /* ===== Ticker pill (shorter + moves right->left) ===== */
+      .ticker {
+        width: fit-content;
+        max-width: 240px; /* smaller length */
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.28);
+        overflow: hidden;
+        margin-bottom: 18px;
+      }
+
+      .ticker__track {
+        display: inline-flex;
+        gap: 28px;
+        white-space: nowrap;
+        will-change: transform;
+        animation: ticker-move 7s linear infinite; /* a little faster */
+      }
+
+      .ticker__item {
+        font-weight: 600;
+        font-size: 14px;
+        color: rgba(13, 13, 13, 0.85);
+      }
+
+      @keyframes ticker-move {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-33.333%);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .ticker__track {
+          animation: none;
+        }
+      }
+
+      /* ===== Right “story/phone” card (same ratio as sample) ===== */
       .media-card {
         position: relative;
-        background: rgba(255,255,255,0.65);
-        border: 1px solid rgba(255,255,255,0.8);
-        border-radius: 28px;
-        box-shadow: var(--shadow);
+        border-radius: 34px;
         padding: 10px;
+        background: rgba(255, 255, 255, 0.55);
+        box-shadow: var(--shadow);
       }
 
       .media-frame {
-        border-radius: 22px;
-        overflow: hidden;
-        background: #111;
-        aspect-ratio: 0.56375; /* tall phone-like */
         position: relative;
+        border-radius: 26px;
+        overflow: hidden;
+        background: #0f0f0f;
+
+        border: 8px solid rgba(255, 255, 255, 0.95);
+        aspect-ratio: 9 / 16; /* SAME as sample story ratio */
       }
 
       .media-frame img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
         display: block;
-      }
-
-      .story-top {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        display: flex;
-        gap: 8px;
-      }
-
-      .story-top span {
-        height: 3px;
-        flex: 1;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.6);
+        object-fit: cover;
       }
 
       .story-meta {
         position: absolute;
-        top: 22px;
-        left: 16px;
+        top: 14px;
+        left: 14px;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        color: rgba(255,255,255,0.92);
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.92);
         font-weight: 600;
         font-size: 13px;
-        text-shadow: 0 2px 14px rgba(0,0,0,0.25);
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
       }
 
       .avatar {
         width: 26px;
         height: 26px;
         border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.35);
-        overflow: hidden;
-        background: rgba(255,255,255,0.15);
         display: grid;
         place-items: center;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.28);
         font-size: 12px;
+      }
+
+      .story-meta .dot {
+        opacity: 0.8;
+      }
+      .story-meta .time {
+        opacity: 0.8;
+        font-weight: 500;
+      }
+
+      /* Grain overlay to match screenshot feel */
+      .grain {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.12;
+        mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+        background-size: 180px 180px;
       }
 
       .floating-badge {
@@ -271,174 +321,140 @@
         background: #0d0d0d;
         display: grid;
         place-items: center;
-        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
-        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.12);
       }
 
-      .floating-badge svg {
-        width: 26px;
-        height: 26px;
-        fill: #fff;
+      .floating-badge .star {
+        color: #fff;
+        font-size: 18px;
+        line-height: 1;
         opacity: 0.95;
       }
 
-      /* Responsive */
+      /* ===== Responsive ===== */
       @media (max-width: 900px) {
-        .hero-grid {
-          grid-template-columns: 1fr;
+        .hero-inner {
+          flex-direction: column;
+          padding: 72px 20px 56px;
+          gap: 32px;
         }
+
         .media-card {
           max-width: 420px;
-          margin: 0 auto;
+          width: 100%;
         }
       }
 
       @media (max-width: 760px) {
-        .nav-links { display: none; }
-        .menu-btn { display: inline-flex; }
+        .nav {
+          padding: 16px 20px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .menu-btn {
+          display: inline-flex;
+        }
 
-        .mobile-drawer[aria-hidden="false"] { display: block; }
+        .mobile-drawer {
+          padding: 0 20px 18px;
+        }
+        .mobile-drawer[aria-hidden="false"] {
+          display: block;
+        }
       }
-
-      /* Smaller pill */
-.ticker{
-  width: fit-content;          /* shrink to content */
-  max-width: 240px;            /* <-- make bar a little less (change as you like) */
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.28);
-  overflow: hidden;            /* hides moving text outside the pill */
-}
-
-/* Marquee */
-.ticker__track{
-  display: inline-flex;
-  gap: 28px;
-  white-space: nowrap;
-  will-change: transform;
-  animation: ticker-move 7s linear infinite;
-}
-
-/* Text style */
-.ticker__item{
-  font-weight: 500;
-  font-size: 13px;
-  color: rgba(13,13,13,0.85);
-}
-
-@keyframes ticker-move{
-  from { transform: translateX(0); }
-  to   { transform: translateX(-33.333%); } /* because we repeated the item 3x */
-}
-
-/* Optional: pause on hover */
-.ticker:hover .ticker__track{
-  animation-play-state: paused;
-}
-
-/* Optional: respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .ticker__track{ animation: none; }
-}
-      
     </style>
   </head>
 
   <body>
     <header>
-      <div class="container">
-        <div class="nav">
-          <!-- Replace with your logo -->
-          <a class="brand" href="#">
-            <span class="brand-badge">✳</span>
-            <span>YourBrand</span>
-          </a>
+      <div class="nav">
+        <!-- Replace with your logo -->
+        <a class="brand" href="#home">
+          <span class="brand-badge">✳</span>
+          <span>YourBrand</span>
+        </a>
 
-          <nav class="nav-links" aria-label="Primary">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#case-studies">Case Studies</a>
-            <a href="#blog">Blog</a>
-          </nav>
-
-          <div class="nav-cta">
-            <a class="btn btn-primary" href="#contact">Book a call</a>
-            <button class="btn btn-ghost menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer">
-              Menu
-            </button>
-          </div>
-        </div>
-
-        <!-- Mobile drawer -->
-        <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+        <nav class="nav-links" aria-label="Primary">
           <a href="#home">Home</a>
           <a href="#about">About</a>
           <a href="#case-studies">Case Studies</a>
           <a href="#blog">Blog</a>
-          <a class="btn btn-primary" style="margin-top: 10px; width: 100%;" href="#contact">Book a call</a>
+        </nav>
+
+        <div class="nav-cta">
+          <a class="btn btn-primary" href="#contact">Book a call</a>
+          <button class="btn btn-ghost menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer">
+            Menu
+          </button>
         </div>
+      </div>
+
+      <!-- Mobile drawer -->
+      <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#case-studies">Case Studies</a>
+        <a href="#blog">Blog</a>
+        <a class="btn btn-primary" style="margin-top: 10px; width: 100%" href="#contact">Book a call</a>
       </div>
     </header>
 
-    <main class="hero" id="home">
-      <div class="container">
-        <div class="hero-grid">
-          <section>
-            
+    <main id="home">
+      <section class="hero">
+        <div class="hero-inner">
+          <div class="hero-left">
+            <!-- Moving text pill -->
             <div class="ticker" aria-label="Announcement">
-  <div class="ticker__track">
-    <span class="ticker__item">Notion Grid Widget</span>
-    <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
-    <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
-  </div>
-</div>
+              <div class="ticker__track">
+                <span class="ticker__item">Notion Grid Widget</span>
+                <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
+                <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
+              </div>
+            </div>
 
             <h1>
-              Your headline<br />
+              Short form<br />
               done <span class="italic">right</span>
             </h1>
 
             <p class="subtext">
-              Add your short paragraph here describing what you do and who you help. Keep it to 2–3 lines for the same look.
+              We combine content, management, and paid media to help brands grow and convert on the social platforms that matter most to you.
             </p>
 
             <div class="hero-actions">
               <a class="btn btn-primary" href="#contact">Get in touch</a>
               <a class="btn btn-ghost" href="#case-studies">View work</a>
             </div>
-          </section>
+          </div>
 
-          <aside>
+          <aside class="hero-right">
             <div class="media-card">
               <div class="media-frame">
-                <!-- Replace with your hero image -->
+                <!-- Replace with your image -->
                 <img
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80"
+                  src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
                   alt="Hero visual"
                 />
-
-                <div class="story-top" aria-hidden="true">
-                  <span></span><span></span><span></span>
-                </div>
 
                 <div class="story-meta">
                   <div class="avatar">U</div>
                   <span>yourbrand</span>
-                  <span style="opacity:0.75; font-weight:500;">· 6h</span>
+                  <span class="dot">·</span>
+                  <span class="time">6h</span>
                 </div>
+
+                <div class="grain" aria-hidden="true"></div>
               </div>
 
               <div class="floating-badge" aria-hidden="true">
-                <!-- simple star mark -->
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 2l1.6 6.1L20 6l-3.9 4.9L20 16l-6.4-2.1L12 20l-1.6-6.1L4 16l3.9-5.1L4 6l6.4 2.1L12 2z"/>
-                </svg>
+                <span class="star">★</span>
               </div>
             </div>
           </aside>
         </div>
-      </div>
+      </section>
     </main>
 
     <script>
