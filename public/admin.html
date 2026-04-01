@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-admin="true">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,125 +8,415 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap"
       rel="stylesheet"
     />
 
     <style>
-      :root{
-        --bg:#efebe2;
-        --text:#0d0d0d;
-        --muted:rgba(13,13,13,.62);
-        --card:#ffffff;
-        --line:rgba(13,13,13,.14);
+      :root {
+        --bg: #efebe2;
+        --text: #0d0d0d;
+        --muted: rgba(13, 13, 13, 0.62);
+        --border: rgba(13, 13, 13, 0.12);
       }
-      *{ box-sizing:border-box; }
-      body{
-        margin:0;
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
         font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        background: var(--bg);
         color: var(--text);
+        background: var(--bg);
       }
-      a{ color:inherit; text-decoration:none; }
+      a { color: inherit; text-decoration: none; }
 
-      .wrap{ width:min(1100px, 100%); margin:0 auto; padding:28px 18px 60px; }
-      .top{
-        display:flex; align-items:center; justify-content:space-between;
-        gap:12px; flex-wrap:wrap;
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: linear-gradient(to bottom, rgba(239, 235, 226, 0.9), rgba(239, 235, 226, 0.55));
+        backdrop-filter: blur(10px);
       }
-      .top h1{ margin:0; font-size:22px; letter-spacing:-.02em; }
-      .top .actions{ display:flex; gap:10px; flex-wrap:wrap; }
 
-      .btn{
-        border:1px solid rgba(13,13,13,.2);
+      .nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .brand { display: inline-flex; align-items: center; gap: 10px; }
+      .brand-logo { height: 30px; width: auto; display: block; object-fit: contain; }
+      .admin-pill{
+        font-size: 12px;
+        font-weight: 700;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(13,13,13,.18);
+        color: rgba(13,13,13,.82);
+        background: rgba(255,255,255,.55);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+        align-items: center;
+        font-weight: 500;
+        color: rgba(13, 13, 13, 0.78);
+      }
+      .nav-links a { padding: 8px 10px; border-radius: 10px; }
+      .nav-links a:hover { background: rgba(13, 13, 13, 0.06); }
+
+      .nav-cta { display: inline-flex; align-items: center; gap: 14px; }
+
+      .icon-btn{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 0;
         background: transparent;
-        padding:10px 14px;
-        border-radius:999px;
-        cursor:pointer;
-        font: inherit;
+        cursor: pointer;
       }
+      .icon-btn:hover{ opacity: 0.72; }
+      .icon{
+        width: 20px;
+        height: 20px;
+        stroke: rgba(13,13,13,0.9);
+      }
+
+      /* Admin sticky actions */
+      .admin-actions {
+        position: fixed;
+        top: 14px;
+        right: 14px;
+        z-index: 999;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        pointer-events: none; /* enable only buttons */
+      }
+
+      .pill {
+        pointer-events: auto;
+        border: 1px solid rgba(13,13,13,.18);
+        background: rgba(255,255,255,.72);
+        backdrop-filter: blur(10px);
+        border-radius: 999px;
+        padding: 10px 12px;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        box-shadow: 0 8px 28px rgba(0,0,0,.08);
+      }
+
+      .btn {
+        border: 1px solid rgba(13,13,13,.18);
+        background: transparent;
+        padding: 10px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 600;
+        font-size: 13px;
+        color: rgba(13,13,13,.9);
+      }
+      .btn:disabled { opacity: .45; cursor: not-allowed; }
+
       .btn-dark{
         border-color: transparent;
-        background:#0d0d0d;
-        color:#fff;
-      }
-      .btn:disabled{ opacity:.55; cursor:not-allowed; }
-
-      .grid{
-        margin-top:16px;
-        display:grid;
-        grid-template-columns: 1.05fr 0.95fr;
-        gap:16px;
-      }
-      .card{
-        background: var(--card);
-        border:1px solid var(--line);
-        border-radius:16px;
-        padding:16px;
-      }
-      .card h2{ margin:0 0 10px; font-size:14px; color: rgba(13,13,13,.85); }
-
-      .field{ display:grid; gap:6px; margin-top:10px; }
-      .field label{ font-size:12px; color: var(--muted); }
-      .field input, .field textarea{
-        width:100%;
-        padding:10px 12px;
-        border-radius:12px;
-        border:1px solid rgba(13,13,13,.22);
-        background:#fff;
-        font:inherit;
-      }
-      .field textarea{ min-height: 90px; resize:vertical; }
-
-      .row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-
-      .hint{ margin:10px 0 0; font-size:12px; color: var(--muted); line-height:1.5; }
-
-      /* Slides list */
-      .slides{ display:grid; gap:10px; margin-top: 10px; }
-      .slide{
-        border:1px solid var(--line);
-        border-radius:14px;
-        padding:12px;
-        display:grid;
-        gap:10px;
-      }
-      .slide-top{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:10px;
-        flex-wrap:wrap;
-      }
-      .badge{
-        font-size:11px;
-        padding:3px 8px;
-        border-radius:999px;
-        border:1px solid rgba(13,13,13,.18);
-        color: rgba(13,13,13,.75);
-      }
-      .mini{
-        display:flex; gap:8px; flex-wrap:wrap;
-      }
-      .mini .btn{ padding:8px 10px; font-size:13px; }
-
-      .upload{
-        border:1px dashed rgba(13,13,13,.25);
-        border-radius:14px;
-        padding:10px;
-        background: rgba(13,13,13,.02);
-        display:grid;
-        gap:8px;
+        background: #0d0d0d;
+        color: #fff;
       }
 
-      .status{
-        margin-top:12px;
-        font-size:13px;
-        color: rgba(13,13,13,.75);
-        min-height: 18px;
+      .status {
+        font-size: 12px;
+        color: rgba(13,13,13,.65);
+        max-width: 260px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      /* auth modal */
+      .hidden { display: none !important; }
+
+      /* ===== Hero ===== */
+      .hero-inner {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+
+        display: flex;
+        flex-flow: row;
+        place-content: center flex-start;
+        align-items: center;
+        gap: 64px;
+
+        padding: 50px 64px 80px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-left {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+        flex: 1 0 0;
+        min-width: 0;
+      }
+
+      h1{
+        margin: 0;
+        font-size: 56px;
+        line-height: 0.90;
+        letter-spacing: -0.05em;
+        font-weight: 600;
+      }
+      @media (min-width: 768px){
+        h1{ font-size: 86px; }
+      }
+      @media (min-width: 1200px){
+        h1{ font-size: 118px; }
+      }
+
+      .italic {
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      .subtext {
+        max-width: 46ch;
+        font-size: 19px;
+        line-height: 1.8;
+        color: var(--muted);
+      }
+
+      .hero-actions { display: flex; gap: 12px; align-items: center; }
+
+      .btn-big {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 16px 32px;
+        font-weight: 500;
+        font-size: 18px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+      .btn-primary { background: #0d0d0d; color: #fff; }
+      .btn-primary:hover { opacity: 0.92; }
+      .btn-ghost {
+        background: transparent;
+        border-color: rgba(13, 13, 13, 0.18);
+        color: rgba(13, 13, 13, 0.85);
+      }
+      .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
+
+      /* ticker */
+      .ticker {
+        width: fit-content;
+        max-width: 240px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: rgba(13,13,13,0.02);
+        overflow: hidden;
+      }
+      .ticker__track {
+        display: inline-flex;
+        gap: 28px;
+        white-space: nowrap;
+        will-change: transform;
+        animation: ticker-move 7s linear infinite;
+      }
+      .ticker__item { font-weight: 600; font-size: 14px; color: rgba(13, 13, 13, 0.85); }
+      @keyframes ticker-move { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+      @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
+
+      /* story card */
+      .hero-right { flex: none; }
+
+      .story-card {
+        width: 375px;
+        display: flex;
+        place-content: center;
+        align-items: center;
+        position: relative;
+        overflow: visible;
+        border: 8px solid #fff;
+        border-radius: 24px;
+        aspect-ratio: 0.56375;
+        background: transparent;
+      }
+
+      .story-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        position: relative;
+        user-select: none;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .story-slides { position: absolute; inset: 0; }
+
+      .story-img,
+      .story-vid,
+      .story-add {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transform: translateX(10%);
+        transition: opacity 500ms ease, transform 700ms ease;
+      }
+
+      .story-img,
+      .story-vid {
+        object-fit: cover;
+      }
+
+      .story-img.is-active,
+      .story-vid.is-active,
+      .story-add.is-active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .story-img.is-exiting,
+      .story-vid.is-exiting,
+      .story-add.is-exiting {
+        opacity: 0;
+        transform: translateX(-10%);
+      }
+
+      .story-bars {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+        z-index: 2;
+      }
+
+      .story-bars .bar {
+        height: 3px;
+        flex: 1;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.35);
+        overflow: hidden;
+        position: relative;
+      }
+      .story-bars .bar::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: 0%;
+        background: rgba(255, 255, 255, 0.9);
+      }
+      .story-bars .bar.is-active::after { animation: storyProgress var(--story-duration, 3500ms) linear forwards; }
+      .story-bars .bar.is-filled::after { width: 100%; }
+
+      @keyframes storyProgress { from { width: 0%; } to { width: 100%; } }
+
+      .story-zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        z-index: 3;
+        padding: 0;
+      }
+      .story-zone.left { left: 0; }
+      .story-zone.right { right: 0; }
+
+      .story-zone::after {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 44px;
+        line-height: 1;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+        text-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        transition: opacity 160ms ease;
+        pointer-events: none;
+      }
+      .story-zone.left::after { content: "‹"; left: 18px; }
+      .story-zone.right::after { content: "›"; right: 18px; }
+      .story-inner:hover .story-zone::after { opacity: 1; }
+      .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
+
+      /* Editable outlines (admin only) */
+      [contenteditable="true"] {
+        outline: 2px solid rgba(13,13,13,.14);
+        outline-offset: 6px;
+        border-radius: 10px;
+      }
+      [contenteditable="true"]:focus {
+        outline-color: rgba(13,13,13,.30);
+      }
+
+      /* Add slide tile UI */
+      .story-add{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, rgba(13,13,13,.06), rgba(13,13,13,.02));
+        color: rgba(13,13,13,.82);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .story-add-inner{
+        display: grid;
+        gap: 10px;
+        place-items: center;
+        padding: 18px;
+        text-align: center;
+      }
+      .plus{
+        width: 62px; height: 62px;
+        border-radius: 999px;
+        border: 1px solid rgba(13,13,13,.18);
+        display: grid;
+        place-items: center;
+        font-size: 34px;
+        background: rgba(255,255,255,.5);
+      }
+      .small-muted{
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(13,13,13,.60);
+      }
+      .add-actions{
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .add-actions .btn{
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      /* Modal */
       .modal{
         position:fixed; inset:0;
         background: rgba(0,0,0,.35);
@@ -134,10 +424,11 @@
         align-items:center;
         justify-content:center;
         padding:18px;
+        z-index: 1000;
       }
       .modal[aria-hidden="false"]{ display:flex; }
       .modal-card{
-        width:min(420px, 100%);
+        width:min(520px, 100%);
         background:#fff;
         border-radius:16px;
         padding:16px;
@@ -145,82 +436,140 @@
       }
       .modal-card h3{ margin:0; font-size:16px; }
       .modal-card p{ margin:8px 0 0; color: rgba(0,0,0,.65); font-size:13px; line-height:1.5; }
+      .field { display:grid; gap:6px; margin-top:10px; }
+      .field label{ font-size:12px; color: rgba(0,0,0,.62); }
+      .field input, .field select{
+        width:100%;
+        padding:10px 12px;
+        border-radius:12px;
+        border:1px solid rgba(0,0,0,.18);
+        background:#fff;
+        font:inherit;
+      }
 
-      @media (max-width: 900px){
-        .grid{ grid-template-columns: 1fr; }
+      @media (max-width: 900px) {
+        .hero-inner{
+          flex-direction: column;
+          padding: 36px 20px 40px;
+          gap: 28px;
+        }
+
+        .hero-right{
+          width: 100%;
+          display: flex;
+          justify-content: center;
+        }
+
+        .story-card{
+          width: min(360px, 92vw);
+          aspect-ratio: 9 / 16;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .nav{ padding: 12px 16px; }
+        .brand-logo{ height: 24px; }
+        .nav-cta{ gap: 10px; }
+        .nav-links { display: none; }
+        .admin-actions { top: 10px; right: 10px; }
+        .status { max-width: 160px; }
       }
     </style>
   </head>
 
   <body>
-    <div class="wrap">
-      <div class="top">
-        <h1>Admin — Home</h1>
-        <div class="actions">
-          <a class="btn" href="index.html">← Back to site</a>
-          <button class="btn" id="logoutBtn" type="button">Log out</button>
-          <button class="btn" id="reloadBtn" type="button">Reload</button>
-          <button class="btn btn-dark" id="saveBtn" type="button">Save changes</button>
-        </div>
-      </div>
-
-      <div class="grid">
-        <section class="card">
-          <h2>Hero content</h2>
-
-          <div class="field">
-            <label>Ticker text</label>
-            <input id="tickerText" placeholder="New drops weekly" />
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label>Hero line 1</label>
-              <input id="heroLine1" placeholder="Short form" />
-            </div>
-            <div class="field">
-              <label>Hero line 2</label>
-              <input id="heroLine2" placeholder="done" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Italic word</label>
-            <input id="heroItalic" placeholder="right" />
-          </div>
-
-          <div class="field">
-            <label>Subtext</label>
-            <textarea id="subtext" placeholder="We combine content..."></textarea>
-          </div>
-
-          <p class="hint">
-            This admin updates <code>public/content/home.json</code> in GitHub through a Vercel API.
-            Customers will see changes after Vercel deploys (usually within ~30–60 seconds).
-          </p>
-
-          <div class="status" id="statusLeft"></div>
-        </section>
-
-        <section class="card">
-          <h2>Story slides</h2>
-
-          <div class="mini" style="margin-bottom:10px;">
-            <button class="btn" id="addImageBtn" type="button">+ Add image</button>
-            <button class="btn" id="addVideoBtn" type="button">+ Add video</button>
-          </div>
-
-          <div class="slides" id="slides"></div>
-
-          <p class="hint">
-            Paste a URL OR upload a file. Uploads are committed into
-            <code>public/uploads/</code> in your repo and returned as a URL.
-          </p>
-
-          <div class="status" id="statusRight"></div>
-        </section>
+    <!-- Sticky admin action bar -->
+    <div class="admin-actions" aria-label="Admin actions">
+      <div class="pill">
+        <button class="btn" id="undoBtn" type="button" disabled>Undo</button>
+        <button class="btn" id="redoBtn" type="button" disabled>Redo</button>
+        <button class="btn btn-dark hidden" id="saveBtn" type="button">Save changes</button>
+        <span class="status" id="status"></span>
+        <button class="btn" id="logoutBtn" type="button">Log out</button>
       </div>
     </div>
+
+    <header>
+      <div class="nav">
+        <a class="brand" href="index.html" aria-label="Home">
+          <img class="brand-logo" src="assets/logo.png" alt="Sync & Style logo" />
+          <span class="admin-pill">ADMIN</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="about.html">About Us</a>
+        </nav>
+
+        <div class="nav-cta" aria-label="Actions">
+          <a class="icon-btn" href="shop.html" aria-label="Search (go to shop)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M21 21l-4.3-4.3"></path>
+            </svg>
+          </a>
+          <a class="icon-btn" href="account.html" aria-label="Account">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21a8 8 0 0 0-16 0"></path>
+              <circle cx="12" cy="8" r="4"></circle>
+            </svg>
+          </a>
+          <a class="icon-btn" href="cart.html" aria-label="Cart">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 6h15l-1.5 9H7.5L6 6Z"></path>
+              <path d="M6 6 5 3H2"></path>
+              <circle cx="9" cy="20" r="1.5"></circle>
+              <circle cx="18" cy="20" r="1.5"></circle>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-inner">
+          <div class="hero-left">
+            <div class="ticker" aria-label="Announcement">
+              <div class="ticker__track" id="tickerTrack">
+                <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">New drops weekly</span>
+                <span class="ticker__item" aria-hidden="true">New drops weekly</span>
+                <span class="ticker__item" aria-hidden="true">New drops weekly</span>
+              </div>
+            </div>
+
+            <h1>
+              <span id="heroLine1" contenteditable="true" spellcheck="false">Short form</span><br />
+              <span id="heroLine2" contenteditable="true" spellcheck="false">done</span>
+              <span class="italic" id="heroItalic" contenteditable="true" spellcheck="false">right</span>
+            </h1>
+
+            <p class="subtext" id="subtext" contenteditable="true" spellcheck="false">
+              We combine content, management, and paid media to help brands grow and convert on the social platforms that matter most to you.
+            </p>
+
+            <div class="hero-actions">
+              <a class="btn-big btn-primary" href="shop.html">Shop now</a>
+              <a class="btn-big btn-ghost" href="contact.html">Contact Us</a>
+            </div>
+          </div>
+
+          <aside class="hero-right">
+            <div class="story-card" aria-label="Story preview">
+              <div class="story-inner" id="story">
+                <div class="story-slides" id="storySlides"></div>
+                <div class="story-bars" aria-hidden="true" id="storyBars"></div>
+
+                <button class="story-zone left" type="button" aria-label="Previous story"></button>
+                <button class="story-zone right" type="button" aria-label="Next story"></button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
 
     <!-- Auth modal -->
     <div class="modal" id="authModal" aria-hidden="true">
@@ -233,119 +582,92 @@
           <input id="passwordInput" type="password" placeholder="••••••••" />
         </div>
 
-        <div class="mini" style="margin-top:12px;">
+        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
           <button class="btn btn-dark" id="loginBtn" type="button">Unlock</button>
         </div>
 
-        <div class="status" id="authStatus"></div>
+        <div class="status" id="authStatus" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- Add Slide modal -->
+    <div class="modal" id="addSlideModal" aria-hidden="true">
+      <div class="modal-card">
+        <h3>Add new slide</h3>
+        <p>Choose image/video and upload a file (auto upload) or paste a URL.</p>
+
+        <div class="field">
+          <label>Type</label>
+          <select id="newSlideType">
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Upload file (auto)</label>
+          <input id="newSlideFile" type="file" accept="image/*" />
+        </div>
+
+        <div class="field">
+          <label>Or paste URL</label>
+          <input id="newSlideUrl" placeholder="https://... or /uploads/..." />
+        </div>
+
+        <div class="field">
+          <label>Alt text</label>
+          <input id="newSlideAlt" placeholder="Story ..." />
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <button class="btn btn-dark" id="addSlideConfirmBtn" type="button">Add slide</button>
+          <button class="btn" id="addSlideCancelBtn" type="button">Cancel</button>
+        </div>
+
+        <div class="status" id="addSlideStatus" style="margin-top:10px;"></div>
       </div>
     </div>
 
     <script>
-      const TOKEN_KEY = "home_admin_token_v1";
       const API = "/api/home-content";
+      const TOKEN_KEY = "home_admin_token_v1";
+      const MAX_SLIDES = 5;
+
+      const DEFAULT_MS = 3500;
+      const MAX_VIDEO_MS = 15000;
+
       const $ = (id) => document.getElementById(id);
 
-      function setStatus(id, msg) { $(id).textContent = msg || ""; }
+      function setStatus(msg) { $("status").textContent = msg || ""; }
+      function setAuthStatus(msg) { $("authStatus").textContent = msg || ""; }
+      function setAddSlideStatus(msg) { $("addSlideStatus").textContent = msg || ""; }
+
       function getToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
-      function setToken(t) {
-        if (!t) localStorage.removeItem(TOKEN_KEY);
-        else localStorage.setItem(TOKEN_KEY, t);
-      }
-      function showAuth(show) {
-        $("authModal").setAttribute("aria-hidden", String(!show));
-        if (show) setTimeout(() => $("passwordInput").focus(), 50);
-      }
+      function setToken(t) { if (!t) localStorage.removeItem(TOKEN_KEY); else localStorage.setItem(TOKEN_KEY, t); }
 
-      function escapeHtml(s) {
-        return String(s || "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      function slideTemplate(s, idx) {
-        const type = s.type || "image";
-        const src = s.src || "";
-        const alt = s.alt || "";
-        return `
-          <div class="slide" data-idx="${idx}">
-            <div class="slide-top">
-              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <span class="badge">${type.toUpperCase()}</span>
-                <span style="font-size:12px; color: rgba(13,13,13,.65);">Slide ${idx + 1}</span>
-              </div>
-              <div class="mini">
-                <button class="btn" data-up type="button">Up</button>
-                <button class="btn" data-down type="button">Down</button>
-                <button class="btn" data-remove type="button">Remove</button>
-              </div>
-            </div>
-
-            <div class="field" style="margin-top:0;">
-              <label>Source URL</label>
-              <input data-src value="${escapeHtml(src)}" placeholder="https://... or /uploads/..." />
-            </div>
-
-            <div class="field" style="margin-top:0;">
-              <label>Alt text</label>
-              <input data-alt value="${escapeHtml(alt)}" placeholder="Story ${idx + 1}" />
-            </div>
-
-            <div class="upload">
-              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                <input data-file type="file" style="display:none" accept="${type === "video" ? "video/*" : "image/*"}" />
-                <button class="btn" data-pick type="button">Choose file</button>
-                <button class="btn" data-upload type="button">Upload & use URL</button>
-              </div>
-              <div style="font-size:12px; color: rgba(13,13,13,.62);">
-                Tip: choose a file first (works on mobile + laptop), then upload.
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      let model = null;
-
-      function writeForm(data) {
-        model = data;
-
-        $("tickerText").value = data.tickerText || "";
-        $("heroLine1").value = data.heroLine1 || "";
-        $("heroLine2").value = data.heroLine2 || "";
-        $("heroItalic").value = data.heroItalic || "";
-        $("subtext").value = data.subtext || "";
-
-        const slides = Array.isArray(data.storySlides) ? data.storySlides : [];
-        $("slides").innerHTML = slides.map((s, i) => slideTemplate(s, i)).join("");
-        bindSlides();
-      }
-
-      function readForm() {
-        const slideEls = Array.from($("slides").querySelectorAll(".slide"));
-        const storySlides = slideEls.map((el) => {
-          const idx = Number(el.dataset.idx || "0");
-          const type = (model?.storySlides?.[idx]?.type) || "image";
-          const src = el.querySelector("[data-src]").value.trim();
-          const alt = el.querySelector("[data-alt]").value.trim();
-          return { type, src, alt };
-        });
-
-        return {
-          tickerText: $("tickerText").value.trim(),
-          heroLine1: $("heroLine1").value.trim(),
-          heroLine2: $("heroLine2").value.trim(),
-          heroItalic: $("heroItalic").value.trim(),
-          subtext: $("subtext").value.trim(),
-          storySlides
-        };
+      function showModal(id, show) {
+        const el = $(id);
+        el.setAttribute("aria-hidden", String(!show));
       }
 
       async function safeText(res) {
         try { return await res.text(); } catch { return ""; }
+      }
+
+      async function apiGet() {
+        const res = await fetch(API, { method: "GET", headers: { "x-admin-token": getToken() } });
+        if (!res.ok) throw new Error((await safeText(res)) || "Failed to load content.");
+        return res.json();
+      }
+
+      async function apiSave(data) {
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-admin-token": getToken() },
+          body: JSON.stringify({ action: "save", data })
+        });
+        if (!res.ok) throw new Error((await safeText(res)) || "Failed to save.");
+        return res.json();
       }
 
       function fileToBase64(file) {
@@ -361,173 +683,514 @@
         });
       }
 
-      async function apiGet() {
-        const token = getToken();
-        const res = await fetch(API, {
-          method: "GET",
-          headers: { "x-admin-token": token }
-        });
-        if (!res.ok) throw new Error((await safeText(res)) || "Failed to load content.");
-        return res.json();
-      }
-
-      async function apiSave(payload) {
-        const token = getToken();
-        const res = await fetch(API, {
-          method: "POST",
-          headers: { "content-type": "application/json", "x-admin-token": token },
-          body: JSON.stringify({ action: "save", data: payload })
-        });
-        if (!res.ok) throw new Error((await safeText(res)) || "Failed to save.");
-        return res.json();
-      }
-
       async function apiUpload(file) {
-        const token = getToken();
         const base64 = await fileToBase64(file);
-
         const res = await fetch(API, {
           method: "POST",
-          headers: { "content-type": "application/json", "x-admin-token": token },
-          body: JSON.stringify({
-            action: "upload",
-            filename: file.name,
-            contentType: file.type,
-            base64
-          })
+          headers: { "content-type": "application/json", "x-admin-token": getToken() },
+          body: JSON.stringify({ action: "upload", filename: file.name, contentType: file.type, base64 })
         });
         if (!res.ok) throw new Error((await safeText(res)) || "Upload failed.");
         return res.json();
       }
 
-      function bindSlides() {
-        const slidesRoot = $("slides");
+      // ===== Model / Dirty state / History (Undo/Redo) =====
+      let original = null; // last loaded/saved snapshot
+      let model = null;    // current working snapshot
 
-        slidesRoot.querySelectorAll(".slide").forEach((slideEl) => {
-          slideEl.querySelector("[data-remove]")?.addEventListener("click", () => {
-            const idx = Number(slideEl.dataset.idx);
-            model.storySlides.splice(idx, 1);
-            writeForm(model);
+      const history = {
+        stack: [],
+        idx: -1
+      };
+
+      function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+
+      function pushHistory(reason) {
+        const snap = clone(model);
+
+        // drop future if we undid
+        history.stack = history.stack.slice(0, history.idx + 1);
+
+        // avoid pushing duplicates
+        const last = history.stack[history.stack.length - 1];
+        if (last && JSON.stringify(last) === JSON.stringify(snap)) {
+          updateHistoryButtons();
+          return;
+        }
+
+        history.stack.push(snap);
+        history.idx = history.stack.length - 1;
+
+        updateHistoryButtons();
+        // setStatus(reason ? `Changed: ${reason}` : "Changed");
+      }
+
+      function updateHistoryButtons() {
+        $("undoBtn").disabled = history.idx <= 0;
+        $("redoBtn").disabled = history.idx >= history.stack.length - 1;
+      }
+
+      function isDirty() {
+        return original && model && JSON.stringify(model) !== JSON.stringify(original);
+      }
+
+      function updateSaveVisibility() {
+        const show = isDirty();
+        $("saveBtn").classList.toggle("hidden", !show);
+      }
+
+      function normalizeText(s) {
+        // keep simple text only (avoid contenteditable inserting <div>)
+        return String(s || "").replace(/\s+/g, " ").trim();
+      }
+
+      // ===== Bind editable fields =====
+      function bindEditable() {
+        const bindings = [
+          { id: "tickerText", key: "tickerText" },
+          { id: "heroLine1", key: "heroLine1" },
+          { id: "heroLine2", key: "heroLine2" },
+          { id: "heroItalic", key: "heroItalic" },
+          { id: "subtext", key: "subtext" }
+        ];
+
+        bindings.forEach(({ id, key }) => {
+          const el = $(id);
+          // Input event fires for contenteditable changes
+          el.addEventListener("input", () => {
+            // read textContent (not innerHTML)
+            model[key] = normalizeText(el.textContent);
+            updateTickerTrackIfNeeded(key);
+            updateSaveVisibility();
+            // Push history (throttled)
+            scheduleHistoryPush(`text:${key}`);
           });
 
-          slideEl.querySelector("[data-up]")?.addEventListener("click", () => {
-            const idx = Number(slideEl.dataset.idx);
-            if (idx <= 0) return;
-            const tmp = model.storySlides[idx - 1];
-            model.storySlides[idx - 1] = model.storySlides[idx];
-            model.storySlides[idx] = tmp;
-            writeForm(model);
-          });
-
-          slideEl.querySelector("[data-down]")?.addEventListener("click", () => {
-            const idx = Number(slideEl.dataset.idx);
-            if (idx >= model.storySlides.length - 1) return;
-            const tmp = model.storySlides[idx + 1];
-            model.storySlides[idx + 1] = model.storySlides[idx];
-            model.storySlides[idx] = tmp;
-            writeForm(model);
-          });
-
-          // NEW: reliable file picker open (mobile + desktop)
-          slideEl.querySelector("[data-pick]")?.addEventListener("click", () => {
-            const input = slideEl.querySelector("[data-file]");
-            input?.click();
-          });
-
-          slideEl.querySelector("[data-file]")?.addEventListener("change", () => {
-            setStatus("statusRight", "File selected. Click Upload & use URL.");
-          });
-
-          slideEl.querySelector("[data-upload]")?.addEventListener("click", async () => {
-            try {
-              setStatus("statusRight", "Uploading…");
-              const fileInput = slideEl.querySelector("[data-file]");
-              const f = fileInput.files && fileInput.files[0];
-              if (!f) return setStatus("statusRight", "Click Choose file first.");
-
-              const out = await apiUpload(f);
-              slideEl.querySelector("[data-src]").value = out.url || "";
-              setStatus("statusRight", "Uploaded. URL applied.");
-            } catch (e) {
-              setStatus("statusRight", e.message || "Upload error.");
-            }
+          // Prevent rich paste
+          el.addEventListener("paste", (e) => {
+            e.preventDefault();
+            const txt = (e.clipboardData || window.clipboardData).getData("text/plain");
+            document.execCommand("insertText", false, txt);
           });
         });
       }
 
+      function updateTickerTrackIfNeeded(key) {
+        if (key !== "tickerText") return;
+        const track = $("tickerTrack");
+        const t = model.tickerText || "";
+        // keep ticker moving; update duplicates
+        track.innerHTML = `
+          <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">${escapeHtml(t)}</span>
+          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
+          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
+        `;
+        // re-bind (because we replaced DOM)
+        bindEditable(); // safe because it re-adds listeners; but we should only bind ticker again
+      }
+
+      let historyTimer = null;
+      function scheduleHistoryPush(reason) {
+        if (historyTimer) clearTimeout(historyTimer);
+        historyTimer = setTimeout(() => pushHistory(reason), 300);
+      }
+
+      function escapeHtml(s) {
+        return String(s || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      // ===== Story rendering + slider navigation =====
+      const storyEl = $("story");
+      const btnPrev = storyEl.querySelector(".story-zone.left");
+      const btnNext = storyEl.querySelector(".story-zone.right");
+
+      let idx = 0;
+      let timer = null;
+
+      const isVideoEl = (el) => el && el.tagName === "VIDEO";
+
+      function setBarDuration(ms) {
+        storyEl.style.setProperty("--story-duration", `${ms}ms`);
+      }
+
+      function clearTimer() {
+        if (timer) clearTimeout(timer);
+        timer = null;
+      }
+
+      function getRenderedSlides() {
+        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid, .story-add"));
+      }
+
+      function stopAllVideos() {
+        getRenderedSlides().forEach((el) => {
+          if (!isVideoEl(el)) return;
+          try { el.pause(); el.currentTime = 0; } catch {}
+        });
+      }
+
+      function getDurationForSlide(el) {
+        if (!isVideoEl(el)) return DEFAULT_MS;
+        const d = el.duration;
+        if (Number.isFinite(d) && d > 0) return Math.min(Math.round(d * 1000), MAX_VIDEO_MS);
+        return DEFAULT_MS;
+      }
+
+      function renderStoryFromModel() {
+        const wrap = $("storySlides");
+        const bars = $("storyBars");
+
+        // Real slides
+        const slides = Array.isArray(model.storySlides) ? model.storySlides.slice(0, MAX_SLIDES) : [];
+        const canAdd = slides.length < MAX_SLIDES;
+
+        // We render N slides + (optional) add-tile as last slide
+        const renderList = [...slides];
+        if (canAdd) renderList.push({ __add: true });
+
+        wrap.innerHTML = "";
+        bars.innerHTML = "";
+
+        renderList.forEach((s, i) => {
+          // bars only for REAL slides, not for add-tile
+          if (!s.__add) {
+            const bar = document.createElement("span");
+            bar.className = "bar" + (i === 0 ? " is-active" : "");
+            bars.appendChild(bar);
+          }
+
+          if (s.__add) {
+            const add = document.createElement("div");
+            add.className = "story-add" + (i === 0 ? " is-active" : "");
+            add.innerHTML = `
+              <div class="story-add-inner">
+                <div class="plus">+</div>
+                <div>Add slide</div>
+                <div class="small-muted">Up to ${MAX_SLIDES} slides</div>
+                <div class="add-actions">
+                  <button class="btn" type="button" data-add-image>Add image</button>
+                  <button class="btn" type="button" data-add-video>Add video</button>
+                </div>
+              </div>
+            `;
+            wrap.appendChild(add);
+
+            // Bind add buttons
+            add.querySelector("[data-add-image]")?.addEventListener("click", (e) => {
+              e.stopPropagation();
+              openAddSlide("image");
+            });
+            add.querySelector("[data-add-video]")?.addEventListener("click", (e) => {
+              e.stopPropagation();
+              openAddSlide("video");
+            });
+
+            return;
+          }
+
+          if (s.type === "video") {
+            const v = document.createElement("video");
+            v.className = "story-vid" + (i === 0 ? " is-active" : "");
+            v.muted = true;
+            v.playsInline = true;
+            v.preload = "metadata";
+            v.dataset.realIndex = String(i);
+
+            const src = document.createElement("source");
+            src.src = s.src || "";
+            src.type = "video/mp4";
+            v.appendChild(src);
+
+            wrap.appendChild(v);
+          } else {
+            const img = document.createElement("img");
+            img.className = "story-img" + (i === 0 ? " is-active" : "");
+            img.src = s.src || "";
+            img.alt = s.alt || `Story ${i + 1}`;
+            img.dataset.realIndex = String(i);
+            wrap.appendChild(img);
+          }
+        });
+
+        // Reset navigation index if out of range
+        idx = 0;
+        applyActive(idx);
+        restartTimer();
+      }
+
+      function applyActive(nextIdx) {
+        const all = getRenderedSlides();
+        all.forEach((el, i) => {
+          el.classList.remove("is-exiting");
+          el.classList.toggle("is-active", i === nextIdx);
+        });
+
+        // bars: only for real slides
+        const realSlidesCount = (model.storySlides || []).slice(0, MAX_SLIDES).length;
+        const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
+        bars.forEach((b, i) => {
+          b.classList.remove("is-active", "is-filled");
+          if (i < nextIdx) b.classList.add("is-filled");
+          if (i === nextIdx) b.classList.add("is-active");
+        });
+
+        // If active is "add tile", stop videos + don't animate bars
+        const active = all[nextIdx];
+        stopAllVideos();
+
+        if (active && isVideoEl(active)) {
+          if (!active.dataset.storyBound) {
+            active.addEventListener("ended", () => showSlide(idx + 1));
+            active.dataset.storyBound = "1";
+          }
+          try { active.currentTime = 0; active.play(); } catch {}
+        }
+
+        // Duration
+        if (realSlidesCount <= 1) return;
+        const duration = getDurationForSlide(active);
+        setBarDuration(duration);
+      }
+
+      function restartTimer() {
+        clearTimer();
+        const realSlidesCount = (model.storySlides || []).slice(0, MAX_SLIDES).length;
+        if (realSlidesCount <= 1) return; // no auto-advance when only one real slide
+
+        const all = getRenderedSlides();
+        const active = all[idx];
+        // If add-tile is active, do not auto-advance
+        if (active && active.classList.contains("story-add")) return;
+
+        const ms = getDurationForSlide(active);
+        setBarDuration(ms);
+        timer = setTimeout(() => showSlide(idx + 1), ms);
+      }
+
+      function showSlide(nextIdx) {
+        const all = getRenderedSlides();
+        if (all.length === 0) return;
+
+        if (nextIdx < 0) nextIdx = all.length - 1;
+        if (nextIdx >= all.length) nextIdx = 0;
+
+        clearTimer();
+
+        const current = all[idx];
+        const next = all[nextIdx];
+
+        if (current) {
+          current.classList.remove("is-active");
+          current.classList.add("is-exiting");
+          setTimeout(() => current.classList.remove("is-exiting"), 700);
+        }
+        if (next) next.classList.add("is-active");
+
+        idx = nextIdx;
+        applyActive(idx);
+        restartTimer();
+      }
+
+      btnPrev?.addEventListener("click", (e) => { e.preventDefault(); showSlide(idx - 1); });
+      btnNext?.addEventListener("click", (e) => { e.preventDefault(); showSlide(idx + 1); });
+
+      storyEl.addEventListener("mouseenter", () => clearTimer());
+      storyEl.addEventListener("mouseleave", () => restartTimer());
+
+      // ===== Add slide flow (modal + auto upload) =====
+      function openAddSlide(type) {
+        if ((model.storySlides || []).length >= MAX_SLIDES) {
+          setStatus(`Max ${MAX_SLIDES} slides reached.`);
+          return;
+        }
+
+        $("newSlideType").value = type || "image";
+        $("newSlideUrl").value = "";
+        $("newSlideAlt").value = "";
+        $("newSlideFile").value = "";
+        setAddSlideStatus("");
+
+        // update accept depending on type
+        $("newSlideFile").setAttribute("accept", type === "video" ? "video/*" : "image/*");
+
+        showModal("addSlideModal", true);
+      }
+
+      $("addSlideCancelBtn").addEventListener("click", () => showModal("addSlideModal", false));
+
+      $("newSlideType").addEventListener("change", () => {
+        const t = $("newSlideType").value;
+        $("newSlideFile").setAttribute("accept", t === "video" ? "video/*" : "image/*");
+      });
+
+      // Auto-upload immediately after choosing a file
+      $("newSlideFile").addEventListener("change", async () => {
+        const file = $("newSlideFile").files && $("newSlideFile").files[0];
+        if (!file) return;
+
+        try {
+          setAddSlideStatus("Uploading…");
+          const out = await apiUpload(file);
+          $("newSlideUrl").value = out.url || "";
+          setAddSlideStatus("Uploaded. You can now click Add slide.");
+        } catch (e) {
+          setAddSlideStatus(e.message || "Upload failed.");
+        }
+      });
+
+      $("addSlideConfirmBtn").addEventListener("click", () => {
+        const type = $("newSlideType").value === "video" ? "video" : "image";
+        const src = ($("newSlideUrl").value || "").trim();
+        const alt = ($("newSlideAlt").value || "").trim();
+
+        if (!src) return setAddSlideStatus("Please upload a file or paste a URL.");
+        if ((model.storySlides || []).length >= MAX_SLIDES) return setAddSlideStatus(`Max ${MAX_SLIDES} slides reached.`);
+
+        model.storySlides = Array.isArray(model.storySlides) ? model.storySlides : [];
+        model.storySlides.push({ type, src, alt });
+
+        // Re-render story and mark dirty
+        renderStoryFromModel();
+        pushHistory("slide:add");
+        updateSaveVisibility();
+        showModal("addSlideModal", false);
+        setStatus("Slide added. Click Save changes.");
+      });
+
+      // ===== Undo / Redo =====
+      $("undoBtn").addEventListener("click", () => {
+        if (history.idx <= 0) return;
+        history.idx -= 1;
+        model = clone(history.stack[history.idx]);
+        renderAllFromModel();
+        updateSaveVisibility();
+        updateHistoryButtons();
+        setStatus("Undo");
+      });
+
+      $("redoBtn").addEventListener("click", () => {
+        if (history.idx >= history.stack.length - 1) return;
+        history.idx += 1;
+        model = clone(history.stack[history.idx]);
+        renderAllFromModel();
+        updateSaveVisibility();
+        updateHistoryButtons();
+        setStatus("Redo");
+      });
+
+      // ===== Render everything from model =====
+      function renderAllFromModel() {
+        // text fields
+        // ticker needs special: keep track duplications
+        const t = model.tickerText || "";
+        $("tickerTrack").innerHTML = `
+          <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">${escapeHtml(t)}</span>
+          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
+          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
+        `;
+
+        $("heroLine1").textContent = model.heroLine1 || "";
+        $("heroLine2").textContent = model.heroLine2 || "";
+        $("heroItalic").textContent = model.heroItalic || "";
+        $("subtext").textContent = model.subtext || "";
+
+        // story
+        renderStoryFromModel();
+
+        // re-bind editable (ticker was recreated)
+        bindEditable();
+      }
+
+      // ===== Auth + load =====
       async function ensureAuthAndLoad() {
-        const token = getToken();
-        if (!token) {
-          showAuth(true);
+        if (!getToken()) {
+          showModal("authModal", true);
           return;
         }
 
         try {
-          $("saveBtn").disabled = true;
-          setStatus("statusLeft", "Loading…");
-          setStatus("statusRight", "");
+          setStatus("Loading…");
           const data = await apiGet();
-          writeForm(data);
-          setStatus("statusLeft", "Loaded.");
+
+          // Ensure minimum keys exist
+          model = {
+            tickerText: data.tickerText || "New drops weekly",
+            heroLine1: data.heroLine1 || "Short form",
+            heroLine2: data.heroLine2 || "done",
+            heroItalic: data.heroItalic || "right",
+            subtext: data.subtext || "",
+            storySlides: Array.isArray(data.storySlides) ? data.storySlides.slice(0, MAX_SLIDES) : []
+          };
+
+          original = clone(model);
+
+          // init history
+          history.stack = [clone(model)];
+          history.idx = 0;
+          updateHistoryButtons();
+
+          renderAllFromModel();
+          updateSaveVisibility();
+          setStatus("Loaded.");
         } catch (e) {
+          setStatus("");
           setToken("");
-          showAuth(true);
-          setStatus("authStatus", "Wrong password or session expired. Enter again.");
-        } finally {
-          $("saveBtn").disabled = false;
+          showModal("authModal", true);
+          setAuthStatus(e.message || "Login failed.");
         }
       }
 
       $("loginBtn").addEventListener("click", async () => {
         const pw = $("passwordInput").value;
-        if (!pw) return setStatus("authStatus", "Enter password.");
-
+        if (!pw) return setAuthStatus("Enter password.");
         setToken(pw);
         $("passwordInput").value = "";
-        setStatus("authStatus", "");
-        showAuth(false);
+        setAuthStatus("");
+        showModal("authModal", false);
         await ensureAuthAndLoad();
       });
 
       $("logoutBtn").addEventListener("click", () => {
         setToken("");
+        original = null;
         model = null;
-        $("slides").innerHTML = "";
-        showAuth(true);
-        setStatus("authStatus", "Logged out.");
+        history.stack = [];
+        history.idx = -1;
+        updateHistoryButtons();
+        $("saveBtn").classList.add("hidden");
+        setStatus("Logged out.");
+        showModal("authModal", true);
       });
-
-      $("reloadBtn").addEventListener("click", () => ensureAuthAndLoad());
 
       $("saveBtn").addEventListener("click", async () => {
         try {
           $("saveBtn").disabled = true;
-          setStatus("statusLeft", "Saving…");
-          setStatus("statusRight", "");
+          setStatus("Saving…");
 
-          const payload = readForm();
-          const out = await apiSave(payload);
+          // enforce max 5, and also enforce at least 1 real slide if you want
+          model.storySlides = Array.isArray(model.storySlides) ? model.storySlides.slice(0, MAX_SLIDES) : [];
 
-          setStatus("statusLeft", out.message || "Saved. Deploying…");
+          const out = await apiSave(model);
+
+          original = clone(model);
+          updateSaveVisibility();
+          setStatus(out.message || "Saved. Deploying…");
         } catch (e) {
-          setStatus("statusLeft", e.message || "Save failed.");
+          setStatus(e.message || "Save failed.");
         } finally {
           $("saveBtn").disabled = false;
         }
       });
 
-      $("addImageBtn").addEventListener("click", () => {
-        if (!model) model = { tickerText:"", heroLine1:"", heroLine2:"", heroItalic:"", subtext:"", storySlides:[] };
-        model.storySlides.push({ type: "image", src: "", alt: "" });
-        writeForm(model);
-      });
-
-      $("addVideoBtn").addEventListener("click", () => {
-        if (!model) model = { tickerText:"", heroLine1:"", heroLine2:"", heroItalic:"", subtext:"", storySlides:[] };
-        model.storySlides.push({ type: "video", src: "", alt: "" });
-        writeForm(model);
-      });
-
+      // Start
+      bindEditable();
       ensureAuthAndLoad();
     </script>
   </body>
