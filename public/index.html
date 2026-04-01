@@ -325,14 +325,22 @@
 
       /* responsive */
       @media (max-width: 900px) {
-        .hero-inner {
-          flex-direction: column;
-          padding: 36px 20px 40px;
-          gap: 32px;
-        }
-        .story-card { width: min(375px, 100%); }
-        .nav { padding: 16px 20px; }
-      }
+        .hero-inner{
+    flex-direction: column;
+    padding: 36px 20px 40px;
+    gap: 28px;
+  }
+
+  .hero-right{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .story-card{
+    width: min(360px, 92vw);
+    aspect-ratio: 9 / 16;  /* stable */
+  }
 
       /* ✅ Mobile: center ticker + heading + subtext + buttons */
       @media (max-width: 760px) {
