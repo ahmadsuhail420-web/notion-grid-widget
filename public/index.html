@@ -161,7 +161,7 @@
 
         display: flex;
         flex-flow: row;
-        place-content: center flex-start; /* as in Framer inspect */
+        place-content: center flex-start;
         align-items: center;
         gap: 64px;
 
@@ -170,9 +170,18 @@
         overflow: hidden;
       }
 
-      /* Left content */
+      /* Left content: like framer-upj7hm */
+      .hero-left {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+        flex: 1 0 0;
+        min-width: 0;
+      }
+
       h1 {
-        margin: 0 0 16px;
+        margin: 0;
         font-size: clamp(44px, 5vw, 78px);
         line-height: 0.95;
         letter-spacing: -0.04em;
@@ -186,7 +195,7 @@
       }
 
       .subtext {
-        margin: 14px 0 22px;
+        margin: 0;
         max-width: 46ch;
         font-size: 16px;
         line-height: 1.7;
@@ -208,7 +217,6 @@
         border: 1px solid var(--border);
         background: rgba(255, 255, 255, 0.28);
         overflow: hidden;
-        margin-bottom: 18px;
       }
 
       .ticker__track {
@@ -240,31 +248,19 @@
         }
       }
 
-      /* ===== Story card (matches your Framer inspect screenshots) ===== */
+      /* ===== Story card (Instagram-like slider + progress) ===== */
 
-      /* Prevent stretching */
       .hero-right {
         flex: none;
       }
 
-      .hero-left{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 32px;
-  flex: 1 0 0;   /* important: takes remaining space like Framer */
-  min-width: 0;  /* prevents overflow issues in flex */
-}
-
-      /* Outer = framer-8bdbh3 */
+      /* Outer = framer-8bdbh3 (keep border + ratio) */
       .story-card {
         width: 375px;
-        padding: 0;
 
         display: flex;
         place-content: center;
         align-items: center;
-        gap: 10px;
 
         position: relative;
         overflow: visible;
@@ -272,11 +268,11 @@
         border: 8px solid #fff;
         border-radius: 24px;
 
-        aspect-ratio: 0.56375; /* exactly what you saw */
+        aspect-ratio: 0.56375;
         background: transparent;
       }
 
-      /* Inner clip layer = inline-style div in your screenshot */
+      /* Inner clip layer */
       .story-inner {
         width: 100%;
         height: 100%;
@@ -285,25 +281,40 @@
         background: #fff;
 
         position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
+        user-select: none;
 
         box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-        user-select: none;
       }
 
-      /* Image fill */
+      /* Slides layer */
+      .story-slides {
+        position: absolute;
+        inset: 0;
+      }
+
       .story-img {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: block;
+
+        opacity: 0;
+        transform: translateX(10%);
+        transition: opacity 500ms ease, transform 700ms ease;
       }
 
-      /* Top progress bars */
+      .story-img.is-active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .story-img.is-exiting {
+        opacity: 0;
+        transform: translateX(-10%);
+      }
+
+      /* Instagram-like progress bars */
       .story-bars {
         position: absolute;
         top: 10px;
@@ -311,63 +322,59 @@
         right: 10px;
         display: flex;
         gap: 8px;
+        z-index: 2;
       }
-      .story-bars span {
+
+      .story-bars .bar {
         height: 3px;
         flex: 1;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.45);
+        background: rgba(255, 255, 255, 0.35);
+        overflow: hidden;
+        position: relative;
       }
 
-      /* Username top-left */
-      .story-meta {
+      .story-bars .bar::after {
+        content: "";
         position: absolute;
-        top: 22px;
-        left: 16px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-
-        color: rgba(255, 255, 255, 0.92);
-        font-weight: 600;
-        font-size: 13px;
-        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
-      }
-      .story-meta .time {
-        opacity: 0.75;
-        font-weight: 500;
+        inset: 0;
+        width: 0%;
+        background: rgba(255, 255, 255, 0.9);
       }
 
-      .avatar {
-        width: 24px;
-        height: 24px;
-        border-radius: 999px;
-        display: grid;
-        place-items: center;
-        background: rgba(255, 255, 255, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        font-size: 12px;
+      .story-bars .bar.is-active::after {
+        animation: storyProgress var(--story-duration, 3500ms) linear forwards;
       }
 
-      /* Bottom floating badge */
-      .floating-badge {
+      .story-bars .bar.is-filled::after {
+        width: 100%;
+      }
+
+      @keyframes storyProgress {
+        from {
+          width: 0%;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      /* Click zones (prev/next) */
+      .story-zone {
         position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: -26px;
-
-        width: 64px;
-        height: 64px;
-        border-radius: 18px;
-        background: #0d0d0d;
-        display: grid;
-        place-items: center;
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        z-index: 3;
       }
-      .floating-badge .star {
-        color: #fff;
-        font-size: 26px;
-        line-height: 1;
+      .story-zone.left {
+        left: 0;
+      }
+      .story-zone.right {
+        right: 0;
       }
 
       /* ===== Responsive ===== */
@@ -381,12 +388,13 @@
         .story-card {
           width: min(375px, 100%);
         }
-      }
 
-      @media (max-width: 760px) {
         .nav {
           padding: 16px 20px;
         }
+      }
+
+      @media (max-width: 760px) {
         .nav-links {
           display: none;
         }
@@ -407,8 +415,7 @@
   <body>
     <header>
       <div class="nav">
-        <!-- Replace with your logo -->
-        <a class="brand" href="#home">
+        <a class="brand" href="#home" aria-label="Home">
           <span class="brand-badge">✳</span>
           <span>YourBrand</span>
         </a>
@@ -428,7 +435,6 @@
         </div>
       </div>
 
-      <!-- Mobile drawer -->
       <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
         <a href="#home">Home</a>
         <a href="#about">About</a>
@@ -442,7 +448,6 @@
       <section class="hero">
         <div class="hero-inner">
           <div class="hero-left">
-            <!-- Moving text pill -->
             <div class="ticker" aria-label="Announcement">
               <div class="ticker__track">
                 <span class="ticker__item">Notion Grid Widget</span>
@@ -468,27 +473,34 @@
 
           <!-- Story card (right) -->
           <aside class="hero-right">
-            <div class="story-card">
-              <div class="story-inner">
-                <img
-                  class="story-img"
-                  src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
-                  alt="Story preview"
-                />
-
-                <div class="story-meta">
-                  <div class="avatar">J</div>
-                  <span>jessicasu</span>
-                  <span class="time">6h</span>
+            <div class="story-card" aria-label="Story preview">
+              <div class="story-inner" id="story">
+                <div class="story-slides">
+                  <img
+                    class="story-img is-active"
+                    src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
+                    alt="Story 1"
+                  />
+                  <img
+                    class="story-img"
+                    src="https://images.unsplash.com/photo-1520962917967-2322b2f94888?auto=format&fit=crop&w=1400&q=80"
+                    alt="Story 2"
+                  />
+                  <img
+                    class="story-img"
+                    src="https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&fit=crop&w=1400&q=80"
+                    alt="Story 3"
+                  />
                 </div>
 
                 <div class="story-bars" aria-hidden="true">
-                  <span></span><span></span><span></span>
+                  <span class="bar is-filled"></span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
                 </div>
-              </div>
 
-              <div class="floating-badge" aria-hidden="true">
-                <span class="star">✳</span>
+                <button class="story-zone left" type="button" aria-label="Previous story"></button>
+                <button class="story-zone right" type="button" aria-label="Next story"></button>
               </div>
             </div>
           </aside>
@@ -497,6 +509,7 @@
     </main>
 
     <script>
+      // Mobile menu
       const menuBtn = document.getElementById("menuBtn");
       const drawer = document.getElementById("mobileDrawer");
 
@@ -505,6 +518,63 @@
         menuBtn.setAttribute("aria-expanded", String(!expanded));
         drawer.setAttribute("aria-hidden", String(expanded));
       });
+
+      // Story slider
+      const storyEl = document.getElementById("story");
+      const slides = Array.from(storyEl.querySelectorAll(".story-img"));
+      const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
+      const btnPrev = storyEl.querySelector(".story-zone.left");
+      const btnNext = storyEl.querySelector(".story-zone.right");
+
+      const DURATION_MS = 3500; // story speed
+      storyEl.style.setProperty("--story-duration", `${DURATION_MS}ms`);
+
+      let index = 0;
+      let timer = null;
+
+      function renderBars() {
+        bars.forEach((b, i) => {
+          b.classList.remove("is-active", "is-filled");
+          if (i < index) b.classList.add("is-filled");
+          if (i === index) b.classList.add("is-active");
+        });
+      }
+
+      function showSlide(nextIndex) {
+        if (nextIndex < 0) nextIndex = slides.length - 1;
+        if (nextIndex >= slides.length) nextIndex = 0;
+
+        const current = slides[index];
+        const next = slides[nextIndex];
+
+        current.classList.remove("is-active");
+        current.classList.add("is-exiting");
+        setTimeout(() => current.classList.remove("is-exiting"), 700);
+
+        next.classList.add("is-active");
+
+        index = nextIndex;
+        renderBars();
+        restartTimer();
+      }
+
+      function restartTimer() {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => showSlide(index + 1), DURATION_MS);
+      }
+
+      // init
+      slides.forEach((s, i) => s.classList.toggle("is-active", i === 0));
+      renderBars();
+      restartTimer();
+
+      // controls
+      btnPrev?.addEventListener("click", () => showSlide(index - 1));
+      btnNext?.addEventListener("click", () => showSlide(index + 1));
+
+      // pause on hover (desktop)
+      storyEl.addEventListener("mouseenter", () => timer && clearTimeout(timer));
+      storyEl.addEventListener("mouseleave", restartTimer);
     </script>
   </body>
 </html>
