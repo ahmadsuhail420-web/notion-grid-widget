@@ -117,11 +117,20 @@ function clampStr(v, n) {
 
 function normalizeHomeJson(input) {
   const storySlides = Array.isArray(input.storySlides)
-    ? input.storySlides.slice(0, 5).map((s) => ({
-        type: s && s.type === "video" ? "video" : "image",
-        src: clampStr(s && s.src, 500),
-        alt: clampStr(s && s.alt, 120)
-      }))
+    ? input.storySlides
+        // remove empty slides
+        .filter((s) => {
+          const src = String((s && s.src) || "").trim();
+          return src.length > 0;
+        })
+        // normalize
+        .map((s) => ({
+          type: s && s.type === "video" ? "video" : "image",
+          src: clampStr(String((s && s.src) || "").trim(), 500),
+          alt: clampStr(String((s && s.alt) || "").trim(), 120)
+        }))
+        // max 5
+        .slice(0, 5)
     : [];
 
   return {
