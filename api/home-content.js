@@ -117,7 +117,7 @@ function clampStr(v, n) {
 
 function normalizeHomeJson(input) {
   const storySlides = Array.isArray(input.storySlides)
-    ? input.storySlides.slice(0, 12).map((s) => ({
+    ? input.storySlides.slice(0, 5).map((s) => ({
         type: s && s.type === "video" ? "video" : "image",
         src: clampStr(s && s.src, 500),
         alt: clampStr(s && s.alt, 120)
