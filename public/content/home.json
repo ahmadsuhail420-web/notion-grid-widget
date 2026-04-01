@@ -7,16 +7,6 @@
   "storySlides": [
     {
       "type": "image",
-      "src": "/uploads/2026-04-01T15-23-49-831Z-38896e95623c18.png",
-      "alt": "Story 1"
-    },
-    {
-      "type": "video",
-      "src": "assets/story2.mp4",
-      "alt": "Story 2"
-    },
-    {
-      "type": "image",
       "src": "https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&fit=crop&w=1400&q=80",
       "alt": "Story 3"
     }
