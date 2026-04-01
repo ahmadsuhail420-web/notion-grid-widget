@@ -51,7 +51,7 @@
       .brand-logo { height: 30px; width: auto; display: block; object-fit: contain; }
       .admin-pill{
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 800;
         padding: 6px 10px;
         border-radius: 999px;
         border: 1px solid rgba(13,13,13,.18);
@@ -67,7 +67,6 @@
         color: rgba(13, 13, 13, 0.78);
       }
       .nav-links a { padding: 8px 10px; border-radius: 10px; }
-      .nav-links a:hover { background: rgba(13, 13, 13, 0.06); }
 
       .nav-cta { display: inline-flex; align-items: center; gap: 14px; }
 
@@ -80,13 +79,18 @@
         padding: 0;
         border: 0;
         background: transparent;
-        cursor: pointer;
       }
-      .icon-btn:hover{ opacity: 0.72; }
       .icon{
         width: 20px;
         height: 20px;
         stroke: rgba(13,13,13,0.9);
+      }
+
+      /* Disable customer interactions in admin */
+      .disabled-link,
+      .disabled-cta {
+        pointer-events: none;
+        opacity: .68;
       }
 
       /* Admin sticky actions */
@@ -98,7 +102,7 @@
         display: flex;
         gap: 10px;
         align-items: center;
-        pointer-events: none; /* enable only buttons */
+        pointer-events: none;
       }
 
       .pill {
@@ -121,7 +125,7 @@
         border-radius: 999px;
         cursor: pointer;
         font: inherit;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 13px;
         color: rgba(13,13,13,.9);
       }
@@ -206,7 +210,6 @@
         padding: 16px 32px;
         font-weight: 500;
         font-size: 18px;
-        cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -214,15 +217,13 @@
         white-space: nowrap;
       }
       .btn-primary { background: #0d0d0d; color: #fff; }
-      .btn-primary:hover { opacity: 0.92; }
       .btn-ghost {
         background: transparent;
         border-color: rgba(13, 13, 13, 0.18);
         color: rgba(13, 13, 13, 0.85);
       }
-      .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
 
-      /* ticker */
+      /* ticker - NO animation in admin */
       .ticker {
         width: fit-content;
         max-width: 240px;
@@ -235,12 +236,11 @@
         display: inline-flex;
         gap: 28px;
         white-space: nowrap;
-        will-change: transform;
-        animation: ticker-move 7s linear infinite;
+        will-change: auto;
+        animation: none; /* admin: stop */
+        transform: none;
       }
       .ticker__item { font-weight: 600; font-size: 14px; color: rgba(13, 13, 13, 0.85); }
-      @keyframes ticker-move { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
-      @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
 
       /* story card */
       .hero-right { flex: none; }
@@ -282,11 +282,8 @@
         transform: translateX(10%);
         transition: opacity 500ms ease, transform 700ms ease;
       }
-
       .story-img,
-      .story-vid {
-        object-fit: cover;
-      }
+      .story-vid { object-fit: cover; }
 
       .story-img.is-active,
       .story-vid.is-active,
@@ -302,6 +299,7 @@
         transform: translateX(-10%);
       }
 
+      /* Admin: keep bars visible but NO auto progress animation */
       .story-bars {
         position: absolute;
         top: 10px;
@@ -311,7 +309,6 @@
         gap: 8px;
         z-index: 2;
       }
-
       .story-bars .bar {
         height: 3px;
         flex: 1;
@@ -327,10 +324,8 @@
         width: 0%;
         background: rgba(255, 255, 255, 0.9);
       }
-      .story-bars .bar.is-active::after { animation: storyProgress var(--story-duration, 3500ms) linear forwards; }
       .story-bars .bar.is-filled::after { width: 100%; }
-
-      @keyframes storyProgress { from { width: 0%; } to { width: 100%; } }
+      .story-bars .bar.is-active::after { width: 35%; } /* just a visual indicator */
 
       .story-zone {
         position: absolute;
@@ -362,9 +357,8 @@
       .story-zone.left::after { content: "‹"; left: 18px; }
       .story-zone.right::after { content: "›"; right: 18px; }
       .story-inner:hover .story-zone::after { opacity: 1; }
-      .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
 
-      /* Editable outlines (admin only) */
+      /* Editable outlines */
       [contenteditable="true"] {
         outline: 2px solid rgba(13,13,13,.14);
         outline-offset: 6px;
@@ -374,15 +368,16 @@
         outline-color: rgba(13,13,13,.30);
       }
 
-      /* Add slide tile UI */
+      /* Add slide tile */
       .story-add{
         display: flex;
         align-items: center;
         justify-content: center;
         background: linear-gradient(180deg, rgba(13,13,13,.06), rgba(13,13,13,.02));
-        color: rgba(13,13,13,.82);
+        color: rgba(13,13,13,.86);
         font-weight: 800;
         letter-spacing: -0.02em;
+        cursor: pointer;
       }
       .story-add-inner{
         display: grid;
@@ -405,15 +400,52 @@
         font-weight: 600;
         color: rgba(13,13,13,.60);
       }
-      .add-actions{
+
+      /* Story editor overlay controls */
+      .story-tools {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        z-index: 4;
         display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
+        pointer-events: none;
       }
-      .add-actions .btn{
-        padding: 10px 12px;
-        font-size: 13px;
+      .tool-group {
+        pointer-events: auto;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        background: rgba(255,255,255,.72);
+        border: 1px solid rgba(13,13,13,.14);
+        border-radius: 999px;
+        padding: 8px 10px;
+        backdrop-filter: blur(10px);
+      }
+      .tool {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        border: 1px solid rgba(13,13,13,.12);
+        background: rgba(255,255,255,.65);
+        user-select: none;
+        font-weight: 900;
+        color: rgba(13,13,13,.85);
+      }
+      .tool:hover { background: rgba(255,255,255,.95); }
+      .tool[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+
+      .tool-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: rgba(13,13,13,.70);
+        padding: 0 4px;
       }
 
       /* Modal */
@@ -453,13 +485,11 @@
           padding: 36px 20px 40px;
           gap: 28px;
         }
-
         .hero-right{
           width: 100%;
           display: flex;
           justify-content: center;
         }
-
         .story-card{
           width: min(360px, 92vw);
           aspect-ratio: 9 / 16;
@@ -491,39 +521,39 @@
 
     <header>
       <div class="nav">
-        <a class="brand" href="index.html" aria-label="Home">
+        <div class="brand" aria-label="Home (disabled in admin)">
           <img class="brand-logo" src="assets/logo.png" alt="Sync & Style logo" />
           <span class="admin-pill">ADMIN</span>
-        </a>
+        </div>
 
-        <nav class="nav-links" aria-label="Primary">
-          <a href="index.html">Home</a>
-          <a href="shop.html">Shop</a>
-          <a href="contact.html">Contact Us</a>
-          <a href="about.html">About Us</a>
+        <nav class="nav-links" aria-label="Primary (disabled in admin)">
+          <a class="disabled-link" href="#" tabindex="-1">Home</a>
+          <a class="disabled-link" href="#" tabindex="-1">Shop</a>
+          <a class="disabled-link" href="#" tabindex="-1">Contact Us</a>
+          <a class="disabled-link" href="#" tabindex="-1">About Us</a>
         </nav>
 
-        <div class="nav-cta" aria-label="Actions">
-          <a class="icon-btn" href="shop.html" aria-label="Search (go to shop)">
+        <div class="nav-cta" aria-label="Actions (disabled in admin)">
+          <span class="icon-btn disabled-link" aria-hidden="true">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="7"></circle>
               <path d="M21 21l-4.3-4.3"></path>
             </svg>
-          </a>
-          <a class="icon-btn" href="account.html" aria-label="Account">
+          </span>
+          <span class="icon-btn disabled-link" aria-hidden="true">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21a8 8 0 0 0-16 0"></path>
               <circle cx="12" cy="8" r="4"></circle>
             </svg>
-          </a>
-          <a class="icon-btn" href="cart.html" aria-label="Cart">
+          </span>
+          <span class="icon-btn disabled-link" aria-hidden="true">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M6 6h15l-1.5 9H7.5L6 6Z"></path>
               <path d="M6 6 5 3H2"></path>
               <circle cx="9" cy="20" r="1.5"></circle>
               <circle cx="18" cy="20" r="1.5"></circle>
             </svg>
-          </a>
+          </span>
         </div>
       </div>
     </header>
@@ -535,8 +565,6 @@
             <div class="ticker" aria-label="Announcement">
               <div class="ticker__track" id="tickerTrack">
                 <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">New drops weekly</span>
-                <span class="ticker__item" aria-hidden="true">New drops weekly</span>
-                <span class="ticker__item" aria-hidden="true">New drops weekly</span>
               </div>
             </div>
 
@@ -551,19 +579,32 @@
             </p>
 
             <div class="hero-actions">
-              <a class="btn-big btn-primary" href="shop.html">Shop now</a>
-              <a class="btn-big btn-ghost" href="contact.html">Contact Us</a>
+              <span class="btn-big btn-primary disabled-cta" aria-hidden="true">Shop now</span>
+              <span class="btn-big btn-ghost disabled-cta" aria-hidden="true">Contact Us</span>
             </div>
           </div>
 
           <aside class="hero-right">
-            <div class="story-card" aria-label="Story preview">
+            <div class="story-card" aria-label="Story editor">
               <div class="story-inner" id="story">
                 <div class="story-slides" id="storySlides"></div>
                 <div class="story-bars" aria-hidden="true" id="storyBars"></div>
 
-                <button class="story-zone left" type="button" aria-label="Previous story"></button>
-                <button class="story-zone right" type="button" aria-label="Next story"></button>
+                <!-- editor tools -->
+                <div class="story-tools" aria-label="Story tools">
+                  <div class="tool-group">
+                    <div class="tool" id="moveLeftTool" title="Move left">‹</div>
+                    <div class="tool" id="moveRightTool" title="Move right">›</div>
+                    <div class="tool-label" id="slideLabel">Slide</div>
+                  </div>
+
+                  <div class="tool-group">
+                    <div class="tool" id="removeTool" title="Remove">×</div>
+                  </div>
+                </div>
+
+                <div class="story-zone left" id="navPrev" aria-label="Previous story"></div>
+                <div class="story-zone right" id="navNext" aria-label="Next story"></div>
               </div>
             </div>
           </aside>
@@ -633,9 +674,6 @@
       const TOKEN_KEY = "home_admin_token_v1";
       const MAX_SLIDES = 5;
 
-      const DEFAULT_MS = 3500;
-      const MAX_VIDEO_MS = 15000;
-
       const $ = (id) => document.getElementById(id);
 
       function setStatus(msg) { $("status").textContent = msg || ""; }
@@ -645,14 +683,9 @@
       function getToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
       function setToken(t) { if (!t) localStorage.removeItem(TOKEN_KEY); else localStorage.setItem(TOKEN_KEY, t); }
 
-      function showModal(id, show) {
-        const el = $(id);
-        el.setAttribute("aria-hidden", String(!show));
-      }
+      function showModal(id, show) { $(id).setAttribute("aria-hidden", String(!show)); }
 
-      async function safeText(res) {
-        try { return await res.text(); } catch { return ""; }
-      }
+      async function safeText(res) { try { return await res.text(); } catch { return ""; } }
 
       async function apiGet() {
         const res = await fetch(API, { method: "GET", headers: { "x-admin-token": getToken() } });
@@ -695,41 +728,29 @@
       }
 
       // ===== Model / Dirty state / History (Undo/Redo) =====
-      let original = null; // last loaded/saved snapshot
-      let model = null;    // current working snapshot
+      let original = null;
+      let model = null;
 
-      const history = {
-        stack: [],
-        idx: -1
-      };
+      const history = { stack: [], idx: -1 };
 
-      function clone(obj) {
-        return JSON.parse(JSON.stringify(obj));
+      function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+      function updateHistoryButtons() {
+        $("undoBtn").disabled = history.idx <= 0;
+        $("redoBtn").disabled = history.idx >= history.stack.length - 1;
       }
 
       function pushHistory(reason) {
         const snap = clone(model);
-
-        // drop future if we undid
         history.stack = history.stack.slice(0, history.idx + 1);
-
-        // avoid pushing duplicates
         const last = history.stack[history.stack.length - 1];
         if (last && JSON.stringify(last) === JSON.stringify(snap)) {
           updateHistoryButtons();
           return;
         }
-
         history.stack.push(snap);
         history.idx = history.stack.length - 1;
-
         updateHistoryButtons();
-        // setStatus(reason ? `Changed: ${reason}` : "Changed");
-      }
-
-      function updateHistoryButtons() {
-        $("undoBtn").disabled = history.idx <= 0;
-        $("redoBtn").disabled = history.idx >= history.stack.length - 1;
       }
 
       function isDirty() {
@@ -737,16 +758,14 @@
       }
 
       function updateSaveVisibility() {
-        const show = isDirty();
-        $("saveBtn").classList.toggle("hidden", !show);
+        $("saveBtn").classList.toggle("hidden", !isDirty());
       }
 
       function normalizeText(s) {
-        // keep simple text only (avoid contenteditable inserting <div>)
         return String(s || "").replace(/\s+/g, " ").trim();
       }
 
-      // ===== Bind editable fields =====
+      // ===== Editable fields =====
       function bindEditable() {
         const bindings = [
           { id: "tickerText", key: "tickerText" },
@@ -758,17 +777,12 @@
 
         bindings.forEach(({ id, key }) => {
           const el = $(id);
-          // Input event fires for contenteditable changes
           el.addEventListener("input", () => {
-            // read textContent (not innerHTML)
             model[key] = normalizeText(el.textContent);
-            updateTickerTrackIfNeeded(key);
             updateSaveVisibility();
-            // Push history (throttled)
             scheduleHistoryPush(`text:${key}`);
           });
 
-          // Prevent rich paste
           el.addEventListener("paste", (e) => {
             e.preventDefault();
             const txt = (e.clipboardData || window.clipboardData).getData("text/plain");
@@ -777,95 +791,35 @@
         });
       }
 
-      function updateTickerTrackIfNeeded(key) {
-        if (key !== "tickerText") return;
-        const track = $("tickerTrack");
-        const t = model.tickerText || "";
-        // keep ticker moving; update duplicates
-        track.innerHTML = `
-          <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">${escapeHtml(t)}</span>
-          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
-          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
-        `;
-        // re-bind (because we replaced DOM)
-        bindEditable(); // safe because it re-adds listeners; but we should only bind ticker again
-      }
-
       let historyTimer = null;
       function scheduleHistoryPush(reason) {
         if (historyTimer) clearTimeout(historyTimer);
-        historyTimer = setTimeout(() => pushHistory(reason), 300);
+        historyTimer = setTimeout(() => pushHistory(reason), 250);
       }
 
-      function escapeHtml(s) {
-        return String(s || "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      // ===== Story rendering + slider navigation =====
-      const storyEl = $("story");
-      const btnPrev = storyEl.querySelector(".story-zone.left");
-      const btnNext = storyEl.querySelector(".story-zone.right");
-
-      let idx = 0;
-      let timer = null;
-
-      const isVideoEl = (el) => el && el.tagName === "VIDEO";
-
-      function setBarDuration(ms) {
-        storyEl.style.setProperty("--story-duration", `${ms}ms`);
-      }
-
-      function clearTimer() {
-        if (timer) clearTimeout(timer);
-        timer = null;
-      }
-
-      function getRenderedSlides() {
-        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid, .story-add"));
-      }
-
-      function stopAllVideos() {
-        getRenderedSlides().forEach((el) => {
-          if (!isVideoEl(el)) return;
-          try { el.pause(); el.currentTime = 0; } catch {}
-        });
-      }
-
-      function getDurationForSlide(el) {
-        if (!isVideoEl(el)) return DEFAULT_MS;
-        const d = el.duration;
-        if (Number.isFinite(d) && d > 0) return Math.min(Math.round(d * 1000), MAX_VIDEO_MS);
-        return DEFAULT_MS;
-      }
-
+      // ===== Story render + manual nav (no autoplay) =====
+      let activeIndex = 0; // index in rendered list (includes add tile)
       function renderStoryFromModel() {
         const wrap = $("storySlides");
         const bars = $("storyBars");
 
-        // Real slides
         const slides = Array.isArray(model.storySlides) ? model.storySlides.slice(0, MAX_SLIDES) : [];
         const canAdd = slides.length < MAX_SLIDES;
 
-        // We render N slides + (optional) add-tile as last slide
         const renderList = [...slides];
         if (canAdd) renderList.push({ __add: true });
 
         wrap.innerHTML = "";
         bars.innerHTML = "";
 
-        renderList.forEach((s, i) => {
-          // bars only for REAL slides, not for add-tile
-          if (!s.__add) {
-            const bar = document.createElement("span");
-            bar.className = "bar" + (i === 0 ? " is-active" : "");
-            bars.appendChild(bar);
-          }
+        // Bars only for real slides
+        slides.forEach((_, i) => {
+          const bar = document.createElement("span");
+          bar.className = "bar" + (i === 0 ? " is-active" : "");
+          bars.appendChild(bar);
+        });
 
+        renderList.forEach((s, i) => {
           if (s.__add) {
             const add = document.createElement("div");
             add.className = "story-add" + (i === 0 ? " is-active" : "");
@@ -873,25 +827,11 @@
               <div class="story-add-inner">
                 <div class="plus">+</div>
                 <div>Add slide</div>
-                <div class="small-muted">Up to ${MAX_SLIDES} slides</div>
-                <div class="add-actions">
-                  <button class="btn" type="button" data-add-image>Add image</button>
-                  <button class="btn" type="button" data-add-video>Add video</button>
-                </div>
+                <div class="small-muted">Click to add (max ${MAX_SLIDES})</div>
               </div>
             `;
+            add.addEventListener("click", () => openAddSlide("image"));
             wrap.appendChild(add);
-
-            // Bind add buttons
-            add.querySelector("[data-add-image]")?.addEventListener("click", (e) => {
-              e.stopPropagation();
-              openAddSlide("image");
-            });
-            add.querySelector("[data-add-video]")?.addEventListener("click", (e) => {
-              e.stopPropagation();
-              openAddSlide("video");
-            });
-
             return;
           }
 
@@ -901,28 +841,26 @@
             v.muted = true;
             v.playsInline = true;
             v.preload = "metadata";
-            v.dataset.realIndex = String(i);
-
             const src = document.createElement("source");
             src.src = s.src || "";
             src.type = "video/mp4";
             v.appendChild(src);
-
             wrap.appendChild(v);
           } else {
             const img = document.createElement("img");
             img.className = "story-img" + (i === 0 ? " is-active" : "");
             img.src = s.src || "";
             img.alt = s.alt || `Story ${i + 1}`;
-            img.dataset.realIndex = String(i);
             wrap.appendChild(img);
           }
         });
 
-        // Reset navigation index if out of range
-        idx = 0;
-        applyActive(idx);
-        restartTimer();
+        activeIndex = 0;
+        applyActive(activeIndex);
+      }
+
+      function getRenderedSlides() {
+        return Array.from($("story").querySelectorAll(".story-img, .story-vid, .story-add"));
       }
 
       function applyActive(nextIdx) {
@@ -932,58 +870,30 @@
           el.classList.toggle("is-active", i === nextIdx);
         });
 
-        // bars: only for real slides
-        const realSlidesCount = (model.storySlides || []).slice(0, MAX_SLIDES).length;
-        const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
+        // Bars relate only to real slides (model.storySlides)
+        const realCount = (model.storySlides || []).slice(0, MAX_SLIDES).length;
+        const bars = Array.from($("story").querySelectorAll(".story-bars .bar"));
+
+        // If nextIdx points to add tile, don't advance bars further than last real index
+        const realIdx = Math.min(nextIdx, Math.max(0, realCount - 1));
+
         bars.forEach((b, i) => {
           b.classList.remove("is-active", "is-filled");
-          if (i < nextIdx) b.classList.add("is-filled");
-          if (i === nextIdx) b.classList.add("is-active");
+          if (i < realIdx) b.classList.add("is-filled");
+          if (i === realIdx) b.classList.add("is-active");
         });
 
-        // If active is "add tile", stop videos + don't animate bars
-        const active = all[nextIdx];
-        stopAllVideos();
-
-        if (active && isVideoEl(active)) {
-          if (!active.dataset.storyBound) {
-            active.addEventListener("ended", () => showSlide(idx + 1));
-            active.dataset.storyBound = "1";
-          }
-          try { active.currentTime = 0; active.play(); } catch {}
-        }
-
-        // Duration
-        if (realSlidesCount <= 1) return;
-        const duration = getDurationForSlide(active);
-        setBarDuration(duration);
+        updateStoryTools();
       }
 
-      function restartTimer() {
-        clearTimer();
-        const realSlidesCount = (model.storySlides || []).slice(0, MAX_SLIDES).length;
-        if (realSlidesCount <= 1) return; // no auto-advance when only one real slide
-
-        const all = getRenderedSlides();
-        const active = all[idx];
-        // If add-tile is active, do not auto-advance
-        if (active && active.classList.contains("story-add")) return;
-
-        const ms = getDurationForSlide(active);
-        setBarDuration(ms);
-        timer = setTimeout(() => showSlide(idx + 1), ms);
-      }
-
-      function showSlide(nextIdx) {
+      function show(nextIdx) {
         const all = getRenderedSlides();
         if (all.length === 0) return;
 
         if (nextIdx < 0) nextIdx = all.length - 1;
         if (nextIdx >= all.length) nextIdx = 0;
 
-        clearTimer();
-
-        const current = all[idx];
+        const current = all[activeIndex];
         const next = all[nextIdx];
 
         if (current) {
@@ -993,33 +903,105 @@
         }
         if (next) next.classList.add("is-active");
 
-        idx = nextIdx;
-        applyActive(idx);
-        restartTimer();
+        activeIndex = nextIdx;
+        applyActive(activeIndex);
       }
 
-      btnPrev?.addEventListener("click", (e) => { e.preventDefault(); showSlide(idx - 1); });
-      btnNext?.addEventListener("click", (e) => { e.preventDefault(); showSlide(idx + 1); });
+      // Story tools: remove / move left / move right (only for real slides)
+      function isOnAddTile() {
+        const slides = (model.storySlides || []).slice(0, MAX_SLIDES);
+        return activeIndex >= slides.length; // last is add tile (if present)
+      }
 
-      storyEl.addEventListener("mouseenter", () => clearTimer());
-      storyEl.addEventListener("mouseleave", () => restartTimer());
+      function updateStoryTools() {
+        const slides = (model.storySlides || []).slice(0, MAX_SLIDES);
+        const onAdd = isOnAddTile();
+        const realIdx = Math.min(activeIndex, Math.max(0, slides.length - 1));
 
-      // ===== Add slide flow (modal + auto upload) =====
+        $("slideLabel").textContent = slides.length
+          ? (onAdd ? `Add (${slides.length}/${MAX_SLIDES})` : `Slide ${realIdx + 1}/${slides.length}`)
+          : `Add (0/${MAX_SLIDES})`;
+
+        const canMoveLeft = !onAdd && realIdx > 0;
+        const canMoveRight = !onAdd && realIdx < slides.length - 1;
+        const canRemove = !onAdd && slides.length > 0;
+
+        $("moveLeftTool").setAttribute("aria-disabled", String(!canMoveLeft));
+        $("moveRightTool").setAttribute("aria-disabled", String(!canMoveRight));
+        $("removeTool").setAttribute("aria-disabled", String(!canRemove));
+      }
+
+      $("navPrev").addEventListener("click", () => show(activeIndex - 1));
+      $("navNext").addEventListener("click", () => show(activeIndex + 1));
+
+      $("moveLeftTool").addEventListener("click", () => {
+        if (isOnAddTile()) return;
+        const slides = (model.storySlides || []).slice(0, MAX_SLIDES);
+        const i = Math.min(activeIndex, slides.length - 1);
+        if (i <= 0) return;
+
+        const tmp = model.storySlides[i - 1];
+        model.storySlides[i - 1] = model.storySlides[i];
+        model.storySlides[i] = tmp;
+
+        renderStoryFromModel();
+        activeIndex = i - 1;
+        applyActive(activeIndex);
+
+        pushHistory("slide:moveLeft");
+        updateSaveVisibility();
+        setStatus("Moved slide left. Save changes.");
+      });
+
+      $("moveRightTool").addEventListener("click", () => {
+        if (isOnAddTile()) return;
+        const slides = (model.storySlides || []).slice(0, MAX_SLIDES);
+        const i = Math.min(activeIndex, slides.length - 1);
+        if (i >= slides.length - 1) return;
+
+        const tmp = model.storySlides[i + 1];
+        model.storySlides[i + 1] = model.storySlides[i];
+        model.storySlides[i] = tmp;
+
+        renderStoryFromModel();
+        activeIndex = i + 1;
+        applyActive(activeIndex);
+
+        pushHistory("slide:moveRight");
+        updateSaveVisibility();
+        setStatus("Moved slide right. Save changes.");
+      });
+
+      $("removeTool").addEventListener("click", () => {
+        if (isOnAddTile()) return;
+        const slides = (model.storySlides || []).slice(0, MAX_SLIDES);
+        const i = Math.min(activeIndex, slides.length - 1);
+        if (i < 0) return;
+
+        model.storySlides.splice(i, 1);
+
+        renderStoryFromModel();
+        activeIndex = Math.max(0, i - 1);
+        applyActive(activeIndex);
+
+        pushHistory("slide:remove");
+        updateSaveVisibility();
+        setStatus("Removed slide. Save changes.");
+      });
+
+      // ===== Add slide modal + auto upload =====
       function openAddSlide(type) {
         if ((model.storySlides || []).length >= MAX_SLIDES) {
           setStatus(`Max ${MAX_SLIDES} slides reached.`);
           return;
         }
-
         $("newSlideType").value = type || "image";
         $("newSlideUrl").value = "";
         $("newSlideAlt").value = "";
         $("newSlideFile").value = "";
         setAddSlideStatus("");
 
-        // update accept depending on type
-        $("newSlideFile").setAttribute("accept", type === "video" ? "video/*" : "image/*");
-
+        $("newSlideFile").setAttribute("accept", (type === "video") ? "video/*" : "image/*");
         showModal("addSlideModal", true);
       }
 
@@ -1030,7 +1012,6 @@
         $("newSlideFile").setAttribute("accept", t === "video" ? "video/*" : "image/*");
       });
 
-      // Auto-upload immediately after choosing a file
       $("newSlideFile").addEventListener("change", async () => {
         const file = $("newSlideFile").files && $("newSlideFile").files[0];
         if (!file) return;
@@ -1039,7 +1020,7 @@
           setAddSlideStatus("Uploading…");
           const out = await apiUpload(file);
           $("newSlideUrl").value = out.url || "";
-          setAddSlideStatus("Uploaded. You can now click Add slide.");
+          setAddSlideStatus("Uploaded. Click Add slide.");
         } catch (e) {
           setAddSlideStatus(e.message || "Upload failed.");
         }
@@ -1056,15 +1037,17 @@
         model.storySlides = Array.isArray(model.storySlides) ? model.storySlides : [];
         model.storySlides.push({ type, src, alt });
 
-        // Re-render story and mark dirty
         renderStoryFromModel();
+        activeIndex = Math.max(0, (model.storySlides.length - 1)); // show newly added slide
+        applyActive(activeIndex);
+
         pushHistory("slide:add");
         updateSaveVisibility();
         showModal("addSlideModal", false);
-        setStatus("Slide added. Click Save changes.");
+        setStatus("Slide added. Save changes.");
       });
 
-      // ===== Undo / Redo =====
+      // ===== Undo/Redo =====
       $("undoBtn").addEventListener("click", () => {
         if (history.idx <= 0) return;
         history.idx -= 1;
@@ -1085,30 +1068,23 @@
         setStatus("Redo");
       });
 
-      // ===== Render everything from model =====
+      // ===== Render all from model =====
       function renderAllFromModel() {
-        // text fields
-        // ticker needs special: keep track duplications
-        const t = model.tickerText || "";
-        $("tickerTrack").innerHTML = `
-          <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">${escapeHtml(t)}</span>
-          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
-          <span class="ticker__item" aria-hidden="true">${escapeHtml(t)}</span>
-        `;
+        $("tickerTrack").innerHTML = `<span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false"></span>`;
+        $("tickerText").textContent = model.tickerText || "";
 
         $("heroLine1").textContent = model.heroLine1 || "";
         $("heroLine2").textContent = model.heroLine2 || "";
         $("heroItalic").textContent = model.heroItalic || "";
         $("subtext").textContent = model.subtext || "";
 
-        // story
         renderStoryFromModel();
 
-        // re-bind editable (ticker was recreated)
+        // rebind (ticker node recreated)
         bindEditable();
       }
 
-      // ===== Auth + load =====
+      // ===== Auth + Load =====
       async function ensureAuthAndLoad() {
         if (!getToken()) {
           showModal("authModal", true);
@@ -1119,7 +1095,6 @@
           setStatus("Loading…");
           const data = await apiGet();
 
-          // Ensure minimum keys exist
           model = {
             tickerText: data.tickerText || "New drops weekly",
             heroLine1: data.heroLine1 || "Short form",
@@ -1130,8 +1105,6 @@
           };
 
           original = clone(model);
-
-          // init history
           history.stack = [clone(model)];
           history.idx = 0;
           updateHistoryButtons();
@@ -1173,12 +1146,8 @@
         try {
           $("saveBtn").disabled = true;
           setStatus("Saving…");
-
-          // enforce max 5, and also enforce at least 1 real slide if you want
           model.storySlides = Array.isArray(model.storySlides) ? model.storySlides.slice(0, MAX_SLIDES) : [];
-
           const out = await apiSave(model);
-
           original = clone(model);
           updateSaveVisibility();
           setStatus(out.message || "Saved. Deploying…");
@@ -1189,7 +1158,6 @@
         }
       });
 
-      // Start
       bindEditable();
       ensureAuthAndLoad();
     </script>
