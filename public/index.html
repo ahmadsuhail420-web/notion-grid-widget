@@ -347,6 +347,23 @@
         .mobile-drawer { padding: 0 20px 18px; }
         .mobile-drawer[aria-hidden="false"] { display: block; }
 
+  .story-card{
+    width: min(320px, 92vw);
+    aspect-ratio: 9 / 16;     /* stable on mobile */
+  }
+
+  /* optional: give some spacing so it doesn't get squeezed */
+  .hero-inner{
+    gap: 24px;
+  }
+
+  /* make sure it actually shows below the text */
+  .hero-right{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
         /* center hero text content */
         .hero-left{
           align-items: center;
