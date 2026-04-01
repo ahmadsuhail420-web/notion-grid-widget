@@ -3,343 +3,526 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin — Products</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Admin — Home</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-      :root { --card:#fff; --line:rgba(0,0,0,.12); --muted:rgba(16,18,20,.7); }
-      body { background:#f4f1eb; color:#101214; }
+      :root{
+        --bg:#efebe2;
+        --text:#0d0d0d;
+        --muted:rgba(13,13,13,.62);
+        --card:#ffffff;
+        --line:rgba(13,13,13,.14);
+      }
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      a{ color:inherit; text-decoration:none; }
 
-      .admin-wrap { width: min(1020px, 100%); margin: 0 auto; padding: 28px 18px 60px; }
-      .admin-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-      .admin-head h1 { margin:0; font-size: 26px; letter-spacing: -0.01em; }
+      .wrap{ width:min(1100px, 100%); margin:0 auto; padding:28px 18px 60px; }
+      .top{
+        display:flex; align-items:center; justify-content:space-between;
+        gap:12px; flex-wrap:wrap;
+      }
+      .top h1{ margin:0; font-size:22px; letter-spacing:-.02em; }
+      .top .actions{ display:flex; gap:10px; flex-wrap:wrap; }
 
-      .admin-grid { display:grid; grid-template-columns: 1.05fr 0.95fr; gap:16px; margin-top: 16px; }
-      .admin-card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; }
-      .admin-card h2 { margin:0 0 10px; font-size: 16px; }
+      .btn{
+        border:1px solid rgba(13,13,13,.2);
+        background: transparent;
+        padding:10px 14px;
+        border-radius:999px;
+        cursor:pointer;
+        font: inherit;
+      }
+      .btn-dark{
+        border-color: transparent;
+        background:#0d0d0d;
+        color:#fff;
+      }
+      .btn:disabled{ opacity:.55; cursor:not-allowed; }
 
-      .field { display:grid; gap:6px; margin-top: 10px; }
-      .field label { font-size: 12px; color: var(--muted); }
-      .field input, .field textarea {
-        width:100%; padding:10px 12px; border-radius:12px;
-        border:1px solid rgba(0,0,0,.18); font: inherit;
+      .grid{
+        margin-top:16px;
+        display:grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap:16px;
+      }
+      .card{
+        background: var(--card);
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:16px;
+      }
+      .card h2{ margin:0 0 10px; font-size:14px; color: rgba(13,13,13,.85); }
+
+      .field{ display:grid; gap:6px; margin-top:10px; }
+      .field label{ font-size:12px; color: var(--muted); }
+      .field input, .field textarea{
+        width:100%;
+        padding:10px 12px;
+        border-radius:12px;
+        border:1px solid rgba(13,13,13,.22);
         background:#fff;
+        font:inherit;
       }
-      .field textarea { min-height: 90px; resize: vertical; }
+      .field textarea{ min-height: 90px; resize:vertical; }
 
-      .row { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 
-      .admin-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top: 14px; }
-      .btn-lite {
-        padding:10px 14px; border-radius:999px; cursor:pointer;
-        border:1px solid rgba(0,0,0,.22); background:transparent;
+      .hint{ margin:10px 0 0; font-size:12px; color: var(--muted); line-height:1.5; }
+
+      /* Slides list */
+      .slides{ display:grid; gap:10px; margin-top: 10px; }
+      .slide{
+        border:1px solid var(--line);
+        border-radius:14px;
+        padding:12px;
+        display:grid;
+        gap:10px;
       }
-      .btn-dark {
-        padding:10px 14px; border-radius:999px; cursor:pointer;
-        border:1px solid transparent; background:#1f2a33; color:#fff;
+      .slide-top{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+      }
+      .badge{
+        font-size:11px;
+        padding:3px 8px;
+        border-radius:999px;
+        border:1px solid rgba(13,13,13,.18);
+        color: rgba(13,13,13,.75);
+      }
+      .mini{
+        display:flex; gap:8px; flex-wrap:wrap;
+      }
+      .mini .btn{ padding:8px 10px; font-size:13px; }
+
+      .upload{
+        border:1px dashed rgba(13,13,13,.25);
+        border-radius:14px;
+        padding:10px;
+        background: rgba(13,13,13,.02);
+        display:grid;
+        gap:8px;
       }
 
-      .hint { margin:12px 0 0; font-size:12px; color: var(--muted); line-height: 1.5; }
-
-      .upload {
-        display:grid; grid-template-columns: 96px 1fr; gap:12px; align-items:center;
-        padding:10px; border:1px dashed rgba(0,0,0,.22); border-radius:14px;
-        background: rgba(0,0,0,.02);
+      .status{
+        margin-top:12px;
+        font-size:13px;
+        color: rgba(13,13,13,.75);
+        min-height: 18px;
       }
-      .preview {
-        width:96px; height:96px; border-radius:14px; overflow:hidden;
-        border:1px solid rgba(0,0,0,.12); background: rgba(0,0,0,.06);
-        display:grid; place-items:center;
-      }
-      .preview img { width:100%; height:100%; object-fit:cover; display:block; }
-      .upload small { color: var(--muted); display:block; margin-top: 4px; }
 
-      .list { margin-top: 16px; display:grid; gap: 10px; }
-      .item {
-        display:grid; grid-template-columns: 64px 1fr auto; gap:12px; align-items:center;
-        padding:10px; border:1px solid var(--line); border-radius:14px; background:#fff;
+      /* auth modal */
+      .modal{
+        position:fixed; inset:0;
+        background: rgba(0,0,0,.35);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        padding:18px;
       }
-      .thumb { width:64px; height:64px; border-radius:12px; overflow:hidden; border:1px solid rgba(0,0,0,.12); background: rgba(0,0,0,.06); }
-      .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-      .meta { min-width: 0; }
-      .meta .name { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-      .meta .sub { font-size: 12px; color: var(--muted); margin-top: 3px; display:flex; gap:8px; flex-wrap:wrap; }
-      .strike { text-decoration: line-through; opacity: .7; }
-      .mini-actions { display:flex; gap:8px; }
-      .pill { font-size: 11px; border:1px solid rgba(0,0,0,.18); padding:3px 8px; border-radius:999px; }
+      .modal[aria-hidden="false"]{ display:flex; }
+      .modal-card{
+        width:min(420px, 100%);
+        background:#fff;
+        border-radius:16px;
+        padding:16px;
+        border:1px solid rgba(0,0,0,.12);
+      }
+      .modal-card h3{ margin:0; font-size:16px; }
+      .modal-card p{ margin:8px 0 0; color: rgba(0,0,0,.65); font-size:13px; line-height:1.5; }
 
-      @media (max-width: 900px) {
-        .admin-grid { grid-template-columns: 1fr; }
+      @media (max-width: 900px){
+        .grid{ grid-template-columns: 1fr; }
       }
     </style>
   </head>
 
   <body>
-    <div class="admin-wrap">
-      <div class="admin-head">
-        <h1>Products Manager</h1>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="btn-lite" href="index.html">← Back to site</a>
-          <button class="btn-lite" id="seedBtn" type="button">Seed sample</button>
-          <button class="btn-lite" id="clearBtn" type="button">Clear all</button>
+    <div class="wrap">
+      <div class="top">
+        <h1>Admin — Home</h1>
+        <div class="actions">
+          <a class="btn" href="index.html">← Back to site</a>
+          <button class="btn" id="logoutBtn" type="button">Log out</button>
+          <button class="btn" id="reloadBtn" type="button">Reload</button>
+          <button class="btn btn-dark" id="saveBtn" type="button">Save changes</button>
         </div>
       </div>
 
-      <div class="admin-grid">
-        <div class="admin-card">
-          <h2>Add / Edit product</h2>
-
-          <div class="upload">
-            <div class="preview" id="imgPreviewBox" aria-label="Image preview">
-              <span style="font-size:12px; color:rgba(16,18,20,.6);" id="imgPreviewText">No image</span>
-              <img id="imgPreview" alt="" style="display:none;" />
-            </div>
-
-            <div>
-              <div class="field" style="margin-top:0;">
-                <label>Upload image</label>
-                <input id="imageFile" type="file" accept="image/*" />
-              </div>
-              <small>
-                Tip: keep images under ~500KB for best performance. (Saved in localStorage on this device.)
-              </small>
-            </div>
-          </div>
-
-          <!-- Hidden field that stores the Data URL -->
-          <input id="imageData" type="hidden" />
+      <div class="grid">
+        <section class="card">
+          <h2>Hero content</h2>
 
           <div class="field">
-            <label>Product name</label>
-            <input id="name" placeholder="Notion Social Media Planner" />
-          </div>
-
-          <div class="field">
-            <label>Description</label>
-            <textarea id="desc" placeholder="Short description..."></textarea>
+            <label>Ticker text</label>
+            <input id="tickerText" placeholder="New drops weekly" />
           </div>
 
           <div class="row">
             <div class="field">
-              <label>Price</label>
-              <input id="price" placeholder="19" />
+              <label>Hero line 1</label>
+              <input id="heroLine1" placeholder="Short form" />
             </div>
             <div class="field">
-              <label>Offer price (optional)</label>
-              <input id="offerPrice" placeholder="15" />
+              <label>Hero line 2</label>
+              <input id="heroLine2" placeholder="done" />
             </div>
           </div>
 
           <div class="field">
-            <label>Product page link (optional)</label>
-            <input id="href" placeholder="product-1.html or https://..." />
+            <label>Italic word</label>
+            <input id="heroItalic" placeholder="right" />
           </div>
 
-          <div class="admin-actions">
-            <button class="btn-dark" id="saveBtn" type="button">Save product</button>
-            <button class="btn-lite" id="resetBtn" type="button">Reset form</button>
+          <div class="field">
+            <label>Subtext</label>
+            <textarea id="subtext" placeholder="We combine content..."></textarea>
           </div>
 
           <p class="hint">
-            This admin saves products to <b>localStorage</b>. That means it works on the device/browser you used to add products.
-            If you need products shared across devices, you’ll need a backend (Supabase/Firebase/etc.).
+            This admin updates <code>public/content/home.json</code> in GitHub through a Vercel API.
+            Customers will see changes after Vercel deploys (usually within ~30–60 seconds).
           </p>
+
+          <div class="status" id="statusLeft"></div>
+        </section>
+
+        <section class="card">
+          <h2>Story slides</h2>
+
+          <div class="mini" style="margin-bottom:10px;">
+            <button class="btn" id="addImageBtn" type="button">+ Add image</button>
+            <button class="btn" id="addVideoBtn" type="button">+ Add video</button>
+          </div>
+
+          <div class="slides" id="slides"></div>
+
+          <p class="hint">
+            Paste a URL OR upload a file. Uploads are committed into
+            <code>public/uploads/</code> in your repo and returned as a URL.
+          </p>
+
+          <div class="status" id="statusRight"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Auth modal -->
+    <div class="modal" id="authModal" aria-hidden="true">
+      <div class="modal-card">
+        <h3>Enter admin password</h3>
+        <p>One-time per session. This is required to load and save homepage content.</p>
+
+        <div class="field" style="margin-top:12px;">
+          <label>Password</label>
+          <input id="passwordInput" type="password" placeholder="••••••••" />
         </div>
 
-        <div class="admin-card">
-          <h2>All products</h2>
-          <div class="list" id="list"></div>
+        <div class="mini" style="margin-top:12px;">
+          <button class="btn btn-dark" id="loginBtn" type="button">Unlock</button>
         </div>
+
+        <div class="status" id="authStatus"></div>
       </div>
     </div>
 
     <script>
-      const KEY = "gridplanner_products_v1";
-      let editingId = null;
+      const TOKEN_KEY = "home_admin_token_v1"; // password stored for this session in localStorage
+      const API = "/api/home-content";
 
       const $ = (id) => document.getElementById(id);
 
-      function load() {
-        try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
-        catch { return []; }
+      function setStatus(id, msg) { $(id).textContent = msg || ""; }
+
+      function getToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
+      function setToken(t) {
+        if (!t) localStorage.removeItem(TOKEN_KEY);
+        else localStorage.setItem(TOKEN_KEY, t);
       }
 
-      function saveAll(items) {
-        localStorage.setItem(KEY, JSON.stringify(items));
+      function showAuth(show) {
+        $("authModal").setAttribute("aria-hidden", String(!show));
+        if (show) setTimeout(() => $("passwordInput").focus(), 50);
       }
 
-      function money(n) {
-        const x = String(n ?? "").trim();
-        if (!x) return "";
-        const num = Number(x);
-        if (Number.isFinite(num)) return "$" + num.toFixed(0);
-        return x.startsWith("$") ? x : "$" + x;
+      function escapeHtml(s) {
+        return String(s || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
 
-      function setPreview(dataUrl) {
-        const img = $("imgPreview");
-        const txt = $("imgPreviewText");
-        if (!dataUrl) {
-          img.style.display = "none";
-          img.src = "";
-          txt.style.display = "block";
-          return;
-        }
-        txt.style.display = "none";
-        img.style.display = "block";
-        img.src = dataUrl;
+      function slideTemplate(s, idx) {
+        const type = s.type || "image";
+        const src = s.src || "";
+        const alt = s.alt || "";
+        return `
+          <div class="slide" data-idx="${idx}">
+            <div class="slide-top">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <span class="badge">${type.toUpperCase()}</span>
+                <span style="font-size:12px; color: rgba(13,13,13,.65);">Slide ${idx + 1}</span>
+              </div>
+              <div class="mini">
+                <button class="btn" data-up type="button">Up</button>
+                <button class="btn" data-down type="button">Down</button>
+                <button class="btn" data-remove type="button">Remove</button>
+              </div>
+            </div>
+
+            <div class="field" style="margin-top:0;">
+              <label>Source URL</label>
+              <input data-src value="${escapeHtml(src)}" placeholder="https://... or /uploads/..." />
+            </div>
+
+            <div class="field" style="margin-top:0;">
+              <label>Alt text</label>
+              <input data-alt value="${escapeHtml(alt)}" placeholder="Story ${idx + 1}" />
+            </div>
+
+            <div class="upload">
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <input data-file type="file" accept="${type === "video" ? "video/*" : "image/*"}" />
+                <button class="btn" data-upload type="button">Upload & use URL</button>
+              </div>
+              <div style="font-size:12px; color: rgba(13,13,13,.62);">
+                Tip: keep files small for faster deploys.
+              </div>
+            </div>
+          </div>
+        `;
       }
 
-      function resetForm() {
-        editingId = null;
-        $("imageFile").value = "";
-        $("imageData").value = "";
-        setPreview("");
-        $("name").value = "";
-        $("desc").value = "";
-        $("price").value = "";
-        $("offerPrice").value = "";
-        $("href").value = "";
-        $("saveBtn").textContent = "Save product";
+      let model = null;
+
+      function writeForm(data) {
+        model = data;
+
+        $("tickerText").value = data.tickerText || "";
+        $("heroLine1").value = data.heroLine1 || "";
+        $("heroLine2").value = data.heroLine2 || "";
+        $("heroItalic").value = data.heroItalic || "";
+        $("subtext").value = data.subtext || "";
+
+        const slides = Array.isArray(data.storySlides) ? data.storySlides : [];
+        $("slides").innerHTML = slides.map((s, i) => slideTemplate(s, i)).join("");
+        bindSlides();
       }
 
-      // Read file -> Data URL
-      $("imageFile").addEventListener("change", async (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
+      function readForm() {
+        const slideEls = Array.from($("slides").querySelectorAll(".slide"));
+        const storySlides = slideEls.map((el) => {
+          const idx = Number(el.dataset.idx || "0");
+          const type = (model?.storySlides?.[idx]?.type) || "image";
+          const src = el.querySelector("[data-src]").value.trim();
+          const alt = el.querySelector("[data-alt]").value.trim();
+          return { type, src, alt };
+        });
 
-        if (!file.type.startsWith("image/")) {
-          alert("Please upload an image file.");
-          return;
-        }
-
-        // Guardrail: localStorage is limited (~5MB). Large images will break saving.
-        if (file.size > 900 * 1024) {
-          const ok = confirm("This image is larger than 900KB. It may fail to save in localStorage. Continue?");
-          if (!ok) {
-            $("imageFile").value = "";
-            return;
-          }
-        }
-
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataUrl = String(reader.result || "");
-          $("imageData").value = dataUrl;
-          setPreview(dataUrl);
+        return {
+          tickerText: $("tickerText").value.trim(),
+          heroLine1: $("heroLine1").value.trim(),
+          heroLine2: $("heroLine2").value.trim(),
+          heroItalic: $("heroItalic").value.trim(),
+          subtext: $("subtext").value.trim(),
+          storySlides
         };
-        reader.readAsDataURL(file);
+      }
+
+      async function safeText(res) {
+        try { return await res.text(); } catch { return ""; }
+      }
+
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onerror = () => reject(new Error("File read error"));
+          reader.onload = () => {
+            const result = String(reader.result || "");
+            const comma = result.indexOf(",");
+            resolve(comma >= 0 ? result.slice(comma + 1) : result);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function apiGet() {
+        const token = getToken();
+        const res = await fetch(API, {
+          method: "GET",
+          headers: { "x-admin-token": token }
+        });
+        if (!res.ok) throw new Error((await safeText(res)) || "Failed to load content.");
+        return res.json();
+      }
+
+      async function apiSave(payload) {
+        const token = getToken();
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-admin-token": token },
+          body: JSON.stringify({ action: "save", data: payload })
+        });
+        if (!res.ok) throw new Error((await safeText(res)) || "Failed to save.");
+        return res.json();
+      }
+
+      async function apiUpload(file) {
+        const token = getToken();
+        const base64 = await fileToBase64(file);
+
+        const res = await fetch(API, {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-admin-token": token },
+          body: JSON.stringify({
+            action: "upload",
+            filename: file.name,
+            contentType: file.type,
+            base64
+          })
+        });
+        if (!res.ok) throw new Error((await safeText(res)) || "Upload failed.");
+        return res.json();
+      }
+
+      function bindSlides() {
+        const slidesRoot = $("slides");
+
+        slidesRoot.querySelectorAll(".slide").forEach((slideEl) => {
+          slideEl.querySelector("[data-remove]")?.addEventListener("click", () => {
+            const idx = Number(slideEl.dataset.idx);
+            model.storySlides.splice(idx, 1);
+            writeForm(model);
+          });
+
+          slideEl.querySelector("[data-up]")?.addEventListener("click", () => {
+            const idx = Number(slideEl.dataset.idx);
+            if (idx <= 0) return;
+            const tmp = model.storySlides[idx - 1];
+            model.storySlides[idx - 1] = model.storySlides[idx];
+            model.storySlides[idx] = tmp;
+            writeForm(model);
+          });
+
+          slideEl.querySelector("[data-down]")?.addEventListener("click", () => {
+            const idx = Number(slideEl.dataset.idx);
+            if (idx >= model.storySlides.length - 1) return;
+            const tmp = model.storySlides[idx + 1];
+            model.storySlides[idx + 1] = model.storySlides[idx];
+            model.storySlides[idx] = tmp;
+            writeForm(model);
+          });
+
+          slideEl.querySelector("[data-upload]")?.addEventListener("click", async () => {
+            try {
+              setStatus("statusRight", "Uploading…");
+              const fileInput = slideEl.querySelector("[data-file]");
+              const f = fileInput.files && fileInput.files[0];
+              if (!f) return setStatus("statusRight", "Choose a file first.");
+
+              const out = await apiUpload(f);
+              slideEl.querySelector("[data-src]").value = out.url || "";
+              setStatus("statusRight", "Uploaded. URL applied.");
+            } catch (e) {
+              setStatus("statusRight", e.message || "Upload error.");
+            }
+          });
+        });
+      }
+
+      async function ensureAuthAndLoad() {
+        const token = getToken();
+        if (!token) {
+          showAuth(true);
+          return;
+        }
+
+        try {
+          $("saveBtn").disabled = true;
+          setStatus("statusLeft", "Loading…");
+          setStatus("statusRight", "");
+          const data = await apiGet();
+          writeForm(data);
+          setStatus("statusLeft", "Loaded.");
+        } catch (e) {
+          setToken("");
+          showAuth(true);
+          setStatus("authStatus", "Wrong password or session expired. Enter again.");
+        } finally {
+          $("saveBtn").disabled = false;
+        }
+      }
+
+      $("loginBtn").addEventListener("click", async () => {
+        const pw = $("passwordInput").value;
+        if (!pw) return setStatus("authStatus", "Enter password.");
+
+        // one-time per session (saved locally)
+        setToken(pw);
+        $("passwordInput").value = "";
+        setStatus("authStatus", "");
+        showAuth(false);
+        await ensureAuthAndLoad();
       });
 
-      function upsert() {
-        const items = load();
-
-        const product = {
-          id: editingId || crypto.randomUUID(),
-          imageData: $("imageData").value.trim(), // Data URL
-          name: $("name").value.trim(),
-          desc: $("desc").value.trim(),
-          price: $("price").value.trim(),
-          offerPrice: $("offerPrice").value.trim(),
-          href: $("href").value.trim() || "#",
-          createdAt: new Date().toISOString()
-        };
-
-        if (!product.imageData) return alert("Please upload an image.");
-        if (!product.name) return alert("Product name is required.");
-        if (!product.price) return alert("Price is required.");
-
-        const idx = items.findIndex((p) => p.id === product.id);
-        if (idx >= 0) items[idx] = product;
-        else items.unshift(product);
-
-        saveAll(items);
-        resetForm();
-        render();
-      }
-
-      function edit(id) {
-        const items = load();
-        const p = items.find((x) => x.id === id);
-        if (!p) return;
-
-        editingId = p.id;
-        $("imageFile").value = "";
-        $("imageData").value = p.imageData || "";
-        setPreview(p.imageData || "");
-        $("name").value = p.name || "";
-        $("desc").value = p.desc || "";
-        $("price").value = p.price || "";
-        $("offerPrice").value = p.offerPrice || "";
-        $("href").value = p.href || "";
-        $("saveBtn").textContent = "Update product";
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-
-      function del(id) {
-        const items = load().filter((p) => p.id !== id);
-        saveAll(items);
-        render();
-      }
-
-      function seed() {
-        // Uses existing local assets (no upload) by converting them to Data URLs is not possible without fetching,
-        // so seed will create items with placeholder imageData only if you upload at least once.
-        alert("Seed works best after you upload at least one image. Add products manually with upload.");
-      }
-
-      function render() {
-        const items = load();
-        const list = $("list");
-        list.innerHTML = "";
-
-        if (!items.length) {
-          list.innerHTML =
-            '<div style="color:rgba(16,18,20,.7); font-size:13px;">No products yet. Upload an image + fill the form to add one.</div>';
-          return;
-        }
-
-        for (const p of items) {
-          const el = document.createElement("div");
-          el.className = "item";
-
-          const hasOffer = !!String(p.offerPrice || "").trim();
-          const priceHtml = hasOffer
-            ? `<span class="strike">${money(p.price)}</span><span>${money(p.offerPrice)}</span><span class="pill">Offer</span>`
-            : `<span>${money(p.price)}</span>`;
-
-          el.innerHTML = `
-            <div class="thumb"><img src="${p.imageData}" alt="" /></div>
-            <div class="meta">
-              <div class="name">${p.name}</div>
-              <div class="sub">${priceHtml}</div>
-            </div>
-            <div class="mini-actions">
-              <button class="btn-lite" data-edit="${p.id}" type="button">Edit</button>
-              <button class="btn-lite" data-del="${p.id}" type="button">Delete</button>
-            </div>
-          `;
-          list.appendChild(el);
-        }
-
-        list.querySelectorAll("[data-edit]").forEach((b) =>
-          b.addEventListener("click", () => edit(b.dataset.edit))
-        );
-        list.querySelectorAll("[data-del]").forEach((b) =>
-          b.addEventListener("click", () => del(b.dataset.del))
-        );
-      }
-
-      $("saveBtn").addEventListener("click", upsert);
-      $("resetBtn").addEventListener("click", resetForm);
-      $("seedBtn").addEventListener("click", seed);
-      $("clearBtn").addEventListener("click", () => {
-        if (!confirm("Clear all products?")) return;
-        localStorage.removeItem(KEY);
-        resetForm();
-        render();
+      $("logoutBtn").addEventListener("click", () => {
+        setToken("");
+        model = null;
+        $("slides").innerHTML = "";
+        showAuth(true);
+        setStatus("authStatus", "Logged out.");
       });
 
-      render();
+      $("reloadBtn").addEventListener("click", () => ensureAuthAndLoad());
+
+      $("saveBtn").addEventListener("click", async () => {
+        try {
+          $("saveBtn").disabled = true;
+          setStatus("statusLeft", "Saving…");
+          setStatus("statusRight", "");
+
+          const payload = readForm();
+          const out = await apiSave(payload);
+
+          setStatus("statusLeft", out.message || "Saved. Deploying…");
+        } catch (e) {
+          setStatus("statusLeft", e.message || "Save failed.");
+        } finally {
+          $("saveBtn").disabled = false;
+        }
+      });
+
+      $("addImageBtn").addEventListener("click", () => {
+        if (!model) model = { tickerText:"", heroLine1:"", heroLine2:"", heroItalic:"", subtext:"", storySlides:[] };
+        model.storySlides.push({ type: "image", src: "", alt: "" });
+        writeForm(model);
+      });
+
+      $("addVideoBtn").addEventListener("click", () => {
+        if (!model) model = { tickerText:"", heroLine1:"", heroLine2:"", heroItalic:"", subtext:"", storySlides:[] };
+        model.storySlides.push({ type: "video", src: "", alt: "" });
+        writeForm(model);
+      });
+
+      // initial
+      ensureAuthAndLoad();
     </script>
   </body>
 </html>
