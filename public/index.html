@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sync & Style</title>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -22,17 +21,14 @@
       }
 
       * { box-sizing: border-box; }
-
       body {
         margin: 0;
         font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
         color: var(--text);
         background: var(--bg);
       }
-
       a { color: inherit; text-decoration: none; }
 
-      /* ===== Header ===== */
       header {
         position: sticky;
         top: 0;
@@ -51,21 +47,8 @@
         gap: 20px;
       }
 
-      .brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-
-      /* Your uploaded logo */
-      .brand-logo {
-        height: 30px;
-        width: auto;
-        display: block;
-        object-fit: contain;
-      }
+      .brand { display: inline-flex; align-items: center; }
+      .brand-logo { height: 30px; width: auto; display: block; object-fit: contain; }
 
       .nav-links {
         display: flex;
@@ -74,21 +57,10 @@
         font-weight: 500;
         color: rgba(13, 13, 13, 0.78);
       }
+      .nav-links a { padding: 8px 10px; border-radius: 10px; }
+      .nav-links a:hover { background: rgba(13, 13, 13, 0.06); }
 
-      .nav-links a {
-        padding: 8px 10px;
-        border-radius: 10px;
-      }
-
-      .nav-links a:hover {
-        background: rgba(13, 13, 13, 0.06);
-      }
-
-      .nav-cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-      }
+      .nav-cta { display: inline-flex; align-items: center; gap: 10px; }
 
       .icon-btn {
         width: 40px;
@@ -100,14 +72,31 @@
         place-items: center;
         cursor: pointer;
       }
-
       .icon-btn:hover { background: rgba(13,13,13,0.06); }
 
-      .icon {
-        width: 18px;
-        height: 18px;
-        stroke: rgba(13,13,13,0.88);
+      .icon { width: 18px; height: 18px; stroke: rgba(13,13,13,0.88); }
+
+      .btn {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
       }
+      .btn-primary { background: #0d0d0d; color: #fff; }
+      .btn-primary:hover { opacity: 0.92; }
+      .btn-ghost {
+        background: transparent;
+        border-color: rgba(13, 13, 13, 0.18);
+        color: rgba(13, 13, 13, 0.85);
+      }
+      .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
 
       .menu-btn { display: none; }
 
@@ -117,7 +106,6 @@
         margin: 0 auto;
         padding: 0 64px 18px;
       }
-
       .mobile-drawer a {
         display: block;
         padding: 12px 10px;
@@ -125,7 +113,6 @@
         color: rgba(13, 13, 13, 0.84);
         font-weight: 600;
       }
-
       .mobile-drawer a:hover { background: rgba(13, 13, 13, 0.06); }
 
       /* ===== Hero ===== */
@@ -178,31 +165,7 @@
 
       .hero-actions { display: flex; gap: 12px; align-items: center; }
 
-      .btn {
-        border: 1px solid transparent;
-        border-radius: 999px;
-        padding: 10px 16px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        white-space: nowrap;
-      }
-
-      .btn-primary { background: #0d0d0d; color: #fff; }
-      .btn-primary:hover { opacity: 0.92; }
-
-      .btn-ghost {
-        background: transparent;
-        border-color: rgba(13, 13, 13, 0.18);
-        color: rgba(13, 13, 13, 0.85);
-      }
-      .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
-
-      /* ===== Ticker pill ===== */
+      /* ticker */
       .ticker {
         width: fit-content;
         max-width: 240px;
@@ -212,7 +175,6 @@
         background: rgba(255, 255, 255, 0.28);
         overflow: hidden;
       }
-
       .ticker__track {
         display: inline-flex;
         gap: 28px;
@@ -220,23 +182,11 @@
         will-change: transform;
         animation: ticker-move 7s linear infinite;
       }
+      .ticker__item { font-weight: 600; font-size: 14px; color: rgba(13, 13, 13, 0.85); }
+      @keyframes ticker-move { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+      @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
 
-      .ticker__item {
-        font-weight: 600;
-        font-size: 14px;
-        color: rgba(13, 13, 13, 0.85);
-      }
-
-      @keyframes ticker-move {
-        from { transform: translateX(0); }
-        to { transform: translateX(-33.333%); }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .ticker__track { animation: none; }
-      }
-
-      /* ===== Story card ===== */
+      /* story card */
       .hero-right { flex: none; }
 
       .story-card {
@@ -250,7 +200,6 @@
 
         border: 8px solid #fff;
         border-radius: 24px;
-
         aspect-ratio: 0.56375;
         background: transparent;
       }
@@ -264,7 +213,6 @@
 
         position: relative;
         user-select: none;
-
         box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
         cursor: pointer;
       }
@@ -308,7 +256,6 @@
         overflow: hidden;
         position: relative;
       }
-
       .story-bars .bar::after {
         content: "";
         position: absolute;
@@ -316,14 +263,10 @@
         width: 0%;
         background: rgba(255, 255, 255, 0.9);
       }
-
       .story-bars .bar.is-active::after { animation: storyProgress var(--story-duration, 3500ms) linear forwards; }
       .story-bars .bar.is-filled::after { width: 100%; }
 
-      @keyframes storyProgress {
-        from { width: 0%; }
-        to { width: 100%; }
-      }
+      @keyframes storyProgress { from { width: 0%; } to { width: 100%; } }
 
       .story-zone {
         position: absolute;
@@ -352,14 +295,12 @@
         transition: opacity 160ms ease;
         pointer-events: none;
       }
-
       .story-zone.left::after { content: "‹"; left: 18px; }
       .story-zone.right::after { content: "›"; right: 18px; }
-
       .story-inner:hover .story-zone::after { opacity: 1; }
       .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
 
-      /* ===== Responsive ===== */
+      /* responsive */
       @media (max-width: 900px) {
         .hero-inner { flex-direction: column; padding: 72px 20px 56px; gap: 32px; }
         .story-card { width: min(375px, 100%); }
@@ -379,36 +320,34 @@
   <body>
     <header>
       <div class="nav">
-        <!-- Logo replaced with your attached logo (image15) -->
-        <a class="brand" href="#home" aria-label="Home">
-          <img class="brand-logo" src="image15.png" alt="Sync & Style logo" />
+        <a class="brand" href="index.html" aria-label="Home">
+          <!-- Save your uploaded logo as assets/logo.png -->
+          <img class="brand-logo" src="assets/logo.png" alt="Sync & Style logo" />
         </a>
 
-        <!-- Nav items changed -->
         <nav class="nav-links" aria-label="Primary">
-          <a href="#home">Home</a>
-          <a href="#shop">Shop</a>
-          <a href="#contact">Contact</a>
-          <a href="#about-us">About Us</a>
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="contact.html">Contact Us</a>
+          <a href="about.html">About Us</a>
         </nav>
 
-        <!-- Book a call replaced with icons -->
         <div class="nav-cta" aria-label="Actions">
-          <a class="icon-btn" href="#search" aria-label="Search">
+          <a class="icon-btn" href="shop.html" aria-label="Search (go to shop)">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="7"></circle>
               <path d="M21 21l-4.3-4.3"></path>
             </svg>
           </a>
 
-          <a class="icon-btn" href="#account" aria-label="Account">
+          <a class="icon-btn" href="account.html" aria-label="Account">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21a8 8 0 0 0-16 0"></path>
               <circle cx="12" cy="8" r="4"></circle>
             </svg>
           </a>
 
-          <a class="icon-btn" href="#cart" aria-label="Cart">
+          <a class="icon-btn" href="cart.html" aria-label="Cart">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M6 6h15l-1.5 9H7.5L6 6Z"></path>
               <path d="M6 6 5 3H2"></path>
@@ -423,39 +362,15 @@
         </div>
       </div>
 
-      <!-- Mobile drawer links updated -->
       <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
-        <a href="#home">Home</a>
-        <a href="#shop">Shop</a>
-        <a href="#contact">Contact</a>
-        <a href="#about-us">About Us</a>
-
-        <div style="display:flex; gap:10px; margin-top: 10px;">
-          <a class="icon-btn" href="#search" aria-label="Search">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="M21 21l-4.3-4.3"></path>
-            </svg>
-          </a>
-          <a class="icon-btn" href="#account" aria-label="Account">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21a8 8 0 0 0-16 0"></path>
-              <circle cx="12" cy="8" r="4"></circle>
-            </svg>
-          </a>
-          <a class="icon-btn" href="#cart" aria-label="Cart">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 6h15l-1.5 9H7.5L6 6Z"></path>
-              <path d="M6 6 5 3H2"></path>
-              <circle cx="9" cy="20" r="1.5"></circle>
-              <circle cx="18" cy="20" r="1.5"></circle>
-            </svg>
-          </a>
-        </div>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="about.html">About Us</a>
       </div>
     </header>
 
-    <main id="home">
+    <main>
       <section class="hero">
         <div class="hero-inner">
           <div class="hero-left">
@@ -477,12 +392,11 @@
             </p>
 
             <div class="hero-actions">
-              <a class="btn btn-primary" href="#shop">Shop now</a>
-              <a class="btn btn-ghost" href="#contact">Contact</a>
+              <a class="btn btn-primary" href="shop.html">Shop now</a>
+              <a class="btn btn-ghost" href="contact.html">Contact Us</a>
             </div>
           </div>
 
-          <!-- Story card -->
           <aside class="hero-right">
             <div class="story-card" aria-label="Story preview">
               <div class="story-inner" id="story">
@@ -493,9 +407,8 @@
                     alt="Story 1"
                   />
 
-                  <!-- Replace with your actual video path -->
                   <video class="story-vid" muted playsinline preload="metadata">
-                    <source src="story2.mp4" type="video/mp4" />
+                    <source src="assets/story2.mp4" type="video/mp4" />
                   </video>
 
                   <img
@@ -518,11 +431,6 @@
           </aside>
         </div>
       </section>
-
-      <!-- Placeholder sections for anchors -->
-      <section id="shop" style="padding: 40px 64px;"></section>
-      <section id="contact" style="padding: 40px 64px;"></section>
-      <section id="about-us" style="padding: 40px 64px;"></section>
     </main>
 
     <script>
