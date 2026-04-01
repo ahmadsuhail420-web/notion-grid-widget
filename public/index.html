@@ -19,7 +19,6 @@
         --text: #0d0d0d;
         --muted: rgba(13, 13, 13, 0.62);
         --border: rgba(13, 13, 13, 0.12);
-        --shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
       }
 
       * {
@@ -154,7 +153,7 @@
         background: rgba(13, 13, 13, 0.06);
       }
 
-      /* ===== Hero (matches inspected Framer container) ===== */
+      /* ===== Hero container (matches inspected Framer values) ===== */
       .hero-inner {
         max-width: 1200px;
         width: 100%;
@@ -162,18 +161,14 @@
 
         display: flex;
         flex-flow: row;
+        place-content: center flex-start; /* as in Framer inspect */
         align-items: center;
-        justify-content: center;
         gap: 64px;
 
         padding: 120px 64px 80px;
         position: relative;
         overflow: hidden;
       }
-
-      .hero-right{
-  flex: 0 0 auto;
-}
 
       /* Left content */
       h1 {
@@ -207,7 +202,7 @@
       /* ===== Ticker pill (shorter + moves right->left) ===== */
       .ticker {
         width: fit-content;
-        max-width: 240px; /* smaller length */
+        max-width: 240px;
         padding: 8px 14px;
         border-radius: 999px;
         border: 1px solid var(--border);
@@ -221,7 +216,7 @@
         gap: 28px;
         white-space: nowrap;
         will-change: transform;
-        animation: ticker-move 7s linear infinite; /* a little faster */
+        animation: ticker-move 7s linear infinite;
       }
 
       .ticker__item {
@@ -245,50 +240,98 @@
         }
       }
 
-      /* ===== Right “story/phone” card (same ratio as sample) ===== */
-      .media-card {
-        position: relative;
-        border-radius: 34px;
-        padding: 10px;
-        background: rgba(255, 255, 255, 0.55);
-        box-shadow: var(--shadow);
-        width: min(375px, 100%);
-        flex: 0 0 auto;
+      /* ===== Story card (matches your Framer inspect screenshots) ===== */
+
+      /* Prevent stretching */
+      .hero-right {
+        flex: none;
       }
 
-      .media-frame {
-        position: relative;
-        border-radius: 26px;
-        overflow: hidden;
-        background: #0f0f0f;
+      /* Outer = framer-8bdbh3 */
+      .story-card {
+        width: 375px;
+        padding: 8px;
 
-        border: 8px solid rgba(255, 255, 255, 0.95);
-        aspect-ratio: 9 / 16; /* SAME as sample story ratio */
-      }
-
-      .media-frame img {
-        width: 100%;
-        height: 100%;
-        display: block;
-        object-fit: cover;
-      }
-
-      .story-meta {
-        position: absolute;
-        top: 14px;
-        left: 14px;
-        display: inline-flex;
+        display: flex;
+        place-content: center;
         align-items: center;
         gap: 10px;
+
+        position: relative;
+        overflow: visible;
+
+        border: 8px solid #fff;
+        border-radius: 24px;
+
+        aspect-ratio: 0.56375; /* exactly what you saw */
+        background: transparent;
+      }
+
+      /* Inner clip layer = inline-style div in your screenshot */
+      .story-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+        user-select: none;
+      }
+
+      /* Image fill */
+      .story-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Top progress bars */
+      .story-bars {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+      }
+      .story-bars span {
+        height: 3px;
+        flex: 1;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.45);
+      }
+
+      /* Username top-left */
+      .story-meta {
+        position: absolute;
+        top: 22px;
+        left: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
         color: rgba(255, 255, 255, 0.92);
         font-weight: 600;
         font-size: 13px;
-        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+      }
+      .story-meta .time {
+        opacity: 0.75;
+        font-weight: 500;
       }
 
       .avatar {
-        width: 26px;
-        height: 26px;
+        width: 24px;
+        height: 24px;
         border-radius: 999px;
         display: grid;
         place-items: center;
@@ -297,30 +340,13 @@
         font-size: 12px;
       }
 
-      .story-meta .dot {
-        opacity: 0.8;
-      }
-      .story-meta .time {
-        opacity: 0.8;
-        font-weight: 500;
-      }
-
-      /* Grain overlay to match screenshot feel */
-      .grain {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        opacity: 0.12;
-        mix-blend-mode: overlay;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-        background-size: 180px 180px;
-      }
-
+      /* Bottom floating badge */
       .floating-badge {
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        bottom: -18px;
+        bottom: -26px;
+
         width: 64px;
         height: 64px;
         border-radius: 18px;
@@ -328,14 +354,11 @@
         display: grid;
         place-items: center;
         box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.12);
       }
-
       .floating-badge .star {
         color: #fff;
-        font-size: 18px;
+        font-size: 26px;
         line-height: 1;
-        opacity: 0.95;
       }
 
       /* ===== Responsive ===== */
@@ -346,9 +369,8 @@
           gap: 32px;
         }
 
-        .media-card {
-          max-width: 420px;
-          width: 100%;
+        .story-card {
+          width: min(375px, 100%);
         }
       }
 
@@ -435,27 +457,29 @@
             </div>
           </div>
 
+          <!-- Story card (right) -->
           <aside class="hero-right">
-            <div class="media-card">
-              <div class="media-frame">
-                <!-- Replace with your image -->
+            <div class="story-card">
+              <div class="story-inner">
                 <img
+                  class="story-img"
                   src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
-                  alt="Hero visual"
+                  alt="Story preview"
                 />
 
                 <div class="story-meta">
-                  <div class="avatar">U</div>
-                  <span>yourbrand</span>
-                  <span class="dot">·</span>
+                  <div class="avatar">J</div>
+                  <span>jessicasu</span>
                   <span class="time">6h</span>
                 </div>
 
-                <div class="grain" aria-hidden="true"></div>
+                <div class="story-bars" aria-hidden="true">
+                  <span></span><span></span><span></span>
+                </div>
               </div>
 
               <div class="floating-badge" aria-hidden="true">
-                <span class="star">★</span>
+                <span class="star">✳</span>
               </div>
             </div>
           </aside>
