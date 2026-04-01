@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Admin — Sync & Style</title>
+    <style>
+      :root{
+        --bg:#f4f1eb;
+        --card:#fff;
+        --text:#101214;
+        --muted:rgba(16,18,20,.65);
+        --line:rgba(0,0,0,.12);
+        --btn:#0d0d0d;
+      }
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background:var(--bg);
+        color:var(--text);
+      }
+      a{ color:inherit; text-decoration:none; }
+      .wrap{ width:min(1040px, 100%); margin:0 auto; padding:28px 18px 80px; }
+      .head{
+        display:flex; justify-content:space-between; align-items:center;
+        gap:12px; flex-wrap:wrap;
+      }
+      .head h1{ margin:0; font-size:22px; letter-spacing:-0.01em; }
+      .actions{ display:flex; gap:10px; flex-wrap:wrap; }
+      .btn{
+        border:1px solid rgba(0,0,0,.18);
+        background:#fff;
+        padding:10px 14px;
+        border-radius:999px;
+        cursor:pointer;
+        font:inherit;
+      }
+      .btn-dark{
+        background:var(--btn);
+        color:#fff;
+        border-color:transparent;
+      }
+      .grid{ display:grid; grid-template-columns: 1.1fr .9fr; gap:16px; margin-top:16px; }
+      .card{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:16px;
+        padding:16px;
+      }
+      .card h2{ margin:0 0 10px; font-size:15px; }
+      .field{ display:grid; gap:6px; margin-top:10px; }
+      .field label{ font-size:12px; color:var(--muted); }
+      .field input, .field textarea, .field select{
+        width:100%;
+        padding:10px 12px;
+        border-radius:12px;
+        border:1px solid rgba(0,0,0,.18);
+        font:inherit;
+        background:#fff;
+      }
+      .field textarea{ min-height: 96px; resize:vertical; }
+      .row{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+      .hint{ margin:10px 0 0; font-size:12px; color:var(--muted); line-height:1.5; }
+      .notice{
+        margin-top:12px;
+        font-size:12px;
+        color:rgba(16,18,20,.72);
+        background:rgba(0,0,0,.03);
+        border:1px solid rgba(0,0,0,.08);
+        padding:10px 12px;
+        border-radius:12px;
+      }
+      .login{
+        display:grid; gap:10px;
+        max-width: 420px;
+        margin: 28px auto 0;
+      }
+      .login input{
+        padding:12px 14px;
+        border-radius:12px;
+        border:1px solid rgba(0,0,0,.18);
+        font:inherit;
+      }
+
+      .slides{ margin-top:12px; display:grid; gap:10px; }
+      .slide{
+        display:grid;
+        grid-template-columns: 90px 1fr auto;
+        gap:12px;
+        align-items:center;
+        padding:10px;
+        border:1px solid var(--line);
+        border-radius:14px;
+        background:#fff;
+      }
+      .thumb{
+        width:90px; height:90px;
+        border-radius:14px;
+        overflow:hidden;
+        border:1px solid rgba(0,0,0,.12);
+        background: rgba(0,0,0,.06);
+        display:grid; place-items:center;
+        font-size:12px; color:var(--muted);
+      }
+      .thumb img, .thumb video{
+        width:100%; height:100%; object-fit:cover; display:block;
+      }
+      .meta{ min-width:0; }
+      .meta .title{
+        font-weight:600;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      }
+      .meta .sub{
+        margin-top:4px;
+        font-size:12px;
+        color:var(--muted);
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+      }
+      .mini{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+      .pill{
+        font-size:11px;
+        border:1px solid rgba(0,0,0,.16);
+        padding:3px 8px;
+        border-radius:999px;
+        background:rgba(0,0,0,.02);
+      }
+
+      @media (max-width: 920px){
+        .grid{ grid-template-columns: 1fr; }
+        .row{ grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="head">
+        <h1>Home Admin</h1>
+        <div class="actions">
+          <a class="btn" href="/index.html">← Back to site</a>
+          <button class="btn" id="logoutBtn" type="button" style="display:none;">Logout</button>
+        </div>
+      </div>
+
+      <!-- Login -->
+      <div class="card login" id="loginCard">
+        <h2 style="margin:0;">Enter Admin Password</h2>
+        <input id="pw" type="password" placeholder="Password" />
+        <button class="btn btn-dark" id="loginBtn" type="button">Continue</button>
+        <div class="hint">This is a one-time login for this browser session.</div>
+      </div>
+
+      <!-- Main UI -->
+      <div class="grid" id="app" style="display:none;">
+        <div class="card">
+          <h2>Hero content</h2>
+
+          <div class="field">
+            <label>Ticker text</label>
+            <input id="tickerText" placeholder="New drops weekly" />
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>H1 line 1</label>
+              <input id="heroLine1" placeholder="Short form" />
+            </div>
+            <div class="field">
+              <label>H1 line 2</label>
+              <input id="heroLine2" placeholder="done" />
+            </div>
+            <div class="field">
+              <label>Italic word</label>
+              <input id="heroItalic" placeholder="right" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Subtext</label>
+            <textarea id="subtext" placeholder="We combine content..."></textarea>
+          </div>
+
+          <div class="actions" style="margin-top:14px;">
+            <button class="btn btn-dark" id="saveBtn" type="button">Save (publish)</button>
+            <button class="btn" id="reloadBtn" type="button">Reload from site</button>
+          </div>
+
+          <div class="notice" id="statusBox" style="display:none;"></div>
+          <p class="hint">
+            Save will commit changes to GitHub → Vercel will deploy → customers will see updates.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Story slides</h2>
+
+          <div class="row" style="grid-template-columns: 1fr 1fr;">
+            <div class="field" style="margin-top:0;">
+              <label>New slide type</label>
+              <select id="newType">
+                <option value="image">Image</option>
+                <option value="video">Video (mp4)</option>
+              </select>
+            </div>
+            <div class="field" style="margin-top:0;">
+              <label>Alt text (optional)</label>
+              <input id="newAlt" placeholder="Story 1" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Slide URL (optional)</label>
+            <input id="newUrl" placeholder="https://... or assets/story2.mp4" />
+          </div>
+
+          <div class="field">
+            <label>Or upload file (image/video)</label>
+            <input id="newFile" type="file" accept="image/*,video/mp4" />
+          </div>
+
+          <div class="actions" style="margin-top:12px;">
+            <button class="btn" id="addSlideBtn" type="button">Add slide</button>
+          </div>
+
+          <div class="slides" id="slidesList"></div>
+
+          <p class="hint">
+            Tip: keep uploads small. Large videos will make your repo big and deploy slower.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const SESSION_KEY = "home_admin_session_token_v1";
+
+      const $ = (id) => document.getElementById(id);
+
+      function setStatus(msg, type = "info") {
+        const box = $("statusBox");
+        box.style.display = "block";
+        box.textContent = msg;
+        box.style.borderColor = type === "error" ? "rgba(220, 38, 38, .25)" : "rgba(0,0,0,.08)";
+        box.style.background = type === "error" ? "rgba(220,38,38,.06)" : "rgba(0,0,0,.03)";
+      }
+
+      function getToken() {
+        return sessionStorage.getItem(SESSION_KEY) || "";
+      }
+      function setToken(token) {
+        sessionStorage.setItem(SESSION_KEY, token);
+      }
+      function clearToken() {
+        sessionStorage.removeItem(SESSION_KEY);
+      }
+
+      let state = {
+        tickerText: "",
+        heroLine1: "",
+        heroLine2: "",
+        heroItalic: "",
+        subtext: "",
+        storySlides: []
+      };
+
+      function renderSlides() {
+        const list = $("slidesList");
+        list.innerHTML = "";
+
+        if (!state.storySlides.length) {
+          list.innerHTML = `<div class="hint" style="margin-top:0;">No slides yet.</div>`;
+          return;
+        }
+
+        state.storySlides.forEach((s, idx) => {
+          const el = document.createElement("div");
+          el.className = "slide";
+
+          const thumb = document.createElement("div");
+          thumb.className = "thumb";
+
+          if (s.type === "video") {
+            const v = document.createElement("video");
+            v.src = s.src;
+            v.muted = true;
+            v.playsInline = true;
+            v.preload = "metadata";
+            thumb.appendChild(v);
+          } else {
+            const img = document.createElement("img");
+            img.src = s.src;
+            img.alt = s.alt || "";
+            thumb.appendChild(img);
+          }
+
+          const meta = document.createElement("div");
+          meta.className = "meta";
+          meta.innerHTML = `
+            <div class="title">${s.alt || `Story ${idx + 1}`}</div>
+            <div class="sub">
+              <span class="pill">${s.type}</span>
+              <span class="pill" title="${s.src}">${String(s.src).slice(0, 42)}${String(s.src).length > 42 ? "…" : ""}</span>
+            </div>
+          `;
+
+          const actions = document.createElement("div");
+          actions.className = "mini";
+          actions.innerHTML = `
+            <button class="btn" type="button" data-up="${idx}">Up</button>
+            <button class="btn" type="button" data-down="${idx}">Down</button>
+            <button class="btn" type="button" data-del="${idx}">Delete</button>
+          `;
+
+          el.appendChild(thumb);
+          el.appendChild(meta);
+          el.appendChild(actions);
+          list.appendChild(el);
+        });
+
+        list.querySelectorAll("[data-del]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const i = Number(b.dataset.del);
+            state.storySlides.splice(i, 1);
+            renderSlides();
+          });
+        });
+
+        list.querySelectorAll("[data-up]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const i = Number(b.dataset.up);
+            if (i <= 0) return;
+            const tmp = state.storySlides[i - 1];
+            state.storySlides[i - 1] = state.storySlides[i];
+            state.storySlides[i] = tmp;
+            renderSlides();
+          });
+        });
+
+        list.querySelectorAll("[data-down]").forEach((b) => {
+          b.addEventListener("click", () => {
+            const i = Number(b.dataset.down);
+            if (i >= state.storySlides.length - 1) return;
+            const tmp = state.storySlides[i + 1];
+            state.storySlides[i + 1] = state.storySlides[i];
+            state.storySlides[i] = tmp;
+            renderSlides();
+          });
+        });
+      }
+
+      async function apiGetHome() {
+        const token = getToken();
+        const res = await fetch("/api/home-content", {
+          method: "GET",
+          headers: token ? { "x-admin-token": token } : {}
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data?.error || "Failed to load content.");
+        return data;
+      }
+
+      async function apiSaveHome(payload) {
+        const token = getToken();
+        const res = await fetch("/api/home-content", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-admin-token": token
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data?.error || "Failed to save.");
+        return data;
+      }
+
+      async function apiUploadFile(file) {
+        const token = getToken();
+        const base64 = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(String(r.result || "").split(",")[1] || "");
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+
+        const res = await fetch("/api/home-content?upload=1", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-admin-token": token
+          },
+          body: JSON.stringify({
+            filename: file.name,
+            mime: file.type,
+            base64
+          })
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data?.error || "Upload failed.");
+        return data; // { url }
+      }
+
+      function fillForm() {
+        $("tickerText").value = state.tickerText || "";
+        $("heroLine1").value = state.heroLine1 || "";
+        $("heroLine2").value = state.heroLine2 || "";
+        $("heroItalic").value = state.heroItalic || "";
+        $("subtext").value = state.subtext || "";
+        renderSlides();
+      }
+
+      function readFormIntoState() {
+        state.tickerText = $("tickerText").value.trim();
+        state.heroLine1 = $("heroLine1").value.trim();
+        state.heroLine2 = $("heroLine2").value.trim();
+        state.heroItalic = $("heroItalic").value.trim();
+        state.subtext = $("subtext").value.trim();
+      }
+
+      async function bootstrap() {
+        try {
+          const data = await apiGetHome();
+          state = {
+            tickerText: data.tickerText || "",
+            heroLine1: data.heroLine1 || "",
+            heroLine2: data.heroLine2 || "",
+            heroItalic: data.heroItalic || "",
+            subtext: data.subtext || "",
+            storySlides: Array.isArray(data.storySlides) ? data.storySlides : []
+          };
+          fillForm();
+        } catch (e) {
+          setStatus(e.message || String(e), "error");
+        }
+      }
+
+      function showApp() {
+        $("loginCard").style.display = "none";
+        $("app").style.display = "grid";
+        $("logoutBtn").style.display = "inline-flex";
+      }
+
+      function showLogin() {
+        $("loginCard").style.display = "grid";
+        $("app").style.display = "none";
+        $("logoutBtn").style.display = "none";
+      }
+
+      // Login (one-time per session)
+      $("loginBtn").addEventListener("click", async () => {
+        const password = $("pw").value;
+        if (!password) return;
+
+        try {
+          const res = await fetch("/api/home-content?login=1", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ password })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data?.error || "Login failed");
+
+          setToken(data.token);
+          $("pw").value = "";
+          showApp();
+          await bootstrap();
+          setStatus("Logged in. You can edit and publish changes.", "info");
+        } catch (e) {
+          setStatus(e.message || String(e), "error");
+        }
+      });
+
+      $("logoutBtn").addEventListener("click", () => {
+        clearToken();
+        showLogin();
+      });
+
+      $("reloadBtn").addEventListener("click", async () => {
+        setStatus("Reloading…");
+        await bootstrap();
+        setStatus("Reloaded.");
+      });
+
+      $("saveBtn").addEventListener("click", async () => {
+        try {
+          readFormIntoState();
+
+          if (!state.tickerText) return setStatus("Ticker text is required.", "error");
+          if (!state.heroLine1) return setStatus("H1 line 1 is required.", "error");
+          if (!state.heroLine2) return setStatus("H1 line 2 is required.", "error");
+          if (!state.heroItalic) return setStatus("Italic word is required.", "error");
+          if (!state.subtext) return setStatus("Subtext is required.", "error");
+          if (!state.storySlides.length) return setStatus("Add at least one story slide.", "error");
+
+          setStatus("Saving to GitHub… (this will trigger a Vercel deploy)");
+          await apiSaveHome(state);
+          setStatus("Saved successfully. Your site will update after Vercel finishes deploying.");
+        } catch (e) {
+          setStatus(e.message || String(e), "error");
+        }
+      });
+
+      $("addSlideBtn").addEventListener("click", async () => {
+        try {
+          const type = $("newType").value;
+          const alt = $("newAlt").value.trim();
+          const url = $("newUrl").value.trim();
+          const file = $("newFile").files && $("newFile").files[0];
+
+          if (!url && !file) return setStatus("Provide a URL or upload a file.", "error");
+
+          let src = url;
+
+          if (file) {
+            setStatus("Uploading file…");
+            const out = await apiUploadFile(file);
+            src = out.url;
+          }
+
+          state.storySlides.push({
+            type,
+            src,
+            alt: alt || ""
+          });
+
+          $("newAlt").value = "";
+          $("newUrl").value = "";
+          $("newFile").value = "";
+
+          renderSlides();
+          setStatus("Slide added. Click Save (publish) to push changes.");
+        } catch (e) {
+          setStatus(e.message || String(e), "error");
+        }
+      });
+
+      // Auto login if token exists
+      if (getToken()) {
+        showApp();
+        bootstrap();
+      } else {
+        showLogin();
+      }
+    </script>
+  </body>
+</html>
