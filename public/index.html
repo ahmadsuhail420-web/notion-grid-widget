@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Brand</title>
 
-    <!-- Fonts (modern sans + italic serif for “right”) -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,7 +37,7 @@
         text-decoration: none;
       }
 
-      /* ===== Header (Framer-ish) ===== */
+      /* ===== Header ===== */
       header {
         position: sticky;
         top: 0;
@@ -153,7 +153,7 @@
         background: rgba(13, 13, 13, 0.06);
       }
 
-      /* ===== Hero container (matches inspected Framer values) ===== */
+      /* ===== Hero (Framer-like) ===== */
       .hero-inner {
         max-width: 1200px;
         width: 100%;
@@ -170,7 +170,6 @@
         overflow: hidden;
       }
 
-      /* Left content: like framer-upj7hm */
       .hero-left {
         display: flex;
         flex-direction: column;
@@ -208,7 +207,7 @@
         align-items: center;
       }
 
-      /* ===== Ticker pill (shorter + moves right->left) ===== */
+      /* ===== Ticker pill ===== */
       .ticker {
         width: fit-content;
         max-width: 240px;
@@ -248,16 +247,15 @@
         }
       }
 
-      /* ===== Story card (Instagram-like slider + progress) ===== */
+      /* ===== Story card (image + video stories) ===== */
 
       .hero-right {
         flex: none;
       }
 
-      /* Outer = framer-8bdbh3 (keep border + ratio) */
+      /* outer frame */
       .story-card {
         width: 375px;
-
         display: flex;
         place-content: center;
         align-items: center;
@@ -272,7 +270,7 @@
         background: transparent;
       }
 
-      /* Inner clip layer */
+      /* inner clip */
       .story-inner {
         width: 100%;
         height: 100%;
@@ -284,14 +282,16 @@
         user-select: none;
 
         box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+
+        cursor: pointer;
       }
 
-      /* Slides layer */
       .story-slides {
         position: absolute;
         inset: 0;
       }
 
+      /* image slides */
       .story-img {
         position: absolute;
         inset: 0;
@@ -303,13 +303,32 @@
         transform: translateX(10%);
         transition: opacity 500ms ease, transform 700ms ease;
       }
-
       .story-img.is-active {
         opacity: 1;
         transform: translateX(0);
       }
-
       .story-img.is-exiting {
+        opacity: 0;
+        transform: translateX(-10%);
+      }
+
+      /* video slides */
+      .story-vid {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+
+        opacity: 0;
+        transform: translateX(10%);
+        transition: opacity 500ms ease, transform 700ms ease;
+      }
+      .story-vid.is-active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .story-vid.is-exiting {
         opacity: 0;
         transform: translateX(-10%);
       }
@@ -359,7 +378,7 @@
         }
       }
 
-      /* Click zones (prev/next) */
+      /* Click zones */
       .story-zone {
         position: absolute;
         top: 0;
@@ -369,12 +388,47 @@
         background: transparent;
         cursor: pointer;
         z-index: 3;
+        padding: 0;
       }
       .story-zone.left {
         left: 0;
       }
       .story-zone.right {
         right: 0;
+      }
+
+      /* Arrows like your screenshot: plain chevrons */
+      .story-zone::after {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 44px;
+        line-height: 1;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+        text-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        transition: opacity 160ms ease;
+        pointer-events: none;
+      }
+
+      .story-zone.left::after {
+        content: "‹";
+        left: 18px;
+      }
+
+      .story-zone.right::after {
+        content: "›";
+        right: 18px;
+      }
+
+      .story-inner:hover .story-zone::after {
+        opacity: 1;
+      }
+
+      .story-zone:hover::after {
+        opacity: 1;
+        color: rgba(255, 255, 255, 0.95);
       }
 
       /* ===== Responsive ===== */
@@ -471,21 +525,24 @@
             </div>
           </div>
 
-          <!-- Story card (right) -->
+          <!-- Story card -->
           <aside class="hero-right">
             <div class="story-card" aria-label="Story preview">
               <div class="story-inner" id="story">
                 <div class="story-slides">
+                  <!-- Slide 1 (image) -->
                   <img
                     class="story-img is-active"
                     src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
                     alt="Story 1"
                   />
-                  <img
-                    class="story-img"
-                    src="https://images.unsplash.com/photo-1520962917967-2322b2f94888?auto=format&fit=crop&w=1400&q=80"
-                    alt="Story 2"
-                  />
+
+                  <!-- Slide 2 (video) - replace src with your video file -->
+                  <video class="story-vid" muted playsinline preload="metadata">
+                    <source src="story2.mp4" type="video/mp4" />
+                  </video>
+
+                  <!-- Slide 3 (image) -->
                   <img
                     class="story-img"
                     src="https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&fit=crop&w=1400&q=80"
@@ -494,7 +551,7 @@
                 </div>
 
                 <div class="story-bars" aria-hidden="true">
-                  <span class="bar is-filled"></span>
+                  <span class="bar"></span>
                   <span class="bar"></span>
                   <span class="bar"></span>
                 </div>
@@ -519,18 +576,46 @@
         drawer.setAttribute("aria-hidden", String(expanded));
       });
 
-      // Story slider
+      // ===== Story slider (images + videos) =====
       const storyEl = document.getElementById("story");
-      const slides = Array.from(storyEl.querySelectorAll(".story-img"));
+      const slides = Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
       const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
       const btnPrev = storyEl.querySelector(".story-zone.left");
       const btnNext = storyEl.querySelector(".story-zone.right");
 
-      const DURATION_MS = 3500; // story speed
-      storyEl.style.setProperty("--story-duration", `${DURATION_MS}ms`);
+      const DEFAULT_MS = 3500;
+      const MAX_VIDEO_MS = 15000;
 
       let index = 0;
       let timer = null;
+
+      const isVideo = (el) => el && el.tagName === "VIDEO";
+
+      function setBarDuration(ms) {
+        storyEl.style.setProperty("--story-duration", `${ms}ms`);
+      }
+
+      function clearTimer() {
+        if (timer) clearTimeout(timer);
+        timer = null;
+      }
+
+      function stopAllVideos() {
+        slides.forEach((el) => {
+          if (!isVideo(el)) return;
+          try {
+            el.pause();
+            el.currentTime = 0;
+          } catch {}
+        });
+      }
+
+      function getDurationForSlide(el) {
+        if (!isVideo(el)) return DEFAULT_MS;
+        const d = el.duration;
+        if (Number.isFinite(d) && d > 0) return Math.min(Math.round(d * 1000), MAX_VIDEO_MS);
+        return DEFAULT_MS;
+      }
 
       function renderBars() {
         bars.forEach((b, i) => {
@@ -540,41 +625,83 @@
         });
       }
 
+      async function activateVideo(el) {
+        if (!isVideo(el)) return;
+
+        // bind ended->next once
+        if (!el.dataset.storyBound) {
+          el.addEventListener("ended", () => {
+            showSlide(index + 1);
+          });
+          el.dataset.storyBound = "1";
+        }
+
+        try {
+          el.currentTime = 0;
+          await el.play(); // works because muted + playsinline
+        } catch {
+          // autoplay might be blocked in some cases; user click will allow.
+        }
+      }
+
+      function restartTimerForActiveSlide() {
+        clearTimer();
+        const active = slides[index];
+        const ms = getDurationForSlide(active);
+
+        setBarDuration(ms);
+
+        // safe fallback timeout (videos will also advance via 'ended')
+        timer = setTimeout(() => showSlide(index + 1), ms);
+      }
+
       function showSlide(nextIndex) {
         if (nextIndex < 0) nextIndex = slides.length - 1;
         if (nextIndex >= slides.length) nextIndex = 0;
 
+        clearTimer();
+
         const current = slides[index];
         const next = slides[nextIndex];
 
+        // Ensure only active video plays
+        stopAllVideos();
+
+        // Exit current
         current.classList.remove("is-active");
         current.classList.add("is-exiting");
         setTimeout(() => current.classList.remove("is-exiting"), 700);
 
+        // Enter next
         next.classList.add("is-active");
 
         index = nextIndex;
         renderBars();
-        restartTimer();
+
+        activateVideo(next);
+        restartTimerForActiveSlide();
       }
 
-      function restartTimer() {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => showSlide(index + 1), DURATION_MS);
-      }
-
-      // init
+      // Init
       slides.forEach((s, i) => s.classList.toggle("is-active", i === 0));
       renderBars();
-      restartTimer();
+      activateVideo(slides[0]);
+      restartTimerForActiveSlide();
 
-      // controls
-      btnPrev?.addEventListener("click", () => showSlide(index - 1));
-      btnNext?.addEventListener("click", () => showSlide(index + 1));
+      // Manual controls (works while video playing)
+      btnPrev?.addEventListener("click", (e) => {
+        e.preventDefault();
+        showSlide(index - 1);
+      });
 
-      // pause on hover (desktop)
-      storyEl.addEventListener("mouseenter", () => timer && clearTimeout(timer));
-      storyEl.addEventListener("mouseleave", restartTimer);
+      btnNext?.addEventListener("click", (e) => {
+        e.preventDefault();
+        showSlide(index + 1);
+      });
+
+      // Pause auto-advance on hover (optional)
+      storyEl.addEventListener("mouseenter", () => clearTimer());
+      storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
     </script>
   </body>
 </html>
