@@ -247,6 +247,15 @@
         flex: none;
       }
 
+      .hero-left{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  flex: 1 0 0;   /* important: takes remaining space like Framer */
+  min-width: 0;  /* prevents overflow issues in flex */
+}
+
       /* Outer = framer-8bdbh3 */
       .story-card {
         width: 375px;
