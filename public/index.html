@@ -322,7 +322,7 @@
       .story-inner:hover .story-zone::after { opacity: 1; }
       .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
 
-      /* ✅ FIXED: your media queries were not closed properly before (this breaks mobile styles) */
+      /* responsive */
       @media (max-width: 900px) {
         .hero-inner{
           flex-direction: column;
@@ -342,7 +342,7 @@
         }
       }
 
-      /* ✅ Mobile: center ticker + heading + sub heading + buttons in middle + header padding fix */
+      /* Mobile: center ticker + heading + sub heading + buttons in middle + header padding fix */
       @media (max-width: 760px) {
         /* header spacing fix */
         .nav{ padding: 12px 16px; }
@@ -454,7 +454,7 @@
         <div class="hero-inner">
           <div class="hero-left">
             <div class="ticker" aria-label="Announcement">
-              <div class="ticker__track">
+              <div class="ticker__track" id="tickerTrack">
                 <span class="ticker__item">New drops weekly</span>
                 <span class="ticker__item" aria-hidden="true">New drops weekly</span>
                 <span class="ticker__item" aria-hidden="true">New drops weekly</span>
@@ -462,11 +462,11 @@
             </div>
 
             <h1>
-              Short form<br />
-              done <span class="italic">right</span>
+              <span id="heroLine1">Short form</span><br />
+              <span id="heroLine2">done</span> <span class="italic" id="heroItalic">right</span>
             </h1>
 
-            <p class="subtext">
+            <p class="subtext" id="heroSubtext">
               We combine content, management, and paid media to help brands grow and convert on the social platforms that matter most to you.
             </p>
 
@@ -479,7 +479,7 @@
           <aside class="hero-right">
             <div class="story-card" aria-label="Story preview">
               <div class="story-inner" id="story">
-                <div class="story-slides">
+                <div class="story-slides" id="storySlides">
                   <img
                     class="story-img is-active"
                     src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
@@ -497,7 +497,7 @@
                   />
                 </div>
 
-                <div class="story-bars" aria-hidden="true">
+                <div class="story-bars" aria-hidden="true" id="storyBars">
                   <span class="bar"></span>
                   <span class="bar"></span>
                   <span class="bar"></span>
@@ -523,10 +523,77 @@
         drawer.setAttribute("aria-hidden", String(expanded));
       });
 
+      async function loadHomeContent() {
+        try {
+          const res = await fetch("/content/home.json", { cache: "no-store" });
+          if (!res.ok) return;
+          const data = await res.json();
+
+          // Ticker
+          const track = document.getElementById("tickerTrack");
+          if (track && data.tickerText) {
+            const t = String(data.tickerText);
+            track.innerHTML = `
+              <span class="ticker__item">${t}</span>
+              <span class="ticker__item" aria-hidden="true">${t}</span>
+              <span class="ticker__item" aria-hidden="true">${t}</span>
+            `;
+          }
+
+          // Hero text
+          const line1 = document.getElementById("heroLine1");
+          const line2 = document.getElementById("heroLine2");
+          const italic = document.getElementById("heroItalic");
+          const sub = document.getElementById("heroSubtext");
+
+          if (line1 && data.heroLine1) line1.textContent = data.heroLine1;
+          if (line2 && data.heroLine2) line2.textContent = data.heroLine2;
+          if (italic && data.heroItalic) italic.textContent = data.heroItalic;
+          if (sub && data.subtext) sub.textContent = data.subtext;
+
+          // Story slides + bars
+          const slidesWrap = document.getElementById("storySlides");
+          const barsWrap = document.getElementById("storyBars");
+          if (slidesWrap && barsWrap && Array.isArray(data.storySlides) && data.storySlides.length) {
+            slidesWrap.innerHTML = "";
+            barsWrap.innerHTML = "";
+
+            data.storySlides.forEach((s, i) => {
+              // bars
+              const bar = document.createElement("span");
+              bar.className = "bar" + (i === 0 ? " is-active" : "");
+              barsWrap.appendChild(bar);
+
+              // slides
+              if (s.type === "video") {
+                const v = document.createElement("video");
+                v.className = "story-vid" + (i === 0 ? " is-active" : "");
+                v.muted = true;
+                v.playsInline = true;
+                v.preload = "metadata";
+
+                const src = document.createElement("source");
+                src.src = s.src;
+                src.type = "video/mp4";
+                v.appendChild(src);
+
+                slidesWrap.appendChild(v);
+              } else {
+                const img = document.createElement("img");
+                img.className = "story-img" + (i === 0 ? " is-active" : "");
+                img.src = s.src;
+                img.alt = s.alt || `Story ${i + 1}`;
+                slidesWrap.appendChild(img);
+              }
+            });
+          }
+        } catch {
+          // fallback to existing hardcoded content
+        }
+      }
+
       // Story slider (images + videos)
       const storyEl = document.getElementById("story");
-      const slides = Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
-      const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
       const btnPrev = storyEl.querySelector(".story-zone.left");
       const btnNext = storyEl.querySelector(".story-zone.right");
 
@@ -548,7 +615,8 @@
       }
 
       function stopAllVideos() {
-        slides.forEach((el) => {
+        const slidesNow = Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
+        slidesNow.forEach((el) => {
           if (!isVideo(el)) return;
           try {
             el.pause();
@@ -564,12 +632,26 @@
         return DEFAULT_MS;
       }
 
-      function renderBars() {
+      function renderBars(slidesCount) {
+        const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
         bars.forEach((b, i) => {
           b.classList.remove("is-active", "is-filled");
           if (i < index) b.classList.add("is-filled");
           if (i === index) b.classList.add("is-active");
         });
+
+        // safety (if bars mismatch)
+        if (bars.length !== slidesCount) {
+          const barsWrap = document.getElementById("storyBars");
+          if (barsWrap) {
+            barsWrap.innerHTML = "";
+            for (let i = 0; i < slidesCount; i++) {
+              const bar = document.createElement("span");
+              bar.className = "bar" + (i === 0 ? " is-active" : "");
+              barsWrap.appendChild(bar);
+            }
+          }
+        }
       }
 
       async function activateVideo(el) {
@@ -590,54 +672,64 @@
 
       function restartTimerForActiveSlide() {
         clearTimer();
-        const active = slides[index];
+        const slidesNow = Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
+        const active = slidesNow[index];
         const ms = getDurationForSlide(active);
         setBarDuration(ms);
         timer = setTimeout(() => showSlide(index + 1), ms);
       }
 
       function showSlide(nextIndex) {
-        if (nextIndex < 0) nextIndex = slides.length - 1;
-        if (nextIndex >= slides.length) nextIndex = 0;
+        const slidesNow = Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
+
+        if (nextIndex < 0) nextIndex = slidesNow.length - 1;
+        if (nextIndex >= slidesNow.length) nextIndex = 0;
 
         clearTimer();
 
-        const current = slides[index];
-        const next = slides[nextIndex];
+        const current = slidesNow[index];
+        const next = slidesNow[nextIndex];
 
         stopAllVideos();
 
-        current.classList.remove("is-active");
-        current.classList.add("is-exiting");
-        setTimeout(() => current.classList.remove("is-exiting"), 700);
+        if (current) {
+          current.classList.remove("is-active");
+          current.classList.add("is-exiting");
+          setTimeout(() => current.classList.remove("is-exiting"), 700);
+        }
 
-        next.classList.add("is-active");
+        if (next) next.classList.add("is-active");
 
         index = nextIndex;
-        renderBars();
+        renderBars(slidesNow.length);
 
         activateVideo(next);
         restartTimerForActiveSlide();
       }
 
-      // Init
-      slides.forEach((s, i) => s.classList.toggle("is-active", i === 0));
-      renderBars();
-      activateVideo(slides[0]);
-      restartTimerForActiveSlide();
+      // Init (load JSON first, then initialize slider on whatever slides exist)
+      loadHomeContent().finally(() => {
+        const slidesNow = Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
+        index = 0;
 
-      btnPrev?.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSlide(index - 1);
+        slidesNow.forEach((s, i) => s.classList.toggle("is-active", i === 0));
+        renderBars(slidesNow.length);
+        activateVideo(slidesNow[0]);
+        restartTimerForActiveSlide();
+
+        btnPrev?.addEventListener("click", (e) => {
+          e.preventDefault();
+          showSlide(index - 1);
+        });
+
+        btnNext?.addEventListener("click", (e) => {
+          e.preventDefault();
+          showSlide(index + 1);
+        });
+
+        storyEl.addEventListener("mouseenter", () => clearTimer());
+        storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
       });
-
-      btnNext?.addEventListener("click", (e) => {
-        e.preventDefault();
-        showSlide(index + 1);
-      });
-
-      storyEl.addEventListener("mouseenter", () => clearTimer());
-      storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
     </script>
   </body>
 </html>
