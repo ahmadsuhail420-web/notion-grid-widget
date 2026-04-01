@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Brand</title>
+    <title>Sync & Style</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,9 +21,7 @@
         --border: rgba(13, 13, 13, 0.12);
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; }
 
       body {
         margin: 0;
@@ -32,10 +30,7 @@
         background: var(--bg);
       }
 
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
+      a { color: inherit; text-decoration: none; }
 
       /* ===== Header ===== */
       header {
@@ -64,16 +59,12 @@
         letter-spacing: -0.02em;
       }
 
-      .brand-badge {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: #0d0d0d;
-        display: grid;
-        place-items: center;
-        color: #fff;
-        font-size: 14px;
-        line-height: 1;
+      /* Your uploaded logo */
+      .brand-logo {
+        height: 30px;
+        width: auto;
+        display: block;
+        object-fit: contain;
       }
 
       .nav-links {
@@ -99,40 +90,26 @@
         gap: 10px;
       }
 
-      .btn {
-        border: 1px solid transparent;
+      .icon-btn {
+        width: 40px;
+        height: 40px;
         border-radius: 999px;
-        padding: 10px 16px;
-        font-weight: 600;
-        font-size: 14px;
+        border: 1px solid rgba(13,13,13,0.18);
+        background: rgba(255,255,255,0.25);
+        display: inline-grid;
+        place-items: center;
         cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        white-space: nowrap;
       }
 
-      .btn-primary {
-        background: #0d0d0d;
-        color: #fff;
-      }
-      .btn-primary:hover {
-        opacity: 0.92;
+      .icon-btn:hover { background: rgba(13,13,13,0.06); }
+
+      .icon {
+        width: 18px;
+        height: 18px;
+        stroke: rgba(13,13,13,0.88);
       }
 
-      .btn-ghost {
-        background: transparent;
-        border-color: rgba(13, 13, 13, 0.18);
-        color: rgba(13, 13, 13, 0.85);
-      }
-      .btn-ghost:hover {
-        background: rgba(13, 13, 13, 0.06);
-      }
-
-      .menu-btn {
-        display: none;
-      }
+      .menu-btn { display: none; }
 
       .mobile-drawer {
         display: none;
@@ -149,11 +126,9 @@
         font-weight: 600;
       }
 
-      .mobile-drawer a:hover {
-        background: rgba(13, 13, 13, 0.06);
-      }
+      .mobile-drawer a:hover { background: rgba(13, 13, 13, 0.06); }
 
-      /* ===== Hero (Framer-like) ===== */
+      /* ===== Hero ===== */
       .hero-inner {
         max-width: 1200px;
         width: 100%;
@@ -201,11 +176,31 @@
         color: var(--muted);
       }
 
-      .hero-actions {
-        display: flex;
-        gap: 12px;
+      .hero-actions { display: flex; gap: 12px; align-items: center; }
+
+      .btn {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
         align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
       }
+
+      .btn-primary { background: #0d0d0d; color: #fff; }
+      .btn-primary:hover { opacity: 0.92; }
+
+      .btn-ghost {
+        background: transparent;
+        border-color: rgba(13, 13, 13, 0.18);
+        color: rgba(13, 13, 13, 0.85);
+      }
+      .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
 
       /* ===== Ticker pill ===== */
       .ticker {
@@ -233,27 +228,17 @@
       }
 
       @keyframes ticker-move {
-        from {
-          transform: translateX(0);
-        }
-        to {
-          transform: translateX(-33.333%);
-        }
+        from { transform: translateX(0); }
+        to { transform: translateX(-33.333%); }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .ticker__track {
-          animation: none;
-        }
+        .ticker__track { animation: none; }
       }
 
-      /* ===== Story card (image + video stories) ===== */
+      /* ===== Story card ===== */
+      .hero-right { flex: none; }
 
-      .hero-right {
-        flex: none;
-      }
-
-      /* outer frame */
       .story-card {
         width: 375px;
         display: flex;
@@ -270,7 +255,6 @@
         background: transparent;
       }
 
-      /* inner clip */
       .story-inner {
         width: 100%;
         height: 100%;
@@ -282,37 +266,12 @@
         user-select: none;
 
         box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-
         cursor: pointer;
       }
 
-      .story-slides {
-        position: absolute;
-        inset: 0;
-      }
+      .story-slides { position: absolute; inset: 0; }
 
-      /* image slides */
-      .story-img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-
-        opacity: 0;
-        transform: translateX(10%);
-        transition: opacity 500ms ease, transform 700ms ease;
-      }
-      .story-img.is-active {
-        opacity: 1;
-        transform: translateX(0);
-      }
-      .story-img.is-exiting {
-        opacity: 0;
-        transform: translateX(-10%);
-      }
-
-      /* video slides */
+      .story-img,
       .story-vid {
         position: absolute;
         inset: 0;
@@ -324,16 +283,13 @@
         transform: translateX(10%);
         transition: opacity 500ms ease, transform 700ms ease;
       }
-      .story-vid.is-active {
-        opacity: 1;
-        transform: translateX(0);
-      }
-      .story-vid.is-exiting {
-        opacity: 0;
-        transform: translateX(-10%);
-      }
 
-      /* Instagram-like progress bars */
+      .story-img.is-active,
+      .story-vid.is-active { opacity: 1; transform: translateX(0); }
+
+      .story-img.is-exiting,
+      .story-vid.is-exiting { opacity: 0; transform: translateX(-10%); }
+
       .story-bars {
         position: absolute;
         top: 10px;
@@ -361,24 +317,14 @@
         background: rgba(255, 255, 255, 0.9);
       }
 
-      .story-bars .bar.is-active::after {
-        animation: storyProgress var(--story-duration, 3500ms) linear forwards;
-      }
-
-      .story-bars .bar.is-filled::after {
-        width: 100%;
-      }
+      .story-bars .bar.is-active::after { animation: storyProgress var(--story-duration, 3500ms) linear forwards; }
+      .story-bars .bar.is-filled::after { width: 100%; }
 
       @keyframes storyProgress {
-        from {
-          width: 0%;
-        }
-        to {
-          width: 100%;
-        }
+        from { width: 0%; }
+        to { width: 100%; }
       }
 
-      /* Click zones */
       .story-zone {
         position: absolute;
         top: 0;
@@ -390,14 +336,9 @@
         z-index: 3;
         padding: 0;
       }
-      .story-zone.left {
-        left: 0;
-      }
-      .story-zone.right {
-        right: 0;
-      }
+      .story-zone.left { left: 0; }
+      .story-zone.right { right: 0; }
 
-      /* Arrows like your screenshot: plain chevrons */
       .story-zone::after {
         position: absolute;
         top: 50%;
@@ -412,56 +353,25 @@
         pointer-events: none;
       }
 
-      .story-zone.left::after {
-        content: "‹";
-        left: 18px;
-      }
+      .story-zone.left::after { content: "‹"; left: 18px; }
+      .story-zone.right::after { content: "›"; right: 18px; }
 
-      .story-zone.right::after {
-        content: "›";
-        right: 18px;
-      }
-
-      .story-inner:hover .story-zone::after {
-        opacity: 1;
-      }
-
-      .story-zone:hover::after {
-        opacity: 1;
-        color: rgba(255, 255, 255, 0.95);
-      }
+      .story-inner:hover .story-zone::after { opacity: 1; }
+      .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
 
       /* ===== Responsive ===== */
       @media (max-width: 900px) {
-        .hero-inner {
-          flex-direction: column;
-          padding: 72px 20px 56px;
-          gap: 32px;
-        }
-
-        .story-card {
-          width: min(375px, 100%);
-        }
-
-        .nav {
-          padding: 16px 20px;
-        }
+        .hero-inner { flex-direction: column; padding: 72px 20px 56px; gap: 32px; }
+        .story-card { width: min(375px, 100%); }
+        .nav { padding: 16px 20px; }
       }
 
       @media (max-width: 760px) {
-        .nav-links {
-          display: none;
-        }
-        .menu-btn {
-          display: inline-flex;
-        }
+        .nav-links { display: none; }
+        .menu-btn { display: inline-flex; }
 
-        .mobile-drawer {
-          padding: 0 20px 18px;
-        }
-        .mobile-drawer[aria-hidden="false"] {
-          display: block;
-        }
+        .mobile-drawer { padding: 0 20px 18px; }
+        .mobile-drawer[aria-hidden="false"] { display: block; }
       }
     </style>
   </head>
@@ -469,32 +379,79 @@
   <body>
     <header>
       <div class="nav">
+        <!-- Logo replaced with your attached logo (image15) -->
         <a class="brand" href="#home" aria-label="Home">
-          <span class="brand-badge">✳</span>
-          <span>YourBrand</span>
+          <img class="brand-logo" src="image15.png" alt="Sync & Style logo" />
         </a>
 
+        <!-- Nav items changed -->
         <nav class="nav-links" aria-label="Primary">
           <a href="#home">Home</a>
-          <a href="#about">About</a>
-          <a href="#case-studies">Case Studies</a>
-          <a href="#blog">Blog</a>
+          <a href="#shop">Shop</a>
+          <a href="#contact">Contact</a>
+          <a href="#about-us">About Us</a>
         </nav>
 
-        <div class="nav-cta">
-          <a class="btn btn-primary" href="#contact">Book a call</a>
+        <!-- Book a call replaced with icons -->
+        <div class="nav-cta" aria-label="Actions">
+          <a class="icon-btn" href="#search" aria-label="Search">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M21 21l-4.3-4.3"></path>
+            </svg>
+          </a>
+
+          <a class="icon-btn" href="#account" aria-label="Account">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21a8 8 0 0 0-16 0"></path>
+              <circle cx="12" cy="8" r="4"></circle>
+            </svg>
+          </a>
+
+          <a class="icon-btn" href="#cart" aria-label="Cart">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 6h15l-1.5 9H7.5L6 6Z"></path>
+              <path d="M6 6 5 3H2"></path>
+              <circle cx="9" cy="20" r="1.5"></circle>
+              <circle cx="18" cy="20" r="1.5"></circle>
+            </svg>
+          </a>
+
           <button class="btn btn-ghost menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer">
             Menu
           </button>
         </div>
       </div>
 
+      <!-- Mobile drawer links updated -->
       <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
         <a href="#home">Home</a>
-        <a href="#about">About</a>
-        <a href="#case-studies">Case Studies</a>
-        <a href="#blog">Blog</a>
-        <a class="btn btn-primary" style="margin-top: 10px; width: 100%" href="#contact">Book a call</a>
+        <a href="#shop">Shop</a>
+        <a href="#contact">Contact</a>
+        <a href="#about-us">About Us</a>
+
+        <div style="display:flex; gap:10px; margin-top: 10px;">
+          <a class="icon-btn" href="#search" aria-label="Search">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M21 21l-4.3-4.3"></path>
+            </svg>
+          </a>
+          <a class="icon-btn" href="#account" aria-label="Account">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21a8 8 0 0 0-16 0"></path>
+              <circle cx="12" cy="8" r="4"></circle>
+            </svg>
+          </a>
+          <a class="icon-btn" href="#cart" aria-label="Cart">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 6h15l-1.5 9H7.5L6 6Z"></path>
+              <path d="M6 6 5 3H2"></path>
+              <circle cx="9" cy="20" r="1.5"></circle>
+              <circle cx="18" cy="20" r="1.5"></circle>
+            </svg>
+          </a>
+        </div>
       </div>
     </header>
 
@@ -504,9 +461,9 @@
           <div class="hero-left">
             <div class="ticker" aria-label="Announcement">
               <div class="ticker__track">
-                <span class="ticker__item">Notion Grid Widget</span>
-                <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
-                <span class="ticker__item" aria-hidden="true">Notion Grid Widget</span>
+                <span class="ticker__item">New drops weekly</span>
+                <span class="ticker__item" aria-hidden="true">New drops weekly</span>
+                <span class="ticker__item" aria-hidden="true">New drops weekly</span>
               </div>
             </div>
 
@@ -520,8 +477,8 @@
             </p>
 
             <div class="hero-actions">
-              <a class="btn btn-primary" href="#contact">Get in touch</a>
-              <a class="btn btn-ghost" href="#case-studies">View work</a>
+              <a class="btn btn-primary" href="#shop">Shop now</a>
+              <a class="btn btn-ghost" href="#contact">Contact</a>
             </div>
           </div>
 
@@ -530,19 +487,17 @@
             <div class="story-card" aria-label="Story preview">
               <div class="story-inner" id="story">
                 <div class="story-slides">
-                  <!-- Slide 1 (image) -->
                   <img
                     class="story-img is-active"
                     src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
                     alt="Story 1"
                   />
 
-                  <!-- Slide 2 (video) - replace src with your video file -->
+                  <!-- Replace with your actual video path -->
                   <video class="story-vid" muted playsinline preload="metadata">
                     <source src="story2.mp4" type="video/mp4" />
                   </video>
 
-                  <!-- Slide 3 (image) -->
                   <img
                     class="story-img"
                     src="https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&fit=crop&w=1400&q=80"
@@ -563,6 +518,11 @@
           </aside>
         </div>
       </section>
+
+      <!-- Placeholder sections for anchors -->
+      <section id="shop" style="padding: 40px 64px;"></section>
+      <section id="contact" style="padding: 40px 64px;"></section>
+      <section id="about-us" style="padding: 40px 64px;"></section>
     </main>
 
     <script>
@@ -576,7 +536,7 @@
         drawer.setAttribute("aria-hidden", String(expanded));
       });
 
-      // ===== Story slider (images + videos) =====
+      // Story slider (images + videos)
       const storyEl = document.getElementById("story");
       const slides = Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
       const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
@@ -628,7 +588,6 @@
       async function activateVideo(el) {
         if (!isVideo(el)) return;
 
-        // bind ended->next once
         if (!el.dataset.storyBound) {
           el.addEventListener("ended", () => {
             showSlide(index + 1);
@@ -638,20 +597,15 @@
 
         try {
           el.currentTime = 0;
-          await el.play(); // works because muted + playsinline
-        } catch {
-          // autoplay might be blocked in some cases; user click will allow.
-        }
+          await el.play();
+        } catch {}
       }
 
       function restartTimerForActiveSlide() {
         clearTimer();
         const active = slides[index];
         const ms = getDurationForSlide(active);
-
         setBarDuration(ms);
-
-        // safe fallback timeout (videos will also advance via 'ended')
         timer = setTimeout(() => showSlide(index + 1), ms);
       }
 
@@ -664,15 +618,12 @@
         const current = slides[index];
         const next = slides[nextIndex];
 
-        // Ensure only active video plays
         stopAllVideos();
 
-        // Exit current
         current.classList.remove("is-active");
         current.classList.add("is-exiting");
         setTimeout(() => current.classList.remove("is-exiting"), 700);
 
-        // Enter next
         next.classList.add("is-active");
 
         index = nextIndex;
@@ -688,7 +639,6 @@
       activateVideo(slides[0]);
       restartTimerForActiveSlide();
 
-      // Manual controls (works while video playing)
       btnPrev?.addEventListener("click", (e) => {
         e.preventDefault();
         showSlide(index - 1);
@@ -699,7 +649,6 @@
         showSlide(index + 1);
       });
 
-      // Pause auto-advance on hover (optional)
       storyEl.addEventListener("mouseenter", () => clearTimer());
       storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
     </script>
