@@ -318,26 +318,47 @@
       @media (max-width: 900px) {
         .hero-inner {
           flex-direction: column;
-          padding: 36px 20px 40px; /* reduced so story is visible sooner */
+          padding: 36px 20px 40px;
           gap: 32px;
         }
         .story-card { width: min(375px, 100%); }
         .nav { padding: 16px 20px; }
       }
 
+      /* ✅ Mobile: center ticker + heading + subtext + buttons */
       @media (max-width: 760px) {
         .nav-links { display: none; }
 
-        /* show hamburger on mobile */
         .menu-btn { display: inline-flex; }
 
-        /* keep icons visible on mobile + size down a bit */
         .nav-cta { gap: 12px; }
         .icon-btn, .menu-btn { width: 24px; height: 24px; }
         .icon { width: 18px; height: 18px; }
 
         .mobile-drawer { padding: 0 20px 18px; }
         .mobile-drawer[aria-hidden="false"] { display: block; }
+
+        /* center hero text content */
+        .hero-left{
+          align-items: center;
+          text-align: center;
+        }
+
+        .subtext{
+          max-width: 34ch; /* looks nicer centered on mobile */
+        }
+
+        .hero-actions{
+          justify-content: center;
+          width: 100%;
+          flex-wrap: wrap;
+        }
+
+        /* center the ticker pill */
+        .ticker{
+          margin-left: auto;
+          margin-right: auto;
+        }
       }
     </style>
   </head>
