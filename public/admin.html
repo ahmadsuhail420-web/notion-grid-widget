@@ -242,19 +242,16 @@
     </div>
 
     <script>
-      const TOKEN_KEY = "home_admin_token_v1"; // password stored for this session in localStorage
+      const TOKEN_KEY = "home_admin_token_v1";
       const API = "/api/home-content";
-
       const $ = (id) => document.getElementById(id);
 
       function setStatus(id, msg) { $(id).textContent = msg || ""; }
-
       function getToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
       function setToken(t) {
         if (!t) localStorage.removeItem(TOKEN_KEY);
         else localStorage.setItem(TOKEN_KEY, t);
       }
-
       function showAuth(show) {
         $("authModal").setAttribute("aria-hidden", String(!show));
         if (show) setTimeout(() => $("passwordInput").focus(), 50);
@@ -299,11 +296,12 @@
 
             <div class="upload">
               <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                <input data-file type="file" accept="${type === "video" ? "video/*" : "image/*"}" />
+                <input data-file type="file" style="display:none" accept="${type === "video" ? "video/*" : "image/*"}" />
+                <button class="btn" data-pick type="button">Choose file</button>
                 <button class="btn" data-upload type="button">Upload & use URL</button>
               </div>
               <div style="font-size:12px; color: rgba(13,13,13,.62);">
-                Tip: keep files small for faster deploys.
+                Tip: choose a file first (works on mobile + laptop), then upload.
               </div>
             </div>
           </div>
@@ -430,12 +428,22 @@
             writeForm(model);
           });
 
+          // NEW: reliable file picker open (mobile + desktop)
+          slideEl.querySelector("[data-pick]")?.addEventListener("click", () => {
+            const input = slideEl.querySelector("[data-file]");
+            input?.click();
+          });
+
+          slideEl.querySelector("[data-file]")?.addEventListener("change", () => {
+            setStatus("statusRight", "File selected. Click Upload & use URL.");
+          });
+
           slideEl.querySelector("[data-upload]")?.addEventListener("click", async () => {
             try {
               setStatus("statusRight", "Uploading…");
               const fileInput = slideEl.querySelector("[data-file]");
               const f = fileInput.files && fileInput.files[0];
-              if (!f) return setStatus("statusRight", "Choose a file first.");
+              if (!f) return setStatus("statusRight", "Click Choose file first.");
 
               const out = await apiUpload(f);
               slideEl.querySelector("[data-src]").value = out.url || "";
@@ -474,7 +482,6 @@
         const pw = $("passwordInput").value;
         if (!pw) return setStatus("authStatus", "Enter password.");
 
-        // one-time per session (saved locally)
         setToken(pw);
         $("passwordInput").value = "";
         setStatus("authStatus", "");
@@ -521,7 +528,6 @@
         writeForm(model);
       });
 
-      // initial
       ensureAuthAndLoad();
     </script>
   </body>
