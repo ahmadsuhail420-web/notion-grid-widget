@@ -1,84 +1,25 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About • Store</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="assets/store/style.css" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand brand-logo-only" href="index.html" aria-label="Home">
-        <img class="brand-logo" src="assets/logo.png" alt="Logo" />
-      </a>
-
-      <nav class="nav">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="shop.html" class="nav-link">Shop</a>
-        <a href="about.html" class="nav-link is-active">About</a>
-        <a href="index.html#contact" class="nav-link">Contact</a>
-      </nav>
-
-      <div class="header-actions">
-        <label class="currency">
-          <select id="currencySelect" aria-label="Currency">
-            <option value="USD" selected>USD ($)</option>
-            <option value="EUR">EUR (€)</option>
-            <option value="GBP">GBP (£)</option>
-            <option value="PKR">PKR (Rs)</option>
-            <option value="INR">INR (₹)</option>
-            <option value="AED">AED (د.إ)</option>
-          </select>
-        </label>
-
-        <a class="cart-btn" href="cart.html" aria-label="Cart">
-          <span class="cart-ico">🛒</span>
-          <span class="cart-count" id="cartCount">0</span>
-        </a>
-      </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us • Sync & Style</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root { --bg:#efebe2; --text:#0d0d0d; }
+      *{ box-sizing:border-box; }
+      body{ margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
+      .wrap{ max-width:900px; margin:0 auto; padding:48px 20px; }
+      a{ color:inherit; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>About Us</h1>
+      <p>This is a separate page. Write your brand story here.</p>
+      <p><a href="index.html">← Back to Home</a></p>
     </div>
-  </header>
-
-  <main class="section">
-    <div class="container">
-      <div class="section-head">
-        <h1>About</h1>
-        <p class="muted">A simple, nature-inspired storefront template.</p>
-      </div>
-
-      <div class="card">
-        <p class="muted">
-          Replace this text with your brand story: what you sell, why you sell it, and how you source products.
-        </p>
-        <ul class="muted">
-          <li>Fast shipping (demo)</li>
-          <li>Easy returns (demo)</li>
-          <li>Secure checkout (demo)</li>
-        </ul>
-      </div>
-    </div>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <div>
-        <div class="footer-brand">Store</div>
-        <div class="muted">© <span id="year"></span></div>
-      </div>
-      <div class="footer-links">
-        <a href="shop.html">Shop</a>
-        <a href="cart.html">Cart</a>
-      </div>
-    </div>
-  </footer>
-
-  <script src="assets/store/products.js"></script>
-  <script src="assets/store/app.js"></script>
-</body>
+  </body>
 </html>
