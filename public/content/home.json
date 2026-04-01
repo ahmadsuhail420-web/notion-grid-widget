@@ -1,5 +1,5 @@
 {
-  "tickerText": "New drops weekly",
+  "tickerText": "Notion Grid widget",
   "heroLine1": "Short form",
   "heroLine2": "done",
   "heroItalic": "right",
@@ -7,7 +7,7 @@
   "storySlides": [
     {
       "type": "image",
-      "src": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80",
+      "src": "",
       "alt": "Story 1"
     },
     {
@@ -19,6 +19,21 @@
       "type": "image",
       "src": "https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&fit=crop&w=1400&q=80",
       "alt": "Story 3"
+    },
+    {
+      "type": "image",
+      "src": "",
+      "alt": ""
+    },
+    {
+      "type": "image",
+      "src": "",
+      "alt": ""
+    },
+    {
+      "type": "image",
+      "src": "",
+      "alt": ""
     }
   ]
 }
