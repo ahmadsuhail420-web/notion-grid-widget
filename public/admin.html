@@ -128,6 +128,7 @@
         font-weight: 700;
         font-size: 13px;
         color: rgba(13,13,13,.9);
+        user-select: none;
       }
       .btn:disabled { opacity: .45; cursor: not-allowed; }
 
@@ -137,12 +138,16 @@
         color: #fff;
       }
 
+      .btn-toggle-active{
+        background: rgba(13,13,13,0.06);
+      }
+
       .hero-italic{
-  font-family: "Playfair Display", serif;
-  font-style: italic;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
 
       .status {
         font-size: 12px;
@@ -195,13 +200,6 @@
         h1{ font-size: 118px; }
       }
 
-      .italic {
-        font-family: "Playfair Display", serif;
-        font-style: italic;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-      }
-
       .subtext {
         max-width: 46ch;
         font-size: 19px;
@@ -244,7 +242,7 @@
         gap: 28px;
         white-space: nowrap;
         will-change: auto;
-        animation: none; /* admin: stop */
+        animation: none;
         transform: none;
       }
       .ticker__item { font-weight: 600; font-size: 14px; color: rgba(13, 13, 13, 0.85); }
@@ -332,7 +330,7 @@
         background: rgba(255, 255, 255, 0.9);
       }
       .story-bars .bar.is-filled::after { width: 100%; }
-      .story-bars .bar.is-active::after { width: 35%; } /* just a visual indicator */
+      .story-bars .bar.is-active::after { width: 35%; }
 
       .story-zone {
         position: absolute;
@@ -520,6 +518,10 @@
       <div class="pill">
         <button class="btn" id="undoBtn" type="button" disabled>Undo</button>
         <button class="btn" id="redoBtn" type="button" disabled>Redo</button>
+
+        <div class="btn" id="fontInterBtn" title="Set selected word to Inter">Inter</div>
+        <div class="btn" id="fontPlayfairBtn" title="Set selected word to Playfair Italic">Playfair Italic</div>
+
         <button class="btn btn-dark hidden" id="saveBtn" type="button">Save changes</button>
         <span class="status" id="status"></span>
         <button class="btn" id="logoutBtn" type="button">Log out</button>
@@ -572,14 +574,12 @@
             <div class="ticker" aria-label="Announcement">
               <div class="ticker__track" id="tickerTrack">
                 <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">New drops weekly</span>
-              <div class="btn" id="fontInterBtn" type="button">Inter</div>
-<div class="btn" id="fontPlayfairBtn" type="button">Playfair Italic</div>
               </div>
             </div>
 
-           <h1 id="heroHeading" contenteditable="true" spellcheck="false">
-  Short form<br />done <span class="hero-italic">right</span>
-</h1>
+            <h1 id="heroHeading" contenteditable="true" spellcheck="false">
+              Short form<br />done <span class="hero-italic">right</span>
+            </h1>
 
             <p class="subtext" id="subtext" contenteditable="true" spellcheck="false">
               We combine content, management, and paid media to help brands grow and convert on the social platforms that matter most to you.
@@ -768,33 +768,268 @@
         $("saveBtn").classList.toggle("hidden", !isDirty());
       }
 
-      function normalizeText(s) {
+      function normalizePlainText(s) {
         return String(s || "").replace(/\s+/g, " ").trim();
+      }
+
+      function escapeHtml(s) {
+        return String(s || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      // ===== heroHtml helpers (client-side enforcement) =====
+      function normalizeHeroDom() {
+        const el = $("heroHeading");
+
+        // Convert DIV/P from mobile enter into <br>
+        // Replace block elements with <br> + their text
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_ELEMENT, null);
+        const blocks = [];
+        while (walker.nextNode()) {
+          const n = walker.currentNode;
+          if (n === el) continue;
+          const tag = n.tagName;
+          if (tag === "DIV" || tag === "P") blocks.push(n);
+        }
+        blocks.forEach((b) => {
+          const txt = b.textContent || "";
+          const br = document.createElement("br");
+          b.replaceWith(br, document.createTextNode(txt));
+        });
+
+        // Remove any spans except hero-italic
+        el.querySelectorAll("span").forEach((s) => {
+          if (!s.classList.contains("hero-italic")) {
+            s.replaceWith(document.createTextNode(s.textContent || ""));
+          } else {
+            // strip other classes just in case
+            s.className = "hero-italic";
+          }
+        });
+
+        // Enforce max 2 lines (max 1 <br>)
+        const brs = el.querySelectorAll("br");
+        if (brs.length > 1) {
+          for (let i = 1; i < brs.length; i++) brs[i].remove();
+        }
+
+        // Make sure there is no trailing extra whitespace nodes
+        el.normalize();
+      }
+
+      function getHeroHtmlFromDom() {
+        normalizeHeroDom();
+        const el = $("heroHeading");
+        // Convert <br> to <br> (self closing not needed)
+        return el.innerHTML
+          .replace(/<br\s*\/?>/gi, "<br>")
+          .replace(/\s*<br>\s*/g, "<br>")
+          .trim();
+      }
+
+      function setHeroDomFromHtml(heroHtml) {
+        const el = $("heroHeading");
+        el.innerHTML = String(heroHtml || "Short form<br>done <span class=\"hero-italic\">right</span>");
+        normalizeHeroDom();
+      }
+
+      function findWordRangeAroundSelection(rootEl) {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return null;
+
+        const range = sel.getRangeAt(0);
+        if (!rootEl.contains(range.commonAncestorContainer)) return null;
+
+        // If selection spans multiple nodes, collapse to start for "word"
+        if (!range.collapsed) {
+          // We'll still apply to word around the focus point
+        }
+
+        let node = sel.focusNode || range.startContainer;
+        let offset = sel.focusOffset ?? range.startOffset;
+
+        // If focus is an element node (e.g., clicking between nodes), choose a nearby text node
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const el = node;
+          const child = el.childNodes[Math.min(offset, el.childNodes.length - 1)];
+          node = child || el;
+          offset = 0;
+        }
+
+        // If inside a span.hero-italic, operate on its text node
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tn = node.firstChild;
+          if (!tn || tn.nodeType !== Node.TEXT_NODE) return null;
+          node = tn;
+          offset = Math.min(offset, (tn.nodeValue || "").length);
+        }
+
+        if (node.nodeType !== Node.TEXT_NODE) return null;
+        const text = node.nodeValue || "";
+        if (!text.trim()) return null;
+
+        // Compute word boundaries (letters/numbers/apostrophe)
+        const isWordChar = (ch) => /[A-Za-z0-9']/u.test(ch);
+
+        let start = Math.max(0, Math.min(offset, text.length));
+        let end = start;
+
+        // If offset points between chars and current isn't word, step left
+        if (start > 0 && start === end && !isWordChar(text[start]) && isWordChar(text[start - 1])) {
+          start = start - 1;
+          end = start;
+        }
+
+        while (start > 0 && isWordChar(text[start - 1])) start--;
+        while (end < text.length && isWordChar(text[end])) end++;
+
+        if (start === end) return null;
+
+        const wordRange = document.createRange();
+        wordRange.setStart(node, start);
+        wordRange.setEnd(node, end);
+        return wordRange;
+      }
+
+      function wrapRangeWithItalic(wordRange) {
+        if (!wordRange) return;
+        const span = document.createElement("span");
+        span.className = "hero-italic";
+        try {
+          wordRange.surroundContents(span);
+        } catch {
+          // fallback: extract and insert
+          const frag = wordRange.extractContents();
+          span.appendChild(frag);
+          wordRange.insertNode(span);
+        }
+        $("heroHeading").normalize();
+      }
+
+      function unwrapItalicAtRange(wordRange) {
+        if (!wordRange) return;
+
+        // Find closest hero-italic span that intersects the range
+        const root = $("heroHeading");
+        const spans = Array.from(root.querySelectorAll("span.hero-italic"));
+
+        const hit = spans.find((s) => {
+          const r = document.createRange();
+          r.selectNodeContents(s);
+          return !(wordRange.compareBoundaryPoints(Range.END_TO_START, r) >= 0 ||
+                   wordRange.compareBoundaryPoints(Range.START_TO_END, r) <= 0);
+        });
+
+        if (!hit) return;
+
+        hit.replaceWith(document.createTextNode(hit.textContent || ""));
+        root.normalize();
+      }
+
+      function refreshFontButtonsActiveState() {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) {
+          $("fontInterBtn").classList.remove("btn-toggle-active");
+          $("fontPlayfairBtn").classList.remove("btn-toggle-active");
+          return;
+        }
+        const node = sel.focusNode;
+        const inItalic = node && node.nodeType
+          ? (node.nodeType === Node.ELEMENT_NODE
+              ? node.closest && node.closest("span.hero-italic")
+              : node.parentElement && node.parentElement.closest("span.hero-italic"))
+          : null;
+
+        $("fontInterBtn").classList.toggle("btn-toggle-active", !inItalic);
+        $("fontPlayfairBtn").classList.toggle("btn-toggle-active", !!inItalic);
       }
 
       // ===== Editable fields =====
       function bindEditable() {
-        const bindings = [
-          { id: "tickerText", key: "tickerText" },
-          { id: "heroLine1", key: "heroLine1" },
-          { id: "heroLine2", key: "heroLine2" },
-          { id: "heroItalic", key: "heroItalic" },
-          { id: "subtext", key: "subtext" }
-        ];
+        // ticker
+        const ticker = $("tickerText");
+        ticker.addEventListener("input", () => {
+          model.tickerText = normalizePlainText(ticker.textContent);
+          updateSaveVisibility();
+          scheduleHistoryPush("text:tickerText");
+        });
+        ticker.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const txt = (e.clipboardData || window.clipboardData).getData("text/plain");
+          document.execCommand("insertText", false, txt);
+        });
 
-        bindings.forEach(({ id, key }) => {
-          const el = $(id);
-          el.addEventListener("input", () => {
-            model[key] = normalizeText(el.textContent);
-            updateSaveVisibility();
-            scheduleHistoryPush(`text:${key}`);
-          });
+        // subtext
+        const sub = $("subtext");
+        sub.addEventListener("input", () => {
+          model.subtext = normalizePlainText(sub.textContent);
+          updateSaveVisibility();
+          scheduleHistoryPush("text:subtext");
+        });
+        sub.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const txt = (e.clipboardData || window.clipboardData).getData("text/plain");
+          document.execCommand("insertText", false, txt);
+        });
 
-          el.addEventListener("paste", (e) => {
+        // hero heading (heroHtml)
+        const h = $("heroHeading");
+
+        h.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            // allow only 2 lines -> at most one <br>
+            normalizeHeroDom();
+            const hasBr = h.querySelector("br");
+            if (hasBr) {
+              e.preventDefault();
+              return;
+            }
+            // allow enter => insert <br>
             e.preventDefault();
-            const txt = (e.clipboardData || window.clipboardData).getData("text/plain");
-            document.execCommand("insertText", false, txt);
-          });
+            document.execCommand("insertHTML", false, "<br>");
+          }
+        });
+
+        h.addEventListener("input", () => {
+          // normalize + store heroHtml
+          model.heroHtml = getHeroHtmlFromDom();
+          updateSaveVisibility();
+          scheduleHistoryPush("text:heroHtml");
+        });
+
+        h.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const txt = (e.clipboardData || window.clipboardData).getData("text/plain");
+          document.execCommand("insertText", false, txt);
+        });
+
+        document.addEventListener("selectionchange", () => {
+          refreshFontButtonsActiveState();
+        });
+
+        // Font buttons (apply to whole word)
+        $("fontPlayfairBtn").addEventListener("click", () => {
+          const range = findWordRangeAroundSelection($("heroHeading"));
+          if (!range) return;
+          wrapRangeWithItalic(range);
+          model.heroHtml = getHeroHtmlFromDom();
+          updateSaveVisibility();
+          pushHistory("style:playfairItalic");
+          refreshFontButtonsActiveState();
+        });
+
+        $("fontInterBtn").addEventListener("click", () => {
+          const range = findWordRangeAroundSelection($("heroHeading"));
+          if (!range) return;
+          unwrapItalicAtRange(range);
+          model.heroHtml = getHeroHtmlFromDom();
+          updateSaveVisibility();
+          pushHistory("style:inter");
+          refreshFontButtonsActiveState();
         });
       }
 
@@ -881,7 +1116,6 @@
         const realCount = (model.storySlides || []).slice(0, MAX_SLIDES).length;
         const bars = Array.from($("story").querySelectorAll(".story-bars .bar"));
 
-        // If nextIdx points to add tile, don't advance bars further than last real index
         const realIdx = Math.min(nextIdx, Math.max(0, realCount - 1));
 
         bars.forEach((b, i) => {
@@ -914,10 +1148,9 @@
         applyActive(activeIndex);
       }
 
-      // Story tools: remove / move left / move right (only for real slides)
       function isOnAddTile() {
         const slides = (model.storySlides || []).slice(0, MAX_SLIDES);
-        return activeIndex >= slides.length; // last is add tile (if present)
+        return activeIndex >= slides.length;
       }
 
       function updateStoryTools() {
@@ -1045,7 +1278,7 @@
         model.storySlides.push({ type, src, alt });
 
         renderStoryFromModel();
-        activeIndex = Math.max(0, (model.storySlides.length - 1)); // show newly added slide
+        activeIndex = Math.max(0, (model.storySlides.length - 1));
         applyActive(activeIndex);
 
         pushHistory("slide:add");
@@ -1077,18 +1310,18 @@
 
       // ===== Render all from model =====
       function renderAllFromModel() {
-        $("tickerTrack").innerHTML = `<span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false"></span>`;
+        // ticker
         $("tickerText").textContent = model.tickerText || "";
 
-        $("heroLine1").textContent = model.heroLine1 || "";
-        $("heroLine2").textContent = model.heroLine2 || "";
-        $("heroItalic").textContent = model.heroItalic || "";
+        // hero + subtext
+        setHeroDomFromHtml(model.heroHtml);
         $("subtext").textContent = model.subtext || "";
 
         renderStoryFromModel();
 
-        // rebind (ticker node recreated)
-        bindEditable();
+        // (re)bind
+        // nothing to re-create, so no special handling
+        refreshFontButtonsActiveState();
       }
 
       // ===== Auth + Load =====
@@ -1104,9 +1337,7 @@
 
           model = {
             tickerText: data.tickerText || "New drops weekly",
-            heroLine1: data.heroLine1 || "Short form",
-            heroLine2: data.heroLine2 || "done",
-            heroItalic: data.heroItalic || "right",
+            heroHtml: String(data.heroHtml || "Short form<br>done <span class=\"hero-italic\">right</span>"),
             subtext: data.subtext || "",
             storySlides: Array.isArray(data.storySlides) ? data.storySlides.slice(0, MAX_SLIDES) : []
           };
@@ -1153,6 +1384,10 @@
         try {
           $("saveBtn").disabled = true;
           setStatus("Saving…");
+
+          // Make sure heroHtml is synced before save
+          model.heroHtml = getHeroHtmlFromDom();
+
           model.storySlides = Array.isArray(model.storySlides) ? model.storySlides.slice(0, MAX_SLIDES) : [];
           const out = await apiSave(model);
           original = clone(model);
@@ -1165,6 +1400,7 @@
         }
       });
 
+      // Start
       bindEditable();
       ensureAuthAndLoad();
     </script>
