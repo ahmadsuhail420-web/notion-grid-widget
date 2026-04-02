@@ -10,9 +10,9 @@
   "storySlides": [
     {
       "type": "video",
-      "src": "assets/story2.mp4",
+      "src": "/uploads/2026-04-02T08-39-59-631Z-widget-preview.png",
       "alt": "Story 2",
-      "caption": "",
+      "caption": "dfdfdf",
       "overlay": {
         "enabled": true,
         "opacity": 0.1
