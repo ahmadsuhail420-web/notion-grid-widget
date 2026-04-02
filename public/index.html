@@ -37,6 +37,13 @@
         backdrop-filter: blur(10px);
       }
 
+      .hero-italic{
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
       .nav {
         max-width: 1200px;
         margin: 0 auto;
@@ -543,16 +550,12 @@
       }
 
       // Hero text
-      const line1 = document.getElementById("heroLine1");
-      const line2 = document.getElementById("heroLine2");
-      const italic = document.getElementById("heroItalic");
-      const sub = document.getElementById("heroSubtext");
+     const heading = document.getElementById("heroHeading");
+const sub = document.getElementById("heroSubtext");
 
-      if (line1 && data.heroLine1) line1.textContent = data.heroLine1;
-      if (line2 && data.heroLine2) line2.textContent = data.heroLine2;
-      if (italic && data.heroItalic) italic.textContent = data.heroItalic;
-      if (sub && data.subtext) sub.textContent = data.subtext;
-
+if (heading && data.heroHtml) heading.innerHTML = data.heroHtml;
+if (sub && data.subtext) sub.textContent = data.subtext;
+      
       // Story slides + bars (EXACTLY N slides from JSON, max 5)
       const slidesWrap = document.getElementById("storySlides");
       const barsWrap = document.getElementById("storyBars");
