@@ -3,23 +3,113 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us • Sync & Style</title>
+    <title>About • Sync & Style</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-      :root { --bg:#efebe2; --text:#0d0d0d; }
+      :root { --bg:#efebe2; --text:#0d0d0d; --muted: rgba(13,13,13,.62); --border: rgba(13,13,13,.12); }
       *{ box-sizing:border-box; }
       body{ margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
-      .wrap{ max-width:900px; margin:0 auto; padding:48px 20px; }
+      .wrap{ max-width: 900px; margin:0 auto; padding: 48px 20px; }
+      h1{ margin:0; font-size: 44px; letter-spacing:-0.04em; }
+      .muted{ color: var(--muted); }
+      .grid{ margin-top: 18px; display:grid; gap: 18px; }
+      .img{
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow:hidden;
+        background: rgba(255,255,255,.5);
+      }
+      .img img{ width:100%; height:auto; display:block; }
+      .card{
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: rgba(255,255,255,.55);
+        padding: 16px;
+      }
+      .body{ white-space: pre-wrap; line-height: 1.8; }
       a{ color:inherit; }
+      .admin-outline{ outline: 2px solid rgba(90,167,255,.6); outline-offset: 4px; border-radius: 14px; }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <h1>About Us</h1>
-      <p>This is a separate page. Write your brand story here.</p>
-      <p><a href="index.html">← Back to Home</a></p>
+      <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+          <h1 id="heading">About Us</h1>
+          <div class="muted">Learn more about us.</div>
+        </div>
+        <a class="muted" href="index.html">← Back to Home</a>
+      </div>
+
+      <div class="grid">
+        <div class="img" id="imageWrap" hidden>
+          <img id="image" alt="About image" />
+        </div>
+
+        <div class="card" id="bodyCard">
+          <div class="body" id="body"></div>
+        </div>
+      </div>
     </div>
+
+    <script>
+      const isAdmin = new URLSearchParams(location.search).get("admin") === "1";
+
+      async function loadAbout(){
+        const res = await fetch("/content/about.json", { cache: "no-store" });
+        if (!res.ok) return { heading: "About Us", body: "", image: "" };
+        return res.json();
+      }
+
+      function sendSelect(target){
+        if (!isAdmin) return;
+        window.parent.postMessage({ __adminPreview: true, type: "select", page: "about", target }, location.origin);
+      }
+
+      function render(data){
+        document.getElementById("heading").textContent = data.heading || "About Us";
+        document.getElementById("body").textContent = data.body || "";
+
+        const wrap = document.getElementById("imageWrap");
+        const img = document.getElementById("image");
+        if (data.image) {
+          wrap.hidden = false;
+          img.src = data.image;
+        } else {
+          wrap.hidden = true;
+          img.removeAttribute("src");
+        }
+      }
+
+      if (isAdmin) {
+        document.getElementById("heading").addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          sendSelect("about");
+          document.getElementById("heading").classList.add("admin-outline");
+        });
+        document.getElementById("bodyCard").addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          sendSelect("about");
+          document.getElementById("bodyCard").classList.add("admin-outline");
+        });
+        document.addEventListener("click", () => {
+          document.querySelectorAll(".admin-outline").forEach((el) => el.classList.remove("admin-outline"));
+        });
+      }
+
+      window.addEventListener("message", (ev) => {
+        if (ev.origin !== location.origin) return;
+        const d = ev.data || {};
+        if (!d.__adminBuilder) return;
+        if (d.type === "applyAbout") render(d.data || {});
+      });
+
+      (async function init(){
+        render(await loadAbout());
+        if (isAdmin) sendSelect("about");
+      })();
+    </script>
   </body>
 </html>
