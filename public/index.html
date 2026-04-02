@@ -322,6 +322,29 @@
       .story-inner:hover .story-zone::after { opacity: 1; }
       .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
 
+      /* Slide overlay + caption (admin-recommended design) */
+      .story-overlay{
+        position:absolute;
+        inset: 0;
+        pointer-events:none;
+        opacity: var(--overlay-opacity, 0.45);
+        background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.0) 55%);
+        z-index: 1;
+      }
+      .story-caption{
+        position:absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        z-index: 2;
+        pointer-events:none;
+        color: rgba(255,255,255,0.95);
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: -0.01em;
+        text-shadow: 0 10px 30px rgba(0,0,0,.35);
+      }
+
       /* responsive */
       @media (max-width: 900px) {
         .hero-inner{
@@ -390,6 +413,13 @@
           margin-right: auto;
         }
       }
+
+      /* Admin preview outline (only when ?admin=1) */
+      .__adminOutline{
+        outline: 2px solid rgba(90,167,255,.6);
+        outline-offset: 4px;
+        border-radius: 14px;
+      }
     </style>
   </head>
 
@@ -455,7 +485,7 @@
           <div class="hero-left">
             <div class="ticker" aria-label="Announcement">
               <div class="ticker__track" id="tickerTrack">
-                <span class="ticker__item">New drops weekly</span>
+                <span class="ticker__item" id="tickerText">New drops weekly</span>
                 <span class="ticker__item" aria-hidden="true">New drops weekly</span>
                 <span class="ticker__item" aria-hidden="true">New drops weekly</span>
               </div>
@@ -497,6 +527,10 @@
                   />
                 </div>
 
+                <!-- overlay + caption (optional, updated when slides change) -->
+                <div class="story-overlay" id="storyOverlay" hidden></div>
+                <div class="story-caption" id="storyCaption" hidden></div>
+
                 <div class="story-bars" aria-hidden="true" id="storyBars">
                   <span class="bar"></span>
                   <span class="bar"></span>
@@ -523,8 +557,148 @@
         drawer.setAttribute("aria-hidden", String(expanded));
       });
 
+      const isAdmin = new URLSearchParams(location.search).get("admin") === "1";
       const MAX_SLIDES = 5;
 
+      // --- Hero word styling helpers (for admin iframe controls) ---
+      function normalizeHeroDom() {
+        const el = document.getElementById("heroHeading");
+        if (!el) return;
+
+        // Convert DIV/P from mobile enter into <br>
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_ELEMENT, null);
+        const blocks = [];
+        while (walker.nextNode()) {
+          const n = walker.currentNode;
+          if (n === el) continue;
+          const tag = n.tagName;
+          if (tag === "DIV" || tag === "P") blocks.push(n);
+        }
+        blocks.forEach((b) => {
+          const txt = b.textContent || "";
+          const br = document.createElement("br");
+          b.replaceWith(br, document.createTextNode(txt));
+        });
+
+        // Remove any spans except hero-italic
+        el.querySelectorAll("span").forEach((s) => {
+          if (!s.classList.contains("hero-italic")) {
+            s.replaceWith(document.createTextNode(s.textContent || ""));
+          } else {
+            s.className = "hero-italic";
+          }
+        });
+
+        // Enforce max 2 lines (max 1 <br>)
+        const brs = el.querySelectorAll("br");
+        if (brs.length > 1) {
+          for (let i = 1; i < brs.length; i++) brs[i].remove();
+        }
+
+        el.normalize();
+      }
+
+      function findWordRangeAroundSelection(rootEl) {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return null;
+
+        const range = sel.getRangeAt(0);
+        if (!rootEl.contains(range.commonAncestorContainer)) return null;
+
+        let node = sel.focusNode || range.startContainer;
+        let offset = sel.focusOffset ?? range.startOffset;
+
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const el = node;
+          const child = el.childNodes[Math.min(offset, el.childNodes.length - 1)];
+          node = child || el;
+          offset = 0;
+        }
+
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tn = node.firstChild;
+          if (!tn || tn.nodeType !== Node.TEXT_NODE) return null;
+          node = tn;
+          offset = Math.min(offset, (tn.nodeValue || "").length);
+        }
+
+        if (node.nodeType !== Node.TEXT_NODE) return null;
+        const text = node.nodeValue || "";
+        if (!text.trim()) return null;
+
+        const isWordChar = (ch) => /[A-Za-z0-9']/u.test(ch);
+
+        let start = Math.max(0, Math.min(offset, text.length));
+        let end = start;
+
+        if (start > 0 && start === end && !isWordChar(text[start]) && isWordChar(text[start - 1])) {
+          start = start - 1;
+          end = start;
+        }
+
+        while (start > 0 && isWordChar(text[start - 1])) start--;
+        while (end < text.length && isWordChar(text[end])) end++;
+
+        if (start === end) return null;
+
+        const wordRange = document.createRange();
+        wordRange.setStart(node, start);
+        wordRange.setEnd(node, end);
+        return wordRange;
+      }
+
+      function wrapRangeWithItalic(wordRange) {
+        if (!wordRange) return;
+
+        const commonEl =
+          wordRange.commonAncestorContainer.nodeType === Node.ELEMENT_NODE
+            ? wordRange.commonAncestorContainer
+            : wordRange.commonAncestorContainer.parentElement;
+
+        if (commonEl && commonEl.closest && commonEl.closest("span.hero-italic")) return;
+
+        const span = document.createElement("span");
+        span.className = "hero-italic";
+
+        const frag = wordRange.extractContents();
+        span.appendChild(frag);
+        wordRange.insertNode(span);
+
+        document.getElementById("heroHeading")?.normalize();
+      }
+
+      function unwrapItalicAtRange(wordRange) {
+        if (!wordRange) return;
+
+        const root = document.getElementById("heroHeading");
+        if (!root) return;
+
+        const spans = Array.from(root.querySelectorAll("span.hero-italic"));
+        const hit = spans.find((s) => {
+          const r = document.createRange();
+          r.selectNodeContents(s);
+          return !(
+            wordRange.compareBoundaryPoints(Range.END_TO_START, r) >= 0 ||
+            wordRange.compareBoundaryPoints(Range.START_TO_END, r) <= 0
+          );
+        });
+
+        if (!hit) return;
+        hit.replaceWith(document.createTextNode(hit.textContent || ""));
+        root.normalize();
+      }
+
+      function getHeroHtmlFromDom() {
+        normalizeHeroDom();
+        const el = document.getElementById("heroHeading");
+        if (!el) return "";
+        return el.innerHTML
+          .replace(/<br\s*\/?>/gi, "<br>")
+          .replace(/\s*<br>\s*/g, "<br>")
+          .trim();
+      }
+
+      // ===== Home content loading =====
       async function loadHomeContent() {
         try {
           const res = await fetch("/content/home.json", { cache: "no-store" });
@@ -533,20 +707,43 @@
 
           // Ticker
           const track = document.getElementById("tickerTrack");
+          const tickerTextEl = document.getElementById("tickerText");
           if (track && data.tickerText) {
             const t = String(data.tickerText);
+            // Ensure first item has id for admin selection
             track.innerHTML = `
-              <span class="ticker__item">${t}</span>
+              <span class="ticker__item" id="tickerText">${t}</span>
               <span class="ticker__item" aria-hidden="true">${t}</span>
               <span class="ticker__item" aria-hidden="true">${t}</span>
             `;
+          } else if (tickerTextEl) {
+            tickerTextEl.id = "tickerText";
           }
 
-          // Hero text (heroHtml)
+          // Hero text (heroHtml) - IMPORTANT: innerHTML, not textContent
           const heading = document.getElementById("heroHeading");
           const sub = document.getElementById("heroSubtext");
-          if (heading && data.heroHtml) heading.innerHTML = data.heroHtml;
+          if (heading && data.heroHtml) {
+            heading.innerHTML = String(data.heroHtml);
+            normalizeHeroDom();
+          }
           if (sub && data.subtext) sub.textContent = data.subtext;
+
+          // Apply theme tokens
+          if (data.theme && typeof data.theme === "object") {
+            if (heading && data.theme.headingColor) heading.style.color = data.theme.headingColor;
+            if (sub && data.theme.subtextColor) sub.style.color = data.theme.subtextColor;
+
+            const align = (data.theme.heroAlign === "center") ? "center" : "left";
+            if (heading) heading.style.textAlign = align;
+            if (sub) sub.style.textAlign = align;
+
+            const heroLeft = document.querySelector(".hero-left");
+            if (heroLeft && window.matchMedia("(max-width: 760px)").matches === false) {
+              // On desktop/tablet, align left or center via flex alignment
+              heroLeft.style.alignItems = (align === "center") ? "center" : "flex-start";
+            }
+          }
 
           // Story slides + bars (EXACTLY N slides from JSON, max 5)
           const slidesWrap = document.getElementById("storySlides");
@@ -554,6 +751,9 @@
 
           const rawSlides = Array.isArray(data.storySlides) ? data.storySlides : [];
           const slides = rawSlides.slice(0, MAX_SLIDES);
+
+          // store in memory for overlay/caption rendering
+          window.__HOME_SLIDES__ = slides;
 
           if (slidesWrap && barsWrap && slides.length) {
             slidesWrap.innerHTML = "";
@@ -565,13 +765,14 @@
               bar.className = "bar" + (i === 0 ? " is-active" : "");
               barsWrap.appendChild(bar);
 
-              // slides
+              // slides: add data-slide-index for admin inspector selection
               if (s.type === "video") {
                 const v = document.createElement("video");
                 v.className = "story-vid" + (i === 0 ? " is-active" : "");
                 v.muted = true;
                 v.playsInline = true;
                 v.preload = "metadata";
+                v.setAttribute("data-slide-index", String(i));
 
                 const src = document.createElement("source");
                 src.src = s.src;
@@ -584,16 +785,59 @@
                 img.className = "story-img" + (i === 0 ? " is-active" : "");
                 img.src = s.src;
                 img.alt = s.alt || `Story ${i + 1}`;
+                img.setAttribute("data-slide-index", String(i));
                 slidesWrap.appendChild(img);
               }
             });
+
+            // update overlay/caption for active slide
+            updateOverlayCaptionForIndex(0);
           }
         } catch {
           // fallback to existing hardcoded content
         }
       }
 
-      // Story slider (images + videos)
+      // ===== Slide overlay + caption rendering =====
+      function getSlidesNow() {
+        const storyEl = document.getElementById("story");
+        if (!storyEl) return [];
+        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
+      }
+
+      function updateOverlayCaptionForIndex(i) {
+        const overlayEl = document.getElementById("storyOverlay");
+        const captionEl = document.getElementById("storyCaption");
+        const slides = window.__HOME_SLIDES__ || [];
+
+        const s = slides[i];
+        if (!overlayEl || !captionEl || !s) {
+          if (overlayEl) overlayEl.hidden = true;
+          if (captionEl) captionEl.hidden = true;
+          return;
+        }
+
+        const overlayEnabled = !(s.overlay && s.overlay.enabled === false);
+        const opacity = (s.overlay && typeof s.overlay.opacity === "number") ? s.overlay.opacity : 0.45;
+
+        if (overlayEnabled) {
+          overlayEl.hidden = false;
+          overlayEl.style.setProperty("--overlay-opacity", String(Math.max(0, Math.min(0.85, opacity))));
+        } else {
+          overlayEl.hidden = true;
+        }
+
+        const cap = (s.caption || "").trim();
+        if (cap) {
+          captionEl.hidden = false;
+          captionEl.textContent = cap;
+        } else {
+          captionEl.hidden = true;
+          captionEl.textContent = "";
+        }
+      }
+
+      // ===== Story slider (images + videos) =====
       const storyEl = document.getElementById("story");
       const btnPrev = storyEl.querySelector(".story-zone.left");
       const btnNext = storyEl.querySelector(".story-zone.right");
@@ -613,10 +857,6 @@
       function clearTimer() {
         if (timer) clearTimeout(timer);
         timer = null;
-      }
-
-      function getSlidesNow() {
-        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
       }
 
       function stopAllVideos() {
@@ -676,6 +916,9 @@
         clearTimer();
         const slidesNow = getSlidesNow();
 
+        // Admin preview: no autoplay (so it doesn't fight with selecting slides)
+        if (isAdmin) return;
+
         // IMPORTANT: if only 0 or 1 slide, don't auto-advance
         if (slidesNow.length <= 1) return;
 
@@ -694,6 +937,7 @@
           index = 0;
           slidesNow[0].classList.add("is-active");
           renderBars(1);
+          updateOverlayCaptionForIndex(0);
           clearTimer();
           return;
         }
@@ -718,9 +962,25 @@
 
         index = nextIndex;
         renderBars(slidesNow.length);
+        updateOverlayCaptionForIndex(index);
 
         activateVideo(next);
         restartTimerForActiveSlide();
+      }
+
+      // ===== Admin iframe hooks =====
+      function adminSend(payload) {
+        if (!isAdmin) return;
+        window.parent.postMessage({ __adminPreview: true, ...payload }, location.origin);
+      }
+
+      function adminClearOutline() {
+        document.querySelectorAll(".__adminOutline").forEach((x) => x.classList.remove("__adminOutline"));
+      }
+
+      function adminOutline(el) {
+        adminClearOutline();
+        if (el) el.classList.add("__adminOutline");
       }
 
       // Init (load JSON first, then initialize slider on whatever slides exist)
@@ -730,6 +990,7 @@
 
         slidesNow.forEach((s, i) => s.classList.toggle("is-active", i === 0));
         renderBars(slidesNow.length);
+        updateOverlayCaptionForIndex(0);
         activateVideo(slidesNow[0]);
         restartTimerForActiveSlide();
 
@@ -745,6 +1006,138 @@
 
         storyEl.addEventListener("mouseenter", () => clearTimer());
         storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
+
+        // Admin mode behaviors
+        if (isAdmin) {
+          // Disable navigation links/buttons inside iframe
+          document.addEventListener("click", (e) => {
+            const a = e.target && e.target.closest ? e.target.closest("a") : null;
+            if (a) { e.preventDefault(); e.stopPropagation(); }
+          }, true);
+
+          // Element selection
+          const ticker = document.getElementById("tickerText");
+          const hero = document.getElementById("heroHeading");
+          const sub = document.getElementById("heroSubtext");
+
+          ticker?.addEventListener("click", (e) => {
+            e.preventDefault(); e.stopPropagation();
+            adminOutline(ticker);
+            adminSend({ type: "select", page: "home", target: "tickerText" });
+          });
+
+          hero?.addEventListener("click", (e) => {
+            e.preventDefault(); e.stopPropagation();
+            adminOutline(hero);
+            adminSend({ type: "select", page: "home", target: "heroHeading" });
+          });
+
+          sub?.addEventListener("click", (e) => {
+            e.preventDefault(); e.stopPropagation();
+            adminOutline(sub);
+            adminSend({ type: "select", page: "home", target: "subtext" });
+          });
+
+          // Slide selection (click on actual slide media)
+          document.addEventListener("click", (e) => {
+            const slideEl = e.target && e.target.closest ? e.target.closest("[data-slide-index]") : null;
+            if (!slideEl) return;
+            e.preventDefault(); e.stopPropagation();
+            const idx = Number(slideEl.getAttribute("data-slide-index") || "0");
+            adminOutline(slideEl);
+            adminSend({ type: "select", page: "home", target: "slide:" + idx });
+          }, true);
+
+          // Make hero editable in preview and notify parent about heroHtml changes
+          if (hero) {
+            hero.setAttribute("contenteditable", "true");
+            hero.setAttribute("spellcheck", "false");
+
+            hero.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") {
+                normalizeHeroDom();
+                const hasBr = hero.querySelector("br");
+                if (hasBr) { e.preventDefault(); return; }
+                e.preventDefault();
+                document.execCommand("insertHTML", false, "<br>");
+              }
+            });
+
+            hero.addEventListener("input", () => {
+              const html = getHeroHtmlFromDom();
+              adminSend({ type: "homeHeroHtml", heroHtml: html });
+            });
+          }
+        }
+      });
+
+      // Receive updates from admin builder
+      window.addEventListener("message", (ev) => {
+        if (ev.origin !== location.origin) return;
+        const d = ev.data || {};
+        if (!d.__adminBuilder) return;
+
+        if (d.type === "apply" && d.page === "home") {
+          const ticker = document.getElementById("tickerText");
+          const sub = document.getElementById("heroSubtext");
+
+          if (d.target === "tickerText" && ticker) ticker.textContent = d.value || "";
+          if (d.target === "subtext" && sub) sub.textContent = d.value || "";
+        }
+
+        if (d.type === "applyStyle" && d.page === "home") {
+          const hero = document.getElementById("heroHeading");
+          const sub = document.getElementById("heroSubtext");
+          const style = d.style || {};
+
+          if (d.target === "heroHeading" && hero) {
+            if (style.color != null) hero.style.color = style.color || "";
+            if (style.align) hero.style.textAlign = style.align;
+          }
+          if (d.target === "subtext" && sub) {
+            if (style.color != null) sub.style.color = style.color || "";
+            if (style.align) sub.style.textAlign = style.align;
+          }
+          // align container on desktop
+          if (style.align && window.matchMedia("(max-width: 760px)").matches === false) {
+            const heroLeft = document.querySelector(".hero-left");
+            if (heroLeft) heroLeft.style.alignItems = (style.align === "center") ? "center" : "flex-start";
+          }
+        }
+
+        if (d.type === "heroWordStyle" && d.page === "home") {
+          const hero = document.getElementById("heroHeading");
+          if (!hero) return;
+          normalizeHeroDom();
+          const range = findWordRangeAroundSelection(hero);
+          if (!range) return;
+
+          if (d.action === "italic") wrapRangeWithItalic(range);
+          if (d.action === "normal") unwrapItalicAtRange(range);
+
+          // report new heroHtml
+          if (isAdmin) {
+            adminSend({ type: "homeHeroHtml", heroHtml: getHeroHtmlFromDom() });
+          }
+        }
+
+        if (d.type === "applySlide" && d.page === "home") {
+          // Update in-memory slides and re-render completely for simplicity
+          const slides = window.__HOME_SLIDES__ || [];
+          const idx = Number(d.index || 0);
+          slides[idx] = d.slide;
+          window.__HOME_SLIDES__ = slides;
+          location.reload();
+        }
+
+        if (d.type === "rerenderSlides" && d.page === "home") {
+          window.__HOME_SLIDES__ = d.slides || [];
+          location.reload();
+        }
+
+        if (d.type === "clearHighlight") {
+          adminClearOutline();
+        }
       });
     </script>
   </body>
