@@ -37,12 +37,13 @@
         backdrop-filter: blur(10px);
       }
 
+      /* Hero HTML saved from admin uses this class */
       .hero-italic{
-  font-family: "Playfair Display", serif;
-  font-style: italic;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
 
       .nav {
         max-width: 1200px;
@@ -154,14 +155,6 @@
       }
       @media (min-width: 1200px){
         h1{ font-size: 118px; } /* laptop/desktop (won't shrink) */
-      }
-
-      /* ✅ Updated: italic should not be too thin */
-      .italic {
-        font-family: "Playfair Display", serif;
-        font-style: italic;
-        font-weight: 600;
-        letter-spacing: -0.02em;
       }
 
       .subtext {
@@ -469,9 +462,9 @@
             </div>
 
             <h1 id="heroHeading">
-  Short form<br />
-  done <span class="italic">right</span>
-</h1>
+              Short form<br />
+              done <span class="hero-italic">right</span>
+            </h1>
 
             <p class="subtext" id="heroSubtext">
               We combine content, management, and paid media to help brands grow and convert on the social platforms that matter most to you.
@@ -519,239 +512,240 @@
       </section>
     </main>
 
-<script>
-  // Mobile menu
-  const menuBtn = document.getElementById("menuBtn");
-  const drawer = document.getElementById("mobileDrawer");
+    <script>
+      // Mobile menu
+      const menuBtn = document.getElementById("menuBtn");
+      const drawer = document.getElementById("mobileDrawer");
 
-  menuBtn?.addEventListener("click", () => {
-    const expanded = menuBtn.getAttribute("aria-expanded") === "true";
-    menuBtn.setAttribute("aria-expanded", String(!expanded));
-    drawer.setAttribute("aria-hidden", String(expanded));
-  });
+      menuBtn?.addEventListener("click", () => {
+        const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+        menuBtn.setAttribute("aria-expanded", String(!expanded));
+        drawer.setAttribute("aria-hidden", String(expanded));
+      });
 
-  const MAX_SLIDES = 5;
+      const MAX_SLIDES = 5;
 
-  async function loadHomeContent() {
-    try {
-      const res = await fetch("/content/home.json", { cache: "no-store" });
-      if (!res.ok) return;
-      const data = await res.json();
+      async function loadHomeContent() {
+        try {
+          const res = await fetch("/content/home.json", { cache: "no-store" });
+          if (!res.ok) return;
+          const data = await res.json();
 
-      // Ticker
-      const track = document.getElementById("tickerTrack");
-      if (track && data.tickerText) {
-        const t = String(data.tickerText);
-        track.innerHTML = `
-          <span class="ticker__item">${t}</span>
-          <span class="ticker__item" aria-hidden="true">${t}</span>
-          <span class="ticker__item" aria-hidden="true">${t}</span>
-        `;
+          // Ticker
+          const track = document.getElementById("tickerTrack");
+          if (track && data.tickerText) {
+            const t = String(data.tickerText);
+            track.innerHTML = `
+              <span class="ticker__item">${t}</span>
+              <span class="ticker__item" aria-hidden="true">${t}</span>
+              <span class="ticker__item" aria-hidden="true">${t}</span>
+            `;
+          }
+
+          // Hero text (heroHtml)
+          const heading = document.getElementById("heroHeading");
+          const sub = document.getElementById("heroSubtext");
+          if (heading && data.heroHtml) heading.innerHTML = data.heroHtml;
+          if (sub && data.subtext) sub.textContent = data.subtext;
+
+          // Story slides + bars (EXACTLY N slides from JSON, max 5)
+          const slidesWrap = document.getElementById("storySlides");
+          const barsWrap = document.getElementById("storyBars");
+
+          const rawSlides = Array.isArray(data.storySlides) ? data.storySlides : [];
+          const slides = rawSlides.slice(0, MAX_SLIDES);
+
+          if (slidesWrap && barsWrap && slides.length) {
+            slidesWrap.innerHTML = "";
+            barsWrap.innerHTML = "";
+
+            slides.forEach((s, i) => {
+              // bars
+              const bar = document.createElement("span");
+              bar.className = "bar" + (i === 0 ? " is-active" : "");
+              barsWrap.appendChild(bar);
+
+              // slides
+              if (s.type === "video") {
+                const v = document.createElement("video");
+                v.className = "story-vid" + (i === 0 ? " is-active" : "");
+                v.muted = true;
+                v.playsInline = true;
+                v.preload = "metadata";
+
+                const src = document.createElement("source");
+                src.src = s.src;
+                src.type = "video/mp4";
+                v.appendChild(src);
+
+                slidesWrap.appendChild(v);
+              } else {
+                const img = document.createElement("img");
+                img.className = "story-img" + (i === 0 ? " is-active" : "");
+                img.src = s.src;
+                img.alt = s.alt || `Story ${i + 1}`;
+                slidesWrap.appendChild(img);
+              }
+            });
+          }
+        } catch {
+          // fallback to existing hardcoded content
+        }
       }
 
-      // Hero text
-     const heading = document.getElementById("heroHeading");
-const sub = document.getElementById("heroSubtext");
+      // Story slider (images + videos)
+      const storyEl = document.getElementById("story");
+      const btnPrev = storyEl.querySelector(".story-zone.left");
+      const btnNext = storyEl.querySelector(".story-zone.right");
 
-if (heading && data.heroHtml) heading.innerHTML = data.heroHtml;
-if (sub && data.subtext) sub.textContent = data.subtext;
-      
-      // Story slides + bars (EXACTLY N slides from JSON, max 5)
-      const slidesWrap = document.getElementById("storySlides");
-      const barsWrap = document.getElementById("storyBars");
+      const DEFAULT_MS = 3500;
+      const MAX_VIDEO_MS = 15000;
 
-      const rawSlides = Array.isArray(data.storySlides) ? data.storySlides : [];
-      const slides = rawSlides.slice(0, MAX_SLIDES);
+      let index = 0;
+      let timer = null;
 
-      if (slidesWrap && barsWrap && slides.length) {
-        slidesWrap.innerHTML = "";
-        barsWrap.innerHTML = "";
+      const isVideo = (el) => el && el.tagName === "VIDEO";
 
-        slides.forEach((s, i) => {
-          // bars
-          const bar = document.createElement("span");
-          bar.className = "bar" + (i === 0 ? " is-active" : "");
-          barsWrap.appendChild(bar);
+      function setBarDuration(ms) {
+        storyEl.style.setProperty("--story-duration", `${ms}ms`);
+      }
 
-          // slides
-          if (s.type === "video") {
-            const v = document.createElement("video");
-            v.className = "story-vid" + (i === 0 ? " is-active" : "");
-            v.muted = true;
-            v.playsInline = true;
-            v.preload = "metadata";
+      function clearTimer() {
+        if (timer) clearTimeout(timer);
+        timer = null;
+      }
 
-            const src = document.createElement("source");
-            src.src = s.src;
-            src.type = "video/mp4";
-            v.appendChild(src);
+      function getSlidesNow() {
+        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
+      }
 
-            slidesWrap.appendChild(v);
-          } else {
-            const img = document.createElement("img");
-            img.className = "story-img" + (i === 0 ? " is-active" : "");
-            img.src = s.src;
-            img.alt = s.alt || `Story ${i + 1}`;
-            slidesWrap.appendChild(img);
-          }
+      function stopAllVideos() {
+        getSlidesNow().forEach((el) => {
+          if (!isVideo(el)) return;
+          try {
+            el.pause();
+            el.currentTime = 0;
+          } catch {}
         });
       }
-    } catch {
-      // fallback to existing hardcoded content
-    }
-  }
 
-  // Story slider (images + videos)
-  const storyEl = document.getElementById("story");
-  const btnPrev = storyEl.querySelector(".story-zone.left");
-  const btnNext = storyEl.querySelector(".story-zone.right");
-
-  const DEFAULT_MS = 3500;
-  const MAX_VIDEO_MS = 15000;
-
-  let index = 0;
-  let timer = null;
-
-  const isVideo = (el) => el && el.tagName === "VIDEO";
-
-  function setBarDuration(ms) {
-    storyEl.style.setProperty("--story-duration", `${ms}ms`);
-  }
-
-  function clearTimer() {
-    if (timer) clearTimeout(timer);
-    timer = null;
-  }
-
-  function getSlidesNow() {
-    return Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
-  }
-
-  function stopAllVideos() {
-    getSlidesNow().forEach((el) => {
-      if (!isVideo(el)) return;
-      try {
-        el.pause();
-        el.currentTime = 0;
-      } catch {}
-    });
-  }
-
-  function getDurationForSlide(el) {
-    if (!isVideo(el)) return DEFAULT_MS;
-    const d = el.duration;
-    if (Number.isFinite(d) && d > 0) return Math.min(Math.round(d * 1000), MAX_VIDEO_MS);
-    return DEFAULT_MS;
-  }
-
-  function renderBars(slidesCount) {
-    const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
-    bars.forEach((b, i) => {
-      b.classList.remove("is-active", "is-filled");
-      if (i < index) b.classList.add("is-filled");
-      if (i === index) b.classList.add("is-active");
-    });
-
-    if (bars.length !== slidesCount) {
-      const barsWrap = document.getElementById("storyBars");
-      if (!barsWrap) return;
-      barsWrap.innerHTML = "";
-      for (let i = 0; i < slidesCount; i++) {
-        const bar = document.createElement("span");
-        bar.className = "bar" + (i === 0 ? " is-active" : "");
-        barsWrap.appendChild(bar);
+      function getDurationForSlide(el) {
+        if (!isVideo(el)) return DEFAULT_MS;
+        const d = el.duration;
+        if (Number.isFinite(d) && d > 0) return Math.min(Math.round(d * 1000), MAX_VIDEO_MS);
+        return DEFAULT_MS;
       }
-    }
-  }
 
-  async function activateVideo(el) {
-    if (!isVideo(el)) return;
+      function renderBars(slidesCount) {
+        const bars = Array.from(storyEl.querySelectorAll(".story-bars .bar"));
+        bars.forEach((b, i) => {
+          b.classList.remove("is-active", "is-filled");
+          if (i < index) b.classList.add("is-filled");
+          if (i === index) b.classList.add("is-active");
+        });
 
-    if (!el.dataset.storyBound) {
-      el.addEventListener("ended", () => showSlide(index + 1));
-      el.dataset.storyBound = "1";
-    }
+        // safety (if bars mismatch)
+        if (bars.length !== slidesCount) {
+          const barsWrap = document.getElementById("storyBars");
+          if (barsWrap) {
+            barsWrap.innerHTML = "";
+            for (let i = 0; i < slidesCount; i++) {
+              const bar = document.createElement("span");
+              bar.className = "bar" + (i === 0 ? " is-active" : "");
+              barsWrap.appendChild(bar);
+            }
+          }
+        }
+      }
 
-    try {
-      el.currentTime = 0;
-      await el.play();
-    } catch {}
-  }
+      async function activateVideo(el) {
+        if (!isVideo(el)) return;
 
-  function restartTimerForActiveSlide() {
-    clearTimer();
-    const slidesNow = getSlidesNow();
+        if (!el.dataset.storyBound) {
+          el.addEventListener("ended", () => showSlide(index + 1));
+          el.dataset.storyBound = "1";
+        }
 
-    // IMPORTANT: if only 0 or 1 slide, don't auto-advance
-    if (slidesNow.length <= 1) return;
+        try {
+          el.currentTime = 0;
+          await el.play();
+        } catch {}
+      }
 
-    const active = slidesNow[index];
-    const ms = getDurationForSlide(active);
-    setBarDuration(ms);
-    timer = setTimeout(() => showSlide(index + 1), ms);
-  }
+      function restartTimerForActiveSlide() {
+        clearTimer();
+        const slidesNow = getSlidesNow();
 
-  function showSlide(nextIndex) {
-    const slidesNow = getSlidesNow();
-    if (slidesNow.length === 0) return;
+        // IMPORTANT: if only 0 or 1 slide, don't auto-advance
+        if (slidesNow.length <= 1) return;
 
-    // IMPORTANT: if only 1 slide, keep it active
-    if (slidesNow.length === 1) {
-      index = 0;
-      slidesNow[0].classList.add("is-active");
-      renderBars(1);
-      clearTimer();
-      return;
-    }
+        const active = slidesNow[index];
+        const ms = getDurationForSlide(active);
+        setBarDuration(ms);
+        timer = setTimeout(() => showSlide(index + 1), ms);
+      }
 
-    if (nextIndex < 0) nextIndex = slidesNow.length - 1;
-    if (nextIndex >= slidesNow.length) nextIndex = 0;
+      function showSlide(nextIndex) {
+        const slidesNow = getSlidesNow();
+        if (slidesNow.length === 0) return;
 
-    clearTimer();
+        // IMPORTANT: if only 1 slide, keep it active
+        if (slidesNow.length === 1) {
+          index = 0;
+          slidesNow[0].classList.add("is-active");
+          renderBars(1);
+          clearTimer();
+          return;
+        }
 
-    const current = slidesNow[index];
-    const next = slidesNow[nextIndex];
+        if (nextIndex < 0) nextIndex = slidesNow.length - 1;
+        if (nextIndex >= slidesNow.length) nextIndex = 0;
 
-    stopAllVideos();
+        clearTimer();
 
-    if (current) {
-      current.classList.remove("is-active");
-      current.classList.add("is-exiting");
-      setTimeout(() => current.classList.remove("is-exiting"), 700);
-    }
+        const current = slidesNow[index];
+        const next = slidesNow[nextIndex];
 
-    if (next) next.classList.add("is-active");
+        stopAllVideos();
 
-    index = nextIndex;
-    renderBars(slidesNow.length);
+        if (current) {
+          current.classList.remove("is-active");
+          current.classList.add("is-exiting");
+          setTimeout(() => current.classList.remove("is-exiting"), 700);
+        }
 
-    activateVideo(next);
-    restartTimerForActiveSlide();
-  }
+        if (next) next.classList.add("is-active");
 
-  // Init (load JSON first, then initialize slider on whatever slides exist)
-  loadHomeContent().finally(() => {
-    const slidesNow = getSlidesNow();
-    index = 0;
+        index = nextIndex;
+        renderBars(slidesNow.length);
 
-    slidesNow.forEach((s, i) => s.classList.toggle("is-active", i === 0));
-    renderBars(slidesNow.length);
-    activateVideo(slidesNow[0]);
-    restartTimerForActiveSlide();
+        activateVideo(next);
+        restartTimerForActiveSlide();
+      }
 
-    btnPrev?.addEventListener("click", (e) => {
-      e.preventDefault();
-      showSlide(index - 1);
-    });
+      // Init (load JSON first, then initialize slider on whatever slides exist)
+      loadHomeContent().finally(() => {
+        const slidesNow = getSlidesNow();
+        index = 0;
 
-    btnNext?.addEventListener("click", (e) => {
-      e.preventDefault();
-      showSlide(index + 1);
-    });
+        slidesNow.forEach((s, i) => s.classList.toggle("is-active", i === 0));
+        renderBars(slidesNow.length);
+        activateVideo(slidesNow[0]);
+        restartTimerForActiveSlide();
 
-    storyEl.addEventListener("mouseenter", () => clearTimer());
-    storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
-  });
-</script>
+        btnPrev?.addEventListener("click", (e) => {
+          e.preventDefault();
+          showSlide(index - 1);
+        });
+
+        btnNext?.addEventListener("click", (e) => {
+          e.preventDefault();
+          showSlide(index + 1);
+        });
+
+        storyEl.addEventListener("mouseenter", () => clearTimer());
+        storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
+      });
+    </script>
   </body>
 </html>
