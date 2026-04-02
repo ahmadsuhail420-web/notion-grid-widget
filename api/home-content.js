@@ -115,29 +115,55 @@ function clampStr(v, n) {
   return String(v || "").slice(0, n);
 }
 
+function sanitizeHeroHtml(input) {
+  let html = String(input || "").trim();
+
+  // normalize line breaks
+  html = html.replace(/\r\n|\r/g, "\n");
+
+  // remove any tags except <br> and <span class="hero-italic">
+  // Strategy: escape everything, then selectively unescape allowed patterns.
+
+  // First escape < and >
+  html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // Allow <br> / <br/> / <br />
+  html = html.replace(/&lt;br\s*\/?\s*&gt;/gi, "<br>");
+
+  // Allow exactly: <span class="hero-italic"> ... </span>
+  html = html.replace(
+    /&lt;span\s+class=&quot;hero-italic&quot;\s*&gt;/gi,
+    '<span class="hero-italic">'
+  );
+  html = html.replace(/&lt;\/span\s*&gt;/gi, "</span>");
+
+  // Enforce max 2 lines: allow at most one <br>
+  const parts = html.split("<br>");
+  if (parts.length > 2) {
+    html = parts.slice(0, 2).join("<br>");
+  }
+
+  // Trim spaces around line breaks
+  html = html.replace(/\s*<br>\s*/g, "<br>");
+
+  return html;
+}
+
 function normalizeHomeJson(input) {
   const storySlides = Array.isArray(input.storySlides)
     ? input.storySlides
-        // remove empty slides
-        .filter((s) => {
-          const src = String((s && s.src) || "").trim();
-          return src.length > 0;
-        })
-        // normalize
+        .filter((s) => String((s && s.src) || "").trim().length > 0)
         .map((s) => ({
           type: s && s.type === "video" ? "video" : "image",
           src: clampStr(String((s && s.src) || "").trim(), 500),
           alt: clampStr(String((s && s.alt) || "").trim(), 120)
         }))
-        // max 5
         .slice(0, 5)
     : [];
 
   return {
     tickerText: clampStr(input.tickerText, 120),
-    heroLine1: clampStr(input.heroLine1, 80),
-    heroLine2: clampStr(input.heroLine2, 80),
-    heroItalic: clampStr(input.heroItalic, 80),
+    heroHtml: clampStr(sanitizeHeroHtml(input.heroHtml), 2000),
     subtext: clampStr(input.subtext, 400),
     storySlides
   };
