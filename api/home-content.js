@@ -76,10 +76,17 @@ async function gh(path, { method = "GET", body } = {}) {
 
   const text = await res.text();
   let data = null;
-  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
 
   if (!res.ok) {
-    const msg = typeof data === "string" ? data : (data && data.message) || "GitHub API error";
+    const msg =
+      typeof data === "string"
+        ? data
+        : (data && data.message) || "GitHub API error";
     throw new Error(msg);
   }
   return data;
@@ -87,7 +94,9 @@ async function gh(path, { method = "GET", body } = {}) {
 
 async function getFile(path) {
   const data = await gh(
-    `/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(BRANCH)}`
+    `/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(
+      path
+    )}?ref=${encodeURIComponent(BRANCH)}`
   );
   const content = Buffer.from(data.content || "", "base64").toString("utf8");
   return { content, sha: data.sha };
@@ -121,16 +130,13 @@ function sanitizeHeroHtml(input) {
   // normalize line breaks
   html = html.replace(/\r\n|\r/g, "\n");
 
-  // remove any tags except <br> and <span class="hero-italic">
-  // Strategy: escape everything, then selectively unescape allowed patterns.
-
-  // First escape < and >
+  // escape all tags
   html = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-  // Allow <br> / <br/> / <br />
+  // allow <br>
   html = html.replace(/&lt;br\s*\/?\s*&gt;/gi, "<br>");
 
-  // Allow exactly: <span class="hero-italic"> ... </span>
+  // allow exactly: <span class="hero-italic"> ... </span>
   html = html.replace(
     /&lt;span\s+class=&quot;hero-italic&quot;\s*&gt;/gi,
     '<span class="hero-italic">'
@@ -139,9 +145,7 @@ function sanitizeHeroHtml(input) {
 
   // Enforce max 2 lines: allow at most one <br>
   const parts = html.split("<br>");
-  if (parts.length > 2) {
-    html = parts.slice(0, 2).join("<br>");
-  }
+  if (parts.length > 2) html = parts.slice(0, 2).join("<br>");
 
   // Trim spaces around line breaks
   html = html.replace(/\s*<br>\s*/g, "<br>");
@@ -171,7 +175,13 @@ function normalizeHomeJson(input) {
 
 module.exports = async function handler(req, res) {
   try {
-    if (!OWNER || !REPO) return sendText(res, 500, "Missing GITHUB_REPO_OWNER/GITHUB_REPO_NAME env vars.");
+    if (!OWNER || !REPO) {
+      return sendText(
+        res,
+        500,
+        "Missing GITHUB_REPO_OWNER/GITHUB_REPO_NAME env vars."
+      );
+    }
     if (!requireAuth(req, res)) return;
 
     if (req.method === "GET") {
@@ -210,14 +220,11 @@ module.exports = async function handler(req, res) {
 
       if (!filename || !base64) return sendText(res, 400, "Missing filename/base64.");
 
-      // Unique filename
       const ext = filename.includes(".") ? filename.split(".").pop() : "";
       const stamp = new Date().toISOString().replace(/[:.]/g, "-");
       const finalName = `${stamp}-${Math.random().toString(16).slice(2)}${ext ? "." + ext : ""}`;
       const path = `${UPLOAD_DIR}/${finalName}`;
 
-      // IMPORTANT:
-      // payload.base64 should be raw file bytes base64 (no "data:*;base64," prefix).
       await gh(`/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(path)}`, {
         method: "PUT",
         body: {
@@ -227,7 +234,6 @@ module.exports = async function handler(req, res) {
         }
       });
 
-      // URL served by the same site
       const url = `/uploads/${finalName}`;
       return sendJson(res, 200, { ok: true, url });
     }
