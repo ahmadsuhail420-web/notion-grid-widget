@@ -37,7 +37,6 @@
         backdrop-filter: blur(10px);
       }
 
-      /* Hero HTML saved from admin uses this class */
       .hero-italic{
         font-family: "Playfair Display", serif;
         font-style: italic;
@@ -70,7 +69,6 @@
 
       .nav-cta { display: inline-flex; align-items: center; gap: 14px; }
 
-      /* Icons: NO circle */
       .icon-btn{
         display: inline-flex;
         align-items: center;
@@ -90,9 +88,8 @@
         stroke: rgba(13,13,13,0.9);
       }
 
-      /* Menu button: hidden on desktop, shown only on mobile */
       .menu-btn{
-        display: none; /* desktop: hidden */
+        display: none;
         width: 28px;
         height: 28px;
         padding: 0;
@@ -116,7 +113,6 @@
       }
       .mobile-drawer a:hover { background: rgba(13, 13, 13, 0.06); }
 
-      /* ===== Hero ===== */
       .hero-inner {
         max-width: 1200px;
         width: 100%;
@@ -142,19 +138,18 @@
         min-width: 0;
       }
 
-      /* 3 sizes only (mobile/tablet/laptop) + not too bold */
       h1{
         margin: 0;
-        font-size: 56px;        /* mobile */
+        font-size: 56px;
         line-height: 0.90;
         letter-spacing: -0.05em;
         font-weight: 600;
       }
       @media (min-width: 768px){
-        h1{ font-size: 86px; }  /* tablet */
+        h1{ font-size: 86px; }
       }
       @media (min-width: 1200px){
-        h1{ font-size: 118px; } /* laptop/desktop */
+        h1{ font-size: 118px; }
       }
 
       .subtext {
@@ -188,7 +183,6 @@
       }
       .btn-ghost:hover { background: rgba(13, 13, 13, 0.06); }
 
-      /* ticker */
       .ticker {
         width: fit-content;
         max-width: 180px;
@@ -208,7 +202,6 @@
       @keyframes ticker-move { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
       @media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
 
-      /* story card */
       .hero-right { flex: none; }
 
       .story-card {
@@ -216,10 +209,8 @@
         display: flex;
         place-content: center;
         align-items: center;
-
         position: relative;
         overflow: visible;
-
         border: 8px solid #fff;
         border-radius: 24px;
         aspect-ratio: 0.56375;
@@ -232,7 +223,6 @@
         border-radius: 16px;
         overflow: hidden;
         background: #fff;
-
         position: relative;
         user-select: none;
         box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
@@ -248,7 +238,6 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-
         opacity: 0;
         transform: translateX(10%);
         transition: opacity 500ms ease, transform 700ms ease;
@@ -322,7 +311,6 @@
       .story-inner:hover .story-zone::after { opacity: 1; }
       .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
 
-      /* Slide overlay + caption */
       .story-overlay{
         position:absolute;
         inset: 0;
@@ -345,27 +333,12 @@
         text-shadow: 0 10px 30px rgba(0,0,0,.35);
       }
 
-      /* responsive */
       @media (max-width: 900px) {
-        .hero-inner{
-          flex-direction: column;
-          padding: 36px 20px 40px;
-          gap: 28px;
-        }
-
-        .hero-right{
-          width: 100%;
-          display: flex;
-          justify-content: center;
-        }
-
-        .story-card{
-          width: min(360px, 92vw);
-          aspect-ratio: 9 / 16;
-        }
+        .hero-inner{ flex-direction: column; padding: 36px 20px 40px; gap: 28px; }
+        .hero-right{ width: 100%; display: flex; justify-content: center; }
+        .story-card{ width: min(360px, 92vw); aspect-ratio: 9 / 16; }
       }
 
-      /* Mobile */
       @media (max-width: 760px) {
         .nav{ padding: 12px 16px; }
         .brand-logo{ height: 24px; }
@@ -380,11 +353,7 @@
         .mobile-drawer { padding: 0 16px 18px; }
         .mobile-drawer[aria-hidden="false"] { display: block; }
 
-        .story-card{
-          width: min(320px, 92vw);
-          aspect-ratio: 9 / 16;
-        }
-
+        .story-card{ width: min(320px, 92vw); aspect-ratio: 9 / 16; }
         .hero-inner{ gap: 24px; }
         .hero-right{ width: 100%; display: flex; justify-content: center; }
 
@@ -394,7 +363,6 @@
         .ticker{ margin-left: auto; margin-right: auto; }
       }
 
-      /* Admin preview outline */
       .__adminOutline{
         outline: 2px solid rgba(90,167,255,.6);
         outline-offset: 4px;
@@ -559,7 +527,7 @@
         const el = document.getElementById("heroHeading");
         if (!el) return;
 
-        // Convert DIV/P from mobile enter into <br>
+        // Convert DIV/P (mobile enter) into <br>
         const walker = document.createTreeWalker(el, NodeFilter.SHOW_ELEMENT, null);
         const blocks = [];
         while (walker.nextNode()) {
@@ -574,7 +542,7 @@
           b.replaceWith(br, document.createTextNode(txt));
         });
 
-        // Remove any spans except hero-italic
+        // Remove spans except hero-italic
         el.querySelectorAll("span").forEach((s) => {
           if (!s.classList.contains("hero-italic")) {
             s.replaceWith(document.createTextNode(s.textContent || ""));
@@ -583,7 +551,7 @@
           }
         });
 
-        // Enforce max 2 lines (max 1 <br>)
+        // Max 2 lines (max 1 <br>)
         const brs = el.querySelectorAll("br");
         if (brs.length > 1) {
           for (let i = 1; i < brs.length; i++) brs[i].remove();
@@ -710,7 +678,7 @@
             `;
           }
 
-          // Hero text (heroHtml) - IMPORTANT: innerHTML (not textContent)
+          // Hero text (heroHtml)
           const heading = document.getElementById("heroHeading");
           const sub = document.getElementById("heroSubtext");
           if (heading && data.heroHtml) {
@@ -719,7 +687,7 @@
           }
           if (sub && data.subtext) sub.textContent = data.subtext;
 
-          // Apply theme tokens
+          // Apply theme
           if (data.theme && typeof data.theme === "object") {
             if (heading && data.theme.headingColor) heading.style.color = data.theme.headingColor;
             if (sub && data.theme.subtextColor) sub.style.color = data.theme.subtextColor;
@@ -734,7 +702,7 @@
             }
           }
 
-          // Story slides + bars (from JSON, max 5)
+          // Slides from JSON
           const slidesWrap = document.getElementById("storySlides");
           const barsWrap = document.getElementById("storyBars");
 
@@ -778,11 +746,10 @@
             updateOverlayCaptionForIndex(0);
           }
         } catch {
-          // fallback to existing hardcoded content
+          // fallback
         }
       }
 
-      // ===== Slide overlay + caption rendering =====
       function updateOverlayCaptionForIndex(i) {
         const overlayEl = document.getElementById("storyOverlay");
         const captionEl = document.getElementById("storyCaption");
@@ -815,7 +782,7 @@
         }
       }
 
-      // ===== Story slider =====
+      // ===== Slider logic =====
       const storyEl = document.getElementById("story");
       const btnPrev = storyEl.querySelector(".story-zone.left");
       const btnNext = storyEl.querySelector(".story-zone.right");
@@ -828,26 +795,14 @@
 
       const isVideo = (el) => el && el.tagName === "VIDEO";
 
-      function setBarDuration(ms) {
-        storyEl.style.setProperty("--story-duration", `${ms}ms`);
-      }
-
-      function clearTimer() {
-        if (timer) clearTimeout(timer);
-        timer = null;
-      }
-
-      function getSlidesNow() {
-        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
-      }
+      function setBarDuration(ms) { storyEl.style.setProperty("--story-duration", `${ms}ms`); }
+      function clearTimer() { if (timer) clearTimeout(timer); timer = null; }
+      function getSlidesNow() { return Array.from(storyEl.querySelectorAll(".story-img, .story-vid")); }
 
       function stopAllVideos() {
         getSlidesNow().forEach((el) => {
           if (!isVideo(el)) return;
-          try {
-            el.pause();
-            el.currentTime = 0;
-          } catch {}
+          try { el.pause(); el.currentTime = 0; } catch {}
         });
       }
 
@@ -865,18 +820,6 @@
           if (i < index) b.classList.add("is-filled");
           if (i === index) b.classList.add("is-active");
         });
-
-        if (bars.length !== slidesCount) {
-          const barsWrap = document.getElementById("storyBars");
-          if (barsWrap) {
-            barsWrap.innerHTML = "";
-            for (let i = 0; i < slidesCount; i++) {
-              const bar = document.createElement("span");
-              bar.className = "bar" + (i === 0 ? " is-active" : "");
-              barsWrap.appendChild(bar);
-            }
-          }
-        }
       }
 
       async function activateVideo(el) {
@@ -887,19 +830,13 @@
           el.dataset.storyBound = "1";
         }
 
-        try {
-          el.currentTime = 0;
-          await el.play();
-        } catch {}
+        try { el.currentTime = 0; await el.play(); } catch {}
       }
 
       function restartTimerForActiveSlide() {
         clearTimer();
         const slidesNow = getSlidesNow();
-
-        // Admin preview: disable autoplay so selection is easy
-        if (isAdmin) return;
-
+        if (isAdmin) return;       // admin: no autoplay
         if (slidesNow.length <= 1) return;
 
         const active = slidesNow[index];
@@ -936,7 +873,6 @@
           current.classList.add("is-exiting");
           setTimeout(() => current.classList.remove("is-exiting"), 700);
         }
-
         if (next) next.classList.add("is-active");
 
         index = nextIndex;
@@ -947,7 +883,7 @@
         restartTimerForActiveSlide();
       }
 
-      // Init (load JSON first, then init slider)
+      // ===== Init =====
       loadHomeContent().finally(() => {
         const slidesNow = getSlidesNow();
         index = 0;
@@ -958,22 +894,14 @@
         activateVideo(slidesNow[0]);
         restartTimerForActiveSlide();
 
-        btnPrev?.addEventListener("click", (e) => {
-          e.preventDefault();
-          showSlide(index - 1);
-        });
-
-        btnNext?.addEventListener("click", (e) => {
-          e.preventDefault();
-          showSlide(index + 1);
-        });
+        btnPrev?.addEventListener("click", (e) => { e.preventDefault(); showSlide(index - 1); });
+        btnNext?.addEventListener("click", (e) => { e.preventDefault(); showSlide(index + 1); });
 
         storyEl.addEventListener("mouseenter", () => clearTimer());
         storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
 
-        // ===== Admin mode bindings (MUST RUN AFTER loadHomeContent) =====
         if (isAdmin) {
-          // Disable navigation links only (do not block other clicks)
+          // Disable navigation links only
           document.addEventListener("click", (e) => {
             const a = e.target && e.target.closest ? e.target.closest("a") : null;
             if (!a) return;
@@ -981,6 +909,12 @@
             e.stopPropagation();
           }, true);
 
+          // IMPORTANT: disable story zones so click doesn't slide
+          storyEl.querySelectorAll(".story-zone").forEach((btn) => {
+            btn.style.pointerEvents = "none";
+          });
+
+          // Bind selections (after home content is loaded)
           const ticker = document.getElementById("tickerText");
           const hero = document.getElementById("heroHeading");
           const sub = document.getElementById("heroSubtext");
@@ -1003,31 +937,20 @@
             adminSend({ type: "select", page: "home", target: "subtext" });
           });
 
-          // Slide selection: click story card selects current active slide
+          // Slide selection: click story card selects active slide
           storyEl.addEventListener("click", (e) => {
-            const zone = e.target && e.target.closest ? e.target.closest(".story-zone") : null;
-            if (zone) return;
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
             adminOutline(storyEl);
             adminSend({ type: "select", page: "home", target: "slide:" + index });
           });
 
-          // Also allow selecting a specific slide by clicking the media (if reachable)
-          document.addEventListener("click", (e) => {
-            const slideEl = e.target && e.target.closest ? e.target.closest("[data-slide-index]") : null;
-            if (!slideEl) return;
-            e.preventDefault(); e.stopPropagation();
-            const idx = Number(slideEl.getAttribute("data-slide-index") || "0");
-            adminOutline(slideEl);
-            adminSend({ type: "select", page: "home", target: "slide:" + idx });
-          }, true);
-
-          // Make hero editable and report heroHtml changes
+          // Make hero editable
           if (hero) {
             hero.setAttribute("contenteditable", "true");
             hero.setAttribute("spellcheck", "false");
 
-            // FIX: Enter inserts 1 line break; next Enter moves cursor to line 2 end
+            // FIX: Enter inserts 1 <br>, then moves caret to 2nd line
             hero.addEventListener("keydown", (e) => {
               if (e.key !== "Enter") return;
 
@@ -1040,7 +963,6 @@
                 return;
               }
 
-              // already has <br>, move caret to end (second line)
               const sel = window.getSelection();
               if (!sel) return;
               const r = document.createRange();
@@ -1051,8 +973,7 @@
             });
 
             hero.addEventListener("input", () => {
-              const html = getHeroHtmlFromDom();
-              adminSend({ type: "homeHeroHtml", heroHtml: html });
+              adminSend({ type: "homeHeroHtml", heroHtml: getHeroHtmlFromDom() });
             });
           }
         }
@@ -1105,18 +1026,9 @@
           if (isAdmin) adminSend({ type: "homeHeroHtml", heroHtml: getHeroHtmlFromDom() });
         }
 
-        if (d.type === "applySlide" && d.page === "home") {
-          // simplest: re-render via reload (keeps your existing logic consistent)
-          location.reload();
-        }
-
-        if (d.type === "rerenderSlides" && d.page === "home") {
-          location.reload();
-        }
-
-        if (d.type === "clearHighlight") {
-          adminClearOutline();
-        }
+        if (d.type === "applySlide" && d.page === "home") location.reload();
+        if (d.type === "rerenderSlides" && d.page === "home") location.reload();
+        if (d.type === "clearHighlight") adminClearOutline();
       });
     </script>
   </body>
