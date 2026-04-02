@@ -142,19 +142,19 @@
         min-width: 0;
       }
 
-      /* ✅ Updated: 3 sizes only (mobile/tablet/laptop) + not too bold */
+      /* 3 sizes only (mobile/tablet/laptop) + not too bold */
       h1{
         margin: 0;
         font-size: 56px;        /* mobile */
         line-height: 0.90;
         letter-spacing: -0.05em;
-        font-weight: 600;       /* lighter than before, but still strong */
+        font-weight: 600;
       }
       @media (min-width: 768px){
         h1{ font-size: 86px; }  /* tablet */
       }
       @media (min-width: 1200px){
-        h1{ font-size: 118px; } /* laptop/desktop (won't shrink) */
+        h1{ font-size: 118px; } /* laptop/desktop */
       }
 
       .subtext {
@@ -267,7 +267,7 @@
         right: 10px;
         display: flex;
         gap: 8px;
-        z-index: 2;
+        z-index: 4;
       }
 
       .story-bars .bar {
@@ -298,7 +298,7 @@
         border: 0;
         background: transparent;
         cursor: pointer;
-        z-index: 3;
+        z-index: 5;
         padding: 0;
       }
       .story-zone.left { left: 0; }
@@ -322,21 +322,21 @@
       .story-inner:hover .story-zone::after { opacity: 1; }
       .story-zone:hover::after { opacity: 1; color: rgba(255, 255, 255, 0.95); }
 
-      /* Slide overlay + caption (admin-recommended design) */
+      /* Slide overlay + caption */
       .story-overlay{
         position:absolute;
         inset: 0;
         pointer-events:none;
         opacity: var(--overlay-opacity, 0.45);
         background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.0) 55%);
-        z-index: 1;
+        z-index: 2;
       }
       .story-caption{
         position:absolute;
         left: 12px;
         right: 12px;
         bottom: 12px;
-        z-index: 2;
+        z-index: 3;
         pointer-events:none;
         color: rgba(255,255,255,0.95);
         font-weight: 800;
@@ -365,9 +365,8 @@
         }
       }
 
-      /* Mobile: center ticker + heading + sub heading + buttons in middle + header padding fix */
+      /* Mobile */
       @media (max-width: 760px) {
-        /* header spacing fix */
         .nav{ padding: 12px 16px; }
         .brand-logo{ height: 24px; }
         .nav-cta{ gap: 10px; }
@@ -387,34 +386,15 @@
         }
 
         .hero-inner{ gap: 24px; }
+        .hero-right{ width: 100%; display: flex; justify-content: center; }
 
-        .hero-right{
-          width: 100%;
-          display: flex;
-          justify-content: center;
-        }
-
-        /* center hero text content */
-        .hero-left{
-          align-items: center;
-          text-align: center;
-        }
-
+        .hero-left{ align-items: center; text-align: center; }
         .subtext{ max-width: 34ch; }
-
-        .hero-actions{
-          justify-content: center;
-          width: 100%;
-          flex-wrap: wrap;
-        }
-
-        .ticker{
-          margin-left: auto;
-          margin-right: auto;
-        }
+        .hero-actions{ justify-content: center; width: 100%; flex-wrap: wrap; }
+        .ticker{ margin-left: auto; margin-right: auto; }
       }
 
-      /* Admin preview outline (only when ?admin=1) */
+      /* Admin preview outline */
       .__adminOutline{
         outline: 2px solid rgba(90,167,255,.6);
         outline-offset: 4px;
@@ -514,9 +494,10 @@
                     class="story-img is-active"
                     src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1400&q=80"
                     alt="Story 1"
+                    data-slide-index="0"
                   />
 
-                  <video class="story-vid" muted playsinline preload="metadata">
+                  <video class="story-vid" muted playsinline preload="metadata" data-slide-index="1">
                     <source src="assets/story2.mp4" type="video/mp4" />
                   </video>
 
@@ -524,10 +505,10 @@
                     class="story-img"
                     src="https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b?auto=format&fit=crop&w=1400&q=80"
                     alt="Story 3"
+                    data-slide-index="2"
                   />
                 </div>
 
-                <!-- overlay + caption (optional, updated when slides change) -->
                 <div class="story-overlay" id="storyOverlay" hidden></div>
                 <div class="story-caption" id="storyCaption" hidden></div>
 
@@ -560,7 +541,20 @@
       const isAdmin = new URLSearchParams(location.search).get("admin") === "1";
       const MAX_SLIDES = 5;
 
-      // --- Hero word styling helpers (for admin iframe controls) ---
+      // --- Admin messaging helpers ---
+      function adminSend(payload) {
+        if (!isAdmin) return;
+        window.parent.postMessage({ __adminPreview: true, ...payload }, location.origin);
+      }
+      function adminClearOutline() {
+        document.querySelectorAll(".__adminOutline").forEach((x) => x.classList.remove("__adminOutline"));
+      }
+      function adminOutline(el) {
+        adminClearOutline();
+        if (el) el.classList.add("__adminOutline");
+      }
+
+      // --- Hero word styling helpers (admin mode) ---
       function normalizeHeroDom() {
         const el = document.getElementById("heroHeading");
         if (!el) return;
@@ -705,22 +699,18 @@
           if (!res.ok) return;
           const data = await res.json();
 
-          // Ticker
+          // Ticker (ensure tickerText id exists after rerender)
           const track = document.getElementById("tickerTrack");
-          const tickerTextEl = document.getElementById("tickerText");
           if (track && data.tickerText) {
             const t = String(data.tickerText);
-            // Ensure first item has id for admin selection
             track.innerHTML = `
               <span class="ticker__item" id="tickerText">${t}</span>
               <span class="ticker__item" aria-hidden="true">${t}</span>
               <span class="ticker__item" aria-hidden="true">${t}</span>
             `;
-          } else if (tickerTextEl) {
-            tickerTextEl.id = "tickerText";
           }
 
-          // Hero text (heroHtml) - IMPORTANT: innerHTML, not textContent
+          // Hero text (heroHtml) - IMPORTANT: innerHTML (not textContent)
           const heading = document.getElementById("heroHeading");
           const sub = document.getElementById("heroSubtext");
           if (heading && data.heroHtml) {
@@ -740,19 +730,16 @@
 
             const heroLeft = document.querySelector(".hero-left");
             if (heroLeft && window.matchMedia("(max-width: 760px)").matches === false) {
-              // On desktop/tablet, align left or center via flex alignment
               heroLeft.style.alignItems = (align === "center") ? "center" : "flex-start";
             }
           }
 
-          // Story slides + bars (EXACTLY N slides from JSON, max 5)
+          // Story slides + bars (from JSON, max 5)
           const slidesWrap = document.getElementById("storySlides");
           const barsWrap = document.getElementById("storyBars");
 
           const rawSlides = Array.isArray(data.storySlides) ? data.storySlides : [];
           const slides = rawSlides.slice(0, MAX_SLIDES);
-
-          // store in memory for overlay/caption rendering
           window.__HOME_SLIDES__ = slides;
 
           if (slidesWrap && barsWrap && slides.length) {
@@ -760,12 +747,10 @@
             barsWrap.innerHTML = "";
 
             slides.forEach((s, i) => {
-              // bars
               const bar = document.createElement("span");
               bar.className = "bar" + (i === 0 ? " is-active" : "");
               barsWrap.appendChild(bar);
 
-              // slides: add data-slide-index for admin inspector selection
               if (s.type === "video") {
                 const v = document.createElement("video");
                 v.className = "story-vid" + (i === 0 ? " is-active" : "");
@@ -790,7 +775,6 @@
               }
             });
 
-            // update overlay/caption for active slide
             updateOverlayCaptionForIndex(0);
           }
         } catch {
@@ -799,12 +783,6 @@
       }
 
       // ===== Slide overlay + caption rendering =====
-      function getSlidesNow() {
-        const storyEl = document.getElementById("story");
-        if (!storyEl) return [];
-        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
-      }
-
       function updateOverlayCaptionForIndex(i) {
         const overlayEl = document.getElementById("storyOverlay");
         const captionEl = document.getElementById("storyCaption");
@@ -837,7 +815,7 @@
         }
       }
 
-      // ===== Story slider (images + videos) =====
+      // ===== Story slider =====
       const storyEl = document.getElementById("story");
       const btnPrev = storyEl.querySelector(".story-zone.left");
       const btnNext = storyEl.querySelector(".story-zone.right");
@@ -857,6 +835,10 @@
       function clearTimer() {
         if (timer) clearTimeout(timer);
         timer = null;
+      }
+
+      function getSlidesNow() {
+        return Array.from(storyEl.querySelectorAll(".story-img, .story-vid"));
       }
 
       function stopAllVideos() {
@@ -884,7 +866,6 @@
           if (i === index) b.classList.add("is-active");
         });
 
-        // safety (if bars mismatch)
         if (bars.length !== slidesCount) {
           const barsWrap = document.getElementById("storyBars");
           if (barsWrap) {
@@ -916,10 +897,9 @@
         clearTimer();
         const slidesNow = getSlidesNow();
 
-        // Admin preview: no autoplay (so it doesn't fight with selecting slides)
+        // Admin preview: disable autoplay so selection is easy
         if (isAdmin) return;
 
-        // IMPORTANT: if only 0 or 1 slide, don't auto-advance
         if (slidesNow.length <= 1) return;
 
         const active = slidesNow[index];
@@ -932,7 +912,6 @@
         const slidesNow = getSlidesNow();
         if (slidesNow.length === 0) return;
 
-        // IMPORTANT: if only 1 slide, keep it active
         if (slidesNow.length === 1) {
           index = 0;
           slidesNow[0].classList.add("is-active");
@@ -968,22 +947,7 @@
         restartTimerForActiveSlide();
       }
 
-      // ===== Admin iframe hooks =====
-      function adminSend(payload) {
-        if (!isAdmin) return;
-        window.parent.postMessage({ __adminPreview: true, ...payload }, location.origin);
-      }
-
-      function adminClearOutline() {
-        document.querySelectorAll(".__adminOutline").forEach((x) => x.classList.remove("__adminOutline"));
-      }
-
-      function adminOutline(el) {
-        adminClearOutline();
-        if (el) el.classList.add("__adminOutline");
-      }
-
-      // Init (load JSON first, then initialize slider on whatever slides exist)
+      // Init (load JSON first, then init slider)
       loadHomeContent().finally(() => {
         const slidesNow = getSlidesNow();
         index = 0;
@@ -1007,15 +971,16 @@
         storyEl.addEventListener("mouseenter", () => clearTimer());
         storyEl.addEventListener("mouseleave", () => restartTimerForActiveSlide());
 
-        // Admin mode behaviors
+        // ===== Admin mode bindings (MUST RUN AFTER loadHomeContent) =====
         if (isAdmin) {
-          // Disable navigation links/buttons inside iframe
+          // Disable navigation links only (do not block other clicks)
           document.addEventListener("click", (e) => {
             const a = e.target && e.target.closest ? e.target.closest("a") : null;
-            if (a) { e.preventDefault(); e.stopPropagation(); }
+            if (!a) return;
+            e.preventDefault();
+            e.stopPropagation();
           }, true);
 
-          // Element selection
           const ticker = document.getElementById("tickerText");
           const hero = document.getElementById("heroHeading");
           const sub = document.getElementById("heroSubtext");
@@ -1038,7 +1003,16 @@
             adminSend({ type: "select", page: "home", target: "subtext" });
           });
 
-          // Slide selection (click on actual slide media)
+          // Slide selection: click story card selects current active slide
+          storyEl.addEventListener("click", (e) => {
+            const zone = e.target && e.target.closest ? e.target.closest(".story-zone") : null;
+            if (zone) return;
+            e.preventDefault(); e.stopPropagation();
+            adminOutline(storyEl);
+            adminSend({ type: "select", page: "home", target: "slide:" + index });
+          });
+
+          // Also allow selecting a specific slide by clicking the media (if reachable)
           document.addEventListener("click", (e) => {
             const slideEl = e.target && e.target.closest ? e.target.closest("[data-slide-index]") : null;
             if (!slideEl) return;
@@ -1048,19 +1022,32 @@
             adminSend({ type: "select", page: "home", target: "slide:" + idx });
           }, true);
 
-          // Make hero editable in preview and notify parent about heroHtml changes
+          // Make hero editable and report heroHtml changes
           if (hero) {
             hero.setAttribute("contenteditable", "true");
             hero.setAttribute("spellcheck", "false");
 
+            // FIX: Enter inserts 1 line break; next Enter moves cursor to line 2 end
             hero.addEventListener("keydown", (e) => {
-              if (e.key === "Enter") {
-                normalizeHeroDom();
-                const hasBr = hero.querySelector("br");
-                if (hasBr) { e.preventDefault(); return; }
-                e.preventDefault();
+              if (e.key !== "Enter") return;
+
+              e.preventDefault();
+              normalizeHeroDom();
+
+              const br = hero.querySelector("br");
+              if (!br) {
                 document.execCommand("insertHTML", false, "<br>");
+                return;
               }
+
+              // already has <br>, move caret to end (second line)
+              const sel = window.getSelection();
+              if (!sel) return;
+              const r = document.createRange();
+              r.selectNodeContents(hero);
+              r.collapse(false);
+              sel.removeAllRanges();
+              sel.addRange(r);
             });
 
             hero.addEventListener("input", () => {
@@ -1098,7 +1085,7 @@
             if (style.color != null) sub.style.color = style.color || "";
             if (style.align) sub.style.textAlign = style.align;
           }
-          // align container on desktop
+
           if (style.align && window.matchMedia("(max-width: 760px)").matches === false) {
             const heroLeft = document.querySelector(".hero-left");
             if (heroLeft) heroLeft.style.alignItems = (style.align === "center") ? "center" : "flex-start";
@@ -1115,23 +1102,15 @@
           if (d.action === "italic") wrapRangeWithItalic(range);
           if (d.action === "normal") unwrapItalicAtRange(range);
 
-          // report new heroHtml
-          if (isAdmin) {
-            adminSend({ type: "homeHeroHtml", heroHtml: getHeroHtmlFromDom() });
-          }
+          if (isAdmin) adminSend({ type: "homeHeroHtml", heroHtml: getHeroHtmlFromDom() });
         }
 
         if (d.type === "applySlide" && d.page === "home") {
-          // Update in-memory slides and re-render completely for simplicity
-          const slides = window.__HOME_SLIDES__ || [];
-          const idx = Number(d.index || 0);
-          slides[idx] = d.slide;
-          window.__HOME_SLIDES__ = slides;
+          // simplest: re-render via reload (keeps your existing logic consistent)
           location.reload();
         }
 
         if (d.type === "rerenderSlides" && d.page === "home") {
-          window.__HOME_SLIDES__ = d.slides || [];
           location.reload();
         }
 
