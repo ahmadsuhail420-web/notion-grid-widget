@@ -137,6 +137,13 @@
         color: #fff;
       }
 
+      .hero-italic{
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
       .status {
         font-size: 12px;
         color: rgba(13,13,13,.65);
@@ -565,14 +572,14 @@
             <div class="ticker" aria-label="Announcement">
               <div class="ticker__track" id="tickerTrack">
                 <span class="ticker__item" id="tickerText" contenteditable="true" spellcheck="false">New drops weekly</span>
+              <div class="btn" id="fontInterBtn" type="button">Inter</div>
+<div class="btn" id="fontPlayfairBtn" type="button">Playfair Italic</div>
               </div>
             </div>
 
-            <h1>
-              <span id="heroLine1" contenteditable="true" spellcheck="false">Short form</span><br />
-              <span id="heroLine2" contenteditable="true" spellcheck="false">done</span>
-              <span class="italic" id="heroItalic" contenteditable="true" spellcheck="false">right</span>
-            </h1>
+           <h1 id="heroHeading" contenteditable="true" spellcheck="false">
+  Short form<br />done <span class="hero-italic">right</span>
+</h1>
 
             <p class="subtext" id="subtext" contenteditable="true" spellcheck="false">
               We combine content, management, and paid media to help brands grow and convert on the social platforms that matter most to you.
