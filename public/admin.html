@@ -274,12 +274,15 @@
         box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
       }
 
-      .story-slides {
-        position: absolute;
-        inset: 0;
-        pointer-events: auto;
-        z-index: 5;
-      }
+      /* layering:
+         bars: 2
+         slides: 3
+         nav zones: 4
+         tools: 5 */
+      .story-bars { z-index: 2; }
+      .story-slides { position: absolute; inset: 0; z-index: 3; }
+      .story-zone { z-index: 4; }
+      .story-tools { z-index: 5; }
 
       .story-img,
       .story-vid,
@@ -309,7 +312,7 @@
         transform: translateX(-10%);
       }
 
-      /* Add tile must be clickable above nav zones */
+      /* Add slide tile - only clickable when active */
       .story-add{
         display: flex;
         align-items: center;
@@ -319,9 +322,9 @@
         font-weight: 800;
         letter-spacing: -0.02em;
         cursor: pointer;
-        pointer-events: auto;
-        z-index: 6;
+        pointer-events: none;
       }
+      .story-add.is-active{ pointer-events: auto; }
 
       /* Admin: keep bars visible but NO auto progress animation */
       .story-bars {
@@ -331,7 +334,6 @@
         right: 10px;
         display: flex;
         gap: 8px;
-        z-index: 2;
       }
       .story-bars .bar {
         height: 3px;
@@ -359,7 +361,6 @@
         border: 0;
         background: transparent;
         cursor: pointer;
-        z-index: 3;
         padding: 0;
       }
       .story-zone.left { left: 0; }
@@ -420,7 +421,6 @@
         bottom: 10px;
         left: 10px;
         right: 10px;
-        z-index: 4;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -606,7 +606,7 @@
                 <div class="story-bars" aria-hidden="true" id="storyBars"></div>
 
                 <!-- editor tools -->
-                <div class="story-tools" aria-label="Story tools">
+                <div class="story-tools" aria-label="Story tools" id="storyTools">
                   <div class="tool-group">
                     <div class="tool" id="moveLeftTool" title="Move left">‹</div>
                     <div class="tool" id="moveRightTool" title="Move right">›</div>
@@ -784,7 +784,6 @@
       function normalizeHeroDom() {
         const el = $("heroHeading");
 
-        // Convert DIV/P from mobile enter into <br>
         const walker = document.createTreeWalker(el, NodeFilter.SHOW_ELEMENT, null);
         const blocks = [];
         while (walker.nextNode()) {
@@ -799,7 +798,6 @@
           b.replaceWith(br, document.createTextNode(txt));
         });
 
-        // Remove any spans except hero-italic
         el.querySelectorAll("span").forEach((s) => {
           if (!s.classList.contains("hero-italic")) {
             s.replaceWith(document.createTextNode(s.textContent || ""));
@@ -808,7 +806,6 @@
           }
         });
 
-        // Enforce max 2 lines (max 1 <br>)
         const brs = el.querySelectorAll("br");
         if (brs.length > 1) {
           for (let i = 1; i < brs.length; i++) brs[i].remove();
@@ -881,7 +878,6 @@
         return wordRange;
       }
 
-      // SAFER: always use extractContents to avoid weird surroundContents issues
       function wrapRangeWithItalic(wordRange) {
         if (!wordRange) return;
 
@@ -941,7 +937,6 @@
         $("fontPlayfairBtn").classList.toggle("btn-toggle-active", !!inItalic);
       }
 
-      // ===== Editable fields =====
       function bindEditable() {
         const ticker = $("tickerText");
         ticker.addEventListener("input", () => {
@@ -1155,6 +1150,9 @@
         $("moveLeftTool").setAttribute("aria-disabled", String(!canMoveLeft));
         $("moveRightTool").setAttribute("aria-disabled", String(!canMoveRight));
         $("removeTool").setAttribute("aria-disabled", String(!canRemove));
+
+        // Visual cue when on Add tile
+        $("storyTools").style.opacity = onAdd ? "0.5" : "1";
       }
 
       $("navPrev").addEventListener("click", () => show(activeIndex - 1));
