@@ -8,18 +8,176 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
-      :root { --bg:#efebe2; --text:#0d0d0d; }
+      :root { --bg:#efebe2; --text:#0d0d0d; --muted: rgba(13,13,13,.62); --card:#fff; --border: rgba(13,13,13,.12); }
       *{ box-sizing:border-box; }
       body{ margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--text); }
+      a{ color:inherit; text-decoration:none; }
       .wrap{ max-width:1200px; margin:0 auto; padding:48px 20px; }
-      a{ color:inherit; }
+      .top{ display:flex; justify-content:space-between; align-items:flex-end; gap: 12px; flex-wrap:wrap; }
+      h1{ margin:0; font-size:40px; letter-spacing:-0.04em; }
+      .muted{ color: var(--muted); }
+      .grid{ margin-top: 22px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+      @media (max-width: 980px){ .grid{ grid-template-columns: repeat(2,1fr); } }
+      @media (max-width: 640px){ .grid{ grid-template-columns: 1fr; } }
+
+      .card{
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow:hidden;
+        cursor: pointer;
+      }
+      .img{
+        height: 180px;
+        background: linear-gradient(135deg, rgba(13,13,13,.08), rgba(13,13,13,.02));
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        position:relative;
+      }
+      .img img{ width:100%; height:100%; object-fit:cover; display:block; }
+      .badge{
+        position:absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(13,13,13,.9);
+        color:#fff;
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+      .body{ padding: 14px; display:grid; gap: 8px; }
+      .title{ font-weight: 800; letter-spacing:-0.02em; }
+      .meta{ display:flex; justify-content:space-between; gap: 10px; align-items:center; }
+      .price{ font-weight: 900; }
+      .cat{ font-size: 12px; color: var(--muted); font-weight: 700; }
+      .desc{ font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+      /* Admin mode highlight */
+      .admin-outline{ outline: 2px solid rgba(90,167,255,.6); outline-offset: 4px; border-radius: 14px; }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <h1>Shop</h1>
-      <p>This is a separate page. Add your products here.</p>
-      <p><a href="index.html">← Back to Home</a></p>
+      <div class="top">
+        <div>
+          <h1>Shop</h1>
+          <div class="muted">Browse products.</div>
+        </div>
+        <a href="index.html" class="muted">← Back to Home</a>
+      </div>
+
+      <div class="grid" id="grid"></div>
     </div>
+
+    <script>
+      const isAdmin = new URLSearchParams(location.search).get("admin") === "1";
+
+      function fmtMoney(price, currency){
+        const sym = currency === "USD" ? "$" :
+          currency === "EUR" ? "€" :
+          currency === "GBP" ? "£" :
+          currency === "PKR" ? "Rs " :
+          currency === "INR" ? "₹" :
+          currency === "AED" ? "د.إ " : "";
+        return sym + Number(price || 0).toFixed(2);
+      }
+
+      async function loadProducts(){
+        const res = await fetch("/content/products.json", { cache: "no-store" });
+        if (!res.ok) return { items: [] };
+        return res.json();
+      }
+
+      function sendSelect(target){
+        if (!isAdmin) return;
+        window.parent.postMessage({ __adminPreview: true, type: "select", page: "products", target }, location.origin);
+      }
+
+      function render(items){
+        const grid = document.getElementById("grid");
+        grid.innerHTML = "";
+        (items || []).forEach((p) => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.dataset.id = p.id;
+
+          const img = document.createElement("div");
+          img.className = "img";
+          if (p.badge) {
+            const b = document.createElement("div");
+            b.className = "badge";
+            b.textContent = p.badge;
+            img.appendChild(b);
+          }
+
+          if (p.image) {
+            const im = document.createElement("img");
+            im.src = p.image;
+            im.alt = p.title || "Product";
+            img.appendChild(im);
+          } else {
+            img.innerHTML += '<div class="muted">No image</div>';
+          }
+
+          const body = document.createElement("div");
+          body.className = "body";
+          body.innerHTML = `
+            <div class="title"></div>
+            <div class="meta">
+              <div class="cat"></div>
+              <div class="price"></div>
+            </div>
+            <div class="desc"></div>
+          `;
+          body.querySelector(".title").textContent = p.title || "Product";
+          body.querySelector(".cat").textContent = p.category || "";
+          body.querySelector(".price").textContent = fmtMoney(p.price, p.currency);
+          body.querySelector(".desc").textContent = p.description || "";
+
+          card.appendChild(img);
+          card.appendChild(body);
+
+          card.addEventListener("click", (e) => {
+            if (isAdmin) {
+              e.preventDefault();
+              e.stopPropagation();
+              sendSelect("product:" + p.id);
+              // highlight
+              document.querySelectorAll(".admin-outline").forEach((el) => el.classList.remove("admin-outline"));
+              card.classList.add("admin-outline");
+              return;
+            }
+            // public behavior: open link if provided
+            if (p.buyLink) window.open(p.buyLink, "_blank");
+          });
+
+          grid.appendChild(card);
+        });
+      }
+
+      // Listen for admin updates
+      window.addEventListener("message", (ev) => {
+        if (ev.origin !== location.origin) return;
+        const d = ev.data || {};
+        if (!d.__adminBuilder) return;
+
+        if (d.type === "rerenderProducts") {
+          render(d.products || []);
+        }
+        if (d.type === "updateProduct") {
+          // small update: just rerender by refetch isn't needed; admin sends full product update
+          // We'll re-render from last known list by asking admin to resend; simplest: reload file.
+          // (Admin already calls rerenderProducts for major changes.)
+        }
+      });
+
+      (async function init(){
+        const data = await loadProducts();
+        render(data.items || []);
+        if (isAdmin) sendSelect("catalog");
+      })();
+    </script>
   </body>
 </html>
