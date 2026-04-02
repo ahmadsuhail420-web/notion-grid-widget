@@ -1,13 +1,8 @@
 {
   "tickerText": "Notion Grid widget",
-  "heroHtml": "Short form<br>done &lt;span class=\"hero-italic\"&gt;&lt;span class=\"hero-italic\"&gt;&lt;span class=\"hero-italic\"&gt;&lt;span class=\"hero-italic\"&gt;right</span></span></span></span>",
+  "heroHtml": "&lt;span class=\"hero-italic\"&gt;Short</span> &lt;span class=\"hero-italic\"&gt;form</span><br>&lt;span class=\"hero-italic\"&gt;done</span> &lt;span class=\"hero-italic\"&gt;right</span>",
   "subtext": "We combine content, management, and paid media to help brands grow and convert on the social platforms that matter most to you.",
   "storySlides": [
-    {
-      "type": "image",
-      "src": "/uploads/2026-04-01T15-23-49-831Z-38896e95623c18.png",
-      "alt": "Story 1"
-    },
     {
       "type": "video",
       "src": "assets/story2.mp4",
