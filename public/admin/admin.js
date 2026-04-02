@@ -8,7 +8,6 @@
     locked: true,
     token: "",
     currentPage: "home",
-    // loaded models
     models: {
       home: null,
       products: null,
@@ -21,7 +20,7 @@
       about: false,
       contact: false
     },
-    selection: null // {page, target, meta}
+    selection: null
   };
 
   function setStatus(msg) { $("status").textContent = msg || ""; }
@@ -89,7 +88,6 @@
   function setPage(page) {
     state.currentPage = page;
 
-    // nav highlight
     document.querySelectorAll(".nav-item").forEach((b) => {
       b.classList.toggle("is-active", b.dataset.page === page);
     });
@@ -109,6 +107,17 @@
 
     $("previewFrame").src = url;
     clearSelection();
+
+    if (page === "products") {
+      // Default inspector for products
+      state.selection = { page: "products", target: "catalog" };
+      renderInspectorForSelection(state.selection);
+      postToPreview({
+        type: "rerenderProducts",
+        page: "products",
+        products: (state.models.products?.items || [])
+      });
+    }
   }
 
   function markDirty(page, isDirty) {
@@ -138,7 +147,6 @@
   }
 
   function renderInspectorForSelection(sel) {
-    // sel: {page, target, value, style, extra}
     $("inspectorTitle").textContent = `${prettyPage(sel.page)} • ${sel.target}`;
     $("inspectorSub").textContent = "Changes apply live. Click Save to persist.";
 
@@ -162,7 +170,6 @@
     const home = state.models.home;
     if (!home) return renderInspectorEmpty();
 
-    // targets: tickerText, heroHeading, subtext, slide:{index}
     if (sel.target === "tickerText") {
       $("inspectorBody").innerHTML = `
         <div class="section">
@@ -209,8 +216,7 @@
               </select>
             </div>
           </div>
-
-          <div class="hint">Use hex color like #111111. We keep options limited for consistency.</div>
+          <div class="hint">Use hex color like #111111.</div>
         </div>
       `;
 
@@ -253,13 +259,11 @@
     }
 
     if (sel.target === "heroHeading") {
-      // Special: keep heroHtml, and provide word-italic controls (like your previous admin)
       $("inspectorBody").innerHTML = `
         <div class="section">
           <div class="section-title">Hero Heading</div>
-
           <div class="hint">
-            Edit directly in the preview heading (click it and type). Use buttons below to style a word.
+            Click the heading in preview and type. Use buttons below to style a word (works on selected word).
           </div>
 
           <div class="rowBtns" style="margin-top:10px;">
@@ -283,8 +287,6 @@
               </select>
             </div>
           </div>
-
-          <div class="hint">Word styling works only on the hero heading.</div>
         </div>
       `;
 
@@ -317,7 +319,6 @@
       });
 
       $("italicBtn").addEventListener("click", () => {
-        // Ask iframe to apply italic to word around current selection
         postToPreview({ type: "heroWordStyle", page: "home", action: "italic" });
       });
       $("normalBtn").addEventListener("click", () => {
@@ -389,8 +390,7 @@
             <button class="btn btn-ghost" id="right" type="button">Move right</button>
             <button class="btn" id="remove" type="button" style="border-color: rgba(255,90,104,.35);">Delete</button>
           </div>
-
-          <div class="hint">Tip: captions work best with overlay enabled.</div>
+          <div class="hint">Max 5 slides. Caption looks best with overlay enabled.</div>
         </div>
       `;
 
@@ -421,31 +421,16 @@
         });
       };
 
-      type.addEventListener("change", () => {
-        slide.type = type.value === "video" ? "video" : "image";
-        commitSlide();
-      });
-      alt.addEventListener("input", () => {
-        slide.alt = alt.value.slice(0, 120);
-        commitSlide();
-      });
-      caption.addEventListener("input", () => {
-        slide.caption = caption.value.slice(0, 60);
-        commitSlide();
-      });
-      overlayOn.addEventListener("change", () => {
-        slide.overlay.enabled = overlayOn.value === "on";
-        commitSlide();
-      });
+      type.addEventListener("change", () => { slide.type = type.value === "video" ? "video" : "image"; commitSlide(); });
+      alt.addEventListener("input", () => { slide.alt = alt.value.slice(0, 120); commitSlide(); });
+      caption.addEventListener("input", () => { slide.caption = caption.value.slice(0, 60); commitSlide(); });
+      overlayOn.addEventListener("change", () => { slide.overlay.enabled = overlayOn.value === "on"; commitSlide(); });
       overlayOpacity.addEventListener("input", () => {
         slide.overlay.opacity = clampNum(parseFloat(overlayOpacity.value || "0.45"), 0, 0.85);
         overlayOpacity.value = String(slide.overlay.opacity);
         commitSlide();
       });
-      src.addEventListener("input", () => {
-        slide.src = src.value.trim().slice(0, 600);
-        commitSlide();
-      });
+      src.addEventListener("input", () => { slide.src = src.value.trim().slice(0, 600); commitSlide(); });
 
       upload.addEventListener("change", async () => {
         const f = upload.files && upload.files[0];
@@ -496,13 +481,12 @@
     renderInspectorEmpty();
   }
 
-  // ===== Products Inspector (full) =====
+  // ===== Products Inspector =====
   function renderProductsInspector(sel) {
     const products = state.models.products;
     if (!products) return renderInspectorEmpty();
     products.items = Array.isArray(products.items) ? products.items : [];
 
-    // sel.target: "catalog" or "product:<id>"
     if (sel.target === "catalog") {
       $("inspectorBody").innerHTML = `
         <div class="section">
@@ -629,9 +613,10 @@
       buyLink.value = item.buyLink || "";
       image.value = item.image || "";
 
+      // ✅ FIX: rerender full list in preview so changes appear immediately
       const commit = () => {
         markDirty("products", true);
-        postToPreview({ type: "updateProduct", page: "products", product: item });
+        postToPreview({ type: "rerenderProducts", page: "products", products: products.items });
       };
 
       title.addEventListener("input", () => { item.title = title.value.slice(0, 80); commit(); });
@@ -852,14 +837,12 @@
     if (!data.__adminPreview) return;
 
     if (data.type === "select") {
-      // {page,target}
       state.selection = { page: data.page, target: data.target };
       renderInspectorForSelection(state.selection);
       return;
     }
 
     if (data.type === "homeHeroHtml") {
-      // iframe reports updated heroHtml after typing
       if (state.models.home) {
         state.models.home.heroHtml = String(data.heroHtml || "");
         markDirty("home", true);
@@ -910,7 +893,6 @@
       setStatus(e.message || "Save failed.");
       updateSaveButton();
     } finally {
-      $("saveBtn").disabled = state.locked || Object.values(state.dirty).some(Boolean) === false;
       updateSaveButton();
     }
   }
@@ -920,13 +902,6 @@
     b.addEventListener("click", async () => {
       const page = b.dataset.page;
       setPage(page);
-
-      // In Products page, default selection is catalog
-      if (page === "products") {
-        state.selection = { page: "products", target: "catalog" };
-        renderInspectorForSelection(state.selection);
-        postToPreview({ type: "rerenderProducts", page: "products", products: (state.models.products?.items || []) });
-      }
     });
   });
 
@@ -934,7 +909,7 @@
 
   $("reloadPreviewBtn").addEventListener("click", () => {
     const f = $("previewFrame");
-    f.src = f.src; // reload
+    f.src = f.src;
     setStatus("Preview reloaded.");
   });
 
@@ -971,9 +946,6 @@
 
     try {
       await loadAll();
-      // send initial data to iframe after it loads
-      // (iframe may not be ready yet; it will request selection by clicks)
-      postToPreview({ type: "hydrate", page: "home", model: state.models.home });
       setPage("home");
     } catch (e) {
       state.locked = true;
