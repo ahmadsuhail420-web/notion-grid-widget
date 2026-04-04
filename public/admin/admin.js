@@ -301,7 +301,7 @@
       return;
     }
 
-    // ===== SLIDE editor (DROPDOWN + ADJUST) =====
+    // ===== SLIDE editor (DROPDOWN + ADJUST + CROP BOX DRAG) =====
     if (sel.target && sel.target.startsWith("slide:")) {
       const idx = Number(sel.target.split(":")[1] || "0");
       const slides = home.storySlides;
@@ -358,8 +358,14 @@
 
           <div class="hr"></div>
 
-          <div class="section-title">Image adjustment</div>
-          <div class="grid2">
+          <div class="section-title">Crop / Move</div>
+
+          <div class="cropBox" id="cropBox">
+            <img id="cropImg" class="cropMedia" alt="Crop preview" />
+            <div class="cropHint">Drag to move</div>
+          </div>
+
+          <div class="grid2" style="margin-top:10px;">
             <div class="control">
               <label>Fit</label>
               <select id="fit">
@@ -375,16 +381,19 @@
 
           <div class="grid2">
             <div class="control">
-              <label>Position X (0–100)</label>
+              <label>X (0–100)</label>
               <input id="posX" type="number" min="0" max="100" step="1" />
             </div>
             <div class="control">
-              <label>Position Y (0–100)</label>
+              <label>Y (0–100)</label>
               <input id="posY" type="number" min="0" max="100" step="1" />
             </div>
           </div>
 
-          <div class="hint">Tip: Fit=Cover + adjust X/Y gives the “crop” look.</div>
+          <div class="rowBtns">
+            <button class="btn btn-ghost" id="centerCrop" type="button">Center</button>
+            <button class="btn btn-ghost" id="resetCrop" type="button">Reset</button>
+          </div>
 
           <div class="hr"></div>
 
@@ -416,8 +425,6 @@
         const nextIdx = Number(slidePick.value || "0");
         state.selection = { page: "home", target: "slide:" + nextIdx };
         renderInspectorForSelection(state.selection);
-
-        // Tell iframe to show this slide immediately
         postToPreview({ type: "selectSlide", page: "home", index: nextIdx });
       });
 
@@ -434,6 +441,11 @@
       const posX = $("posX");
       const posY = $("posY");
 
+      const cropBox = $("cropBox");
+      const cropImg = $("cropImg");
+      const centerCrop = $("centerCrop");
+      const resetCrop = $("resetCrop");
+
       type.value = slide.type;
       alt.value = slide.alt || "";
       caption.value = slide.caption || "";
@@ -449,36 +461,137 @@
       const commitSlide = () => {
         markDirty("home", true);
         postToPreview({ type: "applySlide", page: "home", index: idx, slide });
-        // Also show the slide you are editing
         postToPreview({ type: "selectSlide", page: "home", index: idx });
       };
 
-      type.addEventListener("change", () => { slide.type = type.value === "video" ? "video" : "image"; commitSlide(); });
+      function renderCropPreview() {
+        if (!cropBox || !cropImg) return;
+
+        const isImage = slide.type !== "video";
+        cropBox.style.display = isImage ? "block" : "none";
+        if (!isImage) return;
+
+        cropImg.src = slide.src || "";
+        cropImg.style.objectFit = slide.adjust.fit === "contain" ? "contain" : "cover";
+        cropImg.style.objectPosition = `${slide.adjust.x}% ${slide.adjust.y}%`;
+        cropImg.style.transform = `scale(${slide.adjust.zoom})`;
+        cropImg.style.transformOrigin = `${slide.adjust.x}% ${slide.adjust.y}%`;
+      }
+
+      // Drag-to-move
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
+      let startAdjX = 50;
+      let startAdjY = 50;
+
+      function toPercentDelta(dxPx, dyPx) {
+        const r = cropBox.getBoundingClientRect();
+        const dx = (dxPx / Math.max(1, r.width)) * 100;
+        const dy = (dyPx / Math.max(1, r.height)) * 100;
+        return { dx, dy };
+      }
+
+      cropBox?.addEventListener("pointerdown", (e) => {
+        if (slide.type === "video") return;
+        dragging = true;
+        cropBox.setPointerCapture(e.pointerId);
+        startX = e.clientX;
+        startY = e.clientY;
+        startAdjX = slide.adjust.x ?? 50;
+        startAdjY = slide.adjust.y ?? 50;
+      });
+
+      cropBox?.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        const { dx, dy } = toPercentDelta(e.clientX - startX, e.clientY - startY);
+
+        slide.adjust.x = clampNum(startAdjX - dx, 0, 100);
+        slide.adjust.y = clampNum(startAdjY - dy, 0, 100);
+
+        posX.value = String(Math.round(slide.adjust.x));
+        posY.value = String(Math.round(slide.adjust.y));
+
+        commitSlide();
+        renderCropPreview();
+      });
+
+      cropBox?.addEventListener("pointerup", () => { dragging = false; });
+      cropBox?.addEventListener("pointercancel", () => { dragging = false; });
+
+      centerCrop?.addEventListener("click", () => {
+        slide.adjust.x = 50;
+        slide.adjust.y = 50;
+        posX.value = "50";
+        posY.value = "50";
+        commitSlide();
+        renderCropPreview();
+      });
+
+      resetCrop?.addEventListener("click", () => {
+        slide.adjust.fit = "cover";
+        slide.adjust.zoom = 1;
+        slide.adjust.x = 50;
+        slide.adjust.y = 50;
+        fit.value = "cover";
+        zoom.value = "1";
+        posX.value = "50";
+        posY.value = "50";
+        commitSlide();
+        renderCropPreview();
+      });
+
+      type.addEventListener("change", () => {
+        slide.type = type.value === "video" ? "video" : "image";
+        commitSlide();
+        renderCropPreview();
+      });
+
       alt.addEventListener("input", () => { slide.alt = alt.value.slice(0, 140); commitSlide(); });
       caption.addEventListener("input", () => { slide.caption = caption.value.slice(0, 80); commitSlide(); });
-      overlayOn.addEventListener("change", () => { slide.overlay.enabled = overlayOn.value === "on"; commitSlide(); });
+
+      overlayOn.addEventListener("change", () => {
+        slide.overlay.enabled = overlayOn.value === "on";
+        commitSlide();
+      });
+
       overlayOpacity.addEventListener("input", () => {
         slide.overlay.opacity = clampNum(parseFloat(overlayOpacity.value || "0.45"), 0, 0.85);
         overlayOpacity.value = String(slide.overlay.opacity);
         commitSlide();
       });
-      src.addEventListener("input", () => { slide.src = src.value.trim().slice(0, 700); commitSlide(); });
 
-      fit.addEventListener("change", () => { slide.adjust.fit = fit.value === "contain" ? "contain" : "cover"; commitSlide(); });
+      src.addEventListener("input", () => {
+        slide.src = src.value.trim().slice(0, 700);
+        commitSlide();
+        renderCropPreview();
+      });
+
+      fit.addEventListener("change", () => {
+        slide.adjust.fit = fit.value === "contain" ? "contain" : "cover";
+        commitSlide();
+        renderCropPreview();
+      });
+
       zoom.addEventListener("input", () => {
         slide.adjust.zoom = clampNum(parseFloat(zoom.value || "1"), 1, 2);
         zoom.value = String(slide.adjust.zoom);
         commitSlide();
+        renderCropPreview();
       });
+
       posX.addEventListener("input", () => {
         slide.adjust.x = clampNum(parseFloat(posX.value || "50"), 0, 100);
         posX.value = String(slide.adjust.x);
         commitSlide();
+        renderCropPreview();
       });
+
       posY.addEventListener("input", () => {
         slide.adjust.y = clampNum(parseFloat(posY.value || "50"), 0, 100);
         posY.value = String(slide.adjust.y);
         commitSlide();
+        renderCropPreview();
       });
 
       upload.addEventListener("change", async () => {
@@ -491,6 +604,7 @@
           src.value = slide.src;
           setStatus("Uploaded.");
           commitSlide();
+          renderCropPreview();
         } catch (e) {
           setStatus(e.message || "Upload failed.");
         }
@@ -530,13 +644,14 @@
         clearSelection();
       });
 
+      renderCropPreview();
       return;
     }
 
     renderInspectorEmpty();
   }
 
-  // ===== Products Inspector (unchanged from your working version) =====
+  // ===== Products Inspector =====
   function renderProductsInspector(sel) {
     const products = state.models.products;
     if (!products) return renderInspectorEmpty();
