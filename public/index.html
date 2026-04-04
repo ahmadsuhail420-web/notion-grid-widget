@@ -238,6 +238,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transform-origin: 50% 50%;
         opacity: 0;
         transform: translateX(10%);
         transition: opacity 500ms ease, transform 700ms ease;
@@ -660,6 +661,33 @@
           .trim();
       }
 
+      // ===== Slide adjust helpers =====
+      function clampNum(n, min, max) {
+        n = Number.isFinite(n) ? n : min;
+        return Math.max(min, Math.min(max, n));
+      }
+      function applyAdjustToMedia(el, s) {
+        const adj = (s && typeof s.adjust === "object") ? s.adjust : {};
+        const fit = adj.fit === "contain" ? "contain" : "cover";
+        const x = clampNum(parseFloat(adj.x ?? 50), 0, 100);
+        const y = clampNum(parseFloat(adj.y ?? 50), 0, 100);
+        const zoom = clampNum(parseFloat(adj.zoom ?? 1), 1, 2);
+
+        if (!el) return;
+
+        el.style.objectFit = fit;
+        el.style.objectPosition = `${x}% ${y}%`;
+
+        // Only images get zoom (video zoom is messy)
+        if (el.tagName === "IMG") {
+          el.style.transform = `translateX(0) scale(${zoom})`;
+          el.style.transformOrigin = `${x}% ${y}%`;
+        } else {
+          // keep slider transform behavior for videos
+          el.style.transformOrigin = `${x}% ${y}%`;
+        }
+      }
+
       // ===== Home content loading =====
       async function loadHomeContent() {
         try {
@@ -667,7 +695,7 @@
           if (!res.ok) return;
           const data = await res.json();
 
-          // Ticker (ensure tickerText id exists after rerender)
+          // Ticker
           const track = document.getElementById("tickerTrack");
           if (track && data.tickerText) {
             const t = String(data.tickerText);
@@ -687,7 +715,7 @@
           }
           if (sub && data.subtext) sub.textContent = data.subtext;
 
-          // Apply theme
+          // Theme
           if (data.theme && typeof data.theme === "object") {
             if (heading && data.theme.headingColor) heading.style.color = data.theme.headingColor;
             if (sub && data.theme.subtextColor) sub.style.color = data.theme.subtextColor;
@@ -727,6 +755,9 @@
                 v.preload = "metadata";
                 v.setAttribute("data-slide-index", String(i));
 
+                // Apply fit/position (no zoom)
+                applyAdjustToMedia(v, s);
+
                 const src = document.createElement("source");
                 src.src = s.src;
                 src.type = "video/mp4";
@@ -739,6 +770,9 @@
                 img.src = s.src;
                 img.alt = s.alt || `Story ${i + 1}`;
                 img.setAttribute("data-slide-index", String(i));
+
+                applyAdjustToMedia(img, s);
+
                 slidesWrap.appendChild(img);
               }
             });
@@ -767,7 +801,7 @@
 
         if (overlayEnabled) {
           overlayEl.hidden = false;
-          overlayEl.style.setProperty("--overlay-opacity", String(Math.max(0, Math.min(0.85, opacity))));
+          overlayEl.style.setProperty("--overlay-opacity", String(clampNum(opacity, 0, 0.85)));
         } else {
           overlayEl.hidden = true;
         }
@@ -909,12 +943,12 @@
             e.stopPropagation();
           }, true);
 
-          // IMPORTANT: disable story zones so click doesn't slide
+          // Disable story zones so click selects instead of sliding
           storyEl.querySelectorAll(".story-zone").forEach((btn) => {
             btn.style.pointerEvents = "none";
           });
 
-          // Bind selections (after home content is loaded)
+          // Bind selections (after content load)
           const ticker = document.getElementById("tickerText");
           const hero = document.getElementById("heroHeading");
           const sub = document.getElementById("heroSubtext");
@@ -937,7 +971,7 @@
             adminSend({ type: "select", page: "home", target: "subtext" });
           });
 
-          // Slide selection: click story card selects active slide
+          // Slide selection: click story selects current slide index
           storyEl.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -950,7 +984,7 @@
             hero.setAttribute("contenteditable", "true");
             hero.setAttribute("spellcheck", "false");
 
-            // FIX: Enter inserts 1 <br>, then moves caret to 2nd line
+            // Enter inserts 1 <br>, then moves caret to 2nd line
             hero.addEventListener("keydown", (e) => {
               if (e.key !== "Enter") return;
 
@@ -988,7 +1022,6 @@
         if (d.type === "apply" && d.page === "home") {
           const ticker = document.getElementById("tickerText");
           const sub = document.getElementById("heroSubtext");
-
           if (d.target === "tickerText" && ticker) ticker.textContent = d.value || "";
           if (d.target === "subtext" && sub) sub.textContent = d.value || "";
         }
@@ -1026,8 +1059,20 @@
           if (isAdmin) adminSend({ type: "homeHeroHtml", heroHtml: getHeroHtmlFromDom() });
         }
 
-        if (d.type === "applySlide" && d.page === "home") location.reload();
-        if (d.type === "rerenderSlides" && d.page === "home") location.reload();
+        // Dropdown selection from inspector: jump to a slide
+        if (d.type === "selectSlide" && d.page === "home") {
+          const nextIndex = Number(d.index || 0);
+          showSlide(nextIndex);
+          return;
+        }
+
+        if (d.type === "applySlide" && d.page === "home") {
+          // For simplicity keep consistent: rerender via reload so bars/slides rebuild from JSON
+          location.reload();
+        }
+        if (d.type === "rerenderSlides" && d.page === "home") {
+          location.reload();
+        }
         if (d.type === "clearHighlight") adminClearOutline();
       });
     </script>
