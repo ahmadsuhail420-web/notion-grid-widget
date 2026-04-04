@@ -59,6 +59,40 @@
   background: rgba(255,255,255,.03);
   color: rgba(255,255,255,.85);
 }
+
+.cropBox{
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  touch-action: none;
+}
+
+.cropMedia{
+  position:absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.cropHint{
+  position:absolute;
+  left: 10px;
+  bottom: 10px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.9);
+}
 .badge .dot{
   width: 8px; height: 8px; border-radius: 999px;
   background: #ffcc66;
