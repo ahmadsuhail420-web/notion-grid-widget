@@ -9,12 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-      <link href="https://fonts.googleapis.com/css2?family=TimesNewRoman:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=TimesNewRoman:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    
-   /* ========================= ROOT THEME VARIABLES ========================= */
-    
 :root {
   --bg-main: #ffffff;
   --bg-card: #ffffff;
@@ -48,11 +45,7 @@ body[data-theme="dark"] {
   --toggle-on: #ffffff;
 }
 
-/* ========================= BASE LAYOUT ========================= */
-html,
-body {
-  height: 100%;
-}
+html, body { height: 100%; }
 
 body {
   font-family: var(--font-main);
@@ -63,15 +56,12 @@ body {
   max-width: 460px;
   height: 720px;
   position: relative;
-
   -webkit-text-size-adjust: 100%;
   text-rendering: geometricPrecision;
   box-sizing: border-box;
 }
 
-.hidden-section {
-  display: none !important;
-}
+.hidden-section { display: none !important; }
 
 .widgetWrap {
   width: 100%;
@@ -88,10 +78,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Keep the viewer sharp (not blurred) */
-.widgetWrap .viewer {
-  backdrop-filter: blur(0px); /* optional */
-}
+.widgetWrap .viewer { backdrop-filter: blur(0px); }
 
 .container {
   min-height: 0;
@@ -122,7 +109,6 @@ body {
   background: transparent;
 }
 
-/* ========================= HEADER ========================= */
 .header {
   display: flex;
   flex-direction: column;
@@ -143,8 +129,7 @@ body {
   position: relative;
 }
 
-.refreshBtn,
-.menuBtn {
+.refreshBtn, .menuBtn {
   background: transparent;
   border: none;
   padding: 0;
@@ -174,26 +159,11 @@ body {
   transform: translateZ(0);
 }
 
-.refreshIcon.spin {
-  animation: spin 1s linear infinite;
-}
+.refreshIcon.spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+.headerDivider { height: 1px; background: var(--border-color); width: 100%; }
 
-.headerDivider {
-  height: 1px;
-  background: var(--border-color);
-  width: 100%;
-}
-
-/* Free plan header name (top-right) */
 .freeProfileName {
   margin-left: auto;
   font-size: 12px;
@@ -207,7 +177,6 @@ body {
   padding: 5px 2px;
 }
 
-/* ========================= MENU ========================= */
 .menu {
   width: 115px;
   height: auto;
@@ -227,13 +196,8 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-body[data-theme="dark"] .menu {
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
-}
-
-.menu.hidden {
-  display: none;
-}
+body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
+.menu.hidden { display: none; }
 
 .menuItem {
   font-size: 13px;
@@ -267,11 +231,7 @@ body[data-theme="dark"] .menu {
   margin-left: 0;
 }
 
-.toggleItem input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
+.toggleItem input { position: absolute; opacity: 0; pointer-events: none; }
 
 .toggleItem {
   display: flex;
@@ -304,28 +264,10 @@ body[data-theme="dark"] .menu {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.toggleItem input:checked + .toggle {
-  background: var(--toggle-on);
-}
-.toggleItem input:checked + .toggle::before {
-  transform: translateX(16px);
-}
+.toggleItem input:checked + .toggle { background: var(--toggle-on); }
+.toggleItem input:checked + .toggle::before { transform: translateX(16px); }
 
-.dbMenuTitle {
-  font-size: 12px;
-  font-weight: 700;
-  opacity: 0.75;
-  width: 100%;
-  margin: 0 0 4px;
-  color: var(--text-main);
-}
-
-.dbMenuList {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 4px;
-}
+.dbMenuTitle { font-size: 12px; font-weight: 700; opacity: 0.75; width: 100%; margin: 0 0 4px; color: var(--text-main); }
 
 .dbSelect {
   width: 100%;
@@ -352,19 +294,7 @@ body[data-theme="dark"] .menu {
   outline: none;
 }
 
-body[data-theme="dark"] .dbMenuBtn.active {
-  background: #fff;
-  color: #111;
-  border-color: #fff;
-}
-
-.themeTitle {
-  font-size: 12px;
-  font-weight: 600;
-  opacity: 0.6;
-  text-align: center;
-  margin-top: 2px;
-}
+.themeTitle { font-size: 12px; font-weight: 600; opacity: 0.6; text-align: center; margin-top: 2px; }
 
 .themeSegment {
   position: relative;
@@ -378,12 +308,7 @@ body[data-theme="dark"] .dbMenuBtn.active {
   margin: 0;
 }
 
-.themeSegment .material-symbols-outlined {
-  font-size: 16px;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-}
+.themeSegment .material-symbols-outlined { font-size: 16px; width: 18px; height: 18px; line-height: 18px; }
 
 .themeIndicator {
   position: absolute;
@@ -415,33 +340,12 @@ body[data-theme="dark"] .dbMenuBtn.active {
   transition: color 0.25s ease;
 }
 
-.themeSegment button.active {
-  color: #fff;
-  transform: scale(0.96);
-}
+.themeSegment button.active { color: #fff; transform: scale(0.96); }
+body[data-theme="dark"] .themeIndicator { background: #ffffff; }
+body[data-theme="dark"] .themeSegment button.active { color: #111; }
 
-body[data-theme="dark"] .themeIndicator {
-  background: #ffffff;
-}
-
-body[data-theme="dark"] .themeSegment button.active {
-  color: #111;
-}
-
-/* ========================= PROFILE ========================= */
-.profile {
-  padding: 6px 40px 12px;
-  display: flex;
-  justify-content: center;
-  flex: 0 0 1;
-}
-
-.profileRow {
-  display: flex;
-  max-width: 520px;
-  align-items: center;
-  gap: clamp(10px, 5vw, 24px);
-}
+.profile { padding: 6px 40px 12px; display: flex; justify-content: center; flex: 0 0 1; }
+.profileRow { display: flex; max-width: 520px; align-items: center; gap: clamp(10px, 5vw, 24px); }
 
 .profilePic {
   width: clamp(44px, 20vw, 108px);
@@ -450,20 +354,12 @@ body[data-theme="dark"] .themeSegment button.active {
   overflow: hidden;
   background: #eee;
   flex-shrink: 0;
+  position: relative;
 }
 
-.profilePic img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.profilePic img { width: 100%; height: 100%; object-fit: cover; }
 
-.profileRight {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 2px 6px;
-}
+.profileRight { display: flex; flex-direction: column; align-items: flex-start; padding: 2px 6px; }
 
 .profileTitle {
   font-size: clamp(12px, 4.5vw, 20px);
@@ -472,6 +368,24 @@ body[data-theme="dark"] .themeSegment button.active {
   color: var(--text-main);
 }
 
+.profileTitle.editable { cursor: pointer; }
+.profileNote.editable { cursor: pointer; }
+
+.editBadge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 999px;
+  display: none;
+}
+
+.profilePic.editable .editBadge { display: inline-flex; }
+
 .profileStats {
   display: grid;
   grid-template-columns: repeat(3, auto);
@@ -479,21 +393,9 @@ body[data-theme="dark"] .themeSegment button.active {
   margin-top: 10px;
 }
 
-.stat {
-  text-align: center;
-}
-
-.stat strong {
-  font-size: clamp(11px, 4vw, 18px);
-  font-weight: 700;
-  color: var(--text-main);
-  display: block;
-}
-
-.stat span {
-  font-size: clamp(9px, 3.2vw, 13px);
-  color: var(--text-muted);
-}
+.stat { text-align: center; }
+.stat strong { font-size: clamp(11px, 4vw, 18px); font-weight: 700; color: var(--text-main); display: block; }
+.stat span { font-size: clamp(9px, 3.2vw, 13px); color: var(--text-muted); }
 
 .profileNote {
   text-align: center;
@@ -503,42 +405,13 @@ body[data-theme="dark"] .themeSegment button.active {
   flex: 0 0 1;
 }
 
-/* Hide profile picture when user turns off "Profile" */
-#profileHeader.no-avatar .profilePic {
-  display: none !important;
-}
+#profileHeader.no-avatar .profilePic { display: none !important; }
+#profileHeader.no-avatar .profileRow { gap: 0 !important; justify-content: center; }
+#profileHeader.no-avatar .profileRight { align-items: center; text-align: center; }
 
-/* Optional: tighten spacing when avatar is hidden */
-#profileHeader.no-avatar .profileRow {
-  gap: 0 !important;
-  justify-content: center;
-}
-
-#profileHeader.no-avatar .profileRight {
-  align-items: center;
-  text-align: center;
-}
-
-/* =========================  HIGHLIGHTS ========================= */
-.highlights {
-  width: 100%;
-  padding-left: 1px;
-  box-sizing: border-box;
-  flex: 0 0 auto;
-}
-
-.highlightsRow {
-  width: 100%;
-  max-width: 520px;
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  flex-wrap: nowrap;
-}
-
-.highlightsRow::-webkit-scrollbar {
-  display: none;
-}
+.highlights { width: 100%; padding-left: 1px; box-sizing: border-box; flex: 0 0 auto; }
+.highlightsRow { width: 100%; max-width: 520px; display: flex; gap: 12px; overflow-x: auto; flex-wrap: nowrap; }
+.highlightsRow::-webkit-scrollbar { display: none; }
 
 .highlightItem {
   width: clamp(36px, 16vw, 76px);
@@ -552,35 +425,14 @@ body[data-theme="dark"] .themeSegment button.active {
   flex-shrink: 0;
 }
 
-.highlightItem img {
-  width: 92%;
-  height: 92%;
-  border-radius: 50%;
-  object-fit: cover;
-}
+.highlightItem img { width: 92%; height: 92%; border-radius: 50%; object-fit: cover; }
 
-.highlightPlaceholder {
-  background: var(--bg-muted);
-  border-color: rgba(0, 0, 0, 0.08);
-}
+.highlightPlaceholder { background: var(--bg-muted); border-color: rgba(0, 0, 0, 0.08); }
+body[data-theme="dark"] .highlightPlaceholder { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); }
 
-body[data-theme="dark"] .highlightPlaceholder {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
-}
+#highlightsWrap { margin-bottom: 12px; }
 
-#highlightsWrap {
-  margin-bottom: 12px;
-}
-
-/* ========================= CONTENT AREA / TABS ========================= */
-.contentArea {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
+.contentArea { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
 
 .tabs {
   display: grid;
@@ -591,34 +443,14 @@ body[data-theme="dark"] .highlightPlaceholder {
   flex: 0 0 auto;
 }
 
-.tabItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
+.tabItem { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
 
-.tabItem img {
-  width: 22px;
-  height: 22px;
-  opacity: 0.45;
-  transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
-}
+.tabItem img { width: 22px; height: 22px; opacity: 0.45; transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease; }
 
-body[data-theme="dark"] .tabItem img {
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
-}
+body[data-theme="dark"] .tabItem img { filter: brightness(0) invert(1); opacity: 0.7; }
+body[data-theme="dark"] .tabItem.active img { opacity: 1; }
 
-body[data-theme="dark"] .tabItem.active img {
-  opacity: 1;
-}
-
-.tabItem.active img {
-  opacity: 1;
-  transform: translateY(-2px) scale(1.05);
-}
+.tabItem.active img { opacity: 1; transform: translateY(-2px) scale(1.05); }
 
 .tabIcon {
   font-size: 22px;
@@ -629,19 +461,10 @@ body[data-theme="dark"] .tabItem.active img {
   font-variation-settings: "FILL" 1;
 }
 
-.tabItem.active .tabIcon {
-  opacity: 1;
-  transform: translateY(-2px) scale(1.05);
-}
+.tabItem.active .tabIcon { opacity: 1; transform: translateY(-2px) scale(1.05); }
 
-body[data-theme="dark"] .tabIcon {
-  opacity: 0.75;
-  color: #fff;
-}
-
-body[data-theme="dark"] .tabItem.active .tabIcon {
-  opacity: 1;
-}
+body[data-theme="dark"] .tabIcon { opacity: 0.75; color: #fff; }
+body[data-theme="dark"] .tabItem.active .tabIcon { opacity: 1; }
 
 .slidingUnderline {
   position: absolute;
@@ -654,25 +477,10 @@ body[data-theme="dark"] .tabItem.active .tabIcon {
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ========================= GRID ========================= */
-.gridWrap {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 0;
-  padding-top: 6px;
-}
+.gridWrap { flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0; padding-top: 6px; }
+.gridWrap::-webkit-scrollbar { display: none; }
 
-.gridWrap::-webkit-scrollbar {
-  display: none;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
-  padding: 0;
-}
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 0; }
 
 .card {
   aspect-ratio: 5 / 7;
@@ -684,28 +492,11 @@ body[data-theme="dark"] .tabItem.active .tabIcon {
   justify-content: center;
 }
 
-.card img,
-.card video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.card img, .card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card img { z-index: 1; pointer-events: none; }
 
-.card img {
-  z-index: 1;
-  pointer-events: none;
-}
-
-.card video {
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-
-.card:hover video {
-  opacity: 1;
-}
+.card video { opacity: 0; transition: opacity 0.2s ease; pointer-events: none; }
+.card:hover video { opacity: 1; }
 
 .card .badge {
   position: absolute;
@@ -719,11 +510,8 @@ body[data-theme="dark"] .tabItem.active .tabIcon {
   pointer-events: none;
 }
 
-body[data-theme="dark"] .card video {
-  opacity: 0.85;
-}
+body[data-theme="dark"] .card video { opacity: 0.85; }
 
-/* Hover overlay text */
 .card .hoverText {
   position: absolute;
   inset: 0;
@@ -738,32 +526,20 @@ body[data-theme="dark"] .card video {
   pointer-events: none;
 }
 
-.card:hover .hoverText {
-  opacity: 1;
-}
+.card:hover .hoverText { opacity: 1; }
+.card:active .hoverText { opacity: 1; }
 
-.card:active .hoverText {
-  opacity: 1;
-}
-
-.card .hoverText .textWrap {
-  width: 100%;
-}
+.card .hoverText .textWrap { width: 100%; }
 
 .card .hoverText .title {
   font-size: 13px;
   font-weight: 500;
   line-height: 1.2;
-  /* show full text */
   white-space: normal;
   overflow: visible;
   text-overflow: unset;
-
-  /* wrap long words too */
   overflow-wrap: anywhere;
   word-break: break-word;
-
-  /* remove old clamp behavior if present */
   display: block;
   -webkit-line-clamp: unset;
   -webkit-box-orient: unset;
@@ -779,7 +555,6 @@ body[data-theme="dark"] .card video {
   text-overflow: ellipsis;
 }
 
-/* =========================  VIEWER ========================= */
 .viewer {
   position: absolute;
   inset: 0;
@@ -795,14 +570,8 @@ body[data-theme="dark"] .card video {
   transition: opacity 0.25s ease;
 }
 
-.viewer.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.viewer.hidden {
-  display: none;
-}
+.viewer.show { opacity: 1; pointer-events: auto; }
+.viewer.hidden { display: none; }
 
 .viewerInner {
   width: min(360px, 85%);
@@ -811,9 +580,7 @@ body[data-theme="dark"] .card video {
   transition: transform 0.25s ease;
 }
 
-.viewer.show .viewerInner {
-  transform: scale(1);
-}
+.viewer.show .viewerInner { transform: scale(1); }
 
 .viewerCard {
   background: var(--bg-card);
@@ -822,26 +589,12 @@ body[data-theme="dark"] .card video {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
 
-.viewerImage {
-  aspect-ratio: 5 / 7;
-  overflow: hidden;
-}
+.viewerImage { aspect-ratio: 5 / 7; overflow: hidden; }
+.viewerImage img, .viewerImage video { width: 100%; height: 100%; object-fit: cover; }
 
-.viewerImage img,
-.viewerImage video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.viewerFooter { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); }
 
-.viewerFooter {
-  padding: 14px 16px;
-  border-top: 1px solid var(--border-color);
-  color: var(--text-main);
-}
-
-.viewerClose,
-.nav {
+.viewerClose, .nav {
   position: absolute;
   width: 36px;
   height: 36px;
@@ -856,84 +609,21 @@ body[data-theme="dark"] .card video {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
-.viewerClose {
-  top: -14px;
-  right: -14px;
-  font-size: 16px;
-}
+.viewerClose { top: -14px; right: -14px; font-size: 16px; }
+.nav { top: 50%; transform: translateY(-50%); font-size: 20px; }
+.nav.prev { left: -14px; }
+.nav.next { right: -14px; }
 
-.nav {
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20px;
-}
-
-.nav.prev {
-  left: -14px;
-}
-
-.nav.next {
-  right: -14px;
-}
-
-/* ========================= SKELETON ========================= */
-#skeleton {
-  padding: 16px;
-}
-
-.sk-profile {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.sk-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: var(--bg-muted);
-}
-
-.sk-lines {
-  flex: 1;
-}
-
-.sk-line {
-  height: 12px;
-  background: var(--bg-muted);
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
-
-.sk-line.short {
-  width: 40%;
-}
-
-.sk-highlights {
-  display: flex;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.sk-circle {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  background: var(--bg-muted);
-}
-
-.sk-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
-}
-
-.sk-grid div {
-  aspect-ratio: 4 / 5;
-  background: var(--bg-muted);
-  border-radius: 2px;
-}
+#skeleton { padding: 16px; }
+.sk-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.sk-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--bg-muted); }
+.sk-lines { flex: 1; }
+.sk-line { height: 12px; background: var(--bg-muted); border-radius: 6px; margin-bottom: 8px; }
+.sk-line.short { width: 40%; }
+.sk-highlights { display: flex; gap: 12px; margin: 16px 0; }
+.sk-circle { width: 62px; height: 62px; border-radius: 50%; background: var(--bg-muted); }
+.sk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.sk-grid div { aspect-ratio: 4 / 5; background: var(--bg-muted); border-radius: 2px; }
 
 #skeleton * {
   animation: shimmer 1.2s infinite linear;
@@ -942,255 +632,265 @@ body[data-theme="dark"] .card video {
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: 100% 0;
-  }
-  100% {
-    background-position: -100% 0;
-  }
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
   </style>
 </head>
 <body>
   <div class="widgetWrap">
-      <!-- ========================= HEADER ========================== -->
-      <div class="header">
-        <div class="headerActions">
-          <button class="refreshBtn" aria-label="Refresh">
-            <span class="material-symbols-outlined refreshIcon">refresh</span>
-          </button>
+    <div class="header">
+      <div class="headerActions">
+        <button class="refreshBtn" aria-label="Refresh">
+          <span class="material-symbols-outlined refreshIcon">refresh</span>
+        </button>
 
-          <!-- Add this inside .headerActions, centered between refresh button and menu button -->
-<div id="modePill" class="hidden-section" style="
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:11px;
-  font-weight:800;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid var(--border-color);
-  background: var(--bg-muted);
-  color: var(--text-main);
-  line-height:1;
-  opacity:.95;
-">
-  Merge
-</div>
+        <div id="modePill" class="hidden-section" style="
+          position:absolute;
+          left:50%;
+          transform:translateX(-50%);
+          font-size:11px;
+          font-weight:800;
+          padding:6px 10px;
+          border-radius:999px;
+          border:1px solid var(--border-color);
+          background: var(--bg-muted);
+          color: var(--text-main);
+          line-height:1;
+          opacity:.95;
+        ">Merge</div>
 
-          <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()" aria-label="Menu">
-            <span class="material-symbols-outlined">more_horiz</span>
-          </button>
+        <button class="menuBtn" onclick="event.stopPropagation(); toggleMenu()" aria-label="Menu">
+          <span class="material-symbols-outlined">more_horiz</span>
+        </button>
 
-          <!-- Free plan top-right name -->
-          <div id="freeProfileName" class="freeProfileName hidden-section"></div>
+        <div id="freeProfileName" class="freeProfileName hidden-section"></div>
 
-          <!-- Menu panel -->
-          <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
-            <div id="dbMenuWrap" class="hidden-section">
-              <div class="dbMenuTitle">Databases</div>
-              <select id="dbSelect" class="dbSelect"></select>
+        <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
+          <div id="dbMenuWrap" class="hidden-section">
+            <div class="dbMenuTitle">Databases</div>
+            <select id="dbSelect" class="dbSelect"></select>
+          </div>
+
+          <div id="mergeMenuWrap" class="hidden-section" style="width:100%;">
+            <label class="menuItem toggleItem" style="width:100%; justify-content:space-between;">
+              <span class="menuLabel">Merge</span>
+              <input id="mergeToggle" type="checkbox" onchange="onMergeToggle(this.checked)" />
+              <span class="toggle"></span>
+            </label>
+
+            <div style="font-size:10px; opacity:.7; color:var(--text-muted); margin-top:4px; line-height:1.2;">
+              Merge combines posts from all connected databases.
             </div>
-            
-            <!-- Pro-only Merge toggle -->
-<div id="mergeMenuWrap" class="hidden-section" style="width:100%;">
+          </div>
 
-  <label class="menuItem toggleItem" style="width:100%; justify-content:space-between;">
-    <span class="menuLabel">Merge</span>
-    <input id="mergeToggle" type="checkbox" onchange="onMergeToggle(this.checked)" />
-    <span class="toggle"></span>
-  </label>
-
-  <div style="font-size:10px; opacity:.7; color:var(--text-muted); margin-top:4px; line-height:1.2;">
-    Merge combines posts from all connected databases.
-  </div>
-</div>
-
-            <label class="menuItem toggleItem">
-              <span class="menuLabel">Header</span>
-              <input type="checkbox" checked onchange="toggleSection('header', this)" />
+          <!-- Pro-only: Edit Profile toggle -->
+          <div id="editProfileWrap" class="hidden-section" style="width:100%; margin-top:4px;">
+            <label class="menuItem toggleItem" style="width:100%; justify-content:space-between;">
+              <span class="menuLabel">Edit Profile</span>
+              <input id="editProfileToggle" type="checkbox" onchange="setEditProfileMode(this.checked)" />
               <span class="toggle"></span>
             </label>
 
-            <label class="menuItem toggleItem">
-              <span class="menuLabel">Highlights</span>
-              <input type="checkbox" checked onchange="toggleSection('highlights', this)" />
-              <span class="toggle"></span>
-            </label>
+            <div style="font-size:10px; opacity:.7; color:var(--text-muted); margin-top:4px; line-height:1.2;">
+              Requires <b>?key=</b> in the URL (admin secret).
+            </div>
+          </div>
 
-            <label class="menuItem toggleItem">
-              <span class="menuLabel">Profile</span>
-              <input type="checkbox" checked onchange="toggleAvatar(this)" />
-              <span class="toggle"></span>
-            </label>
+          <label class="menuItem toggleItem">
+            <span class="menuLabel">Header</span>
+            <input type="checkbox" checked onchange="toggleSection('header', this)" />
+            <span class="toggle"></span>
+          </label>
 
-            <label class="menuItem toggleItem">
-              <span class="menuLabel">Note</span>
-              <input type="checkbox" checked onchange="toggleProfileNote(this)" />
-              <span class="toggle"></span>
-            </label>
+          <label class="menuItem toggleItem">
+            <span class="menuLabel">Highlights</span>
+            <input type="checkbox" checked onchange="toggleSection('highlights', this)" />
+            <span class="toggle"></span>
+          </label>
 
-            <select id="fontSelect" onchange="setFont(this.value)">
-              <option value="system">System</option>
-              <option value="inter">Inter</option>
-              <option value="poppins">Poppins</option>
-              <option value="manrope">Manrope</option>
-              <option value="montserrat">Montserrat</option>
-            </select>
+          <label class="menuItem toggleItem">
+            <span class="menuLabel">Profile</span>
+            <input type="checkbox" checked onchange="toggleAvatar(this)" />
+            <span class="toggle"></span>
+          </label>
 
-            <div class="menuSection">
-              <div class="menuLabel themeTitle">Theme</div>
+          <label class="menuItem toggleItem">
+            <span class="menuLabel">Note</span>
+            <input type="checkbox" checked onchange="toggleProfileNote(this)" />
+            <span class="toggle"></span>
+          </label>
 
-              <div class="themeSegment">
-                <div class="themeIndicator"></div>
+          <select id="fontSelect" onchange="setFont(this.value)">
+            <option value="system">System</option>
+            <option value="inter">Inter</option>
+            <option value="poppins">Poppins</option>
+            <option value="manrope">Manrope</option>
+            <option value="montserrat">Montserrat</option>
+          </select>
 
-                <button data-theme-btn="light" title="Light" onclick="setTheme('light')">
-                  <span class="material-symbols-outlined">light_mode</span>
-                </button>
+          <div class="menuSection">
+            <div class="menuLabel themeTitle">Theme</div>
 
-                <button data-theme-btn="dark" title="Dark" onclick="setTheme('dark')">
-                  <span class="material-symbols-outlined">dark_mode</span>
-                </button>
+            <div class="themeSegment">
+              <div class="themeIndicator"></div>
 
-                <button data-theme-btn="default" title="Auto" onclick="setTheme('default')">
-                  <span class="material-symbols-outlined">hdr_auto</span>
-                </button>
-              </div>
+              <button data-theme-btn="light" title="Light" onclick="setTheme('light')">
+                <span class="material-symbols-outlined">light_mode</span>
+              </button>
+
+              <button data-theme-btn="dark" title="Dark" onclick="setTheme('dark')">
+                <span class="material-symbols-outlined">dark_mode</span>
+              </button>
+
+              <button data-theme-btn="default" title="Auto" onclick="setTheme('default')">
+                <span class="material-symbols-outlined">hdr_auto</span>
+              </button>
             </div>
           </div>
         </div>
-
-        <div class="headerDivider"></div>
       </div>
 
-      <!-- ========================= CONTAINER (SKELETON + CONTENT) ========================== -->
-      <div class="container" data-loading="true">
-        <!-- Skeleton -->
-        <div id="skeleton">
-          <div class="sk-profile">
-            <div class="sk-avatar"></div>
-            <div class="sk-lines">
-              <div class="sk-line short"></div>
-              <div class="sk-line"></div>
-            </div>
-          </div>
+      <div class="headerDivider"></div>
+    </div>
 
-          <div class="sk-highlights">
-            <div class="sk-circle"></div>
-            <div class="sk-circle"></div>
-            <div class="sk-circle"></div>
-            <div class="sk-circle"></div>
-          </div>
-
-          <div class="sk-grid">
-            <div></div><div></div><div></div>
-            <div></div><div></div><div></div>
+    <div class="container" data-loading="true">
+      <div id="skeleton">
+        <div class="sk-profile">
+          <div class="sk-avatar"></div>
+          <div class="sk-lines">
+            <div class="sk-line short"></div>
+            <div class="sk-line"></div>
           </div>
         </div>
 
-        <!-- Profile header -->
-        <div id="profileHeader" class="profile">
-          <div class="profileRow">
-            <div class="profilePic">
-              <img id="profileImage" src="/icons/profile-placeholder.png" alt="Profile picture" />
-            </div>
+        <div class="sk-highlights">
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+          <div class="sk-circle"></div>
+        </div>
 
-            <div class="profileRight">
-              <div id="profileName" class="profileTitle">Grid Planner</div>
+        <div class="sk-grid">
+          <div></div><div></div><div></div>
+          <div></div><div></div><div></div>
+        </div>
+      </div>
 
-              <div class="profileStats">
-                <div class="stat">
-                  <strong id="statPosts">0</strong>
-                  <span>Posts</span>
-                </div>
-                <div class="stat">
-                  <strong id="statScheduled">0</strong>
-                  <span>Scheduled</span>
-                </div>
-                <div class="stat">
-                  <strong id="statPublished">0</strong>
-                  <span>Published</span>
-                </div>
+      <div id="profileHeader" class="profile">
+        <div class="profileRow">
+          <div class="profilePic" id="profilePicWrap">
+            <img id="profileImage" src="/icons/profile-placeholder.png" alt="Profile picture" />
+            <div class="editBadge">Edit</div>
+          </div>
+
+          <div class="profileRight">
+            <div id="profileName" class="profileTitle">Grid Planner</div>
+
+            <div class="profileStats">
+              <div class="stat">
+                <strong id="statPosts">0</strong>
+                <span>Posts</span>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Profile note -->
-        <div id="profileNote" class="profileNote">Content Planner</div>
-
-        <!-- Highlights -->
-        <div id="highlightsWrap" class="highlights">
-          <div id="highlights" class="highlightsRow"></div>
-        </div>
-
-        <!-- Content area -->
-        <div class="contentArea">
-          <!-- Tabs -->
-          <div class="tabs">
-            <div class="tabItem active" data-type="post" onclick="setFilter('__POSTS__', this)">
-              <img src="/icons/post-dark.png" alt="Posts" />
-            </div>
-
-            <div class="tabItem" data-type="reel" onclick="setFilter('Video', this)">
-              <img src="/icons/reel-light.png" alt="Reels" />
-            </div>
-
-            <div class="tabItem" data-type="favorite" onclick="setFilter('Favorite', this)">
-              <span class="material-symbols-outlined tabIcon">favorite</span>
-            </div>
-
-            <div class="slidingUnderline" id="slidingUnderline"></div>
-          </div>
-
-          <!-- Grid -->
-          <div class="gridWrap">
-            <div id="grid" class="grid"></div>
-          </div>
-        </div>
-
-        <!-- Viewer modal -->
-        <div id="viewer" class="viewer hidden" onclick="closeViewer()">
-          <div class="viewerInner" onclick="event.stopPropagation()">
-            <button class="viewerClose" onclick="closeViewer()" aria-label="Close viewer">✕</button>
-            <button class="nav prev" onclick="prevImage()" aria-label="Previous">‹</button>
-            <button class="nav next" onclick="nextImage()" aria-label="Next">›</button>
-
-            <div class="viewerCard">
-              <div class="viewerImage" id="viewerMedia"></div>
-
-              <div class="viewerFooter">
-                <div id="viewerTitle"></div>
-                <div id="viewerDate"></div>
+              <div class="stat">
+                <strong id="statScheduled">0</strong>
+                <span>Scheduled</span>
+              </div>
+              <div class="stat">
+                <strong id="statPublished">0</strong>
+                <span>Published</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Footer -->
-      <div class="footer">
-        <span class="footerBrand">Alif Designs</span>
+      <div id="profileNote" class="profileNote">Content Planner</div>
+
+      <div id="highlightsWrap" class="highlights">
+        <div id="highlights" class="highlightsRow"></div>
+      </div>
+
+      <div class="contentArea">
+        <div class="tabs">
+          <div class="tabItem active" data-type="post" onclick="setFilter('__POSTS__', this)">
+            <img src="/icons/post-dark.png" alt="Posts" />
+          </div>
+
+          <div class="tabItem" data-type="reel" onclick="setFilter('Video', this)">
+            <img src="/icons/reel-light.png" alt="Reels" />
+          </div>
+
+          <div class="tabItem" data-type="favorite" onclick="setFilter('Favorite', this)">
+            <span class="material-symbols-outlined tabIcon">favorite</span>
+          </div>
+
+          <div class="slidingUnderline" id="slidingUnderline"></div>
+        </div>
+
+        <div class="gridWrap">
+          <div id="grid" class="grid"></div>
+        </div>
+      </div>
+
+      <div id="viewer" class="viewer hidden" onclick="closeViewer()">
+        <div class="viewerInner" onclick="event.stopPropagation()">
+          <button class="viewerClose" onclick="closeViewer()" aria-label="Close viewer">✕</button>
+          <button class="nav prev" onclick="prevImage()" aria-label="Previous">‹</button>
+          <button class="nav next" onclick="nextImage()" aria-label="Next">›</button>
+
+          <div class="viewerCard">
+            <div class="viewerImage" id="viewerMedia"></div>
+
+            <div class="viewerFooter">
+              <div id="viewerTitle"></div>
+              <div id="viewerDate"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div class="footer">
+      <span class="footerBrand">Alif Designs</span>
+    </div>
+  </div>
+
   <script>
-    
-  /* =========================  GLOBALS  ========================= */
   let CURRENT_PLAN = "free";
   let ALL_POSTS = [];
-  let FILTER = "__POSTS__"; // "__POSTS__" | "Video" | "Favorite"
+  let FILTER = "__POSTS__";
   let currentSlide = 0;
   let currentMedia = [];
 
-    const LS_ACTIVE_DB = "activeDatabase";
-const LS_DB_MODE = "dbMode";
+  const LS_ACTIVE_DB = "activeDatabase";
+  const LS_DB_MODE = "dbMode";
 
-  /* =========================
-     PLAN GATING (FREE / PRO)
-  ========================= */
+  // Profile editing
+  const LS_ADMIN_KEY = "widgetAdminKey";
+  const LS_PROFILE_EDIT_MODE = "profileEditMode";
+
+  function getSlug() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("slug");
+  }
+
+  function getKeyFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("key");
+  }
+
+  function getAdminKey() {
+    return localStorage.getItem(LS_ADMIN_KEY) || "";
+  }
+
+  function setAdminKeyFromUrlIfPresent() {
+    const urlKey = getKeyFromUrl();
+    if (urlKey) localStorage.setItem(LS_ADMIN_KEY, urlKey);
+  }
+
   function planAllows(plan, feature) {
     const isPro = plan === "pro";
-
     if (feature === "viewer_modal") return isPro;
     if (feature === "remove_branding") return isPro;
     if (feature === "fonts") return isPro;
@@ -1198,75 +898,104 @@ const LS_DB_MODE = "dbMode";
     if (feature === "pinned") return isPro;
     if (feature === "multi_db_switcher") return isPro;
     if (feature === "unlimited_highlights") return isPro;
-
+    if (feature === "edit_profile") return isPro;
     return false;
   }
 
- function applyPlanToUI() {
-  const isPro = CURRENT_PLAN === "pro";
-
-  // Branding: hide only on pro (keep spacing)
-  const footerBrand = document.querySelector(".footerBrand");
-  if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
-
-  const menuBtn = document.querySelector(".menuBtn");
-  const menu = document.getElementById("menu");
-  const freeName = document.getElementById("freeProfileName");
-
-  const profileHeader = document.getElementById("profileHeader");
-  const profileNote = document.getElementById("profileNote");
-  const highlightsWrap = document.getElementById("highlightsWrap");
-
-  const dbMenuWrap = document.getElementById("dbMenuWrap");
-  const mergeMenuWrap = document.getElementById("mergeMenuWrap");
-
-  if (!isPro) {
-    // ----- FREE -----
-    if (menuBtn) menuBtn.style.display = "none";
-    if (menu) menu.classList.add("hidden");
-    if (freeName) freeName.classList.remove("hidden-section");
-
-    if (profileHeader) profileHeader.classList.add("hidden-section");
-    if (profileNote) profileNote.classList.add("hidden-section");
-    if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-
-    if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
-    if (mergeMenuWrap) mergeMenuWrap.classList.add("hidden-section");
-
-    // Clear any prior Pro selections
-    localStorage.removeItem(LS_ACTIVE_DB);
-    localStorage.removeItem(LS_DB_MODE);
-
-    updateModePill();
-    return;
+  function isEditProfileMode() {
+    return localStorage.getItem(LS_PROFILE_EDIT_MODE) === "true";
   }
 
-  // ----- PRO -----
-  if (menuBtn) menuBtn.style.display = "";
-  if (freeName) freeName.classList.add("hidden-section");
+  function setEditProfileMode(enabled) {
+    if (CURRENT_PLAN !== "pro") return;
 
-  if (profileHeader) profileHeader.classList.remove("hidden-section");
-  if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
-  // profileNote visibility handled in renderProfile()
+    localStorage.setItem(LS_PROFILE_EDIT_MODE, enabled ? "true" : "false");
+    syncEditProfileUI();
 
-  // Show merge section (pro-only)
-  if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
+    document.getElementById("menu")?.classList.add("hidden");
+  }
+  window.setEditProfileMode = setEditProfileMode;
 
-  const mergeToggle = document.getElementById("mergeToggle");
-const isMerge = !!mergeToggle && mergeToggle.checked;
-   
-if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
+  function syncEditProfileUI() {
+    const pro = CURRENT_PLAN === "pro";
 
-  updateModePill();
-}
+    const wrap = document.getElementById("editProfileWrap");
+    const toggle = document.getElementById("editProfileToggle");
+    if (wrap) wrap.classList.toggle("hidden-section", !pro);
+    if (toggle) toggle.checked = pro && isEditProfileMode();
 
-  /* =========================
-     THEME (AUTO)
-  ========================= */
+    const editable = pro && isEditProfileMode();
+
+    // visual cues
+    const picWrap = document.getElementById("profilePicWrap");
+    const nameEl = document.getElementById("profileName");
+    const noteEl = document.getElementById("profileNote");
+
+    if (picWrap) picWrap.classList.toggle("editable", editable);
+    if (nameEl) nameEl.classList.toggle("editable", editable);
+    if (noteEl) noteEl.classList.toggle("editable", editable);
+  }
+
+  function applyPlanToUI() {
+    const isPro = CURRENT_PLAN === "pro";
+
+    const footerBrand = document.querySelector(".footerBrand");
+    if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
+
+    const menuBtn = document.querySelector(".menuBtn");
+    const menu = document.getElementById("menu");
+    const freeName = document.getElementById("freeProfileName");
+
+    const profileHeader = document.getElementById("profileHeader");
+    const profileNote = document.getElementById("profileNote");
+    const highlightsWrap = document.getElementById("highlightsWrap");
+
+    const dbMenuWrap = document.getElementById("dbMenuWrap");
+    const mergeMenuWrap = document.getElementById("mergeMenuWrap");
+
+    if (!isPro) {
+      if (menuBtn) menuBtn.style.display = "none";
+      if (menu) menu.classList.add("hidden");
+      if (freeName) freeName.classList.remove("hidden-section");
+
+      if (profileHeader) profileHeader.classList.add("hidden-section");
+      if (profileNote) profileNote.classList.add("hidden-section");
+      if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
+
+      if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
+      if (mergeMenuWrap) mergeMenuWrap.classList.add("hidden-section");
+
+      // disable edit profile
+      localStorage.setItem(LS_PROFILE_EDIT_MODE, "false");
+
+      // Clear any prior Pro selections
+      localStorage.removeItem(LS_ACTIVE_DB);
+      localStorage.removeItem(LS_DB_MODE);
+
+      updateModePill();
+      syncEditProfileUI();
+      return;
+    }
+
+    if (menuBtn) menuBtn.style.display = "";
+    if (freeName) freeName.classList.add("hidden-section");
+
+    if (profileHeader) profileHeader.classList.remove("hidden-section");
+    if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
+
+    if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
+
+    const mergeToggle = document.getElementById("mergeToggle");
+    const isMerge = !!mergeToggle && mergeToggle.checked;
+    if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
+
+    updateModePill();
+    syncEditProfileUI();
+  }
+
   (function initThemeOnLoad() {
     const theme = localStorage.getItem("theme") || "default";
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
     if (theme === "dark" || (theme === "default" && prefersDark)) {
       document.body.setAttribute("data-theme", "dark");
     } else {
@@ -1278,7 +1007,6 @@ if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
     const indicator = document.querySelector(".themeIndicator");
     const buttons = [...document.querySelectorAll("[data-theme-btn]")];
     const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
-
     if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
     buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.themeBtn === mode));
   }
@@ -1291,19 +1019,10 @@ if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
       if (prefersDark) document.body.setAttribute("data-theme", "dark");
       else document.body.removeAttribute("data-theme");
     }
-
     localStorage.setItem("theme", mode);
     syncThemePill(mode);
   }
   window.setTheme = setTheme;
-
-  /* =========================
-     HELPERS
-  ========================= */
-  function getSlug() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("slug");
-  }
 
   function hasMedia(post) {
     return (Array.isArray(post.attachment) && post.attachment.length > 0) || post.thumbnail;
@@ -1339,7 +1058,6 @@ if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
 
   function computeStatsFromGrid(posts) {
     const today = new Date().toISOString().split("T")[0];
-
     return {
       total: posts.length,
       scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
@@ -1354,42 +1072,28 @@ if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
     document.getElementById("statPublished").innerText = stats.published;
   }
 
-  function extractProfileFromPosts(posts) {
-    const rowWithName = posts.find(p => p.profileName);
-    const rowWithPic = posts.find(p => p.profilePicture);
+  function updateModePill() {
+    const pill = document.getElementById("modePill");
+    if (!pill) return;
 
-    return {
-      name: rowWithName?.profileName || "Grid Planner",
-      picture: rowWithPic?.profilePicture || "/icons/profile-placeholder.png",
-    };
+    if (CURRENT_PLAN !== "pro") {
+      pill.classList.add("hidden-section");
+      return;
+    }
+
+    const mergeToggle = document.getElementById("mergeToggle");
+    const isMerge = !!mergeToggle && mergeToggle.checked;
+
+    if (isMerge) {
+      pill.textContent = "Merge";
+      pill.classList.remove("hidden-section");
+    } else {
+      pill.classList.add("hidden-section");
+    }
   }
 
-function updateModePill() {
-  const pill = document.getElementById("modePill");
-  if (!pill) return;
-
-  if (CURRENT_PLAN !== "pro") {
-    pill.classList.add("hidden-section");
-    return;
-  }
-
-  const mergeToggle = document.getElementById("mergeToggle");
-  const isMerge = !!mergeToggle && mergeToggle.checked;
-
-  if (isMerge) {
-    pill.textContent = "Merge";
-    pill.classList.remove("hidden-section");
-  } else {
-    pill.classList.add("hidden-section");
-  }
-}
-
-  /* =========================
-     FONTS
-  ========================= */
   function setFont(font) {
     let value;
-
     if (font === "inter") value = "'Inter', system-ui, -apple-system, sans-serif";
     else if (font === "poppins") value = "'Poppins', system-ui, -apple-system, sans-serif";
     else if (font === "manrope") value = "'Manrope', system-ui, -apple-system, sans-serif";
@@ -1402,10 +1106,6 @@ function updateModePill() {
   }
   window.setFont = setFont;
 
-  /* =========================
-     DATE FORMAT (Publish Date only)
-     Example: 2026-02-01 -> 01 Feb 26
-  ========================= */
   function formatDateForHover(post) {
     const raw = post?.publishDate || "";
     if (!raw) return "";
@@ -1422,9 +1122,6 @@ function updateModePill() {
     return `${dd} ${mon} ${yy}`;
   }
 
-  /* =========================
-     MENU
-  ========================= */
   function toggleMenu() {
     document.getElementById("menu").classList.toggle("hidden");
   }
@@ -1449,7 +1146,6 @@ function updateModePill() {
     const note = document.getElementById("profileNote");
     if (!note) return;
 
-    // Free: never show note
     if (CURRENT_PLAN === "free") {
       note.classList.add("hidden-section");
       return;
@@ -1460,9 +1156,6 @@ function updateModePill() {
   }
   window.toggleProfileNote = toggleProfileNote;
 
-  /* =========================
-     TABS / UNDERLINE
-  ========================= */
   function moveUnderline(tab) {
     const underline = document.getElementById("slidingUnderline");
     const tabs = document.querySelector(".tabs");
@@ -1473,14 +1166,12 @@ function updateModePill() {
 
     const underlineWidth = underline.getBoundingClientRect().width || underline.offsetWidth || 0;
     const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underlineWidth / 2;
-
     underline.style.transform = `translateX(${x}px)`;
   }
 
   function syncUnderlineToActiveTab() {
     const activeTab = document.querySelector(".tabItem.active");
     if (!activeTab) return;
-
     requestAnimationFrame(() => moveUnderline(activeTab));
     setTimeout(() => moveUnderline(activeTab), 100);
   }
@@ -1502,44 +1193,30 @@ function updateModePill() {
   }
   window.setFilter = setFilter;
 
-  /* =========================
-     DATABASE SWITCHER (PRO)
-  ========================= */
+  // Merge toggle handler (unchanged)
+  async function onMergeToggle(enabled) {
+    if (CURRENT_PLAN !== "pro") return;
 
-// Called by the toggle in the menu
-async function onMergeToggle(enabled) {
-  if (CURRENT_PLAN !== "pro") return;
+    const mergeToggle = document.getElementById("mergeToggle");
+    const dbMenuWrap = document.getElementById("dbMenuWrap");
+    const dbSelect = document.getElementById("dbSelect");
 
-  const mergeToggle = document.getElementById("mergeToggle");
-  const dbMenuWrap = document.getElementById("dbMenuWrap");
-  const dbSelect = document.getElementById("dbSelect");
+    localStorage.setItem(LS_DB_MODE, enabled ? "merge" : "single");
+    if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", enabled);
 
-  // Persist mode
-  localStorage.setItem(LS_DB_MODE, enabled ? "merge" : "single");
+    if (enabled) {
+      await animateDatabaseChange("merge");
+    } else {
+      const selectedDb = (dbSelect && dbSelect.value) || localStorage.getItem(LS_ACTIVE_DB) || null;
+      if (mergeToggle) mergeToggle.checked = false;
+      await animateDatabaseChange(selectedDb);
+    }
 
-  // Show/hide db switcher UI
-  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", enabled);
-
-  if (enabled) {
-    await animateDatabaseChange("merge");
-  } else {
-    // When turning merge OFF, reload using the currently selected DB (or saved)
-    const selectedDb =
-      (dbSelect && dbSelect.value) ||
-      localStorage.getItem(LS_ACTIVE_DB) ||
-      null;
-
-    // ensure merge toggle state is consistent
-    if (mergeToggle) mergeToggle.checked = false;
-
-    await animateDatabaseChange(selectedDb);
+    document.getElementById("menu")?.classList.add("hidden");
+    updateModePill();
   }
+  window.onMergeToggle = onMergeToggle;
 
-  document.getElementById("menu")?.classList.add("hidden");
-  updateModePill();
-}
-window.onMergeToggle = onMergeToggle;
-    
   async function loadDatabaseSwitcher() {
     const slug = getSlug();
     if (!slug) throw new Error("Missing slug");
@@ -1556,25 +1233,23 @@ window.onMergeToggle = onMergeToggle;
       applyPlanToUI();
       updateModePill();
 
+      if (CURRENT_PLAN === "pro") {
+        const mode = localStorage.getItem(LS_DB_MODE) || "single";
+        const isMerge = mode === "merge";
 
-      // If pro, initialize merge toggle UI state
-if (CURRENT_PLAN === "pro") {
-  const mode = localStorage.getItem(LS_DB_MODE) || "single";
-  const isMerge = mode === "merge";
+        const mergeToggle = document.getElementById("mergeToggle");
+        const mergeMenuWrap = document.getElementById("mergeMenuWrap");
+        const dbMenuWrap = document.getElementById("dbMenuWrap");
 
-  const mergeToggle = document.getElementById("mergeToggle");
-  const mergeMenuWrap = document.getElementById("mergeMenuWrap");
-  const dbMenuWrap = document.getElementById("dbMenuWrap");
+        if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
 
-  if (mergeMenuWrap) mergeMenuWrap.classList.remove("hidden-section");
+        if (mergeToggle) {
+          mergeToggle.checked = isMerge;
+          if (!isMerge) localStorage.setItem(LS_DB_MODE, "single");
+        }
 
-  if (mergeToggle) {
-    mergeToggle.checked = isMerge;
-    if (!isMerge) localStorage.setItem(LS_DB_MODE, "single");
-  }
-
-  if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
-}
+        if (dbMenuWrap) dbMenuWrap.classList.toggle("hidden-section", isMerge);
+      }
 
       if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
       if (!Array.isArray(databases) || databases.length === 0) return;
@@ -1587,7 +1262,6 @@ if (CURRENT_PLAN === "pro") {
 
       const activeDb = localStorage.getItem(LS_ACTIVE_DB);
 
-      // options
       select.innerHTML = "";
       databases.forEach(dbItem => {
         const opt = document.createElement("option");
@@ -1596,27 +1270,24 @@ if (CURRENT_PLAN === "pro") {
         select.appendChild(opt);
       });
 
-      // selected
       const selected = activeDb || databases.find(d => d.is_primary)?.database_id || databases[0].database_id;
       select.value = selected;
-localStorage.setItem(LS_ACTIVE_DB, selected);
-      
-      // change handler
-     select.onchange = async () => {
-  // Selecting a DB always means SINGLE mode
-  localStorage.setItem(LS_DB_MODE, "single");
+      localStorage.setItem(LS_ACTIVE_DB, selected);
 
-  const mergeToggle = document.getElementById("mergeToggle");
-  if (mergeToggle) mergeToggle.checked = false;
+      select.onchange = async () => {
+        localStorage.setItem(LS_DB_MODE, "single");
 
-  const dbId = select.value;
-  localStorage.setItem(LS_ACTIVE_DB, dbId);
+        const mergeToggle = document.getElementById("mergeToggle");
+        if (mergeToggle) mergeToggle.checked = false;
 
-  await animateDatabaseChange(dbId);
+        const dbId = select.value;
+        localStorage.setItem(LS_ACTIVE_DB, dbId);
 
-  document.getElementById("menu")?.classList.add("hidden");
-  updateModePill();
-};
+        await animateDatabaseChange(dbId);
+
+        document.getElementById("menu")?.classList.add("hidden");
+        updateModePill();
+      };
     } catch (e) {
       console.error("loadDatabaseSwitcher failed:", e);
     }
@@ -1638,9 +1309,6 @@ localStorage.setItem(LS_ACTIVE_DB, selected);
     }, 50);
   }
 
-  /* =========================
-     DATA LOAD
-  ========================= */
   async function loadPosts(selectedDb = null, btn = null) {
     const icon = btn?.querySelector(".refreshIcon");
     if (icon) icon.classList.add("spin");
@@ -1654,18 +1322,17 @@ localStorage.setItem(LS_ACTIVE_DB, selected);
       const slug = getSlug();
       if (!slug) throw new Error("Missing slug");
 
-  let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
+      let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
-// Merge only if the UI toggle is ON (this prevents "stuck merge" from localStorage)
-const mergeToggle = document.getElementById("mergeToggle");
-const mergeEnabled = CURRENT_PLAN === "pro" && !!mergeToggle && mergeToggle.checked;
+      const mergeToggle = document.getElementById("mergeToggle");
+      const mergeEnabled = CURRENT_PLAN === "pro" && !!mergeToggle && mergeToggle.checked;
 
-if (selectedDb === "merge" || mergeEnabled) {
-  url += `&db=merge`;
-} else {
-  const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
-  if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
-}
+      if (selectedDb === "merge" || mergeEnabled) {
+        url += `&db=merge`;
+      } else {
+        const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
+        if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
+      }
 
       const res = await fetch(url);
       if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -1679,10 +1346,7 @@ if (selectedDb === "merge" || mergeEnabled) {
       ALL_POSTS = Array.isArray(posts) ? posts : [];
       sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
 
-      const derivedProfile = extractProfileFromPosts(ALL_POSTS);
-      const finalProfile = apiProfile || derivedProfile;
-
-      renderProfile(finalProfile);
+      renderProfile(apiProfile);
       renderHighlights(ALL_POSTS);
       renderGrid();
       updateStats();
@@ -1698,9 +1362,6 @@ if (selectedDb === "merge" || mergeEnabled) {
     }
   }
 
-  /* =========================
-     PROFILE
-  ========================= */
   function renderProfile(profile) {
     if (!profile) return;
 
@@ -1714,7 +1375,6 @@ if (selectedDb === "merge" || mergeEnabled) {
     const noteEl = document.getElementById("profileNote");
     if (!noteEl) return;
 
-    // Free: never show note
     if (CURRENT_PLAN === "free") {
       noteEl.classList.add("hidden-section");
       return;
@@ -1726,16 +1386,195 @@ if (selectedDb === "merge" || mergeEnabled) {
     } else {
       noteEl.classList.add("hidden-section");
     }
+
+    syncEditProfileUI();
+    bindProfileEditHandlers();
   }
 
-  /* =========================
-     HIGHLIGHTS
-  ========================= */
+  function bindProfileEditHandlers() {
+    const editable = CURRENT_PLAN === "pro" && isEditProfileMode();
+    if (!editable) return;
+
+    const picWrap = document.getElementById("profilePicWrap");
+    const nameEl = document.getElementById("profileName");
+    const noteEl = document.getElementById("profileNote");
+
+    if (picWrap && !picWrap.__editBound) {
+      picWrap.__editBound = true;
+      picWrap.addEventListener("click", async () => {
+        if (!(CURRENT_PLAN === "pro" && isEditProfileMode())) return;
+        await pickAndUploadProfilePicture();
+      });
+    }
+
+    if (nameEl && !nameEl.__editBound) {
+      nameEl.__editBound = true;
+      nameEl.addEventListener("click", async () => {
+        if (!(CURRENT_PLAN === "pro" && isEditProfileMode())) return;
+        await inlineEditText(nameEl, { field: "name", multiline: false });
+      });
+    }
+
+    if (noteEl && !noteEl.__editBound) {
+      noteEl.__editBound = true;
+      noteEl.addEventListener("click", async () => {
+        if (!(CURRENT_PLAN === "pro" && isEditProfileMode())) return;
+        await inlineEditText(noteEl, { field: "note", multiline: true });
+      });
+    }
+  }
+
+  async function inlineEditText(el, { field, multiline }) {
+    const oldText = el.textContent || "";
+    const input = multiline ? document.createElement("textarea") : document.createElement("input");
+    input.value = oldText;
+    input.style.width = "100%";
+    input.style.fontSize = "inherit";
+    input.style.fontFamily = "inherit";
+    input.style.fontWeight = "inherit";
+    input.style.border = "1px solid var(--border-color)";
+    input.style.borderRadius = "10px";
+    input.style.padding = "8px 10px";
+    input.style.boxSizing = "border-box";
+    input.style.background = "var(--bg-card)";
+    input.style.color = "var(--text-main)";
+
+    if (multiline) {
+      input.rows = 3;
+    } else {
+      input.type = "text";
+    }
+
+    const parent = el.parentNode;
+    parent.replaceChild(input, el);
+    input.focus();
+    input.select?.();
+
+    const save = async () => {
+      const newValue = String(input.value || "").trim();
+
+      // restore element immediately (optimistic UI)
+      parent.replaceChild(el, input);
+
+      const slug = getSlug();
+      const key = getAdminKey();
+
+      try {
+        const body = { slug, key };
+        if (field === "name") body.name = newValue;
+        if (field === "note") body.note = newValue;
+
+        const res = await fetch("/api/widget-profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Failed to save");
+
+        // apply returned profile
+        if (data.profile?.name) document.getElementById("profileName").innerText = data.profile.name;
+        if (typeof data.profile?.note === "string") {
+          const noteEl = document.getElementById("profileNote");
+          if (noteEl) {
+            if (data.profile.note) {
+              noteEl.textContent = data.profile.note;
+              noteEl.classList.remove("hidden-section");
+            } else {
+              noteEl.classList.add("hidden-section");
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Profile save failed:", e);
+        // revert text if failed
+        if (field === "name") document.getElementById("profileName").innerText = oldText;
+        if (field === "note") document.getElementById("profileNote").textContent = oldText;
+        alert(e.message || "Failed to save profile");
+      }
+    };
+
+    input.addEventListener("blur", save);
+    input.addEventListener("keydown", e => {
+      if (!multiline && e.key === "Enter") {
+        e.preventDefault();
+        input.blur();
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        parent.replaceChild(el, input);
+      }
+    });
+  }
+
+  function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => {
+        const result = String(r.result || "");
+        // result is like: data:image/png;base64,AAAA
+        const idx = result.indexOf("base64,");
+        if (idx === -1) return reject(new Error("Invalid base64"));
+        resolve(result.slice(idx + "base64,".length));
+      };
+      r.onerror = () => reject(new Error("File read failed"));
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function pickAndUploadProfilePicture() {
+    const slug = getSlug();
+    const key = getAdminKey();
+    if (!slug) return;
+
+    if (!key) {
+      alert("Missing admin key. Open widget with ?key=YOUR_ADMIN_SECRET");
+      return;
+    }
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      try {
+        const fileBase64 = await readFileAsBase64(file);
+
+        const res = await fetch("/api/widget-profile-picture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug,
+            key,
+            filename: file.name,
+            contentType: file.type,
+            fileBase64,
+          }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+
+        if (data.profile?.picture) {
+          document.getElementById("profileImage").src = data.profile.picture;
+        }
+      } catch (e) {
+        console.error("Upload failed:", e);
+        alert(e.message || "Upload failed");
+      }
+    };
+  }
+
   function renderHighlights(posts) {
     const row = document.getElementById("highlights");
     row.innerHTML = "";
 
-    let MAX = 0; // free
+    let MAX = 0;
     if (CURRENT_PLAN === "pro") MAX = Infinity;
 
     const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
@@ -1757,7 +1596,6 @@ if (selectedDb === "merge" || mergeEnabled) {
       row.appendChild(wrap);
     });
 
-    // Only show placeholders when MAX is a real number (free)
     if (Number.isFinite(MAX)) {
       const remaining = Math.max(0, MAX - items.length);
       for (let i = 0; i < remaining; i++) {
@@ -1768,9 +1606,6 @@ if (selectedDb === "merge" || mergeEnabled) {
     }
   }
 
-  /* =========================
-     GRID
-  ========================= */
   function addBadge(card, src, index = 0) {
     const img = document.createElement("img");
     img.src = src;
@@ -1814,7 +1649,6 @@ if (selectedDb === "merge" || mergeEnabled) {
       if (isMultiMedia(post)) addBadge(card, "/icons/multi.png");
       if (planAllows(CURRENT_PLAN, "pinned") && post.pinned) addBadge(card, "/icons/pin.png");
 
-      // Hover overlay (title + publish date only)
       const hover = document.createElement("div");
       hover.className = "hoverText";
 
@@ -1845,9 +1679,6 @@ if (selectedDb === "merge" || mergeEnabled) {
     });
   }
 
-  /* =========================
-     VIEWER
-  ========================= */
   function openViewer(post) {
     const viewer = document.getElementById("viewer");
     if (!viewer) return;
@@ -1907,11 +1738,10 @@ if (selectedDb === "merge" || mergeEnabled) {
   window.prevImage = prevImage;
   window.closeViewer = closeViewer;
 
-  /* =========================
-     INIT
-  ========================= */
   async function startGrid() {
     try {
+      setAdminKeyFromUrlIfPresent();
+
       let slugRetries = window.__slugRetries || 0;
       window.__slugRetries = slugRetries + 1;
 
@@ -1967,7 +1797,7 @@ if (selectedDb === "merge" || mergeEnabled) {
       await loadDatabaseSwitcher();
 
       const savedDb = localStorage.getItem(LS_ACTIVE_DB);
-await loadPosts(savedDb);
+      await loadPosts(savedDb);
 
       syncUnderlineToActiveTab();
     } catch (e) {
@@ -1975,24 +1805,20 @@ await loadPosts(savedDb);
     }
   }
 
-  // Refresh click
- document.querySelector(".refreshBtn").onclick = async function () {
-  const selectedDb = localStorage.getItem(LS_ACTIVE_DB);
-  await loadPosts(selectedDb, this);
-};
+  document.querySelector(".refreshBtn").onclick = async function () {
+    const selectedDb = localStorage.getItem(LS_ACTIVE_DB);
+    await loadPosts(selectedDb, this);
+  };
 
-  // Close menu when clicking outside
   document.addEventListener("click", () => {
     const menu = document.getElementById("menu");
     if (menu && !menu.classList.contains("hidden")) menu.classList.add("hidden");
   });
 
-  // Escape closes viewer
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") closeViewer();
   });
 
-  // Auto theme reacts to system changes when theme=default
   const media = window.matchMedia("(prefers-color-scheme: dark)");
   media.addEventListener("change", e => {
     const savedTheme = localStorage.getItem("theme");
