@@ -26,8 +26,8 @@
   --border-color: #e2e2e2;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 
-  --toggle-off: #ddd;
-  --toggle-on: #000;
+  --toggle-off: #1b1b1b;
+  --toggle-on: #1b1b1b;
 }
 
 body[data-theme="dark"] {
@@ -41,8 +41,8 @@ body[data-theme="dark"] {
   --border-color: #2f2f2f;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 
-  --toggle-off: #3a3a3a;
-  --toggle-on: #ffffff;
+  --toggle-off: #111;
+  --toggle-on: #111;
 }
 
 html, body { height: 100%; }
@@ -179,9 +179,9 @@ body {
 
 /* ========================= MENU (PRO) ========================= */
 .menu {
-  width: 175px; /* wider */
+  width: 185px;
   height: auto;
-  max-height: 520px;
+  max-height: 560px;
   overflow: auto;
   position: absolute;
   top: 42px;
@@ -193,7 +193,7 @@ body {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   z-index: 30;
   -webkit-overflow-scrolling: touch;
 }
@@ -237,69 +237,75 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   opacity: 0.9;
 }
 
-.menuItem {
-  font-size: 13px;
+.menuRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-.menuItem.toggleItem {
-  width: 100%;
   justify-content: space-between;
-  padding: 2px 0;
+  gap: 10px;
 }
 
 .menuLabel {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-main);
 }
 
-.toggleItem input { position: absolute; opacity: 0; pointer-events: none; }
-
-.toggleItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  cursor: pointer;
-}
-
-.toggle {
-  width: 34px;
-  height: 18px;
-  background: var(--toggle-off);
-  border-radius: 999px;
+/* ======= Custom toggle (SHOW/HIDE) ======= */
+.togglePill {
   position: relative;
-  transition: background 0.25s ease;
+  width: 86px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--toggle-off);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
   flex: 0 0 auto;
 }
 
-.toggle::before {
-  content: "";
+.togglePill input {
   position: absolute;
-  top: 1.5px;
-  left: 1.5px;
-  width: 15px;
-  height: 15px;
-  background: var(--bg-card);
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.toggleItem input:checked + .toggle { background: var(--toggle-on); }
-.toggleItem input:checked + .toggle::before { transform: translateX(16px); }
+.togglePill .knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s ease;
+}
 
+.togglePill .txt {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  color: #fff;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+.togglePill[data-state="show"] .txt { content: "SHOW"; }
+.togglePill[data-state="hide"] .txt { content: "HIDE"; }
+
+.togglePill[data-state="hide"] .knob { transform: translateX(56px); }
+
+/* Click rows (Database/Merge/Fonts) show only chosen option */
 .menuClickRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 8px;
-  border-radius: 12px;
+  padding: 10px 10px;
+  border-radius: 14px;
   background: var(--bg-muted);
   border: 1px solid var(--border-color);
   cursor: pointer;
@@ -307,21 +313,16 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
 }
 
 .menuClickRow:active { transform: scale(0.99); }
-.menuClickRow .left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.menuClickRow .title {
-  font-size: 11px;
-  font-weight: 800;
+
+.menuClickRow .chosen {
+  font-size: 12px;
+  font-weight: 900;
   color: var(--text-main);
   line-height: 1.1;
-}
-.menuClickRow .sub {
-  font-size: 10px;
-  color: var(--text-muted);
-  line-height: 1.1;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ========================= THEME ========================= */
@@ -436,9 +437,6 @@ body[data-theme="dark"] .themeSegment button.active { color: #111; }
   white-space: nowrap;
 }
 
-.profileTitle.editable { cursor: pointer; }
-.profileNote.editable { cursor: pointer; }
-
 .profileStats {
   display: grid;
   grid-template-columns: repeat(3, auto);
@@ -460,7 +458,7 @@ body[data-theme="dark"] .themeSegment button.active { color: #111; }
   cursor: pointer;
 }
 
-/* When stats hidden, center the name in the header area */
+/* When stats hidden, center name in header area */
 #profileHeader.no-stats .profileRight {
   align-items: center;
   text-align: center;
@@ -473,14 +471,11 @@ body[data-theme="dark"] .themeSegment button.active { color: #111; }
   display: none !important;
 }
 
-/* Hide name/pic per toggles */
-#profileHeader.no-name #profileName { display: none !important; }
-#profileHeader.no-avatar .profilePic { display: none !important; }
+/* Hide pieces */
+#profileHeader.hide-name #profileName { display: none !important; }
+#profileHeader.hide-pic .profilePic { display: none !important; }
 
-#profileHeader.no-avatar .profileRow { gap: 0 !important; justify-content: center; }
-#profileHeader.no-avatar .profileRight { align-items: center; text-align: center; }
-
-/* =========================  HIGHLIGHTS ========================= */
+/* ========================= HIGHLIGHTS ========================= */
 .highlights { width: 100%; padding-left: 1px; box-sizing: border-box; flex: 0 0 auto; }
 .highlightsRow { width: 100%; max-width: 520px; display: flex; gap: 12px; overflow-x: auto; flex-wrap: nowrap; }
 .highlightsRow::-webkit-scrollbar { display: none; }
@@ -504,7 +499,7 @@ body[data-theme="dark"] .highlightPlaceholder { background: rgba(255, 255, 255, 
 
 #highlightsWrap { margin-bottom: 12px; }
 
-/* ========================= CONTENT AREA / TABS ========================= */
+/* ========================= CONTENT / TABS ========================= */
 .contentArea { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
 
 .tabs {
@@ -517,7 +512,6 @@ body[data-theme="dark"] .highlightPlaceholder { background: rgba(255, 255, 255, 
 }
 
 .tabItem { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
-
 .tabItem img { width: 22px; height: 22px; opacity: 0.45; transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease; }
 
 body[data-theme="dark"] .tabItem img { filter: brightness(0) invert(1); opacity: 0.7; }
@@ -535,7 +529,6 @@ body[data-theme="dark"] .tabItem.active img { opacity: 1; }
 }
 
 .tabItem.active .tabIcon { opacity: 1; transform: translateY(-2px) scale(1.05); }
-
 body[data-theme="dark"] .tabIcon { opacity: 0.75; color: #fff; }
 body[data-theme="dark"] .tabItem.active .tabIcon { opacity: 1; }
 
@@ -644,7 +637,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   pointer-events: none;
   transition: opacity 0.25s ease;
 }
-
 .viewer.show { opacity: 1; pointer-events: auto; }
 .viewer.hidden { display: none; }
 
@@ -654,7 +646,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   transform: scale(0.96);
   transition: transform 0.25s ease;
 }
-
 .viewer.show .viewerInner { transform: scale(1); }
 
 .viewerCard {
@@ -726,7 +717,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   padding: 18px;
   box-sizing: border-box;
 }
-
 .modalOverlay.show { display: flex; }
 
 .modalCard {
@@ -779,7 +769,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   cursor: pointer;
   text-align: left;
 }
-
 .modalBtn:active { transform: scale(0.99); }
 
 .modalBtn .sub {
@@ -793,7 +782,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 </head>
 <body>
   <div class="widgetWrap">
-    <!-- ========================= HEADER ========================== -->
     <div class="header">
       <div class="headerActions">
         <button class="refreshBtn" aria-label="Refresh">
@@ -821,7 +809,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
         <div id="freeProfileName" class="freeProfileName hidden-section"></div>
 
-        <!-- Menu panel (PRO only) -->
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
           <div class="menuHeaderRow">
             <div class="menuTitle">Profile</div>
@@ -832,68 +819,71 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
           <div class="menuDivider"></div>
 
-          <!-- Profile toggles -->
-          <label class="menuItem toggleItem">
-            <span class="menuLabel">Name</span>
-            <input id="toggleProfileName" type="checkbox" checked onchange="toggleProfileName(this)" />
-            <span class="toggle"></span>
-          </label>
+          <!-- Toggles: SHOW when unchecked, HIDE when checked -->
+          <div class="menuRow">
+            <div class="menuLabel">Name</div>
+            <label class="togglePill" id="pillProfileName" data-state="show">
+              <input id="toggleProfileName" type="checkbox" onchange="onToggleChanged('name', this.checked)" />
+              <span class="knob"></span>
+              <span class="txt">SHOW</span>
+            </label>
+          </div>
 
-          <label class="menuItem toggleItem">
-            <span class="menuLabel">Pic</span>
-            <input id="toggleProfilePic" type="checkbox" checked onchange="toggleProfilePic(this)" />
-            <span class="toggle"></span>
-          </label>
+          <div class="menuRow">
+            <div class="menuLabel">Pic</div>
+            <label class="togglePill" id="pillProfilePic" data-state="show">
+              <input id="toggleProfilePic" type="checkbox" onchange="onToggleChanged('pic', this.checked)" />
+              <span class="knob"></span>
+              <span class="txt">SHOW</span>
+            </label>
+          </div>
 
-          <label class="menuItem toggleItem">
-            <span class="menuLabel">Stats</span>
-            <input id="toggleProfileStats" type="checkbox" checked onchange="toggleProfileStats(this)" />
-            <span class="toggle"></span>
-          </label>
+          <div class="menuRow">
+            <div class="menuLabel">Stats</div>
+            <label class="togglePill" id="pillProfileStats" data-state="show">
+              <input id="toggleProfileStats" type="checkbox" onchange="onToggleChanged('stats', this.checked)" />
+              <span class="knob"></span>
+              <span class="txt">SHOW</span>
+            </label>
+          </div>
 
-          <label class="menuItem toggleItem">
-            <span class="menuLabel">Note</span>
-            <input id="toggleProfileNote" type="checkbox" checked onchange="toggleProfileNote(this)" />
-            <span class="toggle"></span>
-          </label>
+          <div class="menuRow">
+            <div class="menuLabel">Note</div>
+            <label class="togglePill" id="pillProfileNote" data-state="show">
+              <input id="toggleProfileNote" type="checkbox" onchange="onToggleChanged('note', this.checked)" />
+              <span class="knob"></span>
+              <span class="txt">SHOW</span>
+            </label>
+          </div>
 
           <div class="menuDivider"></div>
 
-          <!-- Highlights -->
-          <label class="menuItem toggleItem">
-            <span class="menuLabel">Highlights</span>
-            <input id="toggleHighlights" type="checkbox" checked onchange="toggleHighlights(this)" />
-            <span class="toggle"></span>
-          </label>
+          <div class="menuRow">
+            <div class="menuLabel">Highlights</div>
+            <label class="togglePill" id="pillHighlights" data-state="show">
+              <input id="toggleHighlights" type="checkbox" onchange="onToggleChanged('highlights', this.checked)" />
+              <span class="knob"></span>
+              <span class="txt">SHOW</span>
+            </label>
+          </div>
 
           <div class="menuDivider"></div>
 
-          <!-- Click rows -->
           <div class="menuClickRow" onclick="openDatabasePicker()">
-            <div class="left">
-              <div class="title">Database</div>
-              <div id="dbLabelSmall" class="sub">Choose database</div>
-            </div>
+            <div id="dbChosenOnly" class="chosen">Choose database</div>
             <span class="material-symbols-outlined" style="font-size:18px; opacity:.75;">chevron_right</span>
           </div>
 
           <div class="menuClickRow" onclick="openMergePicker()">
-            <div class="left">
-              <div class="title">Merge</div>
-              <div id="mergeLabelSmall" class="sub">Single</div>
-            </div>
+            <div id="mergeChosenOnly" class="chosen">Single</div>
             <span class="material-symbols-outlined" style="font-size:18px; opacity:.75;">chevron_right</span>
           </div>
 
           <div class="menuClickRow" onclick="openFontPicker()">
-            <div class="left">
-              <div class="title">Fonts</div>
-              <div id="fontLabelSmall" class="sub">System</div>
-            </div>
+            <div id="fontChosenOnly" class="chosen">System</div>
             <span class="material-symbols-outlined" style="font-size:18px; opacity:.75;">chevron_right</span>
           </div>
 
-          <!-- Theme -->
           <div class="menuSection">
             <div class="menuLabel themeTitle">Theme</div>
 
@@ -919,7 +909,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       <div class="headerDivider"></div>
     </div>
 
-    <!-- ========================= CONTAINER (SKELETON + CONTENT) ========================== -->
     <div class="container" data-loading="true">
       <div id="skeleton">
         <div class="sk-profile">
@@ -943,7 +932,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         </div>
       </div>
 
-      <!-- Profile header -->
       <div id="profileHeader" class="profile">
         <div class="profileRow">
           <div class="profilePic" id="profilePicWrap" title="Change photo">
@@ -972,15 +960,12 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         </div>
       </div>
 
-      <!-- Profile note -->
       <div id="profileNote" class="profileNote">Content Planner</div>
 
-      <!-- Highlights -->
       <div id="highlightsWrap" class="highlights">
         <div id="highlights" class="highlightsRow"></div>
       </div>
 
-      <!-- Content area -->
       <div class="contentArea">
         <div class="tabs">
           <div class="tabItem active" data-type="post" onclick="setFilter('__POSTS__', this)">
@@ -1003,7 +988,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         </div>
       </div>
 
-      <!-- Viewer modal -->
       <div id="viewer" class="viewer hidden" onclick="closeViewer()">
         <div class="viewerInner" onclick="event.stopPropagation()">
           <button class="viewerClose" onclick="closeViewer()" aria-label="Close viewer">✕</button>
@@ -1021,7 +1005,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         </div>
       </div>
 
-      <!-- Center modal overlay -->
       <div id="centerModal" class="modalOverlay" onclick="closeCenterModal()">
         <div class="modalCard" onclick="event.stopPropagation()">
           <div class="modalHeader">
@@ -1035,14 +1018,12 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
       <span class="footerBrand">Alif Designs</span>
     </div>
   </div>
 
   <script>
-  /* ========================= GLOBALS ========================= */
   let CURRENT_PLAN = "free";
   let ALL_POSTS = [];
   let FILTER = "__POSTS__";
@@ -1052,26 +1033,21 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   const LS_ACTIVE_DB = "activeDatabase";
   const LS_DB_MODE = "dbMode";
 
-  // Settings (local)
-  const LS_SHOW_NAME = "showProfileName";
-  const LS_SHOW_PIC = "showProfilePic";
-  const LS_SHOW_STATS = "showProfileStats";
-  const LS_SHOW_NOTE = "showProfileNote";
-  const LS_SHOW_HIGHLIGHTS = "showHighlights";
+  // When checked => HIDE, when unchecked => SHOW
+  const LS_HIDE_NAME = "hideProfileName";
+  const LS_HIDE_PIC = "hideProfilePic";
+  const LS_HIDE_STATS = "hideProfileStats";
+  const LS_HIDE_NOTE = "hideProfileNote";
+  const LS_HIDE_HIGHLIGHTS = "hideHighlights";
 
-  // Admin key for edits
+  // Admin key
   const LS_ADMIN_KEY = "widgetAdminKey";
 
-  // Data from /api/widget-databases
   let DATABASES = [];
 
-  /* ========================= PLAN GATING ========================= */
   function planAllows(plan, feature) {
     const isPro = plan === "pro";
     if (feature === "viewer_modal") return isPro;
-    if (feature === "remove_branding") return isPro;
-    if (feature === "fonts") return isPro;
-    if (feature === "hide_sections") return isPro;
     if (feature === "pinned") return isPro;
     if (feature === "multi_db_switcher") return isPro;
     if (feature === "unlimited_highlights") return isPro;
@@ -1079,7 +1055,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     return false;
   }
 
-  /* ========================= HELPERS ========================= */
   function getSlug() {
     const params = new URLSearchParams(window.location.search);
     return params.get("slug");
@@ -1099,55 +1074,92 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     return localStorage.getItem(LS_ADMIN_KEY) || "";
   }
 
-  function hasMedia(post) {
-    return (Array.isArray(post.attachment) && post.attachment.length > 0) || post.thumbnail;
+  function getBoolLS(key, def = false) {
+    const v = localStorage.getItem(key);
+    if (v === null) return def;
+    return v === "true";
   }
 
-  function isMultiMedia(post) {
-    return Array.isArray(post.attachment) && post.attachment.length > 1;
+  function setBoolLS(key, val) {
+    localStorage.setItem(key, val ? "true" : "false");
   }
 
-  function normalizeTypes(typeArr) {
-    if (!Array.isArray(typeArr)) return [];
-    return typeArr.map(t => String(t || "").trim()).filter(Boolean);
+  /* ========================= TOGGLE UI (SHOW/HIDE) ========================= */
+  function setTogglePill(pillId, inputId, hideValue) {
+    const pill = document.getElementById(pillId);
+    const inp = document.getElementById(inputId);
+    if (!pill || !inp) return;
+
+    inp.checked = !!hideValue;
+    pill.dataset.state = hideValue ? "hide" : "show";
+
+    const txt = pill.querySelector(".txt");
+    if (txt) txt.textContent = hideValue ? "HIDE" : "SHOW";
   }
 
-  function matchesFilter(post) {
-    const types = normalizeTypes(post.type);
-    if (FILTER === "__POSTS__") return types.length === 0;
-    return types.includes(FILTER);
+  function onToggleChanged(which, checked) {
+    // checked => HIDE
+    if (which === "name") setBoolLS(LS_HIDE_NAME, checked);
+    if (which === "pic") setBoolLS(LS_HIDE_PIC, checked);
+    if (which === "stats") setBoolLS(LS_HIDE_STATS, checked);
+    if (which === "note") setBoolLS(LS_HIDE_NOTE, checked);
+    if (which === "highlights") setBoolLS(LS_HIDE_HIGHLIGHTS, checked);
+
+    syncAllTogglesFromStorage();
+    applyVisibilityFromSettings();
+  }
+  window.onToggleChanged = onToggleChanged;
+
+  function syncAllTogglesFromStorage() {
+    if (CURRENT_PLAN !== "pro") return;
+
+    setTogglePill("pillProfileName", "toggleProfileName", getBoolLS(LS_HIDE_NAME, false));
+    setTogglePill("pillProfilePic", "toggleProfilePic", getBoolLS(LS_HIDE_PIC, false));
+    setTogglePill("pillProfileStats", "toggleProfileStats", getBoolLS(LS_HIDE_STATS, false));
+    setTogglePill("pillProfileNote", "toggleProfileNote", getBoolLS(LS_HIDE_NOTE, false));
+    setTogglePill("pillHighlights", "toggleHighlights", getBoolLS(LS_HIDE_HIGHLIGHTS, false));
   }
 
-  function getVisibleGridPosts() {
-    return ALL_POSTS
-      .filter(post => {
-        if (post.hide) return false;
-        if (!hasMedia(post)) return false;
-        return matchesFilter(post);
-      })
-      .sort((a, b) => {
-        if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
-        return (b.pinned === true) - (a.pinned === true);
-      });
+  function applyVisibilityFromSettings() {
+    if (CURRENT_PLAN !== "pro") return;
+
+    const hideName = getBoolLS(LS_HIDE_NAME, false);
+    const hidePic = getBoolLS(LS_HIDE_PIC, false);
+    const hideStats = getBoolLS(LS_HIDE_STATS, false);
+    const hideNote = getBoolLS(LS_HIDE_NOTE, false);
+    const hideHL = getBoolLS(LS_HIDE_HIGHLIGHTS, false);
+
+    const header = document.getElementById("profileHeader");
+    const noteEl = document.getElementById("profileNote");
+    const highlightsWrap = document.getElementById("highlightsWrap");
+
+    if (header) {
+      header.classList.toggle("hide-name", hideName);
+      header.classList.toggle("hide-pic", hidePic);
+      header.classList.toggle("no-stats", hideStats);
+    }
+
+    // NOTE: show/hide note must also respect whether there is content
+    if (noteEl) {
+      if (CURRENT_PLAN === "free") {
+        noteEl.classList.add("hidden-section");
+      } else {
+        const hasText = (noteEl.textContent || "").trim().length > 0;
+        const shouldShow = !hideNote && hasText;
+        noteEl.classList.toggle("hidden-section", !shouldShow);
+      }
+    }
+
+    if (highlightsWrap) highlightsWrap.classList.toggle("hidden-section", hideHL);
   }
 
-  function computeStatsFromGrid(posts) {
-    const today = new Date().toISOString().split("T")[0];
-    return {
-      total: posts.length,
-      scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
-      published: posts.filter(p => p.publishDate && p.publishDate <= today).length,
-    };
-  }
+  /* ========================= MENU ========================= */
+  function toggleMenu() { document.getElementById("menu").classList.toggle("hidden"); }
+  function closeMenu() { document.getElementById("menu")?.classList.add("hidden"); }
+  window.toggleMenu = toggleMenu;
+  window.closeMenu = closeMenu;
 
-  function updateStats() {
-    const stats = computeStatsFromGrid(getVisibleGridPosts());
-    document.getElementById("statPosts").innerText = stats.total;
-    document.getElementById("statScheduled").innerText = stats.scheduled;
-    document.getElementById("statPublished").innerText = stats.published;
-  }
-
-  /* ========================= THEME ========================= */
+  /* ========================= THEME (AUTO) ========================= */
   (function initThemeOnLoad() {
     const theme = localStorage.getItem("theme") || "default";
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -1185,7 +1197,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   /* ========================= FONTS ========================= */
   function setFont(font) {
     let value;
-
     if (font === "inter") value = "'Inter', system-ui, -apple-system, sans-serif";
     else if (font === "poppins") value = "'Poppins', system-ui, -apple-system, sans-serif";
     else if (font === "manrope") value = "'Manrope', system-ui, -apple-system, sans-serif";
@@ -1196,7 +1207,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     document.body.style.fontFamily = "var(--font-main)";
     localStorage.setItem("font", font);
 
-    syncFontLabel();
+    syncFontChosenOnly();
   }
   window.setFont = setFont;
 
@@ -1206,88 +1217,29 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     return map[saved] || "System";
   }
 
-  function syncFontLabel() {
-    const el = document.getElementById("fontLabelSmall");
+  function syncFontChosenOnly() {
+    const el = document.getElementById("fontChosenOnly");
     if (el) el.textContent = getFontLabel();
   }
 
-  /* ========================= MENU ========================= */
-  function toggleMenu() {
-    document.getElementById("menu").classList.toggle("hidden");
-  }
-  window.toggleMenu = toggleMenu;
+  /* ========================= DATABASE / MERGE labels (chosen only) ========================= */
+  function syncDbChosenOnly() {
+    const el = document.getElementById("dbChosenOnly");
+    if (!el) return;
 
-  function closeMenu() {
-    document.getElementById("menu")?.classList.add("hidden");
-  }
-  window.closeMenu = closeMenu;
-
-  /* ========================= SETTINGS (TOGGLES) ========================= */
-  function getBoolLS(key, defaultValue = true) {
-    const v = localStorage.getItem(key);
-    if (v === null) return defaultValue;
-    return v === "true";
+    const activeDb = localStorage.getItem(LS_ACTIVE_DB);
+    const active = (DATABASES || []).find(d => d.database_id === activeDb);
+    el.textContent = active?.label || "Choose database";
   }
 
-  function setBoolLS(key, val) {
-    localStorage.setItem(key, val ? "true" : "false");
+  function syncMergeChosenOnly() {
+    const el = document.getElementById("mergeChosenOnly");
+    if (!el) return;
+
+    const mode = localStorage.getItem(LS_DB_MODE) || "single";
+    el.textContent = mode === "merge" ? "Merge" : "Single";
   }
 
-  function applySettingsToUI() {
-    if (CURRENT_PLAN !== "pro") return;
-
-    const showName = getBoolLS(LS_SHOW_NAME, true);
-    const showPic = getBoolLS(LS_SHOW_PIC, true);
-    const showStats = getBoolLS(LS_SHOW_STATS, true);
-    const showNote = getBoolLS(LS_SHOW_NOTE, true);
-    const showHighlights = getBoolLS(LS_SHOW_HIGHLIGHTS, true);
-
-    // Sync toggle controls
-    const tName = document.getElementById("toggleProfileName");
-    const tPic = document.getElementById("toggleProfilePic");
-    const tStats = document.getElementById("toggleProfileStats");
-    const tNote = document.getElementById("toggleProfileNote");
-    const tHL = document.getElementById("toggleHighlights");
-
-    if (tName) tName.checked = showName;
-    if (tPic) tPic.checked = showPic;
-    if (tStats) tStats.checked = showStats;
-    if (tNote) tNote.checked = showNote;
-    if (tHL) tHL.checked = showHighlights;
-
-    // Apply to DOM
-    const header = document.getElementById("profileHeader");
-    const noteEl = document.getElementById("profileNote");
-    const highlightsWrap = document.getElementById("highlightsWrap");
-
-    if (header) {
-      header.classList.toggle("no-name", !showName);
-      header.classList.toggle("no-avatar", !showPic);
-      header.classList.toggle("no-stats", !showStats);
-    }
-
-    // note is pro-only; also must respect actual note content set by renderProfile()
-    if (noteEl) {
-      // only hide if toggle off (renderProfile will hide if empty)
-      if (!showNote) noteEl.classList.add("hidden-section");
-    }
-
-    if (highlightsWrap) highlightsWrap.classList.toggle("hidden-section", !showHighlights);
-  }
-
-  function toggleProfileName(cb) { setBoolLS(LS_SHOW_NAME, cb.checked); applySettingsToUI(); }
-  function toggleProfilePic(cb) { setBoolLS(LS_SHOW_PIC, cb.checked); applySettingsToUI(); }
-  function toggleProfileStats(cb) { setBoolLS(LS_SHOW_STATS, cb.checked); applySettingsToUI(); }
-  function toggleProfileNote(cb) { setBoolLS(LS_SHOW_NOTE, cb.checked); applySettingsToUI(); }
-  function toggleHighlights(cb) { setBoolLS(LS_SHOW_HIGHLIGHTS, cb.checked); applySettingsToUI(); }
-
-  window.toggleProfileName = toggleProfileName;
-  window.toggleProfilePic = toggleProfilePic;
-  window.toggleProfileStats = toggleProfileStats;
-  window.toggleProfileNote = toggleProfileNote;
-  window.toggleHighlights = toggleHighlights;
-
-  /* ========================= PRO/FREE UI GATING ========================= */
   function updateModePill() {
     const pill = document.getElementById("modePill");
     if (!pill) return;
@@ -1298,9 +1250,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
 
     const mode = localStorage.getItem(LS_DB_MODE) || "single";
-    const isMerge = mode === "merge";
-
-    if (isMerge) {
+    if (mode === "merge") {
       pill.textContent = "Merge";
       pill.classList.remove("hidden-section");
     } else {
@@ -1308,6 +1258,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   }
 
+  /* ========================= PRO/FREE UI GATING ========================= */
   function applyPlanToUI() {
     const isPro = CURRENT_PLAN === "pro";
 
@@ -1338,20 +1289,26 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       return;
     }
 
-    // PRO
     if (menuBtn) menuBtn.style.display = "";
     if (freeName) freeName.classList.add("hidden-section");
 
     if (profileHeader) profileHeader.classList.remove("hidden-section");
     if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
 
-    updateModePill();
+    // Ensure toggle defaults exist (first run)
+    if (localStorage.getItem(LS_HIDE_NAME) === null) setBoolLS(LS_HIDE_NAME, false);
+    if (localStorage.getItem(LS_HIDE_PIC) === null) setBoolLS(LS_HIDE_PIC, false);
+    if (localStorage.getItem(LS_HIDE_STATS) === null) setBoolLS(LS_HIDE_STATS, false);
+    if (localStorage.getItem(LS_HIDE_NOTE) === null) setBoolLS(LS_HIDE_NOTE, false);
+    if (localStorage.getItem(LS_HIDE_HIGHLIGHTS) === null) setBoolLS(LS_HIDE_HIGHLIGHTS, false);
 
-    // Apply stored settings for pro menu toggles
-    applySettingsToUI();
-    syncFontLabel();
-    syncDbLabel();
-    syncMergeLabel();
+    syncAllTogglesFromStorage();
+    applyVisibilityFromSettings();
+
+    syncDbChosenOnly();
+    syncMergeChosenOnly();
+    syncFontChosenOnly();
+    updateModePill();
   }
 
   /* ========================= CENTER MODAL ========================= */
@@ -1366,13 +1323,10 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     body.innerHTML = "";
 
     (buttons || []).forEach(btn => body.appendChild(btn));
-
     overlay.classList.add("show");
   }
 
-  function closeCenterModal() {
-    document.getElementById("centerModal")?.classList.remove("show");
-  }
+  function closeCenterModal() { document.getElementById("centerModal")?.classList.remove("show"); }
   window.closeCenterModal = closeCenterModal;
 
   function makeModalButton(label, sub, onClick) {
@@ -1391,22 +1345,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   }
 
   /* ========================= DATABASE / MERGE / FONT PICKERS ========================= */
-  function syncDbLabel() {
-    const el = document.getElementById("dbLabelSmall");
-    if (!el) return;
-
-    const activeDb = localStorage.getItem(LS_ACTIVE_DB);
-    const active = (DATABASES || []).find(d => d.database_id === activeDb);
-    el.textContent = active?.label || "Choose database";
-  }
-
-  function syncMergeLabel() {
-    const el = document.getElementById("mergeLabelSmall");
-    if (!el) return;
-    const mode = localStorage.getItem(LS_DB_MODE) || "single";
-    el.textContent = mode === "merge" ? "Merge" : "Single";
-  }
-
   async function openDatabasePicker() {
     if (CURRENT_PLAN !== "pro") return;
 
@@ -1418,12 +1356,11 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
 
     const buttons = DATABASES.map(db => makeModalButton(db.label, db.is_primary ? "Primary" : "", async () => {
-      // selecting DB implies single mode
       localStorage.setItem(LS_DB_MODE, "single");
       localStorage.setItem(LS_ACTIVE_DB, db.database_id);
 
-      syncDbLabel();
-      syncMergeLabel();
+      syncDbChosenOnly();
+      syncMergeChosenOnly();
       updateModePill();
 
       closeCenterModal();
@@ -1442,22 +1379,27 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     const buttons = [
       makeModalButton("Single", "Use one database only.", async () => {
         localStorage.setItem(LS_DB_MODE, "single");
-        syncMergeLabel();
+        syncMergeChosenOnly();
         updateModePill();
 
         closeCenterModal();
         closeMenu();
 
-        const activeDb = localStorage.getItem(LS_ACTIVE_DB) || DATABASES.find(d => d.is_primary)?.database_id || DATABASES[0]?.database_id || null;
+        const activeDb =
+          localStorage.getItem(LS_ACTIVE_DB) ||
+          DATABASES.find(d => d.is_primary)?.database_id ||
+          DATABASES[0]?.database_id ||
+          null;
+
         if (activeDb) {
           localStorage.setItem(LS_ACTIVE_DB, activeDb);
-          syncDbLabel();
+          syncDbChosenOnly();
           await animateDatabaseChange(activeDb);
         }
       }),
       makeModalButton("Merge", "Combine posts from all connected databases.", async () => {
         localStorage.setItem(LS_DB_MODE, "merge");
-        syncMergeLabel();
+        syncMergeChosenOnly();
         updateModePill();
 
         closeCenterModal();
@@ -1486,7 +1428,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   }
   window.openFontPicker = openFontPicker;
 
-  /* ========================= DATE FORMAT (Publish Date only) ========================= */
+  /* ========================= DATE FORMAT ========================= */
   function formatDateForHover(post) {
     const raw = post?.publishDate || "";
     if (!raw) return "";
@@ -1573,7 +1515,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       const plan = data.plan || "free";
       CURRENT_PLAN = plan || "free";
 
-      // init defaults if missing
       if (CURRENT_PLAN === "pro") {
         if (localStorage.getItem(LS_DB_MODE) === null) localStorage.setItem(LS_DB_MODE, "single");
 
@@ -1587,6 +1528,54 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     } catch (e) {
       console.error("loadDatabaseMeta failed:", e);
     }
+  }
+
+  function hasMedia(post) {
+    return (Array.isArray(post.attachment) && post.attachment.length > 0) || post.thumbnail;
+  }
+
+  function isMultiMedia(post) {
+    return Array.isArray(post.attachment) && post.attachment.length > 1;
+  }
+
+  function normalizeTypes(typeArr) {
+    if (!Array.isArray(typeArr)) return [];
+    return typeArr.map(t => String(t || "").trim()).filter(Boolean);
+  }
+
+  function matchesFilter(post) {
+    const types = normalizeTypes(post.type);
+    if (FILTER === "__POSTS__") return types.length === 0;
+    return types.includes(FILTER);
+  }
+
+  function getVisibleGridPosts() {
+    return ALL_POSTS
+      .filter(post => {
+        if (post.hide) return false;
+        if (!hasMedia(post)) return false;
+        return matchesFilter(post);
+      })
+      .sort((a, b) => {
+        if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
+        return (b.pinned === true) - (a.pinned === true);
+      });
+  }
+
+  function computeStatsFromGrid(posts) {
+    const today = new Date().toISOString().split("T")[0];
+    return {
+      total: posts.length,
+      scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
+      published: posts.filter(p => p.publishDate && p.publishDate <= today).length,
+    };
+  }
+
+  function updateStats() {
+    const stats = computeStatsFromGrid(getVisibleGridPosts());
+    document.getElementById("statPosts").innerText = stats.total;
+    document.getElementById("statScheduled").innerText = stats.scheduled;
+    document.getElementById("statPublished").innerText = stats.published;
   }
 
   async function loadPosts(selectedDb = null, btn = null) {
@@ -1681,17 +1670,13 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       return;
     }
 
-    if (note) {
-      noteEl.textContent = note;
-      noteEl.classList.remove("hidden-section");
-    } else {
-      noteEl.classList.add("hidden-section");
-    }
+    // Set note text; visibility decided by applyVisibilityFromSettings()
+    noteEl.textContent = note;
 
-    // Apply toggles AFTER render sets visibility/content
-    applySettingsToUI();
+    // Apply settings after content exists (fixes "note not shown")
+    syncAllTogglesFromStorage();
+    applyVisibilityFromSettings();
 
-    // Bind edit handlers (pro only)
     bindProfileEditHandlers();
   }
 
@@ -1724,13 +1709,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   }
 
-  function canEditProfile() {
-    if (CURRENT_PLAN !== "pro") return false;
-    return true;
-  }
-
   async function openProfilePicActions() {
-    if (!canEditProfile()) return;
+    if (CURRENT_PLAN !== "pro") return;
 
     const key = getAdminKey();
     if (!key) {
@@ -1753,7 +1733,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   }
 
   async function inlineEditText(el, { field, multiline }) {
-    if (!canEditProfile()) return;
+    if (CURRENT_PLAN !== "pro") return;
 
     const key = getAdminKey();
     if (!key) {
@@ -1806,21 +1786,14 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || "Failed to save");
 
-        // apply returned profile
         if (data.profile?.name) document.getElementById("profileName").innerText = data.profile.name;
+
         if (typeof data.profile?.note === "string") {
           const noteEl = document.getElementById("profileNote");
-          if (noteEl) {
-            if (data.profile.note) {
-              noteEl.textContent = data.profile.note;
-              noteEl.classList.remove("hidden-section");
-            } else {
-              noteEl.classList.add("hidden-section");
-            }
-          }
+          if (noteEl) noteEl.textContent = data.profile.note;
         }
 
-        applySettingsToUI();
+        applyVisibilityFromSettings();
       } catch (e) {
         console.error("Profile save failed:", e);
         if (field === "name") document.getElementById("profileName").innerText = oldText;
@@ -1914,7 +1887,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Failed to remove picture");
 
-      // Update UI to placeholder + show "Add photo" pill
       const pic = data.profile?.picture || "/icons/profile-placeholder.png";
       document.getElementById("profileImage").src = pic;
       setProfilePicPlaceholderUI(pic);
@@ -1929,7 +1901,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     const row = document.getElementById("highlights");
     row.innerHTML = "";
 
-    let MAX = 0; // free
+    let MAX = 0;
     if (CURRENT_PLAN === "pro") MAX = Infinity;
 
     const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
@@ -1951,7 +1923,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       row.appendChild(wrap);
     });
 
-    // Only show placeholders when MAX is a real number (free)
     if (Number.isFinite(MAX)) {
       const remaining = Math.max(0, MAX - items.length);
       for (let i = 0; i < remaining; i++) {
@@ -2119,12 +2090,10 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
       const savedFont = localStorage.getItem("font");
       if (savedFont) setFont(savedFont);
-      else syncFontLabel();
+      else syncFontChosenOnly();
 
-      // Load plan + databases first
       await loadDatabaseMeta();
 
-      // Load cached data fast if available
       const cached = sessionStorage.getItem("cachedData");
       if (cached) {
         const { profile, posts, plan } = JSON.parse(cached);
@@ -2145,7 +2114,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         return;
       }
 
-      // Otherwise fetch posts
       const mode = localStorage.getItem(LS_DB_MODE) || "single";
       const db = mode === "merge" ? "merge" : (localStorage.getItem(LS_ACTIVE_DB) || null);
       await loadPosts(db);
@@ -2156,20 +2124,17 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   }
 
-  // Refresh click
   document.querySelector(".refreshBtn").onclick = async function () {
     const mode = localStorage.getItem(LS_DB_MODE) || "single";
     const db = mode === "merge" ? "merge" : (localStorage.getItem(LS_ACTIVE_DB) || null);
     await loadPosts(db, this);
   };
 
-  // Close menu when clicking outside
   document.addEventListener("click", () => {
     const menu = document.getElementById("menu");
     if (menu && !menu.classList.contains("hidden")) menu.classList.add("hidden");
   });
 
-  // Escape closes viewer and center modal
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") {
       closeViewer();
@@ -2178,7 +2143,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   });
 
-  // Auto theme reacts to system changes when theme=default
   const media = window.matchMedia("(prefers-color-scheme: dark)");
   media.addEventListener("change", e => {
     const savedTheme = localStorage.getItem("theme");
