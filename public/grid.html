@@ -1169,6 +1169,21 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     underline.style.transform = `translateX(${x}px)`;
   }
 
+    function syncNoteToggleFromStorage() {
+  const noteToggle = document.querySelector('input[onchange*="toggleProfileNote"]');
+  const saved = localStorage.getItem("showProfileNote"); // "true"/"false"/null
+
+  // default is ON if nothing saved
+  const show = saved === null ? true : saved === "true";
+
+  if (noteToggle) noteToggle.checked = show;
+
+  const noteEl = document.getElementById("profileNote");
+  if (noteEl && CURRENT_PLAN === "pro") {
+    noteEl.classList.toggle("hidden-section", !show);
+  }
+}
+    
   function syncUnderlineToActiveTab() {
     const activeTab = document.querySelector(".tabItem.active");
     if (!activeTab) return;
