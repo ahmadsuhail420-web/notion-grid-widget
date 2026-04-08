@@ -679,13 +679,22 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
               <span class="toggle"></span>
             </label>
 
-          <!-- Pro-only: Edit Profile toggle -->
+            <div style="font-size:10px; opacity:.7; color:var(--text-muted); margin-top:4px; line-height:1.2;">
+              Merge combines posts from all connected databases.
+            </div>
+          </div>
+
           <div id="editProfileWrap" class="hidden-section" style="width:100%; margin-top:4px;">
             <label class="menuItem toggleItem" style="width:100%; justify-content:space-between;">
               <span class="menuLabel">Edit Profile</span>
               <input id="editProfileToggle" type="checkbox" onchange="setEditProfileMode(this.checked)" />
               <span class="toggle"></span>
             </label>
+
+            <div style="font-size:10px; opacity:.7; color:var(--text-muted); margin-top:4px; line-height:1.2;">
+              Requires <b>?key=</b> in the URL (admin secret).
+            </div>
+          </div>
 
           <label class="menuItem toggleItem">
             <span class="menuLabel">Header</span>
@@ -707,7 +716,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
           <label class="menuItem toggleItem">
             <span class="menuLabel">Note</span>
-            <input type="checkbox" checked onchange="toggleProfileNote(this)" />
+            <input id="noteToggle" type="checkbox" checked onchange="toggleProfileNote(this)" />
             <span class="toggle"></span>
           </label>
 
@@ -916,7 +925,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     const editable = pro && isEditProfileMode();
 
-    // visual cues
     const picWrap = document.getElementById("profilePicWrap");
     const nameEl = document.getElementById("profileName");
     const noteEl = document.getElementById("profileNote");
@@ -924,6 +932,22 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     if (picWrap) picWrap.classList.toggle("editable", editable);
     if (nameEl) nameEl.classList.toggle("editable", editable);
     if (noteEl) noteEl.classList.toggle("editable", editable);
+  }
+
+  function syncNoteToggleFromStorage() {
+    const noteToggle = document.getElementById("noteToggle");
+    const saved = localStorage.getItem("showProfileNote"); // "true"/"false"/null
+
+    if (saved === null) localStorage.setItem("showProfileNote", "true");
+
+    const show = saved === null ? true : saved === "true";
+
+    if (noteToggle) noteToggle.checked = show;
+
+    const noteEl = document.getElementById("profileNote");
+    if (noteEl && CURRENT_PLAN === "pro") {
+      noteEl.classList.toggle("hidden-section", !show);
+    }
   }
 
   function applyPlanToUI() {
@@ -955,10 +979,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       if (dbMenuWrap) dbMenuWrap.classList.add("hidden-section");
       if (mergeMenuWrap) mergeMenuWrap.classList.add("hidden-section");
 
-      // disable edit profile
       localStorage.setItem(LS_PROFILE_EDIT_MODE, "false");
 
-      // Clear any prior Pro selections
       localStorage.removeItem(LS_ACTIVE_DB);
       localStorage.removeItem(LS_DB_MODE);
 
@@ -1142,7 +1164,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
 
     note.classList.toggle("hidden-section", !checkbox.checked);
-    localStorage.setItem("showProfileNote", checkbox.checked);
+    localStorage.setItem("showProfileNote", checkbox.checked ? "true" : "false");
   }
   window.toggleProfileNote = toggleProfileNote;
 
@@ -1159,21 +1181,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     underline.style.transform = `translateX(${x}px)`;
   }
 
-    function syncNoteToggleFromStorage() {
-  const noteToggle = document.querySelector('input[onchange*="toggleProfileNote"]');
-  const saved = localStorage.getItem("showProfileNote"); // "true"/"false"/null
-
-  // default is ON if nothing saved
-  const show = saved === null ? true : saved === "true";
-
-  if (noteToggle) noteToggle.checked = show;
-
-  const noteEl = document.getElementById("profileNote");
-  if (noteEl && CURRENT_PLAN === "pro") {
-    noteEl.classList.toggle("hidden-section", !show);
-  }
-}
-    
   function syncUnderlineToActiveTab() {
     const activeTab = document.querySelector(".tabItem.active");
     if (!activeTab) return;
@@ -1198,7 +1205,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   }
   window.setFilter = setFilter;
 
-  // Merge toggle handler (unchanged)
   async function onMergeToggle(enabled) {
     if (CURRENT_PLAN !== "pro") return;
 
@@ -1237,6 +1243,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       CURRENT_PLAN = plan || "free";
       applyPlanToUI();
       updateModePill();
+
+      // Ensure the note toggle state is restored as soon as we know the plan
+      syncNoteToggleFromStorage();
 
       if (CURRENT_PLAN === "pro") {
         const mode = localStorage.getItem(LS_DB_MODE) || "single";
@@ -1348,6 +1357,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       applyPlanToUI();
       updateModePill();
 
+      // Ensure note toggle is applied after plan changes
+      syncNoteToggleFromStorage();
+
       ALL_POSTS = Array.isArray(posts) ? posts : [];
       sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
 
@@ -1394,6 +1406,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     syncEditProfileUI();
     bindProfileEditHandlers();
+
+    // IMPORTANT: apply saved toggle AFTER renderProfile sets note visibility
+    syncNoteToggleFromStorage();
   }
 
   function bindProfileEditHandlers() {
@@ -1444,11 +1459,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     input.style.background = "var(--bg-card)";
     input.style.color = "var(--text-main)";
 
-    if (multiline) {
-      input.rows = 3;
-    } else {
-      input.type = "text";
-    }
+    if (multiline) input.rows = 3;
+    else input.type = "text";
 
     const parent = el.parentNode;
     parent.replaceChild(input, el);
@@ -1457,8 +1469,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     const save = async () => {
       const newValue = String(input.value || "").trim();
-
-      // restore element immediately (optimistic UI)
       parent.replaceChild(el, input);
 
       const slug = getSlug();
@@ -1478,7 +1488,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.error || "Failed to save");
 
-        // apply returned profile
         if (data.profile?.name) document.getElementById("profileName").innerText = data.profile.name;
         if (typeof data.profile?.note === "string") {
           const noteEl = document.getElementById("profileNote");
@@ -1491,9 +1500,11 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             }
           }
         }
+
+        // re-apply toggle after server update
+        syncNoteToggleFromStorage();
       } catch (e) {
         console.error("Profile save failed:", e);
-        // revert text if failed
         if (field === "name") document.getElementById("profileName").innerText = oldText;
         if (field === "note") document.getElementById("profileNote").textContent = oldText;
         alert(e.message || "Failed to save profile");
@@ -1518,7 +1529,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       const r = new FileReader();
       r.onload = () => {
         const result = String(r.result || "");
-        // result is like: data:image/png;base64,AAAA
         const idx = result.indexOf("base64,");
         if (idx === -1) return reject(new Error("Invalid base64"));
         resolve(result.slice(idx + "base64,".length));
@@ -1767,6 +1777,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         ALL_POSTS = posts || [];
         CURRENT_PLAN = plan || "free";
         applyPlanToUI();
+
+        // restore note toggle right away
+        syncNoteToggleFromStorage();
 
         renderProfile(profile);
         renderHighlights(ALL_POSTS);
