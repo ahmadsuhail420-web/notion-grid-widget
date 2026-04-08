@@ -46,7 +46,7 @@ module.exports = async function handler(req, res) {
     const rawPlan = customer.plan || "free";
     const plan = rawPlan === "pro" ? "pro" : "free";
 
-    // 3) Widget settings (unchanged)
+    // 3) Widget settings (+ profile fields stored in Supabase)
     let widget_settings = {
       white_label_enabled: false,
       custom_css: "",
@@ -54,10 +54,16 @@ module.exports = async function handler(req, res) {
       auto_refresh_enabled: false,
       auto_refresh_interval_sec: 0,
       theme_mode: "default",
+
+      // new profile fields
+      profile_name: null,
+      profile_note: null,
+      profile_picture_url: null,
     };
 
     const settingsRes = await fetch(
-      `${supabaseUrl}/rest/v1/widget_settings?widget_id=eq.${widget.id}&select=white_label_enabled,custom_css,layout_mode,auto_refresh_enabled,auto_refresh_interval_sec,theme_mode`,
+      `${supabaseUrl}/rest/v1/widget_settings?widget_id=eq.${widget.id}` +
+        `&select=white_label_enabled,custom_css,layout_mode,auto_refresh_enabled,auto_refresh_interval_sec,theme_mode,profile_name,profile_note,profile_picture_url`,
       { headers }
     );
 
@@ -68,6 +74,13 @@ module.exports = async function handler(req, res) {
       console.warn("Widget settings fetch failed:", settingsRes.status);
     }
 
+    // Profile now comes from Supabase (NOT Notion)
+    const profile = {
+      name: widget_settings.profile_name || widget.name || "Grid Planner",
+      picture: widget_settings.profile_picture_url || "/icons/profile-placeholder.png",
+      note: widget_settings.profile_note || "",
+    };
+
     // 4) Notion connection
     const connRes = await fetch(
       `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=id,access_token`,
@@ -75,11 +88,11 @@ module.exports = async function handler(req, res) {
     );
     if (!connRes.ok) {
       console.error("Connection fetch failed:", connRes.status);
-      return res.json({ profile: null, posts: [], plan, widget_settings });
+      return res.json({ profile, posts: [], plan, widget_settings });
     }
 
     const [connection] = await connRes.json();
-    if (!connection?.access_token) return res.json({ profile: null, posts: [], plan, widget_settings });
+    if (!connection?.access_token) return res.json({ profile, posts: [], plan, widget_settings });
 
     // 5) Widget databases
     let databases = [];
@@ -95,7 +108,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (!Array.isArray(databases) || databases.length === 0) {
-      return res.json({ profile: null, posts: [], plan, widget_settings, databases: [] });
+      return res.json({ profile, posts: [], plan, widget_settings, databases: [] });
     }
 
     const primary = databases.find(d => d.is_primary) || databases[0] || null;
@@ -114,7 +127,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (databaseIds.length === 0) {
-      return res.json({ profile: null, posts: [], plan, widget_settings, databases });
+      return res.json({ profile, posts: [], plan, widget_settings, databases });
     }
 
     // ---------------------------
@@ -169,31 +182,8 @@ module.exports = async function handler(req, res) {
     }
 
     // ---------------------------
-    // Parse rows
-    // - profile from PRIMARY DB only (when merging)
+    // Parse rows (posts only)
     // ---------------------------
-    function parseProfileFromPage(page) {
-      const profileName =
-        page.properties?.["Profile Name"]?.rich_text?.[0]?.plain_text || null;
-
-      const profilePicture =
-        page.properties?.["Profile Picture"]?.files?.[0]?.file?.url ||
-        page.properties?.["Profile Picture"]?.files?.[0]?.external?.url ||
-        null;
-
-      const profileNote =
-        page.properties?.["Profile Note"]?.rich_text?.map(t => t.plain_text).join("") || null;
-
-      if (profileName || profilePicture || profileNote) {
-        return {
-          name: profileName || "Grid Planner",
-          picture: profilePicture,
-          note: profileNote,
-        };
-      }
-      return null;
-    }
-
     function parsePostFromPage(page) {
       const name = page.properties?.Name?.title?.[0]?.plain_text || "";
       const publishDate = page.properties?.["Publish Date"]?.date?.start || null;
@@ -221,21 +211,11 @@ module.exports = async function handler(req, res) {
       };
     }
 
-    // Profile: only from primary DB pages
-    let profile = null;
-    if (primaryDbId && Array.isArray(pagesByDb[primaryDbId])) {
-      for (const page of pagesByDb[primaryDbId]) {
-        const p = parseProfileFromPage(page);
-        if (p) { profile = p; break; }
-      }
-    }
-
-    // Posts: from all selected DBs, ignoring profile rows
+    // Posts: from all selected DBs (no special profile row)
     const posts = [];
     for (const databaseId of orderedDbIds) {
       const pages = pagesByDb[databaseId] || [];
       for (const page of pages) {
-        if (parseProfileFromPage(page)) continue;
         posts.push(parsePostFromPage(page));
       }
     }
