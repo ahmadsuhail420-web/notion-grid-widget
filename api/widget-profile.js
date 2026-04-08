@@ -1,4 +1,4 @@
-// Pro-only: update widget profile name/note stored in widget_settings.
+// Pro-only: update widget profile name/note/picture stored in widget_settings.
 // Security: requires slug + key (widgets.admin_secret)
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -18,11 +18,7 @@ async function supabaseFetch(path, { method = "GET", body, preferReturn = true }
 
   const text = await res.text();
   let data = null;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    data = text;
-  }
+  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
 
   if (!res.ok) {
     const msg = (data && data.message) || (data && data.error) || `Supabase error (${res.status})`;
@@ -31,7 +27,6 @@ async function supabaseFetch(path, { method = "GET", body, preferReturn = true }
     err.data = data;
     throw err;
   }
-
   return data;
 }
 
@@ -44,7 +39,7 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: "Missing Supabase env vars" });
     }
 
-    const { slug, key, name, note } = req.body || {};
+    const { slug, key, name, note, picture } = req.body || {};
     if (!slug) return res.status(400).json({ error: "Missing slug" });
     if (!key) return res.status(401).json({ error: "Missing key" });
 
@@ -70,18 +65,20 @@ module.exports = async function handler(req, res) {
     if (plan !== "pro") return res.status(403).json({ error: "Pro required" });
 
     // 3) Upsert widget_settings row (if missing)
-    // First check if exists
     const existing = await supabaseFetch(
       `widget_settings?widget_id=eq.${encodeURIComponent(widget.id)}&select=widget_id&limit=1`,
       { preferReturn: false }
     );
-
     const exists = Array.isArray(existing) && existing.length > 0;
 
-    const payload = {
-      profile_name: typeof name === "string" ? name : null,
-      profile_note: typeof note === "string" ? note : null,
-    };
+    const payload = {};
+    if (typeof name === "string") payload.profile_name = name;
+    if (typeof note === "string") payload.profile_note = note;
+
+    // picture: allow explicit null to clear
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, "picture")) {
+      payload.profile_picture_url = picture === null ? null : String(picture);
+    }
 
     if (!exists) {
       await supabaseFetch("widget_settings", {
