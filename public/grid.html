@@ -250,16 +250,17 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   color: var(--text-main);
 }
 
-/* ======= Custom toggle (SHOW/HIDE) ======= */
+/* ======= Custom toggle (SHOW/HIDE) =======
+   Requirement:
+   - Text smaller
+   - Text centered in EMPTY space (excluding knob area)
+*/
 .togglePill {
   position: relative;
   width: 86px;
   height: 30px;
   border-radius: 999px;
   background: var(--toggle-off);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   cursor: pointer;
   user-select: none;
@@ -281,20 +282,31 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   border-radius: 50%;
   background: #fff;
   transition: transform 0.25s ease;
+  z-index: 3;
+}
+
+/* Label container spans the pill, but we pad left/right by knob+margin
+   so the text is centered in the available empty area */
+.togglePill .txtWrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 30px;  /* knob(24) + margin(3) + a bit */
+  padding-right: 30px; /* symmetrical so center excludes knob side */
+  box-sizing: border-box;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .togglePill .txt {
-  font-size: 12px;
+  font-size: 10px;     /* smaller */
   font-weight: 900;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.7px;
   color: #fff;
-  position: relative;
-  z-index: 2;
-  transition: transform 0.25s ease;
+  line-height: 1;
 }
-
-.togglePill[data-state="show"] .txt { content: "SHOW"; }
-.togglePill[data-state="hide"] .txt { content: "HIDE"; }
 
 .togglePill[data-state="hide"] .knob { transform: translateX(56px); }
 
@@ -819,13 +831,12 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
           <div class="menuDivider"></div>
 
-          <!-- Toggles: SHOW when unchecked, HIDE when checked -->
           <div class="menuRow">
             <div class="menuLabel">Name</div>
             <label class="togglePill" id="pillProfileName" data-state="show">
               <input id="toggleProfileName" type="checkbox" onchange="onToggleChanged('name', this.checked)" />
               <span class="knob"></span>
-              <span class="txt">SHOW</span>
+              <span class="txtWrap"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -834,7 +845,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillProfilePic" data-state="show">
               <input id="toggleProfilePic" type="checkbox" onchange="onToggleChanged('pic', this.checked)" />
               <span class="knob"></span>
-              <span class="txt">SHOW</span>
+              <span class="txtWrap"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -843,7 +854,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillProfileStats" data-state="show">
               <input id="toggleProfileStats" type="checkbox" onchange="onToggleChanged('stats', this.checked)" />
               <span class="knob"></span>
-              <span class="txt">SHOW</span>
+              <span class="txtWrap"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -852,7 +863,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillProfileNote" data-state="show">
               <input id="toggleProfileNote" type="checkbox" onchange="onToggleChanged('note', this.checked)" />
               <span class="knob"></span>
-              <span class="txt">SHOW</span>
+              <span class="txtWrap"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -863,7 +874,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillHighlights" data-state="show">
               <input id="toggleHighlights" type="checkbox" onchange="onToggleChanged('highlights', this.checked)" />
               <span class="knob"></span>
-              <span class="txt">SHOW</span>
+              <span class="txtWrap"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -1139,7 +1150,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       header.classList.toggle("no-stats", hideStats);
     }
 
-    // NOTE: show/hide note must also respect whether there is content
     if (noteEl) {
       if (CURRENT_PLAN === "free") {
         noteEl.classList.add("hidden-section");
@@ -1201,6 +1211,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     else if (font === "poppins") value = "'Poppins', system-ui, -apple-system, sans-serif";
     else if (font === "manrope") value = "'Manrope', system-ui, -apple-system, sans-serif";
     else if (font === "montserrat") value = "'Montserrat', system-ui, -apple-system, sans-serif";
+    else if (font === "times") value = "'Times New Roman', Times, serif";
     else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
 
     document.documentElement.style.setProperty("--font-main", value);
@@ -1213,7 +1224,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
   function getFontLabel() {
     const saved = localStorage.getItem("font") || "system";
-    const map = { system: "System", inter: "Inter", poppins: "Poppins", manrope: "Manrope", montserrat: "Montserrat" };
+    const map = { system: "System", inter: "Inter", poppins: "Poppins", manrope: "Manrope", montserrat: "Montserrat", times: "Times" };
     return map[saved] || "System";
   }
 
@@ -1422,6 +1433,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       makeModalButton("Poppins", "", () => { setFont("poppins"); closeCenterModal(); closeMenu(); }),
       makeModalButton("Manrope", "", () => { setFont("manrope"); closeCenterModal(); closeMenu(); }),
       makeModalButton("Montserrat", "", () => { setFont("montserrat"); closeCenterModal(); closeMenu(); }),
+      makeModalButton("Times", "", () => { setFont("times"); closeCenterModal(); closeMenu(); }),
     ];
 
     openCenterModal("Choose font", buttons);
@@ -1670,10 +1682,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       return;
     }
 
-    // Set note text; visibility decided by applyVisibilityFromSettings()
     noteEl.textContent = note;
 
-    // Apply settings after content exists (fixes "note not shown")
+    // Apply settings after content exists
     syncAllTogglesFromStorage();
     applyVisibilityFromSettings();
 
