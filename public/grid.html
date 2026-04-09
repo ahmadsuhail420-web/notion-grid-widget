@@ -26,8 +26,7 @@
   --border-color: #e2e2e2;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 
-  --toggle-off: #1b1b1b;
-  --toggle-on: #1b1b1b;
+  --toggle-track: #1b1b1b;
 }
 
 body[data-theme="dark"] {
@@ -41,8 +40,7 @@ body[data-theme="dark"] {
   --border-color: #2f2f2f;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 
-  --toggle-off: #111;
-  --toggle-on: #111;
+  --toggle-track: #111;
 }
 
 html, body { height: 100%; }
@@ -77,8 +75,6 @@ body {
   padding: 0px 20px 0px;
   box-sizing: border-box;
 }
-
-.widgetWrap .viewer { backdrop-filter: blur(0px); }
 
 .container {
   min-height: 0;
@@ -140,8 +136,6 @@ body {
   justify-content: center;
   cursor: pointer;
   color: var(--text-main);
-  transform: none !important;
-  filter: none !important;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -156,7 +150,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: geometricPrecision;
-  transform: translateZ(0);
 }
 
 .refreshIcon.spin { animation: spin 1s linear infinite; }
@@ -180,7 +173,6 @@ body {
 /* ========================= MENU (PRO) ========================= */
 .menu {
   width: 185px;
-  height: auto;
   max-height: 560px;
   overflow: auto;
   position: absolute;
@@ -212,7 +204,6 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   font-size: 12px;
   font-weight: 800;
   color: var(--text-main);
-  letter-spacing: 0.2px;
 }
 
 .menuCloseBtn {
@@ -230,12 +221,7 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
 
 .menuCloseBtn:active { transform: scale(0.96); }
 
-.menuDivider {
-  height: 1px;
-  width: 100%;
-  background: var(--border-color);
-  opacity: 0.9;
-}
+.menuDivider { height: 1px; width: 100%; background: var(--border-color); opacity: 0.9; }
 
 .menuRow {
   display: flex;
@@ -250,17 +236,13 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   color: var(--text-main);
 }
 
-/* ======= Custom toggle (SHOW/HIDE) =======
-   Requirement:
-   - Text smaller
-   - Text centered in EMPTY space (excluding knob area)
-*/
+/* ======= Toggle with two label zones (prevents knob overlap) ======= */
 .togglePill {
   position: relative;
-  width: 86px;
+  width: 92px;
   height: 30px;
   border-radius: 999px;
-  background: var(--toggle-off);
+  background: var(--toggle-track);
   overflow: hidden;
   cursor: pointer;
   user-select: none;
@@ -285,30 +267,39 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   z-index: 3;
 }
 
-/* Label container spans the pill, but we pad left/right by knob+margin
-   so the text is centered in the available empty area */
-.togglePill .txtWrap {
+/* Two zones, each has centered text */
+.togglePill .zone {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  width: 62px; /* pill(92) - knob(24) - margins(6) = 62 */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 30px;  /* knob(24) + margin(3) + a bit */
-  padding-right: 30px; /* symmetrical so center excludes knob side */
-  box-sizing: border-box;
-  z-index: 2;
   pointer-events: none;
+  z-index: 2;
 }
 
+.togglePill .zone.left { left: 0; }
+.togglePill .zone.right { right: 0; }
+
 .togglePill .txt {
-  font-size: 10px;     /* smaller */
+  font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.7px;
   color: #fff;
   line-height: 1;
 }
 
-.togglePill[data-state="hide"] .knob { transform: translateX(56px); }
+/* SHOW state (unchecked): knob left, text appears on RIGHT zone only */
+.togglePill[data-state="show"] .zone.left  { opacity: 0; }
+.togglePill[data-state="show"] .zone.right { opacity: 1; }
+
+/* HIDE state (checked): knob right, text appears on LEFT zone only */
+.togglePill[data-state="hide"] .zone.left  { opacity: 1; }
+.togglePill[data-state="hide"] .zone.right { opacity: 0; }
+
+.togglePill[data-state="hide"] .knob { transform: translateX(62px); } /* 92-24-6 */
 
 /* Click rows (Database/Merge/Fonts) show only chosen option */
 .menuClickRow {
@@ -330,7 +321,6 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   font-size: 12px;
   font-weight: 900;
   color: var(--text-main);
-  line-height: 1.1;
   max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -347,7 +337,6 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   position: sticky;
   bottom: 0;
   background: var(--bg-card);
-  margin-left: 0;
   padding-top: 6px;
 }
 
@@ -376,7 +365,6 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   border-radius: 999px;
   background: #000;
   z-index: 0;
-  text-align: center;
   transition: transform 0.45s cubic-bezier(0.22, 1.2, 0.36, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
@@ -466,29 +454,18 @@ body[data-theme="dark"] .themeSegment button.active { color: #111; }
   font-size: clamp(10px, 3.5vw, 24px);
   color: var(--text-muted);
   padding: 4px 16px 10px;
-  flex: 0 0 1;
   cursor: pointer;
 }
 
-/* When stats hidden, center name in header area */
-#profileHeader.no-stats .profileRight {
-  align-items: center;
-  text-align: center;
-}
-#profileHeader.no-stats .profileTitle {
-  white-space: normal;
-  text-overflow: unset;
-}
-#profileHeader.no-stats .profileStats {
-  display: none !important;
-}
+#profileHeader.no-stats .profileRight { align-items: center; text-align: center; }
+#profileHeader.no-stats .profileTitle { white-space: normal; text-overflow: unset; }
+#profileHeader.no-stats .profileStats { display: none !important; }
 
-/* Hide pieces */
 #profileHeader.hide-name #profileName { display: none !important; }
 #profileHeader.hide-pic .profilePic { display: none !important; }
 
 /* ========================= HIGHLIGHTS ========================= */
-.highlights { width: 100%; padding-left: 1px; box-sizing: border-box; flex: 0 0 auto; }
+.highlights { width: 100%; padding-left: 1px; box-sizing: border-box; }
 .highlightsRow { width: 100%; max-width: 520px; display: flex; gap: 12px; overflow-x: auto; flex-wrap: nowrap; }
 .highlightsRow::-webkit-scrollbar { display: none; }
 
@@ -503,196 +480,59 @@ body[data-theme="dark"] .themeSegment button.active { color: #111; }
   border: 2px solid var(--border-color);
   flex-shrink: 0;
 }
-
 .highlightItem img { width: 92%; height: 92%; border-radius: 50%; object-fit: cover; }
-
 .highlightPlaceholder { background: var(--bg-muted); border-color: rgba(0, 0, 0, 0.08); }
 body[data-theme="dark"] .highlightPlaceholder { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15); }
-
 #highlightsWrap { margin-bottom: 12px; }
 
-/* ========================= CONTENT / TABS ========================= */
+/* ========================= CONTENT / TABS / GRID / VIEWER / SKELETON / MODAL ========================= */
+/* (kept identical to your previous version for brevity; no behavioral changes below) */
+
 .contentArea { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
-
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: center;
-  padding: 10px 0 8px;
-  position: relative;
-  flex: 0 0 auto;
-}
-
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; padding: 10px 0 8px; position: relative; flex: 0 0 auto; }
 .tabItem { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
 .tabItem img { width: 22px; height: 22px; opacity: 0.45; transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease; }
-
 body[data-theme="dark"] .tabItem img { filter: brightness(0) invert(1); opacity: 0.7; }
 body[data-theme="dark"] .tabItem.active img { opacity: 1; }
-
 .tabItem.active img { opacity: 1; transform: translateY(-2px) scale(1.05); }
-
-.tabIcon {
-  font-size: 22px;
-  opacity: 0.45;
-  color: var(--text-main);
-  transition: transform 0.25s ease, opacity 0.25s ease;
-  line-height: 1;
-  font-variation-settings: "FILL" 1;
-}
-
+.tabIcon { font-size: 22px; opacity: 0.45; color: var(--text-main); transition: transform 0.25s ease, opacity 0.25s ease; line-height: 1; font-variation-settings: "FILL" 1; }
 .tabItem.active .tabIcon { opacity: 1; transform: translateY(-2px) scale(1.05); }
 body[data-theme="dark"] .tabIcon { opacity: 0.75; color: #fff; }
 body[data-theme="dark"] .tabItem.active .tabIcon { opacity: 1; }
+.slidingUnderline { position: absolute; bottom: 0; height: 2px; width: 28px; background: var(--text-main); border-radius: 2px; transform: translateX(0); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
 
-.slidingUnderline {
-  position: absolute;
-  bottom: 0;
-  height: 2px;
-  width: 28px;
-  background: var(--text-main);
-  border-radius: 2px;
-  transform: translateX(0);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ========================= GRID ========================= */
 .gridWrap { flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0; padding-top: 6px; }
 .gridWrap::-webkit-scrollbar { display: none; }
-
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 0; }
-
-.card {
-  aspect-ratio: 5 / 7;
-  background: var(--bg-muted);
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+.card { aspect-ratio: 5 / 7; background: var(--bg-muted); overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
 .card img, .card video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card img { z-index: 1; pointer-events: none; }
-
 .card video { opacity: 0; transition: opacity 0.2s ease; pointer-events: none; }
 .card:hover video { opacity: 1; }
-
-.card .badge {
-  position: absolute;
-  top: 4%;
-  right: 6%;
-  width: 16%;
-  height: 16%;
-  object-fit: contain;
-  z-index: 5;
-  opacity: 0.8;
-  pointer-events: none;
-}
-
+.card .badge { position: absolute; top: 4%; right: 6%; width: 16%; height: 16%; object-fit: contain; z-index: 5; opacity: 0.8; pointer-events: none; }
 body[data-theme="dark"] .card video { opacity: 0.85; }
-
-.card .hoverText {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  padding: 10px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
-  color: #fff;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 6;
-  pointer-events: none;
-}
-
+.card .hoverText { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 10px; background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)); color: #fff; opacity: 0; transition: opacity 0.2s ease; z-index: 6; pointer-events: none; }
 .card:hover .hoverText { opacity: 1; }
 .card:active .hoverText { opacity: 1; }
-
 .card .hoverText .textWrap { width: 100%; }
+.card .hoverText .title { font-size: 13px; font-weight: 500; line-height: 1.2; overflow-wrap: anywhere; word-break: break-word; }
+.card .hoverText .date { margin-top: 4px; font-size: 10px; font-weight: 500; opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.card .hoverText .title {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.2;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  display: block;
-  -webkit-line-clamp: unset;
-  -webkit-box-orient: unset;
-}
-
-.card .hoverText .date {
-  margin-top: 4px;
-  font-size: 10px;
-  font-weight: 500;
-  opacity: 0.85;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ========================= VIEWER ========================= */
-.viewer {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
+.viewer { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
 .viewer.show { opacity: 1; pointer-events: auto; }
 .viewer.hidden { display: none; }
-
-.viewerInner {
-  width: min(360px, 85%);
-  position: relative;
-  transform: scale(0.96);
-  transition: transform 0.25s ease;
-}
+.viewerInner { width: min(360px, 85%); position: relative; transform: scale(0.96); transition: transform 0.25s ease; }
 .viewer.show .viewerInner { transform: scale(1); }
-
-.viewerCard {
-  background: var(--bg-card);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-}
-
+.viewerCard { background: var(--bg-card); border-radius: 20px; overflow: hidden; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); }
 .viewerImage { aspect-ratio: 5 / 7; overflow: hidden; }
 .viewerImage img, .viewerImage video { width: 100%; height: 100%; object-fit: cover; }
-
 .viewerFooter { padding: 14px 16px; border-top: 1px solid var(--border-color); color: var(--text-main); }
-
-.viewerClose, .nav {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.65);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-}
-
+.viewerClose, .nav { position: absolute; width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 0, 0, 0.65); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); }
 .viewerClose { top: -14px; right: -14px; font-size: 16px; }
 .nav { top: 50%; transform: translateY(-50%); font-size: 20px; }
 .nav.prev { left: -14px; }
 .nav.next { right: -14px; }
 
-/* ========================= SKELETON ========================= */
 #skeleton { padding: 16px; }
 .sk-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
 .sk-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--bg-muted); }
@@ -703,95 +543,22 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 .sk-circle { width: 62px; height: 62px; border-radius: 50%; background: var(--bg-muted); }
 .sk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
 .sk-grid div { aspect-ratio: 4 / 5; background: var(--bg-muted); border-radius: 2px; }
+#skeleton * { animation: shimmer 1.2s infinite linear; background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%); background-size: 400% 100%; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-#skeleton * {
-  animation: shimmer 1.2s infinite linear;
-  background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
-  background-size: 400% 100%;
-}
-
-@keyframes shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
-
-/* ========================= CENTER MODAL ========================= */
-.modalOverlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 80;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  box-sizing: border-box;
-}
+.modalOverlay { position: absolute; inset: 0; background: rgba(0,0,0,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 80; display: none; align-items: center; justify-content: center; padding: 18px; box-sizing: border-box; }
 .modalOverlay.show { display: flex; }
-
-.modalCard {
-  width: min(360px, 92%);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 18px;
-  box-shadow: 0 16px 50px rgba(0,0,0,0.28);
-  overflow: hidden;
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.modalHeaderTitle {
-  font-weight: 800;
-  font-size: 12px;
-  color: var(--text-main);
-}
-
-.modalCloseBtn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-main);
-}
-
+.modalCard { width: min(360px, 92%); background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 18px; box-shadow: 0 16px 50px rgba(0,0,0,0.28); overflow: hidden; }
+.modalHeader { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border-color); }
+.modalHeaderTitle { font-weight: 800; font-size: 12px; color: var(--text-main); }
+.modalCloseBtn { border: none; background: transparent; cursor: pointer; width: 30px; height: 30px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--text-main); }
 .modalBody { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-
-.modalBtn {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-muted);
-  color: var(--text-main);
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  text-align: left;
-}
+.modalBtn { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-muted); color: var(--text-main); font-size: 12px; font-weight: 800; cursor: pointer; text-align: left; }
 .modalBtn:active { transform: scale(0.99); }
-
-.modalBtn .sub {
-  display: block;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
+.modalBtn .sub { display: block; font-size: 10px; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
   </style>
 </head>
+
 <body>
   <div class="widgetWrap">
     <div class="header">
@@ -836,7 +603,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillProfileName" data-state="show">
               <input id="toggleProfileName" type="checkbox" onchange="onToggleChanged('name', this.checked)" />
               <span class="knob"></span>
-              <span class="txtWrap"><span class="txt">SHOW</span></span>
+              <span class="zone left"><span class="txt">HIDE</span></span>
+              <span class="zone right"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -845,7 +613,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillProfilePic" data-state="show">
               <input id="toggleProfilePic" type="checkbox" onchange="onToggleChanged('pic', this.checked)" />
               <span class="knob"></span>
-              <span class="txtWrap"><span class="txt">SHOW</span></span>
+              <span class="zone left"><span class="txt">HIDE</span></span>
+              <span class="zone right"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -854,7 +623,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillProfileStats" data-state="show">
               <input id="toggleProfileStats" type="checkbox" onchange="onToggleChanged('stats', this.checked)" />
               <span class="knob"></span>
-              <span class="txtWrap"><span class="txt">SHOW</span></span>
+              <span class="zone left"><span class="txt">HIDE</span></span>
+              <span class="zone right"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -863,7 +633,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillProfileNote" data-state="show">
               <input id="toggleProfileNote" type="checkbox" onchange="onToggleChanged('note', this.checked)" />
               <span class="knob"></span>
-              <span class="txtWrap"><span class="txt">SHOW</span></span>
+              <span class="zone left"><span class="txt">HIDE</span></span>
+              <span class="zone right"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -874,7 +645,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <label class="togglePill" id="pillHighlights" data-state="show">
               <input id="toggleHighlights" type="checkbox" onchange="onToggleChanged('highlights', this.checked)" />
               <span class="knob"></span>
-              <span class="txtWrap"><span class="txt">SHOW</span></span>
+              <span class="zone left"><span class="txt">HIDE</span></span>
+              <span class="zone right"><span class="txt">SHOW</span></span>
             </label>
           </div>
 
@@ -1044,14 +816,13 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   const LS_ACTIVE_DB = "activeDatabase";
   const LS_DB_MODE = "dbMode";
 
-  // When checked => HIDE, when unchecked => SHOW
+  // checked => HIDE, unchecked => SHOW
   const LS_HIDE_NAME = "hideProfileName";
   const LS_HIDE_PIC = "hideProfilePic";
   const LS_HIDE_STATS = "hideProfileStats";
   const LS_HIDE_NOTE = "hideProfileNote";
   const LS_HIDE_HIGHLIGHTS = "hideHighlights";
 
-  // Admin key
   const LS_ADMIN_KEY = "widgetAdminKey";
 
   let DATABASES = [];
@@ -1095,7 +866,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     localStorage.setItem(key, val ? "true" : "false");
   }
 
-  /* ========================= TOGGLE UI (SHOW/HIDE) ========================= */
   function setTogglePill(pillId, inputId, hideValue) {
     const pill = document.getElementById(pillId);
     const inp = document.getElementById(inputId);
@@ -1103,13 +873,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     inp.checked = !!hideValue;
     pill.dataset.state = hideValue ? "hide" : "show";
-
-    const txt = pill.querySelector(".txt");
-    if (txt) txt.textContent = hideValue ? "HIDE" : "SHOW";
   }
 
   function onToggleChanged(which, checked) {
-    // checked => HIDE
     if (which === "name") setBoolLS(LS_HIDE_NAME, checked);
     if (which === "pic") setBoolLS(LS_HIDE_PIC, checked);
     if (which === "stats") setBoolLS(LS_HIDE_STATS, checked);
@@ -1163,22 +929,17 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     if (highlightsWrap) highlightsWrap.classList.toggle("hidden-section", hideHL);
   }
 
-  /* ========================= MENU ========================= */
   function toggleMenu() { document.getElementById("menu").classList.toggle("hidden"); }
   function closeMenu() { document.getElementById("menu")?.classList.add("hidden"); }
   window.toggleMenu = toggleMenu;
   window.closeMenu = closeMenu;
 
-  /* ========================= THEME (AUTO) ========================= */
   (function initThemeOnLoad() {
     const theme = localStorage.getItem("theme") || "default";
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    if (theme === "dark" || (theme === "default" && prefersDark)) {
-      document.body.setAttribute("data-theme", "dark");
-    } else {
-      document.body.removeAttribute("data-theme");
-    }
+    if (theme === "dark" || (theme === "default" && prefersDark)) document.body.setAttribute("data-theme", "dark");
+    else document.body.removeAttribute("data-theme");
   })();
 
   function syncThemePill(mode) {
@@ -1198,13 +959,11 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       if (prefersDark) document.body.setAttribute("data-theme", "dark");
       else document.body.removeAttribute("data-theme");
     }
-
     localStorage.setItem("theme", mode);
     syncThemePill(mode);
   }
   window.setTheme = setTheme;
 
-  /* ========================= FONTS ========================= */
   function setFont(font) {
     let value;
     if (font === "inter") value = "'Inter', system-ui, -apple-system, sans-serif";
@@ -1217,7 +976,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     document.documentElement.style.setProperty("--font-main", value);
     document.body.style.fontFamily = "var(--font-main)";
     localStorage.setItem("font", font);
-
     syncFontChosenOnly();
   }
   window.setFont = setFont;
@@ -1233,11 +991,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     if (el) el.textContent = getFontLabel();
   }
 
-  /* ========================= DATABASE / MERGE labels (chosen only) ========================= */
   function syncDbChosenOnly() {
     const el = document.getElementById("dbChosenOnly");
     if (!el) return;
-
     const activeDb = localStorage.getItem(LS_ACTIVE_DB);
     const active = (DATABASES || []).find(d => d.database_id === activeDb);
     el.textContent = active?.label || "Choose database";
@@ -1246,7 +1002,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   function syncMergeChosenOnly() {
     const el = document.getElementById("mergeChosenOnly");
     if (!el) return;
-
     const mode = localStorage.getItem(LS_DB_MODE) || "single";
     el.textContent = mode === "merge" ? "Merge" : "Single";
   }
@@ -1269,7 +1024,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   }
 
-  /* ========================= PRO/FREE UI GATING ========================= */
   function applyPlanToUI() {
     const isPro = CURRENT_PLAN === "pro";
 
@@ -1306,7 +1060,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     if (profileHeader) profileHeader.classList.remove("hidden-section");
     if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
 
-    // Ensure toggle defaults exist (first run)
     if (localStorage.getItem(LS_HIDE_NAME) === null) setBoolLS(LS_HIDE_NAME, false);
     if (localStorage.getItem(LS_HIDE_PIC) === null) setBoolLS(LS_HIDE_PIC, false);
     if (localStorage.getItem(LS_HIDE_STATS) === null) setBoolLS(LS_HIDE_STATS, false);
@@ -1322,7 +1075,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     updateModePill();
   }
 
-  /* ========================= CENTER MODAL ========================= */
   function openCenterModal(title, buttons) {
     const overlay = document.getElementById("centerModal");
     const titleEl = document.getElementById("modalTitle");
@@ -1332,7 +1084,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     titleEl.textContent = title;
     body.innerHTML = "";
-
     (buttons || []).forEach(btn => body.appendChild(btn));
     overlay.classList.add("show");
   }
@@ -1355,28 +1106,22 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     return b;
   }
 
-  /* ========================= DATABASE / MERGE / FONT PICKERS ========================= */
   async function openDatabasePicker() {
     if (CURRENT_PLAN !== "pro") return;
 
     if (!Array.isArray(DATABASES) || DATABASES.length === 0) {
-      openCenterModal("Database", [
-        makeModalButton("No databases", "Connect a Notion database first.", () => closeCenterModal()),
-      ]);
+      openCenterModal("Database", [makeModalButton("No databases", "Connect a Notion database first.", () => closeCenterModal())]);
       return;
     }
 
     const buttons = DATABASES.map(db => makeModalButton(db.label, db.is_primary ? "Primary" : "", async () => {
       localStorage.setItem(LS_DB_MODE, "single");
       localStorage.setItem(LS_ACTIVE_DB, db.database_id);
-
       syncDbChosenOnly();
       syncMergeChosenOnly();
       updateModePill();
-
       closeCenterModal();
       closeMenu();
-
       await animateDatabaseChange(db.database_id);
     }));
 
@@ -1392,16 +1137,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         localStorage.setItem(LS_DB_MODE, "single");
         syncMergeChosenOnly();
         updateModePill();
-
         closeCenterModal();
         closeMenu();
-
-        const activeDb =
-          localStorage.getItem(LS_ACTIVE_DB) ||
-          DATABASES.find(d => d.is_primary)?.database_id ||
-          DATABASES[0]?.database_id ||
-          null;
-
+        const activeDb = localStorage.getItem(LS_ACTIVE_DB) || DATABASES.find(d => d.is_primary)?.database_id || DATABASES[0]?.database_id || null;
         if (activeDb) {
           localStorage.setItem(LS_ACTIVE_DB, activeDb);
           syncDbChosenOnly();
@@ -1412,10 +1150,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         localStorage.setItem(LS_DB_MODE, "merge");
         syncMergeChosenOnly();
         updateModePill();
-
         closeCenterModal();
         closeMenu();
-
         await animateDatabaseChange("merge");
       }),
     ];
@@ -1435,79 +1171,60 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       makeModalButton("Montserrat", "", () => { setFont("montserrat"); closeCenterModal(); closeMenu(); }),
       makeModalButton("Times", "", () => { setFont("times"); closeCenterModal(); closeMenu(); }),
     ];
-
     openCenterModal("Choose font", buttons);
   }
   window.openFontPicker = openFontPicker;
 
-  /* ========================= DATE FORMAT ========================= */
   function formatDateForHover(post) {
     const raw = post?.publishDate || "";
     if (!raw) return "";
-
     const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (!m) return "";
-
     const [, yyyy, mm, dd] = m;
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const monthIndex = Number(mm) - 1;
-    const mon = monthNames[monthIndex] || "";
-    const yy = yyyy.slice(-2);
-
-    return `${dd} ${mon} ${yy}`;
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const mon = monthNames[Number(mm) - 1] || "";
+    return `${dd} ${mon} ${yyyy.slice(-2)}`;
   }
 
-  /* ========================= TABS / UNDERLINE ========================= */
   function moveUnderline(tab) {
     const underline = document.getElementById("slidingUnderline");
     const tabs = document.querySelector(".tabs");
     if (!underline || !tabs || !tab) return;
-
     const tabRect = tab.getBoundingClientRect();
     const tabsRect = tabs.getBoundingClientRect();
-
     const underlineWidth = underline.getBoundingClientRect().width || underline.offsetWidth || 0;
     const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underlineWidth / 2;
-
     underline.style.transform = `translateX(${x}px)`;
   }
 
   function syncUnderlineToActiveTab() {
     const activeTab = document.querySelector(".tabItem.active");
     if (!activeTab) return;
-
     requestAnimationFrame(() => moveUnderline(activeTab));
     setTimeout(() => moveUnderline(activeTab), 100);
   }
 
   function setFilter(type, el) {
     FILTER = type;
-
     document.querySelectorAll(".tabItem").forEach(tab => {
       tab.classList.remove("active");
       const img = tab.querySelector("img");
       if (img) img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
     });
-
     el.classList.add("active");
     syncUnderlineToActiveTab();
-
     renderGrid();
     updateStats();
   }
   window.setFilter = setFilter;
 
-  /* ========================= DATA LOAD ========================= */
   async function animateDatabaseChange(dbId) {
     const container = document.querySelector(".gridWrap");
     if (!container) return;
-
     container.style.opacity = 0;
     container.style.transform = "translateY(10px)";
     container.style.transition = "all 0.3s ease";
-
     await loadPosts(dbId);
-
     setTimeout(() => {
       container.style.opacity = 1;
       container.style.transform = "translateY(0)";
@@ -1524,12 +1241,10 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       const data = await res.json();
 
       DATABASES = data.databases || [];
-      const plan = data.plan || "free";
-      CURRENT_PLAN = plan || "free";
+      CURRENT_PLAN = (data.plan || "free");
 
       if (CURRENT_PLAN === "pro") {
         if (localStorage.getItem(LS_DB_MODE) === null) localStorage.setItem(LS_DB_MODE, "single");
-
         if (localStorage.getItem(LS_ACTIVE_DB) === null) {
           const primary = DATABASES.find(d => d.is_primary) || DATABASES[0] || null;
           if (primary?.database_id) localStorage.setItem(LS_ACTIVE_DB, primary.database_id);
@@ -1563,11 +1278,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
   function getVisibleGridPosts() {
     return ALL_POSTS
-      .filter(post => {
-        if (post.hide) return false;
-        if (!hasMedia(post)) return false;
-        return matchesFilter(post);
-      })
+      .filter(post => !post.hide && hasMedia(post) && matchesFilter(post))
       .sort((a, b) => {
         if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
         return (b.pinned === true) - (a.pinned === true);
@@ -1608,9 +1319,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       const mode = localStorage.getItem(LS_DB_MODE) || "single";
       const mergeEnabled = CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge");
 
-      if (mergeEnabled) {
-        url += `&db=merge`;
-      } else {
+      if (mergeEnabled) url += `&db=merge`;
+      else {
         const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
         if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
       }
@@ -1621,9 +1331,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       const payload = await res.json();
       const apiProfile = payload.profile;
       const posts = payload.posts;
-      const plan = payload.plan;
-
-      CURRENT_PLAN = plan || "free";
+      CURRENT_PLAN = payload.plan || "free";
       applyPlanToUI();
 
       ALL_POSTS = Array.isArray(posts) ? posts : [];
@@ -1645,7 +1353,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   }
 
-  /* ========================= PROFILE (RENDER + EDIT) ========================= */
   function isPlaceholderUrl(url) {
     return !url || String(url).includes("/icons/profile-placeholder.png");
   }
@@ -1684,7 +1391,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     noteEl.textContent = note;
 
-    // Apply settings after content exists
     syncAllTogglesFromStorage();
     applyVisibilityFromSettings();
 
@@ -1700,24 +1406,47 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     if (picWrap && !picWrap.__bound) {
       picWrap.__bound = true;
-      picWrap.addEventListener("click", async () => {
-        await openProfilePicActions();
-      });
+      picWrap.addEventListener("click", async () => { await openProfilePicActions(); });
     }
 
     if (nameEl && !nameEl.__bound) {
       nameEl.__bound = true;
-      nameEl.addEventListener("click", async () => {
-        await inlineEditText(nameEl, { field: "name", multiline: false });
-      });
+      nameEl.addEventListener("click", async () => { await inlineEditText(nameEl, { field: "name", multiline: false }); });
     }
 
     if (noteEl && !noteEl.__bound) {
       noteEl.__bound = true;
-      noteEl.addEventListener("click", async () => {
-        await inlineEditText(noteEl, { field: "note", multiline: true });
-      });
+      noteEl.addEventListener("click", async () => { await inlineEditText(noteEl, { field: "note", multiline: true }); });
     }
+  }
+
+  function openCenterModal(title, buttons) {
+    const overlay = document.getElementById("centerModal");
+    const titleEl = document.getElementById("modalTitle");
+    const body = document.getElementById("modalBody");
+    if (!overlay || !titleEl || !body) return;
+    titleEl.textContent = title;
+    body.innerHTML = "";
+    (buttons || []).forEach(btn => body.appendChild(btn));
+    overlay.classList.add("show");
+  }
+
+  function closeCenterModal() { document.getElementById("centerModal")?.classList.remove("show"); }
+  window.closeCenterModal = closeCenterModal;
+
+  function makeModalButton(label, sub, onClick) {
+    const b = document.createElement("button");
+    b.className = "modalBtn";
+    b.type = "button";
+    b.textContent = label;
+    if (sub) {
+      const s = document.createElement("span");
+      s.className = "sub";
+      s.textContent = sub;
+      b.appendChild(s);
+    }
+    b.onclick = onClick;
+    return b;
   }
 
   async function openProfilePicActions() {
@@ -1725,21 +1454,13 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     const key = getAdminKey();
     if (!key) {
-      openCenterModal("Profile photo", [
-        makeModalButton("Missing key", "Open widget with ?key=YOUR_ADMIN_SECRET", () => closeCenterModal()),
-      ]);
+      openCenterModal("Profile photo", [makeModalButton("Missing key", "Open widget with ?key=YOUR_ADMIN_SECRET", () => closeCenterModal())]);
       return;
     }
 
     openCenterModal("Profile photo", [
-      makeModalButton("Replace", "Upload a new profile picture", async () => {
-        closeCenterModal();
-        await pickAndUploadProfilePicture();
-      }),
-      makeModalButton("Remove", "Revert to placeholder", async () => {
-        closeCenterModal();
-        await removeProfilePicture();
-      }),
+      makeModalButton("Replace", "Upload a new profile picture", async () => { closeCenterModal(); await pickAndUploadProfilePicture(); }),
+      makeModalButton("Remove", "Revert to placeholder", async () => { closeCenterModal(); await removeProfilePicture(); }),
     ]);
   }
 
@@ -1748,9 +1469,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     const key = getAdminKey();
     if (!key) {
-      openCenterModal("Edit profile", [
-        makeModalButton("Missing key", "Open widget with ?key=YOUR_ADMIN_SECRET", () => closeCenterModal()),
-      ]);
+      openCenterModal("Edit profile", [makeModalButton("Missing key", "Open widget with ?key=YOUR_ADMIN_SECRET", () => closeCenterModal())]);
       return;
     }
 
@@ -1767,9 +1486,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     input.style.boxSizing = "border-box";
     input.style.background = "var(--bg-card)";
     input.style.color = "var(--text-main)";
-
-    if (multiline) input.rows = 3;
-    else input.type = "text";
+    if (multiline) input.rows = 3; else input.type = "text";
 
     const parent = el.parentNode;
     parent.replaceChild(input, el);
@@ -1798,7 +1515,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         if (!res.ok) throw new Error(data.error || "Failed to save");
 
         if (data.profile?.name) document.getElementById("profileName").innerText = data.profile.name;
-
         if (typeof data.profile?.note === "string") {
           const noteEl = document.getElementById("profileNote");
           if (noteEl) noteEl.textContent = data.profile.note;
@@ -1815,14 +1531,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     input.addEventListener("blur", save);
     input.addEventListener("keydown", e => {
-      if (!multiline && e.key === "Enter") {
-        e.preventDefault();
-        input.blur();
-      }
-      if (e.key === "Escape") {
-        e.preventDefault();
-        parent.replaceChild(el, input);
-      }
+      if (!multiline && e.key === "Enter") { e.preventDefault(); input.blur(); }
+      if (e.key === "Escape") { e.preventDefault(); parent.replaceChild(el, input); }
     });
   }
 
@@ -1860,13 +1570,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         const res = await fetch("/api/widget-profile-picture", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            slug,
-            key,
-            filename: file.name,
-            contentType: file.type,
-            fileBase64,
-          }),
+          body: JSON.stringify({ slug, key, filename: file.name, contentType: file.type, fileBase64 }),
         });
 
         const data = await res.json().catch(() => ({}));
@@ -1907,7 +1611,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   }
 
-  /* ========================= HIGHLIGHTS ========================= */
   function renderHighlights(posts) {
     const row = document.getElementById("highlights");
     row.innerHTML = "";
@@ -1921,7 +1624,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     visibleItems.forEach(post => {
       const wrap = document.createElement("div");
       wrap.className = "highlightItem";
-
       const img = document.createElement("img");
       img.src = post.thumbnail || post.attachment?.[0];
       wrap.appendChild(img);
@@ -1944,7 +1646,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
   }
 
-  /* ========================= GRID ========================= */
   function addBadge(card, src, index = 0) {
     const img = document.createElement("img");
     img.src = src;
@@ -2018,7 +1719,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     });
   }
 
-  /* ========================= VIEWER ========================= */
   function openViewer(post) {
     const viewer = document.getElementById("viewer");
     if (!viewer) return;
@@ -2069,7 +1769,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   function closeViewer() {
     const v = document.getElementById("viewer");
     if (!v) return;
-
     v.classList.remove("show");
     setTimeout(() => v.classList.add("hidden"), 250);
   }
@@ -2078,7 +1777,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   window.prevImage = prevImage;
   window.closeViewer = closeViewer;
 
-  /* ========================= INIT ========================= */
   async function startGrid() {
     try {
       setAdminKeyFromUrlIfPresent();
