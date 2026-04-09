@@ -236,70 +236,87 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   color: var(--text-main);
 }
 
-/* ======= Toggle with two label zones (prevents knob overlap) ======= */
-.togglePill {
+/* ========================= Toggle (exact: Show/Hide) ========================= */
+.switch {
   position: relative;
-  width: 92px;
-  height: 30px;
-  border-radius: 999px;
-  background: var(--toggle-track);
-  overflow: hidden;
-  cursor: pointer;
-  user-select: none;
+  display: inline-block;
+  width: 90px;
+  height: 34px;
   flex: 0 0 auto;
 }
 
-.togglePill input {
-  position: absolute;
+.switch input {
   opacity: 0;
-  pointer-events: none;
+  width: 0;
+  height: 0;
 }
 
-.togglePill .knob {
+.slider {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 24px;
-  height: 24px;
+  cursor: pointer;
+  inset: 0;
+  background: #000;
+  transition: .4s;
+  border-radius: 999px;
+}
+
+/* knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  top: 4px;
+  background-color: #fff;
+  transition: .4s;
   border-radius: 50%;
-  background: #fff;
-  transition: transform 0.25s ease;
-  z-index: 3;
 }
 
-/* Two zones, each has centered text */
-.togglePill .zone {
+/* OFF text (Show): FINAL position when OFF */
+.slider:after {
+  content: "Show";
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 62px; /* pill(92) - knob(24) - margins(6) = 62 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.togglePill .zone.left { left: 0; }
-.togglePill .zone.right { right: 0; }
-
-.togglePill .txt {
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.7px;
+  top: 50%;
+  right: 11px;
   color: #fff;
-  line-height: 1;
+  font: 600 16px/1 Arial, sans-serif;
+  letter-spacing: .5px;
+
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  transition: transform .4s ease, opacity .25s ease;
 }
 
-/* SHOW state (unchecked): knob left, text appears on RIGHT zone only */
-.togglePill[data-state="show"] .zone.left  { opacity: 0; }
-.togglePill[data-state="show"] .zone.right { opacity: 1; }
+/* ON text (Hide): hidden by default, comes from left */
+.slider .on-text {
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  color: #fff;
+  font: 600 16px/1 Arial, sans-serif;
+  letter-spacing: .5px;
 
-/* HIDE state (checked): knob right, text appears on LEFT zone only */
-.togglePill[data-state="hide"] .zone.left  { opacity: 1; }
-.togglePill[data-state="hide"] .zone.right { opacity: 0; }
+  opacity: 0;
+  transform: translateY(-50%) translateX(-18px);
+  transition: transform .4s ease, opacity .25s ease;
+}
 
-.togglePill[data-state="hide"] .knob { transform: translateX(62px); } /* 92-24-6 */
+.switch input:checked + .slider:before {
+  transform: translateX(56px);
+}
+
+/* When ON: Show exits right */
+.switch input:checked + .slider:after {
+  opacity: 0;
+  transform: translateY(-50%) translateX(18px);
+}
+
+/* When ON: Hide slides in */
+.switch input:checked + .slider .on-text {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
 
 /* Click rows (Database/Merge/Fonts) show only chosen option */
 .menuClickRow {
@@ -600,41 +617,33 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
           <div class="menuRow">
             <div class="menuLabel">Name</div>
-            <label class="togglePill" id="pillProfileName" data-state="show">
+            <label class="switch">
               <input id="toggleProfileName" type="checkbox" onchange="onToggleChanged('name', this.checked)" />
-              <span class="knob"></span>
-              <span class="zone left"><span class="txt">HIDE</span></span>
-              <span class="zone right"><span class="txt">SHOW</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
           <div class="menuRow">
             <div class="menuLabel">Pic</div>
-            <label class="togglePill" id="pillProfilePic" data-state="show">
+            <label class="switch">
               <input id="toggleProfilePic" type="checkbox" onchange="onToggleChanged('pic', this.checked)" />
-              <span class="knob"></span>
-              <span class="zone left"><span class="txt">HIDE</span></span>
-              <span class="zone right"><span class="txt">SHOW</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
           <div class="menuRow">
             <div class="menuLabel">Stats</div>
-            <label class="togglePill" id="pillProfileStats" data-state="show">
+            <label class="switch">
               <input id="toggleProfileStats" type="checkbox" onchange="onToggleChanged('stats', this.checked)" />
-              <span class="knob"></span>
-              <span class="zone left"><span class="txt">HIDE</span></span>
-              <span class="zone right"><span class="txt">SHOW</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
           <div class="menuRow">
             <div class="menuLabel">Note</div>
-            <label class="togglePill" id="pillProfileNote" data-state="show">
+            <label class="switch">
               <input id="toggleProfileNote" type="checkbox" onchange="onToggleChanged('note', this.checked)" />
-              <span class="knob"></span>
-              <span class="zone left"><span class="txt">HIDE</span></span>
-              <span class="zone right"><span class="txt">SHOW</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
@@ -642,11 +651,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
           <div class="menuRow">
             <div class="menuLabel">Highlights</div>
-            <label class="togglePill" id="pillHighlights" data-state="show">
+            <label class="switch">
               <input id="toggleHighlights" type="checkbox" onchange="onToggleChanged('highlights', this.checked)" />
-              <span class="knob"></span>
-              <span class="zone left"><span class="txt">HIDE</span></span>
-              <span class="zone right"><span class="txt">SHOW</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
@@ -806,7 +813,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     </div>
   </div>
 
-  <script>
+ <script>
   let CURRENT_PLAN = "free";
   let ALL_POSTS = [];
   let FILTER = "__POSTS__";
@@ -866,15 +873,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     localStorage.setItem(key, val ? "true" : "false");
   }
 
-  function setTogglePill(pillId, inputId, hideValue) {
-    const pill = document.getElementById(pillId);
-    const inp = document.getElementById(inputId);
-    if (!pill || !inp) return;
-
-    inp.checked = !!hideValue;
-    pill.dataset.state = hideValue ? "hide" : "show";
-  }
-
   function onToggleChanged(which, checked) {
     if (which === "name") setBoolLS(LS_HIDE_NAME, checked);
     if (which === "pic") setBoolLS(LS_HIDE_PIC, checked);
@@ -890,11 +888,17 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   function syncAllTogglesFromStorage() {
     if (CURRENT_PLAN !== "pro") return;
 
-    setTogglePill("pillProfileName", "toggleProfileName", getBoolLS(LS_HIDE_NAME, false));
-    setTogglePill("pillProfilePic", "toggleProfilePic", getBoolLS(LS_HIDE_PIC, false));
-    setTogglePill("pillProfileStats", "toggleProfileStats", getBoolLS(LS_HIDE_STATS, false));
-    setTogglePill("pillProfileNote", "toggleProfileNote", getBoolLS(LS_HIDE_NOTE, false));
-    setTogglePill("pillHighlights", "toggleHighlights", getBoolLS(LS_HIDE_HIGHLIGHTS, false));
+    const tName = document.getElementById("toggleProfileName");
+    const tPic = document.getElementById("toggleProfilePic");
+    const tStats = document.getElementById("toggleProfileStats");
+    const tNote = document.getElementById("toggleProfileNote");
+    const tHL = document.getElementById("toggleHighlights");
+
+    if (tName) tName.checked = getBoolLS(LS_HIDE_NAME, false);
+    if (tPic) tPic.checked = getBoolLS(LS_HIDE_PIC, false);
+    if (tStats) tStats.checked = getBoolLS(LS_HIDE_STATS, false);
+    if (tNote) tNote.checked = getBoolLS(LS_HIDE_NOTE, false);
+    if (tHL) tHL.checked = getBoolLS(LS_HIDE_HIGHLIGHTS, false);
   }
 
   function applyVisibilityFromSettings() {
