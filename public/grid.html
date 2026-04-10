@@ -887,7 +887,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     </div>
   </div>
 
- <script>
+<script>
   let CURRENT_PLAN = "free";
   let ALL_POSTS = [];
   let FILTER = "__POSTS__";
@@ -897,7 +897,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   const LS_ACTIVE_DB = "activeDatabase";
   const LS_DB_MODE = "dbMode";
 
-  // checked => HIDE, unchecked => SHOW
+  // checked => SHOW, unchecked => HIDE (we store hide flags in LS_*)
   const LS_HIDE_NAME = "hideProfileName";
   const LS_HIDE_PIC = "hideProfilePic";
   const LS_HIDE_STATS = "hideProfileStats";
@@ -948,36 +948,36 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   }
 
   function onToggleChanged(which, checked) {
-  // checked => SHOW, so "hide" = !checked
-  const hideValue = !checked;
+    // checked => SHOW, so "hide" = !checked
+    const hideValue = !checked;
 
-  if (which === "name") setBoolLS(LS_HIDE_NAME, hideValue);
-  if (which === "pic") setBoolLS(LS_HIDE_PIC, hideValue);
-  if (which === "stats") setBoolLS(LS_HIDE_STATS, hideValue);
-  if (which === "note") setBoolLS(LS_HIDE_NOTE, hideValue);
-  if (which === "highlights") setBoolLS(LS_HIDE_HIGHLIGHTS, hideValue);
+    if (which === "name") setBoolLS(LS_HIDE_NAME, hideValue);
+    if (which === "pic") setBoolLS(LS_HIDE_PIC, hideValue);
+    if (which === "stats") setBoolLS(LS_HIDE_STATS, hideValue);
+    if (which === "note") setBoolLS(LS_HIDE_NOTE, hideValue);
+    if (which === "highlights") setBoolLS(LS_HIDE_HIGHLIGHTS, hideValue);
 
-  syncAllTogglesFromStorage();
-  applyVisibilityFromSettings();
-}
+    syncAllTogglesFromStorage();
+    applyVisibilityFromSettings();
+  }
   window.onToggleChanged = onToggleChanged;
 
   function syncAllTogglesFromStorage() {
-  if (CURRENT_PLAN !== "pro") return;
+    if (CURRENT_PLAN !== "pro") return;
 
-  const tName = document.getElementById("toggleProfileName");
-  const tPic = document.getElementById("toggleProfilePic");
-  const tStats = document.getElementById("toggleProfileStats");
-  const tNote = document.getElementById("toggleProfileNote");
-  const tHL = document.getElementById("toggleHighlights");
+    const tName = document.getElementById("toggleProfileName");
+    const tPic = document.getElementById("toggleProfilePic");
+    const tStats = document.getElementById("toggleProfileStats");
+    const tNote = document.getElementById("toggleProfileNote");
+    const tHL = document.getElementById("toggleHighlights");
 
-  // checked => SHOW => checked = !hide
-  if (tName) tName.checked = !getBoolLS(LS_HIDE_NAME, false);
-  if (tPic) tPic.checked = !getBoolLS(LS_HIDE_PIC, false);
-  if (tStats) tStats.checked = !getBoolLS(LS_HIDE_STATS, false);
-  if (tNote) tNote.checked = !getBoolLS(LS_HIDE_NOTE, false);
-  if (tHL) tHL.checked = !getBoolLS(LS_HIDE_HIGHLIGHTS, false);
-}
+    // checked => SHOW => checked = !hide
+    if (tName) tName.checked = !getBoolLS(LS_HIDE_NAME, false);
+    if (tPic) tPic.checked = !getBoolLS(LS_HIDE_PIC, false);
+    if (tStats) tStats.checked = !getBoolLS(LS_HIDE_STATS, false);
+    if (tNote) tNote.checked = !getBoolLS(LS_HIDE_NOTE, false);
+    if (tHL) tHL.checked = !getBoolLS(LS_HIDE_HIGHLIGHTS, false);
+  }
 
   function applyVisibilityFromSettings() {
     if (CURRENT_PLAN !== "pro") return;
@@ -999,13 +999,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     }
 
     if (noteEl) {
-      if (CURRENT_PLAN === "free") {
-        noteEl.classList.add("hidden-section");
-      } else {
-        const hasText = (noteEl.textContent || "").trim().length > 0;
-        const shouldShow = !hideNote && hasText;
-        noteEl.classList.toggle("hidden-section", !shouldShow);
-      }
+      // Pro-only note: show even if it's just placeholder text
+      const shouldShow = !hideNote;
+      noteEl.classList.toggle("hidden-section", !shouldShow);
     }
 
     if (highlightsWrap) highlightsWrap.classList.toggle("hidden-section", hideHL);
@@ -1450,7 +1446,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
     const name = profile.name || "Grid Planner";
     const pic = profile.picture || "/icons/profile-placeholder.png";
-    const note = profile.note || "";
+    const note = String(profile.note || "").trim();
 
     const nameEl = document.getElementById("profileName");
     if (nameEl) nameEl.innerText = name;
@@ -1471,7 +1467,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       return;
     }
 
-    noteEl.textContent = note;
+    // Pro: show placeholder text when empty
+    noteEl.textContent = note || "Add Profile Note Here";
 
     syncAllTogglesFromStorage();
     applyVisibilityFromSettings();
@@ -1500,35 +1497,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       noteEl.__bound = true;
       noteEl.addEventListener("click", async () => { await inlineEditText(noteEl, { field: "note", multiline: true }); });
     }
-  }
-
-  function openCenterModal(title, buttons) {
-    const overlay = document.getElementById("centerModal");
-    const titleEl = document.getElementById("modalTitle");
-    const body = document.getElementById("modalBody");
-    if (!overlay || !titleEl || !body) return;
-    titleEl.textContent = title;
-    body.innerHTML = "";
-    (buttons || []).forEach(btn => body.appendChild(btn));
-    overlay.classList.add("show");
-  }
-
-  function closeCenterModal() { document.getElementById("centerModal")?.classList.remove("show"); }
-  window.closeCenterModal = closeCenterModal;
-
-  function makeModalButton(label, sub, onClick) {
-    const b = document.createElement("button");
-    b.className = "modalBtn";
-    b.type = "button";
-    b.textContent = label;
-    if (sub) {
-      const s = document.createElement("span");
-      s.className = "sub";
-      s.textContent = sub;
-      b.appendChild(s);
-    }
-    b.onclick = onClick;
-    return b;
   }
 
   async function openProfilePicActions() {
@@ -1599,7 +1567,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
         if (data.profile?.name) document.getElementById("profileName").innerText = data.profile.name;
         if (typeof data.profile?.note === "string") {
           const noteEl = document.getElementById("profileNote");
-          if (noteEl) noteEl.textContent = data.profile.note;
+          if (noteEl) noteEl.textContent = data.profile.note || "Add Profile Note Here";
         }
 
         applyVisibilityFromSettings();
@@ -1948,6 +1916,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   });
 
   window.addEventListener("load", startGrid);
-  </script>
+</script>
 </body>
 </html>
