@@ -671,7 +671,14 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
           <div class="menuHeaderRow">
-            <div class="menuTitle">Profile</div>
+           <button
+  class="menuTitle"
+  style="border:none;background:transparent;padding:0;cursor:pointer;text-align:left;"
+  onclick="openEditProfileUnlock()"
+  type="button"
+>
+  Edit Profile
+</button>
             <button class="menuCloseBtn" onclick="closeMenu()" aria-label="Close menu">
               <span class="material-symbols-outlined" style="font-size:20px;">close</span>
             </button>
@@ -905,6 +912,50 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   const LS_HIDE_HIGHLIGHTS = "hideHighlights";
 
   const LS_ADMIN_KEY = "widgetAdminKey";
+  const SS_EDIT_TOKEN = "widgetEditToken_v1";
+
+function setEditToken(t) {
+  if (!t) sessionStorage.removeItem(SS_EDIT_TOKEN);
+  else sessionStorage.setItem(SS_EDIT_TOKEN, String(t));
+}
+
+async function openEditProfileUnlock() {
+  if (CURRENT_PLAN !== "pro") {
+    alert("Pro required to edit profile");
+    return;
+  }
+
+  const slug = getSlug();
+  if (!slug) {
+    alert("Missing slug in URL");
+    return;
+  }
+
+  const password = prompt("Enter your edit password:");
+  if (!password) return;
+
+  try {
+    const res = await fetch("/api/get-posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "unlock_editing", slug, password })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Unlock failed");
+
+    setEditToken(data.edit_token);
+    alert("Unlocked ✅ Now you can tap name/note/photo to edit.");
+    closeMenu();
+  } catch (e) {
+    alert(e.message || "Unlock failed");
+  }
+}
+window.openEditProfileUnlock = openEditProfileUnlock;
+
+function getEditToken() {
+  return sessionStorage.getItem(SS_EDIT_TOKEN) || "";
+}
 
   let DATABASES = [];
 
@@ -1551,9 +1602,15 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       const key = getAdminKey();
 
       try {
-        const body = { slug, key };
-        if (field === "name") body.name = newValue;
-        if (field === "note") body.note = newValue;
+        const edit_token = getEditToken();
+const body = { slug };
+
+// prefer edit_token (password unlock) over key (legacy)
+if (edit_token) body.edit_token = edit_token;
+else body.key = key;
+
+if (field === "name") body.name = newValue;
+if (field === "note") body.note = newValue;
 
         const res = await fetch("/api/widget-profile", {
           method: "POST",
@@ -1600,66 +1657,99 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
     });
   }
 
-  async function pickAndUploadProfilePicture() {
-    const slug = getSlug();
-    const key = getAdminKey();
-    if (!slug) return;
+async function pickAndUploadProfilePicture() {
+  const slug = getSlug();
+  const key = getAdminKey();          // legacy fallback
+  const edit_token = getEditToken();  // new secure token
 
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.click();
+  if (!slug) return;
 
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return;
-
-      try {
-        const fileBase64 = await readFileAsBase64(file);
-
-        const res = await fetch("/api/widget-profile-picture", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slug, key, filename: file.name, contentType: file.type, fileBase64 }),
-        });
-
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || "Upload failed");
-
-        if (data.profile?.picture) {
-          document.getElementById("profileImage").src = data.profile.picture;
-          setProfilePicPlaceholderUI(data.profile.picture);
-        }
-      } catch (e) {
-        console.error("Upload failed:", e);
-        alert(e.message || "Upload failed");
-      }
-    };
+  // If not unlocked, prompt for password first
+  if (!isEditingUnlocked()) {
+    openEditProfileUnlock();
+    return;
   }
 
-  async function removeProfilePicture() {
-    const slug = getSlug();
-    const key = getAdminKey();
-    if (!slug) return;
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.click();
+
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file) return;
 
     try {
-      const res = await fetch("/api/widget-profile", {
+      const fileBase64 = await readFileAsBase64(file);
+
+      const payload = {
+        slug,
+        filename: file.name,
+        contentType: file.type,
+        fileBase64,
+      };
+
+      // Prefer edit_token; fallback to key only if needed
+      if (edit_token) payload.edit_token = edit_token;
+      else payload.key = key;
+
+      const res = await fetch("/api/widget-profile-picture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, key, picture: null }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || "Failed to remove picture");
+      if (!res.ok) throw new Error(data.error || "Upload failed");
 
-      const pic = data.profile?.picture || "/icons/profile-placeholder.png";
-      document.getElementById("profileImage").src = pic;
-      setProfilePicPlaceholderUI(pic);
+      if (data.profile?.picture) {
+        document.getElementById("profileImage").src = data.profile.picture;
+        setProfilePicPlaceholderUI(data.profile.picture);
+      }
     } catch (e) {
-      console.error("Remove picture failed:", e);
-      alert(e.message || "Failed to remove picture");
+      console.error("Upload failed:", e);
+      alert(e.message || "Upload failed");
     }
+  };
+}
+
+  async function removeProfilePicture() {
+  const slug = getSlug();
+  const key = getAdminKey();          // legacy fallback
+  const edit_token = getEditToken();  // new secure token
+
+  if (!slug) return;
+
+  // If not unlocked, prompt for password first
+  if (!isEditingUnlocked()) {
+    openEditProfileUnlock();
+    return;
   }
+
+  try {
+    const payload = { slug, picture: null };
+
+    // Prefer edit_token; fallback to key only if needed
+    if (edit_token) payload.edit_token = edit_token;
+    else payload.key = key;
+
+    const res = await fetch("/api/widget-profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Failed to remove picture");
+
+    const pic = data.profile?.picture || "/icons/profile-placeholder.png";
+    document.getElementById("profileImage").src = pic;
+    setProfilePicPlaceholderUI(pic);
+  } catch (e) {
+    console.error("Remove picture failed:", e);
+    alert(e.message || "Failed to remove picture");
+  }
+}
 
   function renderHighlights(posts) {
     const row = document.getElementById("highlights");
