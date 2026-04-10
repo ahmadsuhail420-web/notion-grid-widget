@@ -3,11 +3,16 @@
  *
  * GET  /api/widgets?token=... -> list widgets for customer
  * POST /api/widgets { token, action:"create", name } -> create new widget with unique slug
+ * POST /api/widgets { token, action:"rename", slug, name } -> rename widget
+ * POST /api/widgets { token, action:"set_edit_password", password } -> set customer-level edit password (bcrypt hash)
+ * POST /api/widgets { token, action:"save_setup", slug, name, password } -> rename + set password in one call
  *
  * Uses Supabase REST with service role key (bypasses RLS).
  *
- * NOTE: Converted to CommonJS export style for Vercel/Node default.
+ * NOTE: CommonJS export style for Vercel/Node default.
  */
+
+const bcrypt = require("bcryptjs");
 
 function makeSlugBase(input) {
   return String(input || "")
@@ -101,6 +106,78 @@ module.exports = async function handler(req, res) {
 
     const action = String(req.body?.action || "").trim();
 
+    // Helper: enforce pro (you asked password-editing is pro-only)
+    function requirePro() {
+      if ((plan || "free") !== "pro") {
+        const err = new Error("Pro required");
+        err.status = 403;
+        throw err;
+      }
+    }
+
+    async function resolveWidgetForCustomer(slug) {
+      const s = String(slug || "").trim();
+      if (!s) {
+        const err = new Error("Missing slug");
+        err.status = 400;
+        throw err;
+      }
+
+      const wUrl =
+        `${supabaseUrl}/rest/v1/widgets?customer_id=eq.${encodeURIComponent(customer.id)}` +
+        `&slug=eq.${encodeURIComponent(s)}` +
+        `&select=id,slug,name,customer_id&limit=1`;
+
+      const wResp = await fetchJson(wUrl, { headers });
+      if (!wResp.res.ok) {
+        const err = new Error("Failed to fetch widget");
+        err.status = 500;
+        throw err;
+      }
+      const w = Array.isArray(wResp.json) ? wResp.json[0] : null;
+      if (!w) {
+        const err = new Error("Widget not found");
+        err.status = 404;
+        throw err;
+      }
+      return w;
+    }
+
+    async function setCustomerPassword(password) {
+      requirePro();
+
+      const pw = String(password || "");
+      if (pw.trim().length < 6) {
+        const err = new Error("Password must be at least 6 characters");
+        err.status = 400;
+        throw err;
+      }
+
+      const hash = await bcrypt.hash(pw, 10);
+      const now = new Date().toISOString();
+
+      // Upsert-like behavior using REST:
+      // - delete existing row (if any)
+      // - insert new row
+      await fetchJson(
+        `${supabaseUrl}/rest/v1/customer_profile_auth?customer_id=eq.${encodeURIComponent(customer.id)}`,
+        { method: "DELETE", headers: { ...headers, Prefer: undefined } }
+      );
+
+      const ins = await fetchJson(`${supabaseUrl}/rest/v1/customer_profile_auth`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify([{ customer_id: customer.id, password_hash: hash, updated_at: now }]),
+      });
+
+      if (!ins.res.ok) {
+        const err = new Error("Failed to save password");
+        err.status = 500;
+        throw err;
+      }
+      return true;
+    }
+
     if (action === "create") {
       const name = String(req.body?.name || "My Grid").trim() || "My Grid";
 
@@ -141,12 +218,77 @@ module.exports = async function handler(req, res) {
       return res.json({ ok: true, plan, widget: created });
     }
 
+    if (action === "rename") {
+      const slug = String(req.body?.slug || "").trim();
+      const name = String(req.body?.name || "").trim();
+
+      if (!slug) return res.status(400).json({ error: "Missing slug" });
+      if (!name) return res.status(400).json({ error: "Missing name" });
+
+      // Ensure widget belongs to customer
+      const widget = await resolveWidgetForCustomer(slug);
+
+      const patchUrl = `${supabaseUrl}/rest/v1/widgets?id=eq.${encodeURIComponent(widget.id)}`;
+      const patchResp = await fetchJson(patchUrl, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ name }),
+      });
+
+      if (!patchResp.res.ok) {
+        console.error("Widget rename failed:", patchResp.res.status, patchResp.text);
+        return res.status(500).json({ error: "Failed to rename widget" });
+      }
+
+      const updated = Array.isArray(patchResp.json) ? patchResp.json[0] : patchResp.json;
+      return res.json({ ok: true, plan, widget: updated });
+    }
+
+    if (action === "set_edit_password") {
+      await setCustomerPassword(req.body?.password);
+      return res.json({ ok: true, plan });
+    }
+
+    if (action === "save_setup") {
+      // One Save button on dashboard: rename widget + set password together
+      const slug = String(req.body?.slug || "").trim();
+      const name = String(req.body?.name || "").trim();
+      const password = req.body?.password;
+
+      if (!slug) return res.status(400).json({ error: "Missing slug" });
+      if (!name) return res.status(400).json({ error: "Missing name" });
+      if (!password) return res.status(400).json({ error: "Missing password" });
+
+      // Ensure widget belongs to customer
+      const widget = await resolveWidgetForCustomer(slug);
+
+      // Rename (if different)
+      if (String(widget.name || "") !== name) {
+        const patchUrl = `${supabaseUrl}/rest/v1/widgets?id=eq.${encodeURIComponent(widget.id)}`;
+        const patchResp = await fetchJson(patchUrl, {
+          method: "PATCH",
+          headers,
+          body: JSON.stringify({ name }),
+        });
+        if (!patchResp.res.ok) {
+          console.error("Widget rename failed:", patchResp.res.status, patchResp.text);
+          return res.status(500).json({ error: "Failed to rename widget" });
+        }
+      }
+
+      // Set customer password (pro-only)
+      await setCustomerPassword(password);
+
+      return res.json({ ok: true, plan });
+    }
+
     return res.status(400).json({
       error: "Invalid action",
-      allowed_actions: ["create"],
+      allowed_actions: ["create", "rename", "set_edit_password", "save_setup"],
     });
   } catch (err) {
-    console.error("widgets api error:", err);
-    return res.status(500).json({ error: "Server error" });
+    const status = err?.status || 500;
+    if (status >= 500) console.error("widgets api error:", err);
+    return res.status(status).json({ error: err.message || "Server error" });
   }
 };
