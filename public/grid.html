@@ -210,7 +210,20 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
 .menuTitle {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--toggle-text);
+  border: none;
+  background: #0d0d0d;
+  border-radius: 12px; /* slightly rounded */
+  cursor: pointer;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.menuTitle:active { transform: scale(0.98); }
+
+body[data-theme="dark"] .menuTitle {
+  background: #ffffff;
+  color: #0d0d0d;
 }
 
 .menuCloseBtn {
@@ -671,13 +684,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
           <div class="menuHeaderRow">
-           <button
-  class="menuTitle"
-  style="border:none;background:transparent;padding:0;cursor:pointer;text-align:left;"
-  onclick="openEditProfileUnlock()"
-  type="button"
->
-  Edit Profile
+        <button class="menuTitle" type="button" onclick="openEditProfileUnlock()">
+  Edit
 </button>
             <button class="menuCloseBtn" onclick="closeMenu()" aria-label="Close menu">
               <span class="material-symbols-outlined" style="font-size:20px;">close</span>
