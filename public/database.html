@@ -501,8 +501,8 @@ button.primary-btn {
     CURRENT_PLAN = data.plan || "free";
 
     // Always show embed URL for selected widget
-    const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
-    renderEmbedUrl(embedUrl);
+    const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}&key=${encodeURIComponent(token)}`;
+renderEmbedUrl(embedUrl);
 
     if (!DATABASES.length) {
       dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
