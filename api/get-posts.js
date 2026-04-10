@@ -1,21 +1,133 @@
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+
+function randomTokenHex(len = 48) {
+  return crypto.randomBytes(len / 2).toString("hex");
+}
+
+async function safeJson(res) {
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceKey) {
+    return res.status(500).json({ error: "Missing Supabase env vars" });
+  }
+
+  const headers = {
+    apikey: serviceKey,
+    Authorization: `Bearer ${serviceKey}`,
+    "Content-Type": "application/json",
+  };
+
   try {
-    const { slug, db } = req.query;
-    if (!slug) return res.status(400).json({ profile: null, posts: [] });
+    // ============================
+    // POST: Unlock editing (merged)
+    // ============================
+    if (req.method === "POST") {
+      const body = (req.body && typeof req.body === "object") ? req.body : {};
+      const action = String(body.action || "").trim();
 
-    const supabaseUrl = process.env.SUPABASE_URL;
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (action !== "unlock_editing") {
+        return res.status(400).json({ error: "Invalid action", allowed_actions: ["unlock_editing"] });
+      }
 
-    if (!supabaseUrl || !serviceKey) {
-      return res.status(500).json({ error: "Missing Supabase env vars" });
+      const slug = String(body.slug || "").trim();
+      const password = String(body.password || "");
+
+      if (!slug) return res.status(400).json({ error: "Missing slug" });
+      if (!password) return res.status(400).json({ error: "Missing password" });
+
+      // 1) Resolve widget -> customer_id
+      const widgetRes = await fetch(
+        `${supabaseUrl}/rest/v1/widgets?slug=eq.${encodeURIComponent(slug)}&select=id,customer_id,slug,name&limit=1`,
+        { headers }
+      );
+      if (!widgetRes.ok) {
+        return res.status(500).json({ error: "Failed to fetch widget" });
+      }
+      const widgets = await safeJson(widgetRes);
+      const widget = Array.isArray(widgets) ? widgets[0] : null;
+      if (!widget) return res.status(404).json({ error: "Widget not found" });
+
+      // 2) Customer plan (must be active + pro)
+      const customerRes = await fetch(
+        `${supabaseUrl}/rest/v1/customers?id=eq.${encodeURIComponent(widget.customer_id)}` +
+          `&status=eq.active&select=id,plan&limit=1`,
+        { headers }
+      );
+      if (!customerRes.ok) return res.status(403).json({ error: "Customer not active" });
+
+      const customers = await safeJson(customerRes);
+      const customer = Array.isArray(customers) ? customers[0] : null;
+      if (!customer) return res.status(403).json({ error: "Customer not active" });
+
+      const plan = (customer.plan || "free") === "pro" ? "pro" : "free";
+      if (plan !== "pro") return res.status(403).json({ error: "Pro required" });
+
+      // 3) Load password hash
+      const authRes = await fetch(
+        `${supabaseUrl}/rest/v1/customer_profile_auth?customer_id=eq.${encodeURIComponent(customer.id)}` +
+          `&select=password_hash&limit=1`,
+        { headers }
+      );
+      if (!authRes.ok) return res.status(500).json({ error: "Failed to load password" });
+
+      const authRows = await safeJson(authRes);
+      const auth = Array.isArray(authRows) ? authRows[0] : null;
+      if (!auth?.password_hash) return res.status(403).json({ error: "Password not set" });
+
+      const ok = await bcrypt.compare(password, String(auth.password_hash));
+      if (!ok) return res.status(401).json({ error: "Invalid password" });
+
+      // 4) Create session token (1 hour)
+      const editToken = randomTokenHex(48);
+      const nowIso = new Date().toISOString();
+      const expiresAtIso = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+      const insRes = await fetch(`${supabaseUrl}/rest/v1/customer_edit_sessions`, {
+        method: "POST",
+        headers: {
+          ...headers,
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify([
+          {
+            token: editToken,
+            customer_id: customer.id,
+            created_at: nowIso,
+            expires_at: expiresAtIso,
+          },
+        ]),
+      });
+
+      if (!insRes.ok) {
+        const text = await insRes.text().catch(() => "");
+        console.error("Session insert failed:", insRes.status, text);
+        return res.status(500).json({ error: "Failed to create session" });
+      }
+
+      return res.status(200).json({ ok: true, edit_token: editToken, expires_at: expiresAtIso });
     }
 
-    const headers = {
-      apikey: serviceKey,
-      Authorization: `Bearer ${serviceKey}`,
-    };
+    // ============================
+    // GET: Existing behavior
+    // ============================
+    if (req.method !== "GET") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+
+    const { slug, db } = req.query;
+    if (!slug) return res.status(400).json({ profile: null, posts: [] });
 
     // 1) Resolve widget
     const widgetRes = await fetch(
