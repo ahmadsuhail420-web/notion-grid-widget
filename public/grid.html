@@ -339,10 +339,11 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
 
 /* OFF text (Show): FINAL position when OFF */
 .slider:after {
-  content: "Hide";
+  content: "Show";
   position: absolute;
   top: 50%;
-  right: 9px;
+  left: 9px;
+  right: auto;
   color: var(--toggle-text);
   font: 600 11px/1 Arial, sans-serif;
   letter-spacing: .5px;
@@ -356,7 +357,8 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
 .slider .on-text {
   position: absolute;
   top: 50%;
-  left: 7px;
+  left: auto;
+  right: 7px
   color: var(--toggle-text);
   font: 600 11px/1 Arial, sans-serif;
   letter-spacing: .5px;
@@ -373,7 +375,7 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
 /* When ON: Show exits right */
 .switch input:checked + .slider:after {
   opacity: 0;
-  transform: translateY(-50%) translateX(18px);
+  transform: translateY(-50%) translateX(-18px);
 }
 
 /* When ON: Hide slides in */
@@ -683,7 +685,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <div class="menuLabel">Name</div>
             <label class="switch">
               <input id="toggleProfileName" type="checkbox" onchange="onToggleChanged('name', this.checked)" />
-              <span class="slider"><span class="on-text">Show</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
@@ -691,7 +693,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <div class="menuLabel">Pic</div>
             <label class="switch">
               <input id="toggleProfilePic" type="checkbox" onchange="onToggleChanged('pic', this.checked)" />
-              <span class="slider"><span class="on-text">Show</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
@@ -699,7 +701,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <div class="menuLabel">Stats</div>
             <label class="switch">
               <input id="toggleProfileStats" type="checkbox" onchange="onToggleChanged('stats', this.checked)" />
-              <span class="slider"><span class="on-text">Show</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
@@ -707,7 +709,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <div class="menuLabel">Note</div>
             <label class="switch">
               <input id="toggleProfileNote" type="checkbox" onchange="onToggleChanged('note', this.checked)" />
-              <span class="slider"><span class="on-text">Show</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
@@ -715,7 +717,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
             <div class="menuLabel">Highlights</div>
             <label class="switch">
               <input id="toggleHighlights" type="checkbox" onchange="onToggleChanged('highlights', this.checked)" />
-              <span class="slider"><span class="on-text">Show</span></span>
+              <span class="slider"><span class="on-text">Hide</span></span>
             </label>
           </div>
 
@@ -948,32 +950,36 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   }
 
   function onToggleChanged(which, checked) {
-    if (which === "name") setBoolLS(LS_HIDE_NAME, checked);
-    if (which === "pic") setBoolLS(LS_HIDE_PIC, checked);
-    if (which === "stats") setBoolLS(LS_HIDE_STATS, checked);
-    if (which === "note") setBoolLS(LS_HIDE_NOTE, checked);
-    if (which === "highlights") setBoolLS(LS_HIDE_HIGHLIGHTS, checked);
+  // checked => SHOW, so "hide" = !checked
+  const hideValue = !checked;
 
-    syncAllTogglesFromStorage();
-    applyVisibilityFromSettings();
-  }
+  if (which === "name") setBoolLS(LS_HIDE_NAME, hideValue);
+  if (which === "pic") setBoolLS(LS_HIDE_PIC, hideValue);
+  if (which === "stats") setBoolLS(LS_HIDE_STATS, hideValue);
+  if (which === "note") setBoolLS(LS_HIDE_NOTE, hideValue);
+  if (which === "highlights") setBoolLS(LS_HIDE_HIGHLIGHTS, hideValue);
+
+  syncAllTogglesFromStorage();
+  applyVisibilityFromSettings();
+}
   window.onToggleChanged = onToggleChanged;
 
   function syncAllTogglesFromStorage() {
-    if (CURRENT_PLAN !== "pro") return;
+  if (CURRENT_PLAN !== "pro") return;
 
-    const tName = document.getElementById("toggleProfileName");
-    const tPic = document.getElementById("toggleProfilePic");
-    const tStats = document.getElementById("toggleProfileStats");
-    const tNote = document.getElementById("toggleProfileNote");
-    const tHL = document.getElementById("toggleHighlights");
+  const tName = document.getElementById("toggleProfileName");
+  const tPic = document.getElementById("toggleProfilePic");
+  const tStats = document.getElementById("toggleProfileStats");
+  const tNote = document.getElementById("toggleProfileNote");
+  const tHL = document.getElementById("toggleHighlights");
 
-    if (tName) tName.checked = getBoolLS(LS_HIDE_NAME, false);
-    if (tPic) tPic.checked = getBoolLS(LS_HIDE_PIC, false);
-    if (tStats) tStats.checked = getBoolLS(LS_HIDE_STATS, false);
-    if (tNote) tNote.checked = getBoolLS(LS_HIDE_NOTE, false);
-    if (tHL) tHL.checked = getBoolLS(LS_HIDE_HIGHLIGHTS, false);
-  }
+  // checked => SHOW => checked = !hide
+  if (tName) tName.checked = !getBoolLS(LS_HIDE_NAME, false);
+  if (tPic) tPic.checked = !getBoolLS(LS_HIDE_PIC, false);
+  if (tStats) tStats.checked = !getBoolLS(LS_HIDE_STATS, false);
+  if (tNote) tNote.checked = !getBoolLS(LS_HIDE_NOTE, false);
+  if (tHL) tHL.checked = !getBoolLS(LS_HIDE_HIGHLIGHTS, false);
+}
 
   function applyVisibilityFromSettings() {
     if (CURRENT_PLAN !== "pro") return;
