@@ -712,7 +712,7 @@
     const res = await fetch(API, {
       method: "POST",
       headers: { "content-type": "application/json", "x-admin-token": getToken() },
-      body: JSON.stringify({ action: "save", page: "home", data })
+      body: JSON.stringify({ action: "save", page: "home", data })  // <-- ADD page:"home"
     });
     if (!res.ok) throw new Error((await safeText(res)) || "Failed to save.");
     return res.json();
