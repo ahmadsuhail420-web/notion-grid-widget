@@ -266,6 +266,33 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   opacity: 0.75;
 }
 
+/* Right-side value (like a control, but text) */
+.menuValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  cursor: pointer;         /* whole right side feels clickable */
+  user-select: none;
+}
+
+.menuValueText {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--text-main);
+  max-width: 110px;        /* adjust if needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+.menuValueChevron {
+  font-size: 18px;
+  opacity: 0.75;
+  color: var(--text-main);
+}
+
 /* ========================= Toggle (exact: Show/Hide) ========================= */
 .switch {
   position: relative;
@@ -689,30 +716,30 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
           <div class="menuDivider"></div>
 
-          <div class="menuClickRow twoCol" onclick="openDatabasePicker()">
+        <div class="menuRow" onclick="openDatabasePicker()" style="cursor:pointer;">
   <div class="menuLabel">Database</div>
 
-  <div class="rightSide">
-    <div id="dbChosenOnly" class="chosen">Choose database</div>
-    <span class="material-symbols-outlined chevron">chevron_right</span>
+  <div class="menuValue">
+    <div id="dbChosenOnly" class="menuValueText">Choose database</div>
+    <span class="material-symbols-outlined menuValueChevron">chevron_right</span>
   </div>
 </div>
 
-        <div class="menuClickRow twoCol" onclick="openMergePicker()">
+      <div class="menuRow" onclick="openMergePicker()" style="cursor:pointer;">
   <div class="menuLabel">Merge</div>
 
-  <div class="rightSide">
-    <div id="mergeChosenOnly" class="chosen">Single</div>
-    <span class="material-symbols-outlined chevron">chevron_right</span>
+  <div class="menuValue">
+    <div id="mergeChosenOnly" class="menuValueText">Single</div>
+    <span class="material-symbols-outlined menuValueChevron">chevron_right</span>
   </div>
 </div>
 
-       <div class="menuClickRow twoCol" onclick="openFontPicker()">
+     <div class="menuRow" onclick="openFontPicker()" style="cursor:pointer;">
   <div class="menuLabel">Font</div>
 
-  <div class="rightSide">
-    <div id="fontChosenOnly" class="chosen">System</div>
-    <span class="material-symbols-outlined chevron">chevron_right</span>
+  <div class="menuValue">
+    <div id="fontChosenOnly" class="menuValueText">System</div>
+    <span class="material-symbols-outlined menuValueChevron">chevron_right</span>
   </div>
 </div>
 
