@@ -27,6 +27,9 @@
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 
   --toggle-track: #1b1b1b;
+  --toggle-bg: #000;
+  --toggle-knob: #fff;
+  --toggle-text: #fff;
 }
 
 body[data-theme="dark"] {
@@ -41,6 +44,10 @@ body[data-theme="dark"] {
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 
   --toggle-track: #111;
+  
+  --toggle-bg: #fff;
+  --toggle-knob: #000;
+  --toggle-text: #000;
 }
 
 html, body { height: 100%; }
@@ -312,7 +319,7 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: #000;
+  background: var(--toggle-bg);
   transition: .4s;
   border-radius: 999px;
 }
@@ -325,7 +332,7 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   width: 16px;
   left: 4px;
   top: 4px;
-  background-color: #fff;
+  background-color: var(--toggle-knob);
   transition: .4s;
   border-radius: 50%;
 }
@@ -336,7 +343,7 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   position: absolute;
   top: 50%;
   right: 9px;
-  color: #fff;
+  color: var(--toggle-text);
   font: 600 11px/1 Arial, sans-serif;
   letter-spacing: .5px;
 
@@ -350,7 +357,7 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   position: absolute;
   top: 50%;
   left: 7px;
-  color: #fff;
+  color: var(--toggle-text);
   font: 600 11px/1 Arial, sans-serif;
   letter-spacing: .5px;
 
@@ -703,8 +710,6 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
               <span class="slider"><span class="on-text">Show</span></span>
             </label>
           </div>
-
-          <div class="menuDivider"></div>
 
           <div class="menuRow">
             <div class="menuLabel">Highlights</div>
