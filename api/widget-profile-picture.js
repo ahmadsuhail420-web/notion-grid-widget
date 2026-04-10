@@ -67,7 +67,6 @@ module.exports = async function handler(req, res) {
 
     const { slug, key, filename, contentType, fileBase64 } = req.body || {};
     if (!slug) return res.status(400).json({ error: "Missing slug" });
-    if (!key) return res.status(401).json({ error: "Missing key" });
     if (!fileBase64) return res.status(400).json({ error: "Missing fileBase64" });
 
     // 1) Resolve widget
