@@ -236,6 +236,36 @@ body[data-theme="dark"] .menu { box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
   color: var(--text-main);
 }
 
+/* menuClickRow as 2-column: label left, chosen value right */
+.menuClickRow.twoCol {
+  justify-content: space-between;
+}
+
+.menuClickRow.twoCol .rightSide {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.menuClickRow.twoCol .menuLabel {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.menuClickRow.twoCol .chosen {
+  max-width: 105px; /* tweak if you need more room */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuClickRow.twoCol .chevron {
+  font-size: 18px;
+  opacity: 0.75;
+}
+
 /* ========================= Toggle (exact: Show/Hide) ========================= */
 .switch {
   position: relative;
@@ -659,20 +689,32 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
           <div class="menuDivider"></div>
 
-          <div class="menuClickRow" onclick="openDatabasePicker()">
-            <div id="dbChosenOnly" class="chosen">Choose database</div>
-            <span class="material-symbols-outlined" style="font-size:18px; opacity:.75;">chevron_right</span>
-          </div>
+          <div class="menuClickRow twoCol" onclick="openDatabasePicker()">
+  <div class="menuLabel">Database</div>
 
-          <div class="menuClickRow" onclick="openMergePicker()">
-            <div id="mergeChosenOnly" class="chosen">Single</div>
-            <span class="material-symbols-outlined" style="font-size:18px; opacity:.75;">chevron_right</span>
-          </div>
+  <div class="rightSide">
+    <div id="dbChosenOnly" class="chosen">Choose database</div>
+    <span class="material-symbols-outlined chevron">chevron_right</span>
+  </div>
+</div>
 
-          <div class="menuClickRow" onclick="openFontPicker()">
-            <div id="fontChosenOnly" class="chosen">System</div>
-            <span class="material-symbols-outlined" style="font-size:18px; opacity:.75;">chevron_right</span>
-          </div>
+        <div class="menuClickRow twoCol" onclick="openMergePicker()">
+  <div class="menuLabel">Merge</div>
+
+  <div class="rightSide">
+    <div id="mergeChosenOnly" class="chosen">Single</div>
+    <span class="material-symbols-outlined chevron">chevron_right</span>
+  </div>
+</div>
+
+       <div class="menuClickRow twoCol" onclick="openFontPicker()">
+  <div class="menuLabel">Font</div>
+
+  <div class="rightSide">
+    <div id="fontChosenOnly" class="chosen">System</div>
+    <span class="material-symbols-outlined chevron">chevron_right</span>
+  </div>
+</div>
 
           <div class="menuSection">
             <div class="menuLabel themeTitle">Theme</div>
