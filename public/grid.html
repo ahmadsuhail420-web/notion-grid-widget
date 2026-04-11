@@ -1674,6 +1674,145 @@ async function removeProfilePicture() {
     syncUnderlineToActiveTab();
   });
 
+function isMultiMedia(post) {
+  return Array.isArray(post.attachment) && post.attachment.length > 1;
+}
+
+function formatDateForHover(post) {
+  const raw = post?.publishDate || "";
+  if (!raw) return "";
+  const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return "";
+  const [, yyyy, mm, dd] = m;
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const mon = monthNames[Number(mm) - 1] || "";
+  return `${dd} ${mon} ${yyyy.slice(-2)}`;
+}
+
+function syncUnderlineToActiveTab() {
+  const activeTab = document.querySelector(".tabItem.active");
+  if (!activeTab) return;
+  requestAnimationFrame(() => moveUnderline(activeTab));
+  setTimeout(() => moveUnderline(activeTab), 100);
+}
+
+function moveUnderline(tab) {
+  const underline = document.getElementById("slidingUnderline");
+  const tabs = document.querySelector(".tabs");
+  if (!underline || !tabs || !tab) return;
+  const tabRect = tab.getBoundingClientRect();
+  const tabsRect = tabs.getBoundingClientRect();
+  const underlineWidth = underline.getBoundingClientRect().width || underline.offsetWidth || 0;
+  const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underlineWidth / 2;
+  underline.style.transform = `translateX(${x}px)`;
+}
+
+function setFilter(type, el) {
+  FILTER = type;
+  document.querySelectorAll(".tabItem").forEach(tab => {
+    tab.classList.remove("active");
+    const img = tab.querySelector("img");
+    if (img) img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
+  });
+  el.classList.add("active");
+  syncUnderlineToActiveTab();
+  renderGrid();
+  updateStats();
+}
+window.setFilter = setFilter;
+
+// Now also restore the database picker and font/merge picker handlers:
+function openDatabasePicker() {
+  if (CURRENT_PLAN !== "pro") return;
+  if (!Array.isArray(DATABASES) || DATABASES.length === 0) {
+    openCenterModal("Database", [makeModalButton("No databases", "Connect a Notion database first.", () => closeCenterModal())]);
+    return;
+  }
+  const buttons = DATABASES.map(db => makeModalButton(db.label, db.is_primary ? "Primary" : "", async () => {
+    localStorage.setItem(LS_DB_MODE, "single");
+    localStorage.setItem(LS_ACTIVE_DB, db.database_id);
+    syncDbChosenOnly();
+    syncMergeChosenOnly();
+    updateModePill();
+    closeCenterModal();
+    closeMenu();
+    await animateDatabaseChange(db.database_id);
+  }));
+  openCenterModal("Choose database", buttons);
+}
+window.openDatabasePicker = openDatabasePicker;
+
+async function animateDatabaseChange(dbId) {
+  const container = document.querySelector(".gridWrap");
+  if (!container) return;
+  container.style.opacity = 0;
+  container.style.transform = "translateY(10px)";
+  container.style.transition = "all 0.3s ease";
+  await loadPosts(dbId);
+  setTimeout(() => {
+    container.style.opacity = 1;
+    container.style.transform = "translateY(0)";
+  }, 50);
+}
+
+function openMergePicker() {
+  if (CURRENT_PLAN !== "pro") return;
+  const buttons = [
+    makeModalButton("Single", "Use one database only.", async () => {
+      localStorage.setItem(LS_DB_MODE, "single");
+      syncMergeChosenOnly();
+      updateModePill();
+      closeCenterModal();
+      closeMenu();
+      const activeDb = localStorage.getItem(LS_ACTIVE_DB) || DATABASES.find(d => d.is_primary)?.database_id || DATABASES[0]?.database_id || null;
+      if (activeDb) {
+        localStorage.setItem(LS_ACTIVE_DB, activeDb);
+        syncDbChosenOnly();
+        await animateDatabaseChange(activeDb);
+      }
+    }),
+    makeModalButton("Merge", "Combine posts from all connected databases.", async () => {
+      localStorage.setItem(LS_DB_MODE, "merge");
+      syncMergeChosenOnly();
+      updateModePill();
+      closeCenterModal();
+      closeMenu();
+      await animateDatabaseChange("merge");
+    }),
+  ];
+  openCenterModal("Merge mode", buttons);
+}
+window.openMergePicker = openMergePicker;
+
+function openFontPicker() {
+  if (CURRENT_PLAN !== "pro") return;
+  const buttons = [
+    makeModalButton("System", "", () => { setFont("system"); closeCenterModal(); closeMenu(); }),
+    makeModalButton("Inter", "", () => { setFont("inter"); closeCenterModal(); closeMenu(); }),
+    makeModalButton("Poppins", "", () => { setFont("poppins"); closeCenterModal(); closeMenu(); }),
+    makeModalButton("Manrope", "", () => { setFont("manrope"); closeCenterModal(); closeMenu(); }),
+    makeModalButton("Montserrat", "", () => { setFont("montserrat"); closeCenterModal(); closeMenu(); }),
+    makeModalButton("Times", "", () => { setFont("times"); closeCenterModal(); closeMenu(); }),
+  ];
+  openCenterModal("Choose font", buttons);
+}
+window.openFontPicker = openFontPicker;
+
+function makeModalButton(label, sub, onClick) {
+  const b = document.createElement("button");
+  b.className = "modalBtn";
+  b.type = "button";
+  b.textContent = label;
+  if (sub) {
+    const s = document.createElement("span");
+    s.className = "sub";
+    s.textContent = sub;
+    b.appendChild(s);
+  }
+  b.onclick = onClick;
+  return b;
+}
+
   window.addEventListener("load", startGrid);
 </script>
 </body>
