@@ -1869,6 +1869,36 @@ function makeModalButton(label, sub, onClick) {
   b.onclick = onClick;
   return b;
 }
+   function updateStats() {
+  const stats = computeStatsFromGrid(getVisibleGridPosts());
+  document.getElementById("statPosts").innerText = stats.total;
+  document.getElementById("statScheduled").innerText = stats.scheduled;
+  document.getElementById("statPublished").innerText = stats.published;
+}
+function getVisibleGridPosts() {
+  return ALL_POSTS
+    .filter(post => !post.hide && hasMedia(post) && matchesFilter(post))
+    .sort((a, b) => {
+      if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
+      return (b.pinned === true) - (a.pinned === true);
+    });
+}
+function computeStatsFromGrid(posts) {
+  const today = new Date().toISOString().split("T")[0];
+  return {
+    total: posts.length,
+    scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
+    published: posts.filter(p => p.publishDate && p.publishDate <= today).length,
+  };
+}
+function matchesFilter(post) {
+  const types = Array.isArray(post.type) ? post.type : [];
+  if (FILTER === "__POSTS__") return types.length === 0;
+  return types.includes(FILTER);
+}
+function hasMedia(post) {
+  return (Array.isArray(post.attachment) && post.attachment.length > 0) || post.thumbnail;
+}
 
   window.addEventListener("load", startGrid);
 </script>
