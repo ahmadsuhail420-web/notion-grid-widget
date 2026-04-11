@@ -909,30 +909,35 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
       <span class="footerBrand">Alif Designs</span>
     </div>
   </div>
+  
+ <script>
+let CURRENT_PLAN = "free";
+let ALL_POSTS = [];
+let FILTER = "__POSTS__";
+let currentSlide = 0;
+let currentMedia = [];
 
-<script>
-  let CURRENT_PLAN = "free";
-  let ALL_POSTS = [];
-  let FILTER = "__POSTS__";
-  let currentSlide = 0;
-  let currentMedia = [];
+const LS_ACTIVE_DB = "activeDatabase";
+const LS_DB_MODE = "dbMode";
 
-  const LS_ACTIVE_DB = "activeDatabase";
-  const LS_DB_MODE = "dbMode";
+// checked => SHOW, unchecked => HIDE (we store hide flags in LS_*)
+const LS_HIDE_NAME = "hideProfileName";
+const LS_HIDE_PIC = "hideProfilePic";
+const LS_HIDE_STATS = "hideProfileStats";
+const LS_HIDE_NOTE = "hideProfileNote";
+const LS_HIDE_HIGHLIGHTS = "hideHighlights";
 
-  // checked => SHOW, unchecked => HIDE (we store hide flags in LS_*)
-  const LS_HIDE_NAME = "hideProfileName";
-  const LS_HIDE_PIC = "hideProfilePic";
-  const LS_HIDE_STATS = "hideProfileStats";
-  const LS_HIDE_NOTE = "hideProfileNote";
-  const LS_HIDE_HIGHLIGHTS = "hideHighlights";
+const SS_EDIT_TOKEN = "widgetEditToken_v1";
 
-  const LS_ADMIN_KEY = "widgetAdminKey";
-  const SS_EDIT_TOKEN = "widgetEditToken_v1";
+// --- EDIT SESSION MANAGEMENT ---
 
 function setEditToken(t) {
   if (!t) sessionStorage.removeItem(SS_EDIT_TOKEN);
   else sessionStorage.setItem(SS_EDIT_TOKEN, String(t));
+}
+
+function getEditToken() {
+  return sessionStorage.getItem(SS_EDIT_TOKEN) || "";
 }
 
 async function openEditProfileUnlock() {
@@ -969,716 +974,377 @@ async function openEditProfileUnlock() {
 }
 window.openEditProfileUnlock = openEditProfileUnlock;
 
-function getEditToken() {
-  return sessionStorage.getItem(SS_EDIT_TOKEN) || "";
+// --- END EDIT SESSION MANAGEMENT ---
+
+let DATABASES = [];
+
+function planAllows(plan, feature) {
+  const isPro = plan === "pro";
+  if (feature === "viewer_modal") return isPro;
+  if (feature === "pinned") return isPro;
+  if (feature === "multi_db_switcher") return isPro;
+  if (feature === "unlimited_highlights") return isPro;
+  if (feature === "profile_edit") return isPro;
+  return false;
 }
 
-  let DATABASES = [];
+function getSlug() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("slug");
+}
 
-  function planAllows(plan, feature) {
-    const isPro = plan === "pro";
-    if (feature === "viewer_modal") return isPro;
-    if (feature === "pinned") return isPro;
-    if (feature === "multi_db_switcher") return isPro;
-    if (feature === "unlimited_highlights") return isPro;
-    if (feature === "profile_edit") return isPro;
-    return false;
+function getBoolLS(key, def = false) {
+  const v = localStorage.getItem(key);
+  if (v === null) return def;
+  return v === "true";
+}
+
+function setBoolLS(key, val) {
+  localStorage.setItem(key, val ? "true" : "false");
+}
+
+function onToggleChanged(which, checked) {
+  // checked => SHOW, so "hide" = !checked
+  const hideValue = !checked;
+
+  if (which === "name") setBoolLS(LS_HIDE_NAME, hideValue);
+  if (which === "pic") setBoolLS(LS_HIDE_PIC, hideValue);
+  if (which === "stats") setBoolLS(LS_HIDE_STATS, hideValue);
+  if (which === "note") setBoolLS(LS_HIDE_NOTE, hideValue);
+  if (which === "highlights") setBoolLS(LS_HIDE_HIGHLIGHTS, hideValue);
+
+  syncAllTogglesFromStorage();
+  applyVisibilityFromSettings();
+}
+window.onToggleChanged = onToggleChanged;
+
+function syncAllTogglesFromStorage() {
+  if (CURRENT_PLAN !== "pro") return;
+
+  const tName = document.getElementById("toggleProfileName");
+  const tPic = document.getElementById("toggleProfilePic");
+  const tStats = document.getElementById("toggleProfileStats");
+  const tNote = document.getElementById("toggleProfileNote");
+  const tHL = document.getElementById("toggleHighlights");
+
+  // checked => SHOW => checked = !hide
+  if (tName) tName.checked = !getBoolLS(LS_HIDE_NAME, false);
+  if (tPic) tPic.checked = !getBoolLS(LS_HIDE_PIC, false);
+  if (tStats) tStats.checked = !getBoolLS(LS_HIDE_STATS, false);
+  if (tNote) tNote.checked = !getBoolLS(LS_HIDE_NOTE, false);
+  if (tHL) tHL.checked = !getBoolLS(LS_HIDE_HIGHLIGHTS, false);
+}
+
+function applyVisibilityFromSettings() {
+  if (CURRENT_PLAN !== "pro") return;
+
+  const hideName = getBoolLS(LS_HIDE_NAME, false);
+  const hidePic = getBoolLS(LS_HIDE_PIC, false);
+  const hideStats = getBoolLS(LS_HIDE_STATS, false);
+  const hideNote = getBoolLS(LS_HIDE_NOTE, false);
+  const hideHL = getBoolLS(LS_HIDE_HIGHLIGHTS, false);
+
+  const header = document.getElementById("profileHeader");
+  const noteEl = document.getElementById("profileNote");
+  const highlightsWrap = document.getElementById("highlightsWrap");
+
+  if (header) {
+    header.classList.toggle("hide-name", hideName);
+    header.classList.toggle("hide-pic", hidePic);
+    header.classList.toggle("no-stats", hideStats);
   }
 
-  function getSlug() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("slug");
+  if (noteEl) {
+    // Pro-only note: show even if it's just placeholder text
+    const shouldShow = !hideNote;
+    noteEl.classList.toggle("hidden-section", !shouldShow);
   }
 
-  function getKeyFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("key");
-  }
+  if (highlightsWrap) highlightsWrap.classList.toggle("hidden-section", hideHL);
+}
 
-  function setAdminKeyFromUrlIfPresent() {
-    const urlKey = getKeyFromUrl();
-    if (urlKey) localStorage.setItem(LS_ADMIN_KEY, urlKey);
-  }
+function toggleMenu() { document.getElementById("menu").classList.toggle("hidden"); }
+function closeMenu() { document.getElementById("menu")?.classList.add("hidden"); }
+window.toggleMenu = toggleMenu;
+window.closeMenu = closeMenu;
 
-  function getAdminKey() {
-    return localStorage.getItem(LS_ADMIN_KEY) || "";
-  }
+(function initThemeOnLoad() {
+  const theme = localStorage.getItem("theme") || "default";
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-  function getBoolLS(key, def = false) {
-    const v = localStorage.getItem(key);
-    if (v === null) return def;
-    return v === "true";
-  }
+  if (theme === "dark" || (theme === "default" && prefersDark)) document.body.setAttribute("data-theme", "dark");
+  else document.body.removeAttribute("data-theme");
+})();
 
-  function setBoolLS(key, val) {
-    localStorage.setItem(key, val ? "true" : "false");
-  }
+function syncThemePill(mode) {
+  const indicator = document.querySelector(".themeIndicator");
+  const buttons = [...document.querySelectorAll("[data-theme-btn]")];
+  const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
 
-  function onToggleChanged(which, checked) {
-    // checked => SHOW, so "hide" = !checked
-    const hideValue = !checked;
+  if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
+  buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.themeBtn === mode));
+}
 
-    if (which === "name") setBoolLS(LS_HIDE_NAME, hideValue);
-    if (which === "pic") setBoolLS(LS_HIDE_PIC, hideValue);
-    if (which === "stats") setBoolLS(LS_HIDE_STATS, hideValue);
-    if (which === "note") setBoolLS(LS_HIDE_NOTE, hideValue);
-    if (which === "highlights") setBoolLS(LS_HIDE_HIGHLIGHTS, hideValue);
-
-    syncAllTogglesFromStorage();
-    applyVisibilityFromSettings();
-  }
-  window.onToggleChanged = onToggleChanged;
-
-  function syncAllTogglesFromStorage() {
-    if (CURRENT_PLAN !== "pro") return;
-
-    const tName = document.getElementById("toggleProfileName");
-    const tPic = document.getElementById("toggleProfilePic");
-    const tStats = document.getElementById("toggleProfileStats");
-    const tNote = document.getElementById("toggleProfileNote");
-    const tHL = document.getElementById("toggleHighlights");
-
-    // checked => SHOW => checked = !hide
-    if (tName) tName.checked = !getBoolLS(LS_HIDE_NAME, false);
-    if (tPic) tPic.checked = !getBoolLS(LS_HIDE_PIC, false);
-    if (tStats) tStats.checked = !getBoolLS(LS_HIDE_STATS, false);
-    if (tNote) tNote.checked = !getBoolLS(LS_HIDE_NOTE, false);
-    if (tHL) tHL.checked = !getBoolLS(LS_HIDE_HIGHLIGHTS, false);
-  }
-
-  function applyVisibilityFromSettings() {
-    if (CURRENT_PLAN !== "pro") return;
-
-    const hideName = getBoolLS(LS_HIDE_NAME, false);
-    const hidePic = getBoolLS(LS_HIDE_PIC, false);
-    const hideStats = getBoolLS(LS_HIDE_STATS, false);
-    const hideNote = getBoolLS(LS_HIDE_NOTE, false);
-    const hideHL = getBoolLS(LS_HIDE_HIGHLIGHTS, false);
-
-    const header = document.getElementById("profileHeader");
-    const noteEl = document.getElementById("profileNote");
-    const highlightsWrap = document.getElementById("highlightsWrap");
-
-    if (header) {
-      header.classList.toggle("hide-name", hideName);
-      header.classList.toggle("hide-pic", hidePic);
-      header.classList.toggle("no-stats", hideStats);
-    }
-
-    if (noteEl) {
-      // Pro-only note: show even if it's just placeholder text
-      const shouldShow = !hideNote;
-      noteEl.classList.toggle("hidden-section", !shouldShow);
-    }
-
-    if (highlightsWrap) highlightsWrap.classList.toggle("hidden-section", hideHL);
-  }
-
-  function toggleMenu() { document.getElementById("menu").classList.toggle("hidden"); }
-  function closeMenu() { document.getElementById("menu")?.classList.add("hidden"); }
-  window.toggleMenu = toggleMenu;
-  window.closeMenu = closeMenu;
-
-  (function initThemeOnLoad() {
-    const theme = localStorage.getItem("theme") || "default";
+function setTheme(mode) {
+  if (mode === "dark") document.body.setAttribute("data-theme", "dark");
+  else if (mode === "light") document.body.removeAttribute("data-theme");
+  else {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    if (theme === "dark" || (theme === "default" && prefersDark)) document.body.setAttribute("data-theme", "dark");
+    if (prefersDark) document.body.setAttribute("data-theme", "dark");
     else document.body.removeAttribute("data-theme");
-  })();
+  }
+  localStorage.setItem("theme", mode);
+  syncThemePill(mode);
+}
+window.setTheme = setTheme;
 
-  function syncThemePill(mode) {
-    const indicator = document.querySelector(".themeIndicator");
-    const buttons = [...document.querySelectorAll("[data-theme-btn]")];
-    const index = buttons.findIndex(b => b.dataset.themeBtn === mode);
+function setFont(font) {
+  let value;
+  if (font === "inter") value = "'Inter', system-ui, -apple-system, sans-serif";
+  else if (font === "poppins") value = "'Poppins', system-ui, -apple-system, sans-serif";
+  else if (font === "manrope") value = "'Manrope', system-ui, -apple-system, sans-serif";
+  else if (font === "montserrat") value = "'Montserrat', system-ui, -apple-system, sans-serif";
+  else if (font === "times") value = "'Times New Roman', Times, serif";
+  else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
 
-    if (indicator && index >= 0) indicator.style.transform = `translateX(${index * 100}%)`;
-    buttons.forEach(btn => btn.classList.toggle("active", btn.dataset.themeBtn === mode));
+  document.documentElement.style.setProperty("--font-main", value);
+  document.body.style.fontFamily = "var(--font-main)";
+  localStorage.setItem("font", font);
+  syncFontChosenOnly();
+}
+window.setFont = setFont;
+
+function getFontLabel() {
+  const saved = localStorage.getItem("font") || "system";
+  const map = { system: "System", inter: "Inter", poppins: "Poppins", manrope: "Manrope", montserrat: "Montserrat", times: "Times" };
+  return map[saved] || "System";
+}
+
+function syncFontChosenOnly() {
+  const el = document.getElementById("fontChosenOnly");
+  if (el) el.textContent = getFontLabel();
+}
+
+function syncDbChosenOnly() {
+  const el = document.getElementById("dbChosenOnly");
+  if (!el) return;
+  const activeDb = localStorage.getItem(LS_ACTIVE_DB);
+  const active = (DATABASES || []).find(d => d.database_id === activeDb);
+  el.textContent = active?.label || "Choose database";
+}
+
+function syncMergeChosenOnly() {
+  const el = document.getElementById("mergeChosenOnly");
+  if (!el) return;
+  const mode = localStorage.getItem(LS_DB_MODE) || "single";
+  el.textContent = mode === "merge" ? "Merge" : "Single";
+}
+
+function updateModePill() {
+  const pill = document.getElementById("modePill");
+  if (!pill) return;
+
+  if (CURRENT_PLAN !== "pro") {
+    pill.classList.add("hidden-section");
+    return;
   }
 
-  function setTheme(mode) {
-    if (mode === "dark") document.body.setAttribute("data-theme", "dark");
-    else if (mode === "light") document.body.removeAttribute("data-theme");
-    else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (prefersDark) document.body.setAttribute("data-theme", "dark");
-      else document.body.removeAttribute("data-theme");
-    }
-    localStorage.setItem("theme", mode);
-    syncThemePill(mode);
+  const mode = localStorage.getItem(LS_DB_MODE) || "single";
+  if (mode === "merge") {
+    pill.textContent = "Merge";
+    pill.classList.remove("hidden-section");
+  } else {
+    pill.classList.add("hidden-section");
   }
-  window.setTheme = setTheme;
+}
 
-  function setFont(font) {
-    let value;
-    if (font === "inter") value = "'Inter', system-ui, -apple-system, sans-serif";
-    else if (font === "poppins") value = "'Poppins', system-ui, -apple-system, sans-serif";
-    else if (font === "manrope") value = "'Manrope', system-ui, -apple-system, sans-serif";
-    else if (font === "montserrat") value = "'Montserrat', system-ui, -apple-system, sans-serif";
-    else if (font === "times") value = "'Times New Roman', Times, serif";
-    else value = "system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+function applyPlanToUI() {
+  const isPro = CURRENT_PLAN === "pro";
 
-    document.documentElement.style.setProperty("--font-main", value);
-    document.body.style.fontFamily = "var(--font-main)";
-    localStorage.setItem("font", font);
-    syncFontChosenOnly();
-  }
-  window.setFont = setFont;
+  const footerBrand = document.querySelector(".footerBrand");
+  if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
 
-  function getFontLabel() {
-    const saved = localStorage.getItem("font") || "system";
-    const map = { system: "System", inter: "Inter", poppins: "Poppins", manrope: "Manrope", montserrat: "Montserrat", times: "Times" };
-    return map[saved] || "System";
-  }
+  const menuBtn = document.querySelector(".menuBtn");
+  const menu = document.getElementById("menu");
+  const freeName = document.getElementById("freeProfileName");
 
-  function syncFontChosenOnly() {
-    const el = document.getElementById("fontChosenOnly");
-    if (el) el.textContent = getFontLabel();
-  }
+  const profileHeader = document.getElementById("profileHeader");
+  const profileNote = document.getElementById("profileNote");
+  const highlightsWrap = document.getElementById("highlightsWrap");
 
-  function syncDbChosenOnly() {
-    const el = document.getElementById("dbChosenOnly");
-    if (!el) return;
-    const activeDb = localStorage.getItem(LS_ACTIVE_DB);
-    const active = (DATABASES || []).find(d => d.database_id === activeDb);
-    el.textContent = active?.label || "Choose database";
-  }
+  if (!isPro) {
+    if (menuBtn) menuBtn.style.display = "none";
+    if (menu) menu.classList.add("hidden");
+    if (freeName) freeName.classList.remove("hidden-section");
 
-  function syncMergeChosenOnly() {
-    const el = document.getElementById("mergeChosenOnly");
-    if (!el) return;
-    const mode = localStorage.getItem(LS_DB_MODE) || "single";
-    el.textContent = mode === "merge" ? "Merge" : "Single";
-  }
+    if (profileHeader) profileHeader.classList.add("hidden-section");
+    if (profileNote) profileNote.classList.add("hidden-section");
+    if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
 
-  function updateModePill() {
-    const pill = document.getElementById("modePill");
-    if (!pill) return;
+    localStorage.removeItem(LS_ACTIVE_DB);
+    localStorage.removeItem(LS_DB_MODE);
 
-    if (CURRENT_PLAN !== "pro") {
-      pill.classList.add("hidden-section");
-      return;
-    }
-
-    const mode = localStorage.getItem(LS_DB_MODE) || "single";
-    if (mode === "merge") {
-      pill.textContent = "Merge";
-      pill.classList.remove("hidden-section");
-    } else {
-      pill.classList.add("hidden-section");
-    }
-  }
-
-  function applyPlanToUI() {
-    const isPro = CURRENT_PLAN === "pro";
-
-    const footerBrand = document.querySelector(".footerBrand");
-    if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
-
-    const menuBtn = document.querySelector(".menuBtn");
-    const menu = document.getElementById("menu");
-    const freeName = document.getElementById("freeProfileName");
-
-    const profileHeader = document.getElementById("profileHeader");
-    const profileNote = document.getElementById("profileNote");
-    const highlightsWrap = document.getElementById("highlightsWrap");
-
-    if (!isPro) {
-      if (menuBtn) menuBtn.style.display = "none";
-      if (menu) menu.classList.add("hidden");
-      if (freeName) freeName.classList.remove("hidden-section");
-
-      if (profileHeader) profileHeader.classList.add("hidden-section");
-      if (profileNote) profileNote.classList.add("hidden-section");
-      if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-
-      localStorage.removeItem(LS_ACTIVE_DB);
-      localStorage.removeItem(LS_DB_MODE);
-
-      updateModePill();
-      return;
-    }
-
-    if (menuBtn) menuBtn.style.display = "";
-    if (freeName) freeName.classList.add("hidden-section");
-
-    if (profileHeader) profileHeader.classList.remove("hidden-section");
-    if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
-
-    if (localStorage.getItem(LS_HIDE_NAME) === null) setBoolLS(LS_HIDE_NAME, false);
-    if (localStorage.getItem(LS_HIDE_PIC) === null) setBoolLS(LS_HIDE_PIC, false);
-    if (localStorage.getItem(LS_HIDE_STATS) === null) setBoolLS(LS_HIDE_STATS, false);
-    if (localStorage.getItem(LS_HIDE_NOTE) === null) setBoolLS(LS_HIDE_NOTE, false);
-    if (localStorage.getItem(LS_HIDE_HIGHLIGHTS) === null) setBoolLS(LS_HIDE_HIGHLIGHTS, false);
-
-    syncAllTogglesFromStorage();
-    applyVisibilityFromSettings();
-
-    syncDbChosenOnly();
-    syncMergeChosenOnly();
-    syncFontChosenOnly();
     updateModePill();
+    return;
   }
 
-  function openCenterModal(title, buttons) {
-    const overlay = document.getElementById("centerModal");
-    const titleEl = document.getElementById("modalTitle");
-    const body = document.getElementById("modalBody");
+  if (menuBtn) menuBtn.style.display = "";
+  if (freeName) freeName.classList.add("hidden-section");
 
-    if (!overlay || !titleEl || !body) return;
+  if (profileHeader) profileHeader.classList.remove("hidden-section");
+  if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
 
-    titleEl.textContent = title;
-    body.innerHTML = "";
-    (buttons || []).forEach(btn => body.appendChild(btn));
-    overlay.classList.add("show");
+  if (localStorage.getItem(LS_HIDE_NAME) === null) setBoolLS(LS_HIDE_NAME, false);
+  if (localStorage.getItem(LS_HIDE_PIC) === null) setBoolLS(LS_HIDE_PIC, false);
+  if (localStorage.getItem(LS_HIDE_STATS) === null) setBoolLS(LS_HIDE_STATS, false);
+  if (localStorage.getItem(LS_HIDE_NOTE) === null) setBoolLS(LS_HIDE_NOTE, false);
+  if (localStorage.getItem(LS_HIDE_HIGHLIGHTS) === null) setBoolLS(LS_HIDE_HIGHLIGHTS, false);
+
+  syncAllTogglesFromStorage();
+  applyVisibilityFromSettings();
+
+  syncDbChosenOnly();
+  syncMergeChosenOnly();
+  syncFontChosenOnly();
+  updateModePill();
+}
+
+// --- PROFILE EDIT HANDLERS ---
+
+function bindProfileEditHandlers() {
+  if (CURRENT_PLAN !== "pro") return;
+
+  const picWrap = document.getElementById("profilePicWrap");
+  const nameEl = document.getElementById("profileName");
+  const noteEl = document.getElementById("profileNote");
+
+  if (picWrap && !picWrap.__bound) {
+    picWrap.__bound = true;
+    picWrap.addEventListener("click", async () => { await openProfilePicActions(); });
   }
 
-  function closeCenterModal() { document.getElementById("centerModal")?.classList.remove("show"); }
-  window.closeCenterModal = closeCenterModal;
-
-  function makeModalButton(label, sub, onClick) {
-    const b = document.createElement("button");
-    b.className = "modalBtn";
-    b.type = "button";
-    b.textContent = label;
-    if (sub) {
-      const s = document.createElement("span");
-      s.className = "sub";
-      s.textContent = sub;
-      b.appendChild(s);
-    }
-    b.onclick = onClick;
-    return b;
+  if (nameEl && !nameEl.__bound) {
+    nameEl.__bound = true;
+    nameEl.addEventListener("click", async () => { await inlineEditText(nameEl, { field: "name", multiline: false }); });
   }
 
-  async function openDatabasePicker() {
-    if (CURRENT_PLAN !== "pro") return;
-
-    if (!Array.isArray(DATABASES) || DATABASES.length === 0) {
-      openCenterModal("Database", [makeModalButton("No databases", "Connect a Notion database first.", () => closeCenterModal())]);
-      return;
-    }
-
-    const buttons = DATABASES.map(db => makeModalButton(db.label, db.is_primary ? "Primary" : "", async () => {
-      localStorage.setItem(LS_DB_MODE, "single");
-      localStorage.setItem(LS_ACTIVE_DB, db.database_id);
-      syncDbChosenOnly();
-      syncMergeChosenOnly();
-      updateModePill();
-      closeCenterModal();
-      closeMenu();
-      await animateDatabaseChange(db.database_id);
-    }));
-
-    openCenterModal("Choose database", buttons);
+  if (noteEl && !noteEl.__bound) {
+    noteEl.__bound = true;
+    noteEl.addEventListener("click", async () => { await inlineEditText(noteEl, { field: "note", multiline: true }); });
   }
-  window.openDatabasePicker = openDatabasePicker;
+}
 
-  async function openMergePicker() {
-    if (CURRENT_PLAN !== "pro") return;
+async function openProfilePicActions() {
+  if (CURRENT_PLAN !== "pro") return;
 
-    const buttons = [
-      makeModalButton("Single", "Use one database only.", async () => {
-        localStorage.setItem(LS_DB_MODE, "single");
-        syncMergeChosenOnly();
-        updateModePill();
-        closeCenterModal();
-        closeMenu();
-        const activeDb = localStorage.getItem(LS_ACTIVE_DB) || DATABASES.find(d => d.is_primary)?.database_id || DATABASES[0]?.database_id || null;
-        if (activeDb) {
-          localStorage.setItem(LS_ACTIVE_DB, activeDb);
-          syncDbChosenOnly();
-          await animateDatabaseChange(activeDb);
-        }
-      }),
-      makeModalButton("Merge", "Combine posts from all connected databases.", async () => {
-        localStorage.setItem(LS_DB_MODE, "merge");
-        syncMergeChosenOnly();
-        updateModePill();
-        closeCenterModal();
-        closeMenu();
-        await animateDatabaseChange("merge");
-      }),
-    ];
-
-    openCenterModal("Merge mode", buttons);
-  }
-  window.openMergePicker = openMergePicker;
-
-  function openFontPicker() {
-    if (CURRENT_PLAN !== "pro") return;
-
-    const buttons = [
-      makeModalButton("System", "", () => { setFont("system"); closeCenterModal(); closeMenu(); }),
-      makeModalButton("Inter", "", () => { setFont("inter"); closeCenterModal(); closeMenu(); }),
-      makeModalButton("Poppins", "", () => { setFont("poppins"); closeCenterModal(); closeMenu(); }),
-      makeModalButton("Manrope", "", () => { setFont("manrope"); closeCenterModal(); closeMenu(); }),
-      makeModalButton("Montserrat", "", () => { setFont("montserrat"); closeCenterModal(); closeMenu(); }),
-      makeModalButton("Times", "", () => { setFont("times"); closeCenterModal(); closeMenu(); }),
-    ];
-    openCenterModal("Choose font", buttons);
-  }
-  window.openFontPicker = openFontPicker;
-
-  function formatDateForHover(post) {
-    const raw = post?.publishDate || "";
-    if (!raw) return "";
-    const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (!m) return "";
-    const [, yyyy, mm, dd] = m;
-    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const mon = monthNames[Number(mm) - 1] || "";
-    return `${dd} ${mon} ${yyyy.slice(-2)}`;
+  const edit_token = getEditToken();
+  if (!edit_token) {
+    openEditProfileUnlock();
+    return;
   }
 
-  function moveUnderline(tab) {
-    const underline = document.getElementById("slidingUnderline");
-    const tabs = document.querySelector(".tabs");
-    if (!underline || !tabs || !tab) return;
-    const tabRect = tab.getBoundingClientRect();
-    const tabsRect = tabs.getBoundingClientRect();
-    const underlineWidth = underline.getBoundingClientRect().width || underline.offsetWidth || 0;
-    const x = tabRect.left - tabsRect.left + tabRect.width / 2 - underlineWidth / 2;
-    underline.style.transform = `translateX(${x}px)`;
+  openCenterModal("Profile photo", [
+    makeModalButton("Replace", "Upload a new profile picture", async () => { closeCenterModal(); await pickAndUploadProfilePicture(); }),
+    makeModalButton("Remove", "Revert to placeholder", async () => { closeCenterModal(); await removeProfilePicture(); }),
+  ]);
+}
+
+async function inlineEditText(el, { field, multiline }) {
+  if (CURRENT_PLAN !== "pro") return;
+
+  const edit_token = getEditToken();
+  if (!edit_token) {
+    openEditProfileUnlock();
+    return;
   }
 
-  function syncUnderlineToActiveTab() {
-    const activeTab = document.querySelector(".tabItem.active");
-    if (!activeTab) return;
-    requestAnimationFrame(() => moveUnderline(activeTab));
-    setTimeout(() => moveUnderline(activeTab), 100);
-  }
+  const oldText = el.textContent || "";
+  const input = multiline ? document.createElement("textarea") : document.createElement("input");
+  input.value = oldText;
+  input.style.width = "100%";
+  input.style.fontSize = "inherit";
+  input.style.fontFamily = "inherit";
+  input.style.fontWeight = "inherit";
+  input.style.border = "1px solid var(--border-color)";
+  input.style.borderRadius = "10px";
+  input.style.padding = "8px 10px";
+  input.style.boxSizing = "border-box";
+  input.style.background = "var(--bg-card)";
+  input.style.color = "var(--text-main)";
+  if (multiline) input.rows = 3; else input.type = "text";
 
-  function setFilter(type, el) {
-    FILTER = type;
-    document.querySelectorAll(".tabItem").forEach(tab => {
-      tab.classList.remove("active");
-      const img = tab.querySelector("img");
-      if (img) img.src = `/icons/${tab.dataset.type}-${tab === el ? "dark" : "light"}.png`;
-    });
-    el.classList.add("active");
-    syncUnderlineToActiveTab();
-    renderGrid();
-    updateStats();
-  }
-  window.setFilter = setFilter;
+  const parent = el.parentNode;
+  parent.replaceChild(input, el);
+  input.focus();
+  input.select?.();
 
-  async function animateDatabaseChange(dbId) {
-    const container = document.querySelector(".gridWrap");
-    if (!container) return;
-    container.style.opacity = 0;
-    container.style.transform = "translateY(10px)";
-    container.style.transition = "all 0.3s ease";
-    await loadPosts(dbId);
-    setTimeout(() => {
-      container.style.opacity = 1;
-      container.style.transform = "translateY(0)";
-    }, 50);
-  }
+  const save = async () => {
+    const newValue = String(input.value || "").trim();
+    parent.replaceChild(el, input);
 
-  async function loadDatabaseMeta() {
     const slug = getSlug();
-    if (!slug) return;
+    const edit_token = getEditToken();
+    if (!edit_token) {
+      openEditProfileUnlock();
+      return;
+    }
+    const body = { slug, edit_token };
+    if (field === "name") body.name = newValue;
+    if (field === "note") body.note = newValue;
 
     try {
-      const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-      const data = await res.json();
-
-      DATABASES = data.databases || [];
-      CURRENT_PLAN = (data.plan || "free");
-
-      if (CURRENT_PLAN === "pro") {
-        if (localStorage.getItem(LS_DB_MODE) === null) localStorage.setItem(LS_DB_MODE, "single");
-        if (localStorage.getItem(LS_ACTIVE_DB) === null) {
-          const primary = DATABASES.find(d => d.is_primary) || DATABASES[0] || null;
-          if (primary?.database_id) localStorage.setItem(LS_ACTIVE_DB, primary.database_id);
-        }
-      }
-
-      applyPlanToUI();
-    } catch (e) {
-      console.error("loadDatabaseMeta failed:", e);
-    }
-  }
-
-  function hasMedia(post) {
-    return (Array.isArray(post.attachment) && post.attachment.length > 0) || post.thumbnail;
-  }
-
-  function isMultiMedia(post) {
-    return Array.isArray(post.attachment) && post.attachment.length > 1;
-  }
-
-  function normalizeTypes(typeArr) {
-    if (!Array.isArray(typeArr)) return [];
-    return typeArr.map(t => String(t || "").trim()).filter(Boolean);
-  }
-
-  function matchesFilter(post) {
-    const types = normalizeTypes(post.type);
-    if (FILTER === "__POSTS__") return types.length === 0;
-    return types.includes(FILTER);
-  }
-
-  function getVisibleGridPosts() {
-    return ALL_POSTS
-      .filter(post => !post.hide && hasMedia(post) && matchesFilter(post))
-      .sort((a, b) => {
-        if (!planAllows(CURRENT_PLAN, "pinned")) return 0;
-        return (b.pinned === true) - (a.pinned === true);
+      const res = await fetch("/api/widget-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
-  }
 
-  function computeStatsFromGrid(posts) {
-    const today = new Date().toISOString().split("T")[0];
-    return {
-      total: posts.length,
-      scheduled: posts.filter(p => p.publishDate && p.publishDate > today).length,
-      published: posts.filter(p => p.publishDate && p.publishDate <= today).length,
-    };
-  }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to save");
 
-  function updateStats() {
-    const stats = computeStatsFromGrid(getVisibleGridPosts());
-    document.getElementById("statPosts").innerText = stats.total;
-    document.getElementById("statScheduled").innerText = stats.scheduled;
-    document.getElementById("statPublished").innerText = stats.published;
-  }
-
-  async function loadPosts(selectedDb = null, btn = null) {
-    const icon = btn?.querySelector(".refreshIcon");
-    if (icon) icon.classList.add("spin");
-
-    if (!btn) {
-      document.querySelector(".container").setAttribute("data-loading", "true");
-      document.getElementById("skeleton").style.display = "block";
-    }
-
-    try {
-      const slug = getSlug();
-      if (!slug) throw new Error("Missing slug");
-
-      let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
-
-      const mode = localStorage.getItem(LS_DB_MODE) || "single";
-      const mergeEnabled = CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge");
-
-      if (mergeEnabled) url += `&db=merge`;
-      else {
-        const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
-        if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
+      if (data.profile?.name) document.getElementById("profileName").innerText = data.profile.name;
+      if (typeof data.profile?.note === "string") {
+        const noteEl = document.getElementById("profileNote");
+        if (noteEl) noteEl.textContent = data.profile.note || "Add Profile Note Here";
       }
 
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
-
-      const payload = await res.json();
-      const apiProfile = payload.profile;
-      const posts = payload.posts;
-      CURRENT_PLAN = payload.plan || "free";
-      applyPlanToUI();
-
-      ALL_POSTS = Array.isArray(posts) ? posts : [];
-      sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
-
-      renderProfile(apiProfile);
-      renderHighlights(ALL_POSTS);
-      renderGrid();
-      updateStats();
-      syncUnderlineToActiveTab();
+      applyVisibilityFromSettings();
     } catch (e) {
-      console.error("loadPosts failed:", e);
-    } finally {
-      if (!btn) {
-        document.getElementById("skeleton").style.display = "none";
-        document.querySelector(".container").removeAttribute("data-loading");
-      }
-      if (icon) icon.classList.remove("spin");
+      console.error("Profile save failed:", e);
+      if (field === "name") document.getElementById("profileName").innerText = oldText;
+      if (field === "note") document.getElementById("profileNote").textContent = oldText;
+      alert(e.message || "Failed to save profile");
     }
-  }
+  };
 
-  function isPlaceholderUrl(url) {
-    return !url || String(url).includes("/icons/profile-placeholder.png");
-  }
+  input.addEventListener("blur", save);
+  input.addEventListener("keydown", e => {
+    if (!multiline && e.key === "Enter") { e.preventDefault(); input.blur(); }
+    if (e.key === "Escape") { e.preventDefault(); parent.replaceChild(el, input); }
+  });
+}
 
-  function setProfilePicPlaceholderUI(pictureUrl) {
-    const wrap = document.getElementById("profilePicWrap");
-    if (!wrap) return;
-    wrap.classList.toggle("is-placeholder", isPlaceholderUrl(pictureUrl));
-  }
-
-  function renderProfile(profile) {
-    if (!profile) return;
-
-    const name = profile.name || "Grid Planner";
-    const pic = profile.picture || "/icons/profile-placeholder.png";
-    const note = String(profile.note || "").trim();
-
-    const nameEl = document.getElementById("profileName");
-    if (nameEl) nameEl.innerText = name;
-
-    const freeName = document.getElementById("freeProfileName");
-    if (freeName) freeName.textContent = name;
-
-    const img = document.getElementById("profileImage");
-    if (img) img.src = pic;
-
-    setProfilePicPlaceholderUI(pic);
-
-    const noteEl = document.getElementById("profileNote");
-    if (!noteEl) return;
-
-    if (CURRENT_PLAN === "free") {
-      noteEl.classList.add("hidden-section");
-      return;
-    }
-
-    // Pro: show placeholder text when empty
-    noteEl.textContent = note || "Add Profile Note Here";
-
-    syncAllTogglesFromStorage();
-    applyVisibilityFromSettings();
-
-    bindProfileEditHandlers();
-  }
-
-  function bindProfileEditHandlers() {
-    if (CURRENT_PLAN !== "pro") return;
-
-    const picWrap = document.getElementById("profilePicWrap");
-    const nameEl = document.getElementById("profileName");
-    const noteEl = document.getElementById("profileNote");
-
-    if (picWrap && !picWrap.__bound) {
-      picWrap.__bound = true;
-      picWrap.addEventListener("click", async () => { await openProfilePicActions(); });
-    }
-
-    if (nameEl && !nameEl.__bound) {
-      nameEl.__bound = true;
-      nameEl.addEventListener("click", async () => { await inlineEditText(nameEl, { field: "name", multiline: false }); });
-    }
-
-    if (noteEl && !noteEl.__bound) {
-      noteEl.__bound = true;
-      noteEl.addEventListener("click", async () => { await inlineEditText(noteEl, { field: "note", multiline: true }); });
-    }
-  }
-
-  async function openProfilePicActions() {
-    if (CURRENT_PLAN !== "pro") return;
-
-    const key = getAdminKey();
-    if (!key) {
-      openCenterModal("Profile photo", [makeModalButton("Missing key", "Open widget with ?key=YOUR_ADMIN_SECRET", () => closeCenterModal())]);
-      return;
-    }
-
-    openCenterModal("Profile photo", [
-      makeModalButton("Replace", "Upload a new profile picture", async () => { closeCenterModal(); await pickAndUploadProfilePicture(); }),
-      makeModalButton("Remove", "Revert to placeholder", async () => { closeCenterModal(); await removeProfilePicture(); }),
-    ]);
-  }
-
-  async function inlineEditText(el, { field, multiline }) {
-    if (CURRENT_PLAN !== "pro") return;
-
-    const key = getAdminKey();
-    if (!key) {
-      openCenterModal("Edit profile", [makeModalButton("Missing key", "Open widget with ?key=YOUR_ADMIN_SECRET", () => closeCenterModal())]);
-      return;
-    }
-
-    const oldText = el.textContent || "";
-    const input = multiline ? document.createElement("textarea") : document.createElement("input");
-    input.value = oldText;
-    input.style.width = "100%";
-    input.style.fontSize = "inherit";
-    input.style.fontFamily = "inherit";
-    input.style.fontWeight = "inherit";
-    input.style.border = "1px solid var(--border-color)";
-    input.style.borderRadius = "10px";
-    input.style.padding = "8px 10px";
-    input.style.boxSizing = "border-box";
-    input.style.background = "var(--bg-card)";
-    input.style.color = "var(--text-main)";
-    if (multiline) input.rows = 3; else input.type = "text";
-
-    const parent = el.parentNode;
-    parent.replaceChild(input, el);
-    input.focus();
-    input.select?.();
-
-    const save = async () => {
-      const newValue = String(input.value || "").trim();
-      parent.replaceChild(el, input);
-
-      const slug = getSlug();
-      const key = getAdminKey();
-
-      try {
-        const edit_token = getEditToken();
-        const body = { slug };
-if (edit_token) body.edit_token = edit_token;
-else body.key = key;
-if (field === "name") body.name = newValue;
-if (field === "note") body.note = newValue;
-
-        const res = await fetch("/api/widget-profile", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || "Failed to save");
-
-        if (data.profile?.name) document.getElementById("profileName").innerText = data.profile.name;
-        if (typeof data.profile?.note === "string") {
-          const noteEl = document.getElementById("profileNote");
-          if (noteEl) noteEl.textContent = data.profile.note || "Add Profile Note Here";
-        }
-
-        applyVisibilityFromSettings();
-      } catch (e) {
-        console.error("Profile save failed:", e);
-        if (field === "name") document.getElementById("profileName").innerText = oldText;
-        if (field === "note") document.getElementById("profileNote").textContent = oldText;
-        alert(e.message || "Failed to save profile");
-      }
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => {
+      const result = String(r.result || "");
+      const idx = result.indexOf("base64,");
+      if (idx === -1) return reject(new Error("Invalid base64"));
+      resolve(result.slice(idx + "base64,".length));
     };
-
-    input.addEventListener("blur", save);
-    input.addEventListener("keydown", e => {
-      if (!multiline && e.key === "Enter") { e.preventDefault(); input.blur(); }
-      if (e.key === "Escape") { e.preventDefault(); parent.replaceChild(el, input); }
-    });
-  }
-
-  function readFileAsBase64(file) {
-    return new Promise((resolve, reject) => {
-      const r = new FileReader();
-      r.onload = () => {
-        const result = String(r.result || "");
-        const idx = result.indexOf("base64,");
-        if (idx === -1) return reject(new Error("Invalid base64"));
-        resolve(result.slice(idx + "base64,".length));
-      };
-      r.onerror = () => reject(new Error("File read failed"));
-      r.readAsDataURL(file);
-    });
-  }
+    r.onerror = () => reject(new Error("File read failed"));
+    r.readAsDataURL(file);
+  });
+}
 
 async function pickAndUploadProfilePicture() {
   const slug = getSlug();
-  const key = getAdminKey();          // legacy fallback
-  const edit_token = getEditToken();  // new secure token
+  const edit_token = getEditToken();
 
   if (!slug) return;
 
-  // If not unlocked, prompt for password first
-  if (!isEditingUnlocked()) {
+  if (!edit_token) {
     openEditProfileUnlock();
     return;
   }
@@ -1700,11 +1366,8 @@ async function pickAndUploadProfilePicture() {
         filename: file.name,
         contentType: file.type,
         fileBase64,
+        edit_token
       };
-
-      // Prefer edit_token; fallback to key only if needed
-      if (edit_token) payload.edit_token = edit_token;
-      else payload.key = key;
 
       const res = await fetch("/api/widget-profile-picture", {
         method: "POST",
@@ -1726,25 +1389,19 @@ async function pickAndUploadProfilePicture() {
   };
 }
 
-  async function removeProfilePicture() {
+async function removeProfilePicture() {
   const slug = getSlug();
-  const key = getAdminKey();          // legacy fallback
-  const edit_token = getEditToken();  // new secure token
+  const edit_token = getEditToken();
 
   if (!slug) return;
 
-  // If not unlocked, prompt for password first
-  if (!isEditingUnlocked()) {
+  if (!edit_token) {
     openEditProfileUnlock();
     return;
   }
 
   try {
-    const payload = { slug, picture: null };
-
-    // Prefer edit_token; fallback to key only if needed
-    if (edit_token) payload.edit_token = edit_token;
-    else payload.key = key;
+    const payload = { slug, picture: null, edit_token };
 
     const res = await fetch("/api/widget-profile", {
       method: "POST",
@@ -1763,7 +1420,7 @@ async function pickAndUploadProfilePicture() {
     alert(e.message || "Failed to remove picture");
   }
 }
-
+  
   function renderHighlights(posts) {
     const row = document.getElementById("highlights");
     row.innerHTML = "";
@@ -1932,7 +1589,6 @@ async function pickAndUploadProfilePicture() {
 
   async function startGrid() {
     try {
-      setAdminKeyFromUrlIfPresent();
 
       let slugRetries = window.__slugRetries || 0;
       window.__slugRetries = slugRetries + 1;
