@@ -1522,32 +1522,41 @@ function renderProfile(profile) {
 
   syncAllTogglesFromStorage();
   applyVisibilityFromSettings();
-
-  bindProfileEditHandlers();
 }
 
-function bindProfileEditHandlers() {
-  if (CURRENT_PLAN !== "pro") return;
+function openProfileEditModal() {
+  const overlay = document.getElementById("centerModal");
+  const titleEl = document.getElementById("modalTitle");
+  const body = document.getElementById("modalBody");
 
-  const picWrap = document.getElementById("profilePicWrap");
-  const nameEl = document.getElementById("profileName");
-  const noteEl = document.getElementById("profileNote");
+  // Pre-fill values from profile
+  const name = document.getElementById("profileName")?.innerText || "";
+  const note = document.getElementById("profileNote")?.innerText || "";
+  const pic = document.getElementById("profileImage")?.src || "";
 
-  if (picWrap && !picWrap.__bound) {
-    picWrap.__bound = true;
-    picWrap.addEventListener("click", async () => { await openProfilePicActions(); });
-  }
-
-  if (nameEl && !nameEl.__bound) {
-    nameEl.__bound = true;
-    nameEl.addEventListener("click", async () => { await inlineEditText(nameEl, { field: "name", multiline: false }); });
-  }
-
-  if (noteEl && !noteEl.__bound) {
-    noteEl.__bound = true;
-    noteEl.addEventListener("click", async () => { await inlineEditText(noteEl, { field: "note", multiline: true }); });
-  }
+  // Build modal content
+  body.innerHTML = `
+    <div style="text-align:center;">
+      <img id="editProfileImage" src="${pic}" style="width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:10px;" />
+      <br />
+      <button onclick="editProfilePickPhoto()">Change Photo</button>
+      <button onclick="editProfileRemovePhoto()">Remove Photo</button>
+    </div>
+    <label>Name:</label>
+    <input id="editProfileName" style="width:100%;margin-bottom:10px;" type="text" value="${name}">
+    <label>Bio:</label>
+    <textarea id="editProfileNote" style="width:100%;">${note}</textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">
+      <button onclick="editProfileSave()">Save</button>
+      <button onclick="closeCenterModal()">Cancel</button>
+    </div>
+  `;
+  titleEl.textContent = "Edit Profile";
+  overlay.classList.add("show");
 }
+
+// Replace the existing Edit button's handler:
+document.querySelector('.menuTitle').onclick = openProfileEditModal;
 
 async function openProfilePicActions() {
   if (CURRENT_PLAN !== "pro") return;
@@ -1562,6 +1571,79 @@ async function openProfilePicActions() {
     makeModalButton("Replace", "Upload a new profile picture", async () => { closeCenterModal(); await pickAndUploadProfilePicture(); }),
     makeModalButton("Remove", "Revert to placeholder", async () => { closeCenterModal(); await removeProfilePicture(); }),
   ]);
+}
+
+function editProfilePickPhoto() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file) return;
+    // Use your existing code to upload and get preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById("editProfileImage").src = e.target.result;
+      // Store file for saving (global var or closure, as needed)
+      window.__editProfilePicFile = file;
+    }
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function editProfileRemovePhoto() {
+  document.getElementById("editProfileImage").src = "/icons/profile-placeholder.png";
+  window.__editProfilePicFile = null;
+}
+
+async function editProfileSave() {
+  const name = document.getElementById("editProfileName").value.trim();
+  const note = document.getElementById("editProfileNote").value.trim();
+  const slug = getSlug();
+  const edit_token = getEditToken();
+  const picFile = window.__editProfilePicFile;
+
+  // 1. Save name/note:
+  try {
+    let res = await fetch("/api/widget-profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, edit_token, name, note }),
+    });
+    let data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed saving profile");
+
+    document.getElementById("profileName").innerText = data.profile?.name || "";
+    document.getElementById("profileNote").innerText = data.profile?.note || "";
+  } catch (e) {
+    alert(e.message || "Failed saving");
+  }
+
+  // 2. Save picture if changed (optional: for more robust, detect original vs new file)
+  if (picFile) {
+    try {
+      const fileBase64 = await readFileAsBase64(picFile);
+      let res = await fetch("/api/widget-profile-picture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug,
+          filename: picFile.name,
+          contentType: picFile.type,
+          fileBase64,
+          edit_token
+        }),
+      });
+      let data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Photo upload failed");
+      document.getElementById("profileImage").src = data.profile?.picture || "/icons/profile-placeholder.png";
+    } catch (e) {
+      alert(e.message || "Failed saving image");
+    }
+  }
+
+  closeCenterModal();
 }
 
 async function inlineEditText(el, { field, multiline }) {
