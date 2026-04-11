@@ -1586,6 +1586,63 @@ async function removeProfilePicture() {
   window.nextImage = nextImage;
   window.prevImage = prevImage;
   window.closeViewer = closeViewer;
+   async function loadDatabaseMeta() {
+  const slug = getSlug();
+  if (!slug) return;
+  try {
+    const res = await fetch(`/api/widget-databases?slug=${encodeURIComponent(slug)}`);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const data = await res.json();
+    DATABASES = data.databases || [];
+    CURRENT_PLAN = data.plan || "free";
+    applyPlanToUI();
+  } catch (e) {
+    console.error("loadDatabaseMeta failed:", e);
+  }
+}
+
+async function loadPosts(selectedDb = null, btn = null) {
+  const icon = btn?.querySelector(".refreshIcon");
+  if (icon) icon.classList.add("spin");
+  if (!btn) {
+    document.querySelector(".container").setAttribute("data-loading", "true");
+    document.getElementById("skeleton").style.display = "block";
+  }
+  try {
+    const slug = getSlug();
+    if (!slug) throw new Error("Missing slug");
+    let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
+    const mode = localStorage.getItem(LS_DB_MODE) || "single";
+    const mergeEnabled = CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge");
+    if (mergeEnabled) url += `&db=merge`;
+    else {
+      const activeDb = selectedDb || localStorage.getItem(LS_ACTIVE_DB);
+      if (activeDb) url += `&db=${encodeURIComponent(activeDb)}`;
+    }
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+    const payload = await res.json();
+    const apiProfile = payload.profile;
+    const posts = payload.posts;
+    CURRENT_PLAN = payload.plan || "free";
+    applyPlanToUI();
+    ALL_POSTS = Array.isArray(posts) ? posts : [];
+    sessionStorage.setItem("cachedData", JSON.stringify({ profile: apiProfile, posts, plan: CURRENT_PLAN }));
+    renderProfile(apiProfile);
+    renderHighlights(ALL_POSTS);
+    renderGrid();
+    updateStats();
+    syncUnderlineToActiveTab();
+  } catch (e) {
+    console.error("loadPosts failed:", e);
+  } finally {
+    if (!btn) {
+      document.getElementById("skeleton").style.display = "none";
+      document.querySelector(".container").removeAttribute("data-loading");
+    }
+    if (icon) icon.classList.remove("spin");
+  }
+}
 
   async function startGrid() {
     try {
