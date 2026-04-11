@@ -1619,12 +1619,9 @@ function getEditToken() {
 
       try {
         const edit_token = getEditToken();
-const body = { slug };
-
-// prefer edit_token (password unlock) over key (legacy)
+        const body = { slug };
 if (edit_token) body.edit_token = edit_token;
 else body.key = key;
-
 if (field === "name") body.name = newValue;
 if (field === "note") body.note = newValue;
 
