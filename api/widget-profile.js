@@ -39,39 +39,29 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: "Missing Supabase env vars" });
     }
 
-    const { slug, key, edit_token, name, note, picture } = req.body || {};
+    const { slug, edit_token, name, note, picture } = req.body || {};
 if (!slug) return res.status(400).json({ error: "Missing slug" });
 
 // 1) Resolve widget (need customer_id)
 const widgets = await supabaseFetch(
-  `widgets?slug=eq.${encodeURIComponent(slug)}&select=id,customer_id,slug,name,admin_secret&limit=1`
+  `widgets?slug=eq.${encodeURIComponent(slug)}&select=id,customer_id,slug,name&limit=1`
 );
 const widget = Array.isArray(widgets) ? widgets[0] : null;
 if (!widget) return res.status(404).json({ error: "Widget not found" });
 
-// 2) Auth: either admin_secret OR edit_token session
-let authed = false;
-
-// Old method: admin key
-if (key && widget.admin_secret && String(widget.admin_secret) === String(key)) {
-  authed = true;
-}
-
-// New method: edit_token session (customer-level)
-if (!authed && edit_token) {
-  const sessions = await supabaseFetch(
-    `customer_edit_sessions?token=eq.${encodeURIComponent(edit_token)}` +
-    `&customer_id=eq.${encodeURIComponent(widget.customer_id)}` +
-    `&select=token,expires_at&limit=1`
-  );
-  const session = Array.isArray(sessions) ? sessions[0] : null;
-
-  const expiresAt = session?.expires_at ? new Date(session.expires_at).getTime() : 0;
-  if (session && expiresAt > Date.now()) authed = true;
-}
-
-if (!authed) {
+// 2) Auth: require valid edit_token session only
+if (!edit_token) {
   return res.status(401).json({ error: "Unauthorized" });
+}
+const sessions = await supabaseFetch(
+  `customer_edit_sessions?token=eq.${encodeURIComponent(edit_token)}` +
+  `&customer_id=eq.${encodeURIComponent(widget.customer_id)}` +
+  `&select=token,expires_at&limit=1`
+);
+const session = Array.isArray(sessions) ? sessions[0] : null;
+const expiresAt = session?.expires_at ? new Date(session.expires_at).getTime() : 0;
+if (!session || expiresAt < Date.now()) {
+  return res.status(401).json({ error: "Unauthorized or session expired" });
 }
 
     // 2) Check customer plan is pro
