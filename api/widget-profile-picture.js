@@ -65,20 +65,40 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: "Missing Supabase env vars" });
     }
 
-    const { slug, key, filename, contentType, fileBase64 } = req.body || {};
-    if (!slug) return res.status(400).json({ error: "Missing slug" });
-    if (!fileBase64) return res.status(400).json({ error: "Missing fileBase64" });
+    const { slug, key, edit_token, filename, contentType, fileBase64 } = req.body || {};
+if (!slug) return res.status(400).json({ error: "Missing slug" });
+if (!fileBase64) return res.status(400).json({ error: "Missing fileBase64" });
 
-    // 1) Resolve widget
-    const widgets = await supabaseRest(
-      `widgets?slug=eq.${encodeURIComponent(slug)}&select=id,customer_id,slug,name,admin_secret&limit=1`
-    );
-    const widget = Array.isArray(widgets) ? widgets[0] : null;
-    if (!widget) return res.status(404).json({ error: "Widget not found" });
+// 1) Resolve widget
+const widgets = await supabaseRest(
+  `widgets?slug=eq.${encodeURIComponent(slug)}&select=id,customer_id,slug,name,admin_secret&limit=1`
+);
+const widget = Array.isArray(widgets) ? widgets[0] : null;
+if (!widget) return res.status(404).json({ error: "Widget not found" });
 
-    if (!widget.admin_secret || String(widget.admin_secret) !== String(key)) {
-      return res.status(401).json({ error: "Invalid key" });
-    }
+// AUTH: Accept either key or edit_token
+let authed = false;
+
+// 1. If key matches admin_secret (legacy, still works)
+if (key && widget.admin_secret && String(widget.admin_secret) === String(key)) {
+  authed = true;
+}
+
+// 2. If edit_token present and valid in customer_edit_sessions
+if (!authed && edit_token) {
+  const sessions = await supabaseRest(
+    `customer_edit_sessions?token=eq.${encodeURIComponent(edit_token)}` +
+    `&customer_id=eq.${encodeURIComponent(widget.customer_id)}` +
+    `&select=token,expires_at&limit=1`
+  );
+  const session = Array.isArray(sessions) ? sessions[0] : null;
+  const expiresAt = session?.expires_at ? new Date(session.expires_at).getTime() : 0;
+  if (session && expiresAt > Date.now()) authed = true;
+}
+
+if (!authed) {
+  return res.status(401).json({ error: "Unauthorized" });
+}
 
     // 2) Check plan
     const customers = await supabaseRest(
