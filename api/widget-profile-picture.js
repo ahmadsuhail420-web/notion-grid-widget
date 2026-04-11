@@ -76,28 +76,19 @@ const widgets = await supabaseRest(
 const widget = Array.isArray(widgets) ? widgets[0] : null;
 if (!widget) return res.status(404).json({ error: "Widget not found" });
 
-// AUTH: Accept either key or edit_token
-let authed = false;
-
-// 1. If key matches admin_secret (legacy, still works)
-if (key && widget.admin_secret && String(widget.admin_secret) === String(key)) {
-  authed = true;
-}
-
-// 2. If edit_token present and valid in customer_edit_sessions
-if (!authed && edit_token) {
-  const sessions = await supabaseRest(
-    `customer_edit_sessions?token=eq.${encodeURIComponent(edit_token)}` +
-    `&customer_id=eq.${encodeURIComponent(widget.customer_id)}` +
-    `&select=token,expires_at&limit=1`
-  );
-  const session = Array.isArray(sessions) ? sessions[0] : null;
-  const expiresAt = session?.expires_at ? new Date(session.expires_at).getTime() : 0;
-  if (session && expiresAt > Date.now()) authed = true;
-}
-
-if (!authed) {
+// Require edit_token only!
+if (!edit_token) {
   return res.status(401).json({ error: "Unauthorized" });
+}
+const sessions = await supabaseRest(
+  `customer_edit_sessions?token=eq.${encodeURIComponent(edit_token)}` +
+  `&customer_id=eq.${encodeURIComponent(widget.customer_id)}` +
+  `&select=token,expires_at&limit=1`
+);
+const session = Array.isArray(sessions) ? sessions[0] : null;
+const expiresAt = session?.expires_at ? new Date(session.expires_at).getTime() : 0;
+if (!session || expiresAt < Date.now()) {
+  return res.status(401).json({ error: "Unauthorized or session expired" });
 }
 
     // 2) Check plan
