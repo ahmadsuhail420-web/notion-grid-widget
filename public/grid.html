@@ -1899,7 +1899,12 @@ function matchesFilter(post) {
 function hasMedia(post) {
   return (Array.isArray(post.attachment) && post.attachment.length > 0) || post.thumbnail;
 }
-
+   
+function setProfilePicPlaceholderUI(pictureUrl) {
+  const wrap = document.getElementById("profilePicWrap");
+  if (!wrap) return;
+  wrap.classList.toggle("is-placeholder", !pictureUrl || pictureUrl.includes("profile-placeholder.png"));
+}
   window.addEventListener("load", startGrid);
 </script>
 </body>
