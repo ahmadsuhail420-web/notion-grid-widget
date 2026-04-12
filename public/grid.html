@@ -429,6 +429,65 @@ body[data-theme="dark"] .menuTitle {
   white-space: nowrap;
 }
 
+    /* ========================= TOAST NOTIFICATION ========================= */
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 280px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  opacity: 0;
+  pointer-events: none;
+  animation: toastSlideIn 0.3s ease-out forwards, toastSlideOut 0.3s ease-out 2.7s forwards;
+}
+
+.toast.success {
+  color: #34c759;
+}
+
+.toast.error {
+  color: #ff3b30;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+body[data-theme="dark"] .toast {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
 /* ========================= THEME ========================= */
 .menuSection {
   display: flex;
@@ -1219,6 +1278,35 @@ function updateModePill() {
   }
 }
 
+  function showToast(message, type = "success") {
+  // Remove any existing toast
+  const existingToast = document.querySelector(".toast");
+  if (existingToast) existingToast.remove();
+
+  // Create toast element
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  
+  // Add icon based on type
+  let icon = "";
+  if (type === "success") icon = "✓";
+  if (type === "error") icon = "✕";
+  
+  toast.innerHTML = `
+    <span style="font-size:18px;">${icon}</span>
+    <span>${message}</span>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Remove after animation completes (3 seconds)
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+window.showToast = showToast;
+
 function applyPlanToUI() {
   const isPro = CURRENT_PLAN === "pro";
 
@@ -1684,8 +1772,8 @@ async function editProfileSave() {
   
   // If no token, ask for password
   if (!edit_token) {
-    alert("Session expired. Please unlock editing again.");
-    openEditProfileUnlock();
+    showToast("Session expired. Unlock editing again.", "error");
+    setTimeout(() => openEditProfileUnlock(), 500);
     return;
   }
 
@@ -1695,7 +1783,7 @@ async function editProfileSave() {
   const picFile = window.__editProfilePicFile;
 
   if (!slug) {
-    alert("Missing slug in URL");
+    showToast("Missing slug in URL", "error");
     return;
   }
 
@@ -1714,10 +1802,10 @@ async function editProfileSave() {
 
     document.getElementById("profileName").innerText = data.profile?.name || name;
     document.getElementById("profileNote").innerText = data.profile?.note || note;
-    alert("Profile saved! ✅");
+    showToast("Profile saved!", "success");
   } catch (e) {
     console.error("Save failed:", e);
-    alert(e.message || "Failed saving profile");
+    showToast(e.message || "Failed saving profile", "error");
     return;
   }
 
@@ -1743,18 +1831,22 @@ async function editProfileSave() {
       }
       document.getElementById("profileImage").src = data.profile?.picture || "/icons/profile-placeholder.png";
       setProfilePicPlaceholderUI(data.profile?.picture);
-      alert("Photo updated! ✅");
+      showToast("Photo updated!", "success");
     } catch (e) {
       console.error("Photo save failed:", e);
-      alert(e.message || "Failed saving photo");
+      showToast(e.message || "Failed saving photo", "error");
       return;
     }
   }
 
   // Clear the temp file reference
   window.__editProfilePicFile = null;
-  closeCenterModal();
-  closeMenu();
+  
+  // Close modal and menu after a brief delay
+  setTimeout(() => {
+    closeCenterModal();
+    closeMenu();
+  }, 500);
 }
 
 async function inlineEditText(el, { field, multiline }) {
@@ -1821,7 +1913,7 @@ async function inlineEditText(el, { field, multiline }) {
       console.error("Profile save failed:", e);
       if (field === "name") document.getElementById("profileName").innerText = oldText;
       if (field === "note") document.getElementById("profileNote").textContent = oldText;
-      alert(e.message || "Failed to save profile");
+           showToast(e.message || "Failed to save profile", "error");
     }
   };
 
