@@ -121,10 +121,7 @@ module.exports = async function handler(req, res) {
       return parseContentRangeCount(r.headers.get("content-range"));
     }
 
-    // GET = LIST
-        // GET = LIST
-        // GET = LIST
-        // GET = LIST
+       // GET = LIST
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
@@ -133,27 +130,35 @@ module.exports = async function handler(req, res) {
 
       const dbResp = await fetchJson(dbUrl, { headers });
 
-      // Default: assume user can edit (owner)
-      let can_edit = true;
+      // Default: DENY edit (conservative approach)
+      let can_edit = false;
       let edit_token = null;
 
-      // If databases exist, check the primary one's access level
-      if (dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
+      // Only allow edit if:
+      // 1. Customer is PRO
+      // 2. Primary database exists
+      // 3. Notion token is valid
+      if (plan === "pro" && dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
         const primaryDb = dbResp.json.find(d => d.is_primary) || dbResp.json[0];
         
-        if (primaryDb.notion_token) {
-          const accessCheck = await checkNotionDatabaseAccess(
-            primaryDb.database_id,
-            primaryDb.notion_token
-          );
-          can_edit = accessCheck.can_edit;
+        if (primaryDb && primaryDb.notion_token) {
+          try {
+            const accessCheck = await checkNotionDatabaseAccess(
+              primaryDb.database_id,
+              primaryDb.notion_token
+            );
+            can_edit = accessCheck.can_edit === true; // Explicitly check for true
+          } catch (err) {
+            console.error("Access check failed:", err);
+            can_edit = false; // Fail safely
+          }
         }
       }
 
       // If user can edit, generate a session token
       if (can_edit && plan === "pro") {
         const token = `token_${Date.now()}_${Math.random().toString(36).slice(2, 15)}`;
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
         
         try {
           await fetchJson(`${supabaseUrl}/rest/v1/customer_edit_sessions`, {
@@ -168,16 +173,16 @@ module.exports = async function handler(req, res) {
           edit_token = token;
         } catch (err) {
           console.error("Failed to create session:", err);
+          can_edit = false;
         }
       }
 
       if (!dbResp.res.ok) {
-        console.error("Database list failed:", dbResp.res.status, dbResp.text);
         return res.json({
           plan,
           db_limit: dbLimit,
-          can_edit,
-          edit_token,
+          can_edit: false,
+          edit_token: null,
           widget: { id: widget.id, slug: widget.slug, name: widget.name },
           databases: [],
         });
@@ -192,7 +197,7 @@ module.exports = async function handler(req, res) {
         databases: dbResp.json || [],
       });
     }
-
+    
     // POST = ACTIONS
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
@@ -371,3 +376,35 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "Failed to handle widget databases" });
   }
 };
+
+async function checkNotionDatabaseAccess(databaseId, notionToken) {
+  try {
+    console.log("Checking access for DB:", databaseId);
+    
+    const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${notionToken}`,
+        "Notion-Version": "2022-06-28",
+      },
+    });
+
+    console.log("Notion API response status:", response.status);
+    
+    if (!response.ok) {
+      console.error("Notion API error:", response.status);
+      return { can_edit: false, error: `Notion API ${response.status}` };
+    }
+
+    const data = await response.json();
+    console.log("Notion data:", JSON.stringify(data, null, 2));
+    
+    const isReadOnly = data.public_url && !data.public_url.includes("edit");
+    console.log("Is read-only:", isReadOnly, "Public URL:", data.public_url);
+    
+    return { can_edit: !isReadOnly };
+  } catch (err) {
+    console.error("Notion access check failed:", err);
+    return { can_edit: false, error: err.message };
+  }
+}
