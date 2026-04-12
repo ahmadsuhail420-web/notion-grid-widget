@@ -95,6 +95,7 @@ module.exports = async function handler(req, res) {
     }
 
     // GET = LIST
+        // GET = LIST
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
@@ -108,6 +109,7 @@ module.exports = async function handler(req, res) {
         return res.json({
           plan,
           db_limit: dbLimit,
+          can_edit: true,  // ← ADD THIS LINE
           widget: { id: widget.id, slug: widget.slug, name: widget.name },
           databases: [],
         });
@@ -116,6 +118,7 @@ module.exports = async function handler(req, res) {
       return res.json({
         plan,
         db_limit: dbLimit,
+        can_edit: true,  // ← ADD THIS LINE
         widget: { id: widget.id, slug: widget.slug, name: widget.name },
         databases: dbResp.json || [],
       });
