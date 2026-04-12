@@ -1524,6 +1524,13 @@ function renderProfile(profile) {
 }
 
 function openProfileEditModal() {
+  // Check if edit token exists, if not ask for password
+  const edit_token = getEditToken();
+  if (!edit_token) {
+    openEditProfileUnlock();
+    return;
+  }
+
   const overlay = document.getElementById("centerModal");
   const titleEl = document.getElementById("modalTitle");
   const body = document.getElementById("modalBody");
@@ -1538,21 +1545,29 @@ function openProfileEditModal() {
     <div style="text-align:center;">
       <img id="editProfileImage" src="${pic}" style="width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:10px;" />
       <br />
-      <button onclick="editProfilePickPhoto()">Change Photo</button>
-      <button onclick="editProfileRemovePhoto()">Remove Photo</button>
+      <button onclick="editProfilePickPhoto()" style="padding:8px 12px; margin-right:8px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-muted); cursor:pointer;">Change Photo</button>
+      <button onclick="editProfileRemovePhoto()" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-muted); cursor:pointer;">Remove Photo</button>
     </div>
-    <label>Name:</label>
-    <input id="editProfileName" style="width:100%;margin-bottom:10px;" type="text" value="${name}">
-    <label>Bio:</label>
-    <textarea id="editProfileNote" style="width:100%;">${note}</textarea>
+    <label style="display:block; margin-top:12px; font-weight:600; font-size:12px;">Name:</label>
+    <input id="editProfileName" style="width:100%;margin-bottom:10px;padding:8px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-card);color:var(--text-main);box-sizing:border-box;" type="text" value="${name}">
+    <label style="display:block; margin-top:8px; font-weight:600; font-size:12px;">Bio:</label>
+    <textarea id="editProfileNote" style="width:100%;padding:8px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-card);color:var(--text-main);box-sizing:border-box;" rows="3">${note}</textarea>
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">
-      <button onclick="editProfileSave()">Save</button>
-      <button onclick="closeCenterModal()">Cancel</button>
+      <button onclick="editProfileSave()" style="padding:8px 16px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-main);cursor:pointer;font-weight:600;">Save</button>
+      <button onclick="closeCenterModal()" style="padding:8px 16px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-main);cursor:pointer;font-weight:600;">Cancel</button>
     </div>
   `;
   titleEl.textContent = "Edit Profile";
   overlay.classList.add("show");
 }
+
+// Edit button handler - checks for token first
+document.addEventListener("DOMContentLoaded", () => {
+  const menuTitle = document.querySelector('.menuTitle');
+  if (menuTitle) {
+    menuTitle.onclick = openProfileEditModal;
+  }
+});
 
 // Replace the existing Edit button's handler:
 document.querySelector('.menuTitle').onclick = openProfileEditModal;
@@ -1597,11 +1612,24 @@ function editProfileRemovePhoto() {
 }
 
 async function editProfileSave() {
+  const edit_token = getEditToken();
+  
+  // If no token, ask for password
+  if (!edit_token) {
+    alert("Session expired. Please unlock editing again.");
+    openEditProfileUnlock();
+    return;
+  }
+
   const name = document.getElementById("editProfileName").value.trim();
   const note = document.getElementById("editProfileNote").value.trim();
   const slug = getSlug();
-  const edit_token = getEditToken();
   const picFile = window.__editProfilePicFile;
+
+  if (!slug) {
+    alert("Missing slug in URL");
+    return;
+  }
 
   // 1. Save name/note:
   try {
@@ -1610,16 +1638,22 @@ async function editProfileSave() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug, edit_token, name, note }),
     });
-    let data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed saving profile");
+    let data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const errMsg = data.error || `API error: ${res.status}`;
+      throw new Error(errMsg);
+    }
 
-    document.getElementById("profileName").innerText = data.profile?.name || "";
-    document.getElementById("profileNote").innerText = data.profile?.note || "";
+    document.getElementById("profileName").innerText = data.profile?.name || name;
+    document.getElementById("profileNote").innerText = data.profile?.note || note;
+    alert("Profile saved! ✅");
   } catch (e) {
-    alert(e.message || "Failed saving");
+    console.error("Save failed:", e);
+    alert(e.message || "Failed saving profile");
+    return;
   }
 
-  // 2. Save picture if changed (optional: for more robust, detect original vs new file)
+  // 2. Save picture if changed
   if (picFile) {
     try {
       const fileBase64 = await readFileAsBase64(picFile);
@@ -1634,15 +1668,25 @@ async function editProfileSave() {
           edit_token
         }),
       });
-      let data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Photo upload failed");
+      let data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMsg = data.error || `API error: ${res.status}`;
+        throw new Error(errMsg);
+      }
       document.getElementById("profileImage").src = data.profile?.picture || "/icons/profile-placeholder.png";
+      setProfilePicPlaceholderUI(data.profile?.picture);
+      alert("Photo updated! ✅");
     } catch (e) {
-      alert(e.message || "Failed saving image");
+      console.error("Photo save failed:", e);
+      alert(e.message || "Failed saving photo");
+      return;
     }
   }
 
+  // Clear the temp file reference
+  window.__editProfilePicFile = null;
   closeCenterModal();
+  closeMenu();
 }
 
 async function inlineEditText(el, { field, multiline }) {
