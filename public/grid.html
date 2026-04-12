@@ -1524,6 +1524,13 @@ async function loadDatabaseMeta() {
     CURRENT_PLAN = (data.plan || "free");
     CAN_EDIT = data.can_edit === true;
 
+    // Set edit token from backend
+    if (data.edit_token && CAN_EDIT) {
+      setEditToken(data.edit_token);
+    } else {
+      setEditToken(null);
+    }
+
     if (CURRENT_PLAN === "pro") {
       if (localStorage.getItem(LS_DB_MODE) === null) localStorage.setItem(LS_DB_MODE, "single");
       if (localStorage.getItem(LS_ACTIVE_DB) === null) {
