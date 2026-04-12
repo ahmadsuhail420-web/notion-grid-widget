@@ -1754,13 +1754,11 @@ function editProfileRemovePhoto() {
 }
 
 async function editProfileSave() {
-  const edit_token = getEditToken();
-  
-  // If no token, ask for password
+  // No password needed, just set a dummy token if not exists
+  let edit_token = getEditToken();
   if (!edit_token) {
-    showToast("Session expired. Unlock editing again.", "error");
-    setTimeout(() => openEditProfileUnlock(), 500);
-    return;
+    setEditToken("embedded-edit");
+    edit_token = "embedded-edit";
   }
 
   const name = document.getElementById("editProfileName").value.trim();
@@ -1838,10 +1836,10 @@ async function editProfileSave() {
 async function inlineEditText(el, { field, multiline }) {
   if (CURRENT_PLAN !== "pro") return;
 
-  const edit_token = getEditToken();
+  let edit_token = getEditToken();
   if (!edit_token) {
-    openEditProfileUnlock();
-    return;
+    setEditToken("embedded-edit");
+    edit_token = "embedded-edit";
   }
 
   const oldText = el.textContent || "";
@@ -1926,13 +1924,13 @@ function readFileAsBase64(file) {
 
 async function pickAndUploadProfilePicture() {
   const slug = getSlug();
-  const edit_token = getEditToken();
+  let edit_token = getEditToken();
 
   if (!slug) return;
 
   if (!edit_token) {
-    openEditProfileUnlock();
-    return;
+    setEditToken("embedded-edit");
+    edit_token = "embedded-edit";
   }
 
   const input = document.createElement("input");
@@ -1977,13 +1975,13 @@ async function pickAndUploadProfilePicture() {
 
 async function removeProfilePicture() {
   const slug = getSlug();
-  const edit_token = getEditToken();
+  let edit_token = getEditToken();
 
   if (!slug) return;
 
   if (!edit_token) {
-    openEditProfileUnlock();
-    return;
+    setEditToken("embedded-edit");
+    edit_token = "embedded-edit";
   }
 
   try {
