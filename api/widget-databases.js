@@ -121,7 +121,7 @@ module.exports = async function handler(req, res) {
       return parseContentRangeCount(r.headers.get("content-range"));
     }
 
-       // GET = LIST
+     // GET = LIST
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
@@ -130,32 +130,22 @@ module.exports = async function handler(req, res) {
 
       const dbResp = await fetchJson(dbUrl, { headers });
 
-      // Default: DENY edit (conservative approach)
       let can_edit = false;
       let edit_token = null;
 
-      // Only allow edit if:
-      // 1. Customer is PRO
-      // 2. Primary database exists
-      // 3. Notion token is valid
+      // Check Notion permission on primary database
       if (plan === "pro" && dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
         const primaryDb = dbResp.json.find(d => d.is_primary) || dbResp.json[0];
         
         if (primaryDb && primaryDb.notion_token) {
-          try {
-            const accessCheck = await checkNotionDatabaseAccess(
-              primaryDb.database_id,
-              primaryDb.notion_token
-            );
-            can_edit = accessCheck.can_edit === true; // Explicitly check for true
-          } catch (err) {
-            console.error("Access check failed:", err);
-            can_edit = false; // Fail safely
-          }
+          can_edit = await checkNotionEditPermission(
+            primaryDb.database_id,
+            primaryDb.notion_token
+          );
         }
       }
 
-      // If user can edit, generate a session token
+      // Only create token if can actually edit
       if (can_edit && plan === "pro") {
         const token = `token_${Date.now()}_${Math.random().toString(36).slice(2, 15)}`;
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
@@ -173,19 +163,7 @@ module.exports = async function handler(req, res) {
           edit_token = token;
         } catch (err) {
           console.error("Failed to create session:", err);
-          can_edit = false;
         }
-      }
-
-      if (!dbResp.res.ok) {
-        return res.json({
-          plan,
-          db_limit: dbLimit,
-          can_edit: false,
-          edit_token: null,
-          widget: { id: widget.id, slug: widget.slug, name: widget.name },
-          databases: [],
-        });
       }
 
       return res.json({
@@ -406,5 +384,39 @@ async function checkNotionDatabaseAccess(databaseId, notionToken) {
   } catch (err) {
     console.error("Notion access check failed:", err);
     return { can_edit: false, error: err.message };
+  }
+}
+
+async function checkNotionEditPermission(databaseId, notionToken) {
+  try {
+    // Try to create a test page (won't actually save, just checks permission)
+    const response = await fetch(`https://api.notion.com/v1/pages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${notionToken}`,
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        parent: { database_id: databaseId },
+        properties: {}, // Empty, won't save
+      }),
+    });
+
+    // If 403 Forbidden = read-only access
+    if (response.status === 403) {
+      return false; // View-only
+    }
+    
+    // If 400 Bad Request = has write permission but bad payload
+    if (response.status === 400) {
+      return true; // Can edit
+    }
+    
+    // Any other error = assume can't edit
+    return response.ok;
+  } catch (err) {
+    console.error("Permission check failed:", err);
+    return false;
   }
 }
