@@ -429,29 +429,22 @@ body[data-theme="dark"] .menuTitle {
   white-space: nowrap;
 }
 
-    /* ========================= TOAST NOTIFICATION ========================= */
+ /* ========================= TOAST NOTIFICATION ========================= */
 .toast {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 16px 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   z-index: 999;
   display: flex;
   align-items: center;
-  gap: 10px;
-  max-width: 280px;
-  text-align: center;
-  font-size: 14px;
+  gap: 8px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-main);
   opacity: 0;
   pointer-events: none;
-  animation: toastSlideIn 0.3s ease-out forwards, toastSlideOut 0.3s ease-out 2.7s forwards;
+  animation: toastFadeIn 0.2s ease-out forwards, toastFadeOut 0.2s ease-out 2.8s forwards;
 }
 
 .toast.success {
@@ -462,30 +455,22 @@ body[data-theme="dark"] .menuTitle {
   color: #ff3b30;
 }
 
-@keyframes toastSlideIn {
+@keyframes toastFadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
   }
 }
 
-@keyframes toastSlideOut {
+@keyframes toastFadeOut {
   from {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
   }
   to {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
   }
-}
-
-body[data-theme="dark"] .toast {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
 /* ========================= THEME ========================= */
@@ -1292,12 +1277,15 @@ function updateModePill() {
   if (type === "success") icon = "✓";
   if (type === "error") icon = "✕";
   
-  toast.innerHTML = `
-    <span style="font-size:18px;">${icon}</span>
-    <span>${message}</span>
-  `;
+  toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
   
-  document.body.appendChild(toast);
+  // Append to container (inside grid UI)
+  const container = document.querySelector(".container");
+  if (container) {
+    container.appendChild(toast);
+  } else {
+    document.body.appendChild(toast);
+  }
   
   // Remove after animation completes (3 seconds)
   setTimeout(() => {
