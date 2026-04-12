@@ -121,19 +121,43 @@ module.exports = async function handler(req, res) {
       return parseContentRangeCount(r.headers.get("content-range"));
     }
 
-       // GET = LIST
+          // GET = LIST
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
-        `&select=id,label,database_id,is_primary,created_at` +
+        `&select=id,label,database_id,is_primary,created_at,notion_token` +
         `&order=is_primary.desc&order=created_at.asc`;
 
       const dbResp = await fetchJson(dbUrl, { headers });
 
-      let can_edit = true;
+      let can_edit = false;
       let edit_token = null;
 
-      // Generate session token for editing
+      // Check Notion permission on primary database
+      if (plan === "pro" && dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
+        const primaryDb = dbResp.json.find(d => d.is_primary) || dbResp.json[0];
+        
+        if (primaryDb && primaryDb.notion_token) {
+          // Check if user has write permission to Notion database
+          try {
+            const notionRes = await fetch(`https://api.notion.com/v1/databases/${primaryDb.database_id}`, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${primaryDb.notion_token}`,
+                "Notion-Version": "2022-06-28",
+              },
+            });
+
+            // If 403 = read-only access, otherwise has write permission
+            can_edit = notionRes.status !== 403;
+          } catch (err) {
+            console.error("Notion permission check failed:", err);
+            can_edit = false;
+          }
+        }
+      }
+
+      // Generate session token only if can edit
       if (can_edit && plan === "pro") {
         const token = `token_${Date.now()}_${Math.random().toString(36).slice(2, 15)}`;
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
