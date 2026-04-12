@@ -693,7 +693,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
           <div class="menuHeaderRow">
-        <button class="menuTitle" type="button" onclick="openEditProfileUnlock()">
+        <button class="menuTitle" type="button" onclick="openEditPasswordModal()">
   Edit
 </button>
             <button class="menuCloseBtn" onclick="closeMenu()" aria-label="Close menu">
@@ -935,7 +935,36 @@ function getEditToken() {
   return sessionStorage.getItem(SS_EDIT_TOKEN) || "";
 }
 
-async function openEditProfileUnlock() {
+function openEditPasswordModal() {
+  const overlay = document.getElementById("centerModal");
+  const titleEl = document.getElementById("modalTitle");
+  const body = document.getElementById("modalBody");
+
+  body.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <label style="display:block;font-weight:600;font-size:12px;color:var(--text-main);">Enter Edit Password:</label>
+      <input id="passwordInput" type="password" placeholder="Password" style="width:100%;padding:10px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-card);color:var(--text-main);box-sizing:border-box;font-size:14px;" autofocus />
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+        <button onclick="submitEditPassword()" style="padding:10px 16px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-main);cursor:pointer;font-weight:600;">Unlock</button>
+        <button onclick="closeCenterModal()" style="padding:10px 16px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-main);cursor:pointer;font-weight:600;">Cancel</button>
+      </div>
+    </div>
+  `;
+  titleEl.textContent = "Unlock Editing";
+  overlay.classList.add("show");
+
+  // Focus on password input
+  setTimeout(() => {
+    document.getElementById("passwordInput")?.focus();
+  }, 100);
+
+  // Allow Enter key to submit
+  document.getElementById("passwordInput")?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") submitEditPassword();
+  });
+}
+
+async function submitEditPassword() {
   if (CURRENT_PLAN !== "pro") {
     alert("Pro required to edit profile");
     return;
@@ -947,8 +976,11 @@ async function openEditProfileUnlock() {
     return;
   }
 
-  const password = prompt("Enter your edit password:");
-  if (!password) return;
+  const password = document.getElementById("passwordInput")?.value || "";
+  if (!password) {
+    alert("Please enter your password");
+    return;
+  }
 
   try {
     const res = await fetch("/api/get-posts", {
@@ -961,11 +993,32 @@ async function openEditProfileUnlock() {
     if (!res.ok) throw new Error(data.error || "Unlock failed");
 
     setEditToken(data.edit_token);
-    alert("Unlocked ✅ Now you can tap name/note/photo to edit.");
+    closeCenterModal();
+    alert("Unlocked ✅ Now you can edit your profile.");
     closeMenu();
+    
+    // Open edit modal after unlocking
+    setTimeout(() => openProfileEditModal(), 300);
   } catch (e) {
     alert(e.message || "Unlock failed");
+    document.getElementById("passwordInput").value = "";
+    document.getElementById("passwordInput").focus();
   }
+}
+
+async function openEditProfileUnlock() {
+  if (CURRENT_PLAN !== "pro") {
+    alert("Pro required to edit profile");
+    return;
+  }
+
+  const slug = getSlug();
+  if (!slug) {
+    alert("Missing slug in URL");
+    return;
+  }
+
+  openEditPasswordModal();
 }
 window.openEditProfileUnlock = openEditProfileUnlock;
 
@@ -2115,6 +2168,9 @@ media.addEventListener("change", e => {
 window.addEventListener("load", () => {
   syncUnderlineToActiveTab();
 });
+  window.openEditProfileUnlock = openEditProfileUnlock;
+window.openEditPasswordModal = openEditPasswordModal;
+window.submitEditPassword = submitEditPassword;
 
 window.addEventListener("load", startGrid);
 </script>
