@@ -1520,19 +1520,9 @@ async function loadDatabaseMeta() {
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     const data = await res.json();
 
-    console.log("Backend response:", data); // Debug: see what's returned
-
-    // Ensure databases is always an array
-    DATABASES = Array.isArray(data.databases) ? data.databases : [];
+    DATABASES = data.databases || [];
     CURRENT_PLAN = (data.plan || "free");
     CAN_EDIT = data.can_edit === true;
-    
-    // Set edit token if provided
-    if (data.edit_token && CAN_EDIT) {
-      setEditToken(data.edit_token);
-    } else {
-      setEditToken(null);
-    }
 
     if (CURRENT_PLAN === "pro") {
       if (localStorage.getItem(LS_DB_MODE) === null) localStorage.setItem(LS_DB_MODE, "single");
@@ -1545,8 +1535,6 @@ async function loadDatabaseMeta() {
     applyPlanToUI();
   } catch (e) {
     console.error("loadDatabaseMeta failed:", e);
-    DATABASES = [];
-    CAN_EDIT = false;
   }
 }
 
