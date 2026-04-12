@@ -737,7 +737,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
           <div class="menuHeaderRow">
-        <button class="menuTitle" type="button" onclick="openEditPasswordModal()">
+        <button class="menuTitle" type="button" onclick="openProfileEditModal()">
   Edit
 </button>
             <button class="menuCloseBtn" onclick="closeMenu()" aria-label="Close menu">
@@ -970,6 +970,8 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
   const LS_HIDE_HIGHLIGHTS = "hideHighlights";
   const SS_EDIT_TOKEN = "widgetEditToken_v1";
 
+  let CAN_EDIT = false;  // Track if user has edit permission
+
 function setEditToken(t) {
   if (!t) sessionStorage.removeItem(SS_EDIT_TOKEN);
   else sessionStorage.setItem(SS_EDIT_TOKEN, String(t));
@@ -1077,7 +1079,11 @@ async function openEditProfileUnlock() {
     return;
   }
 
-  openEditPasswordModal();
+  // Directly set a dummy token so password is not required
+  setEditToken("unlocked");
+  
+  // Open edit modal directly
+  openProfileEditModal();
 }
 window.openEditProfileUnlock = openEditProfileUnlock;
 
@@ -1513,6 +1519,7 @@ async function loadDatabaseMeta() {
 
     DATABASES = data.databases || [];
     CURRENT_PLAN = (data.plan || "free");
+    CAN_EDIT = data.can_edit === true;  // Get permission from backend
 
     if (CURRENT_PLAN === "pro") {
       if (localStorage.getItem(LS_DB_MODE) === null) localStorage.setItem(LS_DB_MODE, "single");
@@ -1668,11 +1675,16 @@ function renderProfile(profile) {
 }
 
 function openProfileEditModal() {
-  // Check if edit token exists, if not ask for password
+  // Check if user has edit permission
+  if (!CAN_EDIT) {
+    showToast("View-only access. Cannot edit.", "error");
+    return;
+  }
+
+  // Ensure edit token exists
   const edit_token = getEditToken();
   if (!edit_token) {
-    openEditProfileUnlock();
-    return;
+    setEditToken("unlocked");
   }
 
   const overlay = document.getElementById("centerModal");
