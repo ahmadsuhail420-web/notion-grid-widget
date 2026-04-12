@@ -737,7 +737,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
           <div class="menuHeaderRow">
-        <button class="menuTitle" type="button" onclick="openProfileEditModal()">
+ <button class="menuTitle" type="button" id="editBtn" onclick="openProfileEditModal()" style="display:none;">
   Edit
 </button>
             <button class="menuCloseBtn" onclick="closeMenu()" aria-label="Close menu">
@@ -1304,8 +1304,11 @@ window.showToast = showToast;
 function applyPlanToUI() {
   const isPro = CURRENT_PLAN === "pro";
 
-  const footerBrand = document.querySelector(".footerBrand");
-  if (footerBrand) footerBrand.style.visibility = isPro ? "hidden" : "visible";
+  // Show/hide Edit button based on edit permission
+  const editBtn = document.querySelector("#editBtn");
+  if (editBtn) {
+    editBtn.style.display = (isPro && CAN_EDIT) ? "" : "none";
+  }
 
   const menuBtn = document.querySelector(".menuBtn");
   const menu = document.getElementById("menu");
@@ -1675,16 +1678,10 @@ function renderProfile(profile) {
 }
 
 function openProfileEditModal() {
-  // Check if user has edit permission
-  if (!CAN_EDIT) {
-    showToast("View-only access. Cannot edit.", "error");
+  // Simple check - if Pro and can edit, allow
+  if (CURRENT_PLAN !== "pro" || !CAN_EDIT) {
+    showToast("Cannot edit in view-only mode", "error");
     return;
-  }
-
-  // Ensure edit token exists
-  const edit_token = getEditToken();
-  if (!edit_token) {
-    setEditToken("unlocked");
   }
 
   const overlay = document.getElementById("centerModal");
@@ -1716,17 +1713,6 @@ function openProfileEditModal() {
   titleEl.textContent = "Edit Profile";
   overlay.classList.add("show");
 }
-
-// Edit button handler - checks for token first
-document.addEventListener("DOMContentLoaded", () => {
-  const menuTitle = document.querySelector('.menuTitle');
-  if (menuTitle) {
-    menuTitle.onclick = openProfileEditModal;
-  }
-});
-
-// Replace the existing Edit button's handler:
-document.querySelector('.menuTitle').onclick = openProfileEditModal;
 
 async function openProfilePicActions() {
   if (CURRENT_PLAN !== "pro") return;
