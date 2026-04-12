@@ -124,6 +124,7 @@ module.exports = async function handler(req, res) {
     // GET = LIST
         // GET = LIST
         // GET = LIST
+        // GET = LIST
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
@@ -134,6 +135,7 @@ module.exports = async function handler(req, res) {
 
       // Default: assume user can edit (owner)
       let can_edit = true;
+      let edit_token = null;
 
       // If databases exist, check the primary one's access level
       if (dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
@@ -148,12 +150,34 @@ module.exports = async function handler(req, res) {
         }
       }
 
+      // If user can edit, generate a session token
+      if (can_edit && plan === "pro") {
+        const token = `token_${Date.now()}_${Math.random().toString(36).slice(2, 15)}`;
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+        
+        try {
+          await fetchJson(`${supabaseUrl}/rest/v1/customer_edit_sessions`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              customer_id: customer.id,
+              token,
+              expires_at: expiresAt,
+            }),
+          });
+          edit_token = token;
+        } catch (err) {
+          console.error("Failed to create session:", err);
+        }
+      }
+
       if (!dbResp.res.ok) {
         console.error("Database list failed:", dbResp.res.status, dbResp.text);
         return res.json({
           plan,
           db_limit: dbLimit,
           can_edit,
+          edit_token,
           widget: { id: widget.id, slug: widget.slug, name: widget.name },
           databases: [],
         });
@@ -163,6 +187,7 @@ module.exports = async function handler(req, res) {
         plan,
         db_limit: dbLimit,
         can_edit,
+        edit_token,
         widget: { id: widget.id, slug: widget.slug, name: widget.name },
         databases: dbResp.json || [],
       });
