@@ -13,6 +13,33 @@
  *
  * NOTE: Converted to CommonJS export style for Vercel/Node default (no "type":"module").
  */
+async function checkNotionDatabaseAccess(databaseId, notionToken) {
+  try {
+    const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${notionToken}`,
+        "Notion-Version": "2022-06-28",
+      },
+    });
+
+    if (!response.ok) {
+      console.error("Notion API error:", response.status);
+      return { can_edit: false, error: "Failed to check access" };
+    }
+
+    const data = await response.json();
+    
+    // Check if user has edit permissions
+    // Notion databases have object.public_url which indicates read-only shared link
+    const isReadOnly = data.public_url && !data.public_url.includes("edit");
+    
+    return { can_edit: !isReadOnly };
+  } catch (err) {
+    console.error("Notion access check failed:", err);
+    return { can_edit: false, error: err.message };
+  }
+}
 
 async function fetchJson(url, options) {
   const res = await fetch(url, options);
@@ -96,20 +123,37 @@ module.exports = async function handler(req, res) {
 
     // GET = LIST
         // GET = LIST
+        // GET = LIST
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
-        `&select=id,label,database_id,is_primary,created_at` +
+        `&select=id,label,database_id,is_primary,created_at,notion_token` +
         `&order=is_primary.desc&order=created_at.asc`;
 
       const dbResp = await fetchJson(dbUrl, { headers });
+
+      // Default: assume user can edit (owner)
+      let can_edit = true;
+
+      // If databases exist, check the primary one's access level
+      if (dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
+        const primaryDb = dbResp.json.find(d => d.is_primary) || dbResp.json[0];
+        
+        if (primaryDb.notion_token) {
+          const accessCheck = await checkNotionDatabaseAccess(
+            primaryDb.database_id,
+            primaryDb.notion_token
+          );
+          can_edit = accessCheck.can_edit;
+        }
+      }
 
       if (!dbResp.res.ok) {
         console.error("Database list failed:", dbResp.res.status, dbResp.text);
         return res.json({
           plan,
           db_limit: dbLimit,
-          can_edit: true,  // ← ADD THIS LINE
+          can_edit,
           widget: { id: widget.id, slug: widget.slug, name: widget.name },
           databases: [],
         });
@@ -118,7 +162,7 @@ module.exports = async function handler(req, res) {
       return res.json({
         plan,
         db_limit: dbLimit,
-        can_edit: true,  // ← ADD THIS LINE
+        can_edit,
         widget: { id: widget.id, slug: widget.slug, name: widget.name },
         databases: dbResp.json || [],
       });
