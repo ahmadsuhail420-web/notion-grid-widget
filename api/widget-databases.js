@@ -13,34 +13,6 @@
  *
  * NOTE: Converted to CommonJS export style for Vercel/Node default (no "type":"module").
  */
-async function checkNotionDatabaseAccess(databaseId, notionToken) {
-  try {
-    const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${notionToken}`,
-        "Notion-Version": "2022-06-28",
-      },
-    });
-
-    if (!response.ok) {
-      console.error("Notion API error:", response.status);
-      return { can_edit: false, error: "Failed to check access" };
-    }
-
-    const data = await response.json();
-    
-    // Check if user has edit permissions
-    // Notion databases have object.public_url which indicates read-only shared link
-    const isReadOnly = data.public_url && !data.public_url.includes("edit");
-    
-    return { can_edit: !isReadOnly };
-  } catch (err) {
-    console.error("Notion access check failed:", err);
-    return { can_edit: false, error: err.message };
-  }
-}
-
 async function fetchJson(url, options) {
   const res = await fetch(url, options);
   const text = await res.text();
@@ -162,6 +134,13 @@ module.exports = async function handler(req, res) {
         const token = `token_${Date.now()}_${Math.random().toString(36).slice(2, 15)}`;
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
         
+        if (plan === "pro" && dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
+  const primaryDb = dbResp.json.find(d => d.is_primary) || dbResp.json[0];
+  
+  if (primaryDb && primaryDb.notion_token) {
+    can_edit = await checkNotionEditPermission(primaryDb.database_id, primaryDb.notion_token);
+  }
+}
         try {
           await fetchJson(`${supabaseUrl}/rest/v1/customer_edit_sessions`, {
             method: "POST",
@@ -407,40 +386,8 @@ async function checkNotionDatabaseAccess(databaseId, notionToken) {
     return { can_edit: !isReadOnly };
   } catch (err) {
     console.error("Notion access check failed:", err);
-    return { can_edit: false, error: err.message };
-  }
-}
-
-async function checkNotionEditPermission(databaseId, notionToken) {
-  try {
-    // Try to create a test page (won't actually save, just checks permission)
-    const response = await fetch(`https://api.notion.com/v1/pages`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${notionToken}`,
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        parent: { database_id: databaseId },
-        properties: {}, // Empty, won't save
-      }),
-    });
-
-    // If 403 Forbidden = read-only access
-    if (response.status === 403) {
-      return false; // View-only
-    }
-    
-    // If 400 Bad Request = has write permission but bad payload
-    if (response.status === 400) {
-      return true; // Can edit
-    }
-    
-    // Any other error = assume can't edit
     return response.ok;
   } catch (err) {
     console.error("Permission check failed:", err);
-    return false;
-  }
+ return false;
 }
