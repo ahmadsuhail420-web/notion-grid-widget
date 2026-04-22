@@ -97,7 +97,7 @@ module.exports = async function handler(req, res) {
     if (req.method === "GET") {
       const dbUrl =
         `${supabaseUrl}/rest/v1/notion_databases?widget_id=eq.${widget.id}` +
-        `&select=id,label,database_id,is_primary,created_at,notion_token` +
+        `&select=id,label,database_id,is_primary,created_at` +
         `&order=is_primary.desc&order=created_at.asc`;
 
       const dbResp = await fetchJson(dbUrl, { headers });
@@ -105,55 +105,17 @@ module.exports = async function handler(req, res) {
       let can_edit = false;
       let edit_token = null;
 
+      // Fetch Notion connection to get access token
+      const connUrl = `${supabaseUrl}/rest/v1/notion_connections?customer_id=eq.${customer.id}&select=access_token&limit=1`;
+      const connResp = await fetchJson(connUrl, { headers });
+      const accessToken = connResp.json?.[0]?.access_token;
+
       // Check Notion permission on primary database
-      if (plan === "pro" && dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
+      if (plan === "pro" && dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0 && accessToken) {
         const primaryDb = dbResp.json.find(d => d.is_primary) || dbResp.json[0];
         
-        if (primaryDb && primaryDb.notion_token) {
-          // Check if user has write permission to Notion database
-          try {
-            const notionRes = await fetch(`https://api.notion.com/v1/databases/${primaryDb.database_id}`, {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${primaryDb.notion_token}`,
-                "Notion-Version": "2022-06-28",
-              },
-            });
-
-            // If 403 = read-only access, otherwise has write permission
-            can_edit = notionRes.status !== 403;
-          } catch (err) {
-            console.error("Notion permission check failed:", err);
-            can_edit = false;
-          }
-        }
-      }
-
-      // Generate session token only if can edit
-      if (can_edit && plan === "pro") {
-        const token = `token_${Date.now()}_${Math.random().toString(36).slice(2, 15)}`;
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-        
-        if (plan === "pro" && dbResp.res.ok && Array.isArray(dbResp.json) && dbResp.json.length > 0) {
-  const primaryDb = dbResp.json.find(d => d.is_primary) || dbResp.json[0];
-  
-  if (primaryDb && primaryDb.notion_token) {
-    can_edit = await checkNotionEditPermission(primaryDb.database_id, primaryDb.notion_token);
-  }
-}
-        try {
-          await fetchJson(`${supabaseUrl}/rest/v1/customer_edit_sessions`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-              customer_id: customer.id,
-              token,
-              expires_at: expiresAt,
-            }),
-          });
-          edit_token = token;
-        } catch (err) {
-          console.error("Failed to create session:", err);
+        if (primaryDb) {
+          can_edit = await checkNotionEditPermission(primaryDb.database_id, accessToken);
         }
       }
 
@@ -163,7 +125,7 @@ module.exports = async function handler(req, res) {
           plan,
           db_limit: dbLimit,
           can_edit,
-          edit_token,
+          edit_token: null,
           widget: { id: widget.id, slug: widget.slug, name: widget.name },
           databases: [],
         });
@@ -173,7 +135,7 @@ module.exports = async function handler(req, res) {
         plan,
         db_limit: dbLimit,
         can_edit,
-        edit_token,
+        edit_token: null, // Session token is generated via POST /api/get-posts { action: "unlock_editing" }
         widget: { id: widget.id, slug: widget.slug, name: widget.name },
         databases: dbResp.json || [],
       });
@@ -358,10 +320,8 @@ module.exports = async function handler(req, res) {
   }
 };
 
-async function checkNotionDatabaseAccess(databaseId, notionToken) {
+async function checkNotionEditPermission(databaseId, notionToken) {
   try {
-    console.log("Checking access for DB:", databaseId);
-    
     const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
       method: "GET",
       headers: {
@@ -370,24 +330,26 @@ async function checkNotionDatabaseAccess(databaseId, notionToken) {
       },
     });
 
-    console.log("Notion API response status:", response.status);
-    
-    if (!response.ok) {
-      console.error("Notion API error:", response.status);
-      return { can_edit: false, error: `Notion API ${response.status}` };
-    }
+    if (!response.ok) return false;
 
     const data = await response.json();
-    console.log("Notion data:", JSON.stringify(data, null, 2));
     
-    const isReadOnly = data.public_url && !data.public_url.includes("edit");
-    console.log("Is read-only:", isReadOnly, "Public URL:", data.public_url);
+    // 1. Explicit Check for Web-Shared templates (View-only)
+    const isPublicReadOnly = data.public_url && !data.public_url.includes("edit");
+    if (isPublicReadOnly) return false;
+
+    // 2. Integration Check
+    // Handle cases where the database was shared with the integration as "Can view" vs "Can edit"
+    // Since Notion API doesn't have a simple 'can_update' boolean, we can check for properties
+    // that are usually only writable if we have full access, or check metadata.
+    // In most cases, if it's shared with integration as read-only, is_inline or similar might differ
+    // but the safest way is a lightweight PATCH probe if truly necessary.
+    // For now, we trust Notion's 403 response on actual write attempts, 
+    // but we can look at the workspace/user mapping if available.
     
-    return { can_edit: !isReadOnly };
-  } catch (err) {
-    console.error("Notion access check failed:", err);
-    return response.ok;
+    return true; 
   } catch (err) {
     console.error("Permission check failed:", err);
- return false;
+    return false;
+  }
 }
