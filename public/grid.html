@@ -1047,6 +1047,9 @@ async function submitEditPassword() {
     closeCenterModal();
     closeMenu();
     
+    // Update UI to show Edit Profile instead of Unlock
+    applyPlanToUI();
+    
     // Open edit modal directly after successful unlock
     setTimeout(() => openProfileEditModal(), 200);
   } catch (e) {
@@ -1069,21 +1072,23 @@ function showPasswordError(message) {
 
 async function openEditProfileUnlock() {
   if (CURRENT_PLAN !== "pro") {
-    alert("Pro required to edit profile");
+    showToast("Pro plan required for editing", "error");
     return;
   }
 
-  const slug = getSlug();
-  if (!slug) {
-    alert("Missing slug in URL");
+  if (!CAN_EDIT) {
+    showToast("Editing disabled (Notion view-only)", "error");
     return;
   }
 
-  // Directly set a dummy token so password is not required
-  setEditToken("unlocked");
-  
-  // Open edit modal directly
-  openProfileEditModal();
+  const token = getEditToken();
+  if (token) {
+    // Already unlocked
+    openProfileEditModal();
+  } else {
+    // Needs unlock
+    openEditPasswordModal();
+  }
 }
 window.openEditProfileUnlock = openEditProfileUnlock;
 
@@ -1307,7 +1312,18 @@ function applyPlanToUI() {
   // Show/hide Edit button based on edit permission
   const editBtn = document.querySelector("#editBtn");
   if (editBtn) {
-    editBtn.style.display = (isPro && CAN_EDIT) ? "" : "none";
+    const isAdminUnlocked = !!getEditToken();
+    editBtn.style.display = (isPro) ? "" : "none";
+    
+    if (!CAN_EDIT) {
+      editBtn.textContent = "View Only";
+      editBtn.disabled = true;
+      editBtn.style.opacity = "0.5";
+    } else {
+      editBtn.textContent = isAdminUnlocked ? "Edit Profile" : "Unlock to Edit";
+      editBtn.disabled = false;
+      editBtn.style.opacity = "1";
+    }
   }
 
   const menuBtn = document.querySelector(".menuBtn");
@@ -1524,11 +1540,9 @@ async function loadDatabaseMeta() {
     CURRENT_PLAN = (data.plan || "free");
     CAN_EDIT = data.can_edit === true;
 
-    // Set edit token from backend
+    // Set edit token from backend only if provided
     if (data.edit_token && CAN_EDIT) {
       setEditToken(data.edit_token);
-    } else {
-      setEditToken(null);
     }
 
     if (CURRENT_PLAN === "pro") {
@@ -1600,7 +1614,10 @@ async function loadPosts(selectedDb = null, btn = null) {
 
   try {
     const slug = getSlug();
-    if (!slug) throw new Error("Missing slug");
+    if (!slug) {
+      console.warn("loadPosts: No slug found in URL, skipping fetch.");
+      return;
+    }
 
     let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
@@ -1761,11 +1778,10 @@ function editProfileRemovePhoto() {
 }
 
 async function editProfileSave() {
-  // No password needed, just set a dummy token if not exists
-  let edit_token = getEditToken();
+  const edit_token = getEditToken();
   if (!edit_token) {
-    setEditToken("embedded-edit");
-    edit_token = "embedded-edit";
+    showToast("Session expired, please refresh and unlock again", "error");
+    return;
   }
 
   const name = document.getElementById("editProfileName").value.trim();
@@ -1843,10 +1859,10 @@ async function editProfileSave() {
 async function inlineEditText(el, { field, multiline }) {
   if (CURRENT_PLAN !== "pro") return;
 
-  let edit_token = getEditToken();
+  const edit_token = getEditToken();
   if (!edit_token) {
-    setEditToken("embedded-edit");
-    edit_token = "embedded-edit";
+    showToast("Session expired, please unlock again", "error");
+    return;
   }
 
   const oldText = el.textContent || "";
@@ -1931,13 +1947,13 @@ function readFileAsBase64(file) {
 
 async function pickAndUploadProfilePicture() {
   const slug = getSlug();
-  let edit_token = getEditToken();
+  const edit_token = getEditToken();
 
   if (!slug) return;
 
   if (!edit_token) {
-    setEditToken("embedded-edit");
-    edit_token = "embedded-edit";
+    showToast("Please unlock editing first", "error");
+    return;
   }
 
   const input = document.createElement("input");
@@ -1982,13 +1998,13 @@ async function pickAndUploadProfilePicture() {
 
 async function removeProfilePicture() {
   const slug = getSlug();
-  let edit_token = getEditToken();
+  const edit_token = getEditToken();
 
   if (!slug) return;
 
   if (!edit_token) {
-    setEditToken("embedded-edit");
-    edit_token = "embedded-edit";
+    showToast("Please unlock editing first", "error");
+    return;
   }
 
   try {
@@ -2180,9 +2196,6 @@ window.closeViewer = closeViewer;
 
 async function startGrid() {
   try {
-    // Clear edit token on page load to require password re-entry
-    setEditToken(null);
-
     let slugRetries = window.__slugRetries || 0;
     window.__slugRetries = slugRetries + 1;
 
