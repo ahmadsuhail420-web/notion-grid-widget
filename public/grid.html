@@ -737,9 +737,9 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
         <div id="menu" class="menu hidden" onclick="event.stopPropagation()">
           <div class="menuHeaderRow">
- <button class="menuTitle" type="button" id="editBtn" onclick="openProfileEditModal()" style="display:none;">
-  Edit
-</button>
+    <button class="menuTitle" type="button" id="editBtn" onclick="openEditProfileUnlock()">
+      Edit
+    </button>
             <button class="menuCloseBtn" onclick="closeMenu()" aria-label="Close menu">
               <span class="material-symbols-outlined" style="font-size:20px;">close</span>
             </button>
@@ -835,6 +835,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
               </button>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -866,7 +867,7 @@ body[data-theme="dark"] .card video { opacity: 0.85; }
 
       <div id="profileHeader" class="profile">
         <div class="profileRow">
-          <div class="profilePic" id="profilePicWrap" title="Change photo">
+          <div class="profilePic" id="profilePicWrap" title="Change photo" onclick="openProfilePicActions()">
             <img id="profileImage" src="/icons/profile-placeholder.png" alt="Profile picture" />
           </div>
 
@@ -1012,11 +1013,6 @@ function openEditPasswordModal() {
 }
 
 async function submitEditPassword() {
-  if (CURRENT_PLAN !== "pro") {
-    alert("Pro required to edit profile");
-    return;
-  }
-
   const slug = getSlug();
   if (!slug) {
     alert("Missing slug in URL");
@@ -1047,7 +1043,7 @@ async function submitEditPassword() {
     closeCenterModal();
     closeMenu();
     
-    // Update UI to show Edit Profile instead of Unlock
+    // Update UI to show Edit instead of Unlock
     applyPlanToUI();
     
     // Open edit modal directly after successful unlock
@@ -1071,37 +1067,15 @@ function showPasswordError(message) {
 }
 
 async function openEditProfileUnlock() {
-  if (CURRENT_PLAN !== "pro") {
-    showToast("Pro plan required for editing", "error");
-    return;
-  }
-
-  if (!CAN_EDIT) {
-    showToast("Editing disabled (Notion view-only)", "error");
-    return;
-  }
-
-  const token = getEditToken();
-  if (token) {
-    // Already unlocked
-    openProfileEditModal();
-  } else {
-    // Needs unlock
-    openEditPasswordModal();
-  }
+  // Always ask for password
+  openEditPasswordModal();
 }
 window.openEditProfileUnlock = openEditProfileUnlock;
 
 let DATABASES = [];
 
 function planAllows(plan, feature) {
-  const isPro = plan === "pro";
-  if (feature === "viewer_modal") return isPro;
-  if (feature === "pinned") return isPro;
-  if (feature === "multi_db_switcher") return isPro;
-  if (feature === "unlimited_highlights") return isPro;
-  if (feature === "profile_edit") return isPro;
-  return false;
+  return true; // Everything is "normal" now, gated by password/unlock
 }
 
 function getSlug() {
@@ -1135,7 +1109,7 @@ function onToggleChanged(which, checked) {
 window.onToggleChanged = onToggleChanged;
 
 function syncAllTogglesFromStorage() {
-  if (CURRENT_PLAN !== "pro") return;
+  if (!planAllows(CURRENT_PLAN, "visibility")) return;
 
   const tName = document.getElementById("toggleProfileName");
   const tPic = document.getElementById("toggleProfilePic");
@@ -1152,7 +1126,8 @@ function syncAllTogglesFromStorage() {
 }
 
 function applyVisibilityFromSettings() {
-  if (CURRENT_PLAN !== "pro") return;
+  // Allow all users who have unlocked editing to see settings changes
+  // or simply remove the pro check if we want settings to work for everyone
 
   const hideName = getBoolLS(LS_HIDE_NAME, false);
   const hidePic = getBoolLS(LS_HIDE_PIC, false);
@@ -1260,7 +1235,7 @@ function updateModePill() {
   const pill = document.getElementById("modePill");
   if (!pill) return;
 
-  if (CURRENT_PLAN !== "pro") {
+  if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) {
     pill.classList.add("hidden-section");
     return;
   }
@@ -1312,18 +1287,11 @@ function applyPlanToUI() {
   // Show/hide Edit button based on edit permission
   const editBtn = document.querySelector("#editBtn");
   if (editBtn) {
-    const isAdminUnlocked = !!getEditToken();
-    editBtn.style.display = (isPro) ? "" : "none";
+    editBtn.style.display = ""; // Always show Edit button entry
     
-    if (!CAN_EDIT) {
-      editBtn.textContent = "View Only";
-      editBtn.disabled = true;
-      editBtn.style.opacity = "0.5";
-    } else {
-      editBtn.textContent = isAdminUnlocked ? "Edit Profile" : "Unlock to Edit";
-      editBtn.disabled = false;
-      editBtn.style.opacity = "1";
-    }
+    editBtn.textContent = "Edit";
+    editBtn.disabled = false;
+    editBtn.style.opacity = "1";
   }
 
   const menuBtn = document.querySelector(".menuBtn");
@@ -1334,17 +1302,20 @@ function applyPlanToUI() {
   const profileNote = document.getElementById("profileNote");
   const highlightsWrap = document.getElementById("highlightsWrap");
 
-  if (!isPro) {
-    if (menuBtn) menuBtn.style.display = "none";
+  const isAdminUnlocked = !!getEditToken();
+  const canSeeAdmin = isPro || isAdminUnlocked;
+
+  // Always show menu button so users can click "Edit" to unlock
+  if (menuBtn) menuBtn.style.display = "";
+
+  if (!canSeeAdmin) {
     if (menu) menu.classList.add("hidden");
     if (freeName) freeName.classList.remove("hidden-section");
 
-    if (profileHeader) profileHeader.classList.add("hidden-section");
-    if (profileNote) profileNote.classList.add("hidden-section");
-    if (highlightsWrap) highlightsWrap.classList.add("hidden-section");
-
-    localStorage.removeItem(LS_ACTIVE_DB);
-    localStorage.removeItem(LS_DB_MODE);
+    // Fix: We should NOT hide profile header/highlights for visitors.
+    // They are only hidden via settings (LS_HIDE_NAME etc), not because we aren't admin.
+    if (profileHeader) profileHeader.classList.remove("hidden-section");
+    if (highlightsWrap) highlightsWrap.classList.remove("hidden-section");
 
     updateModePill();
     return;
@@ -1403,7 +1374,7 @@ function makeModalButton(label, sub, onClick) {
 }
 
 async function openDatabasePicker() {
-  if (CURRENT_PLAN !== "pro") return;
+  if (!planAllows(CURRENT_PLAN, "multi_db_switcher")) return;
 
   if (!Array.isArray(DATABASES) || DATABASES.length === 0) {
     openCenterModal("Database", [makeModalButton("No databases", "Connect a Notion database first.", () => closeCenterModal())]);
@@ -1426,7 +1397,7 @@ async function openDatabasePicker() {
 window.openDatabasePicker = openDatabasePicker;
 
 async function openMergePicker() {
-  if (CURRENT_PLAN !== "pro") return;
+  if (!planAllows(CURRENT_PLAN, "merge_mode")) return;
 
   const buttons = [
     makeModalButton("Single", "Use one database only.", async () => {
@@ -1457,7 +1428,7 @@ async function openMergePicker() {
 window.openMergePicker = openMergePicker;
 
 function openFontPicker() {
-  if (CURRENT_PLAN !== "pro") return;
+  if (!planAllows(CURRENT_PLAN, "custom_fonts")) return;
 
   const buttons = [
     makeModalButton("System", "", () => { setFont("system"); closeCenterModal(); closeMenu(); }),
@@ -1545,7 +1516,7 @@ async function loadDatabaseMeta() {
       setEditToken(data.edit_token);
     }
 
-    if (CURRENT_PLAN === "pro") {
+    if (planAllows(CURRENT_PLAN, "multi_db_switcher")) {
       if (localStorage.getItem(LS_DB_MODE) === null) localStorage.setItem(LS_DB_MODE, "single");
       if (localStorage.getItem(LS_ACTIVE_DB) === null) {
         const primary = DATABASES.find(d => d.is_primary) || DATABASES[0] || null;
@@ -1622,7 +1593,7 @@ async function loadPosts(selectedDb = null, btn = null) {
     let url = `/api/get-posts?slug=${encodeURIComponent(slug)}`;
 
     const mode = localStorage.getItem(LS_DB_MODE) || "single";
-    const mergeEnabled = CURRENT_PLAN === "pro" && (selectedDb === "merge" || mode === "merge");
+    const mergeEnabled = planAllows(CURRENT_PLAN, "merge_mode") && (selectedDb === "merge" || mode === "merge");
 
     if (mergeEnabled) url += `&db=merge`;
     else {
@@ -1689,12 +1660,7 @@ function renderProfile(profile) {
   const noteEl = document.getElementById("profileNote");
   if (!noteEl) return;
 
-  if (CURRENT_PLAN === "free") {
-    noteEl.classList.add("hidden-section");
-    return;
-  }
-
-  // Pro: show placeholder text when empty
+  // Show bio anyway if we can edit
   noteEl.textContent = note || "Add Profile Note Here";
 
   syncAllTogglesFromStorage();
@@ -1702,12 +1668,6 @@ function renderProfile(profile) {
 }
 
 function openProfileEditModal() {
-  // Simple check - if Pro and can edit, allow
-  if (CURRENT_PLAN !== "pro" || !CAN_EDIT) {
-    showToast("Cannot edit in view-only mode", "error");
-    return;
-  }
-
   const overlay = document.getElementById("centerModal");
   const titleEl = document.getElementById("modalTitle");
   const body = document.getElementById("modalBody");
@@ -1734,13 +1694,11 @@ function openProfileEditModal() {
       <button onclick="closeCenterModal()" style="padding:8px 16px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-muted);color:var(--text-main);cursor:pointer;font-weight:600;">Cancel</button>
     </div>
   `;
-  titleEl.textContent = "Edit Profile";
+  titleEl.textContent = "Edit";
   overlay.classList.add("show");
 }
 
 async function openProfilePicActions() {
-  if (CURRENT_PLAN !== "pro") return;
-
   const edit_token = getEditToken();
   if (!edit_token) {
     openEditProfileUnlock();
@@ -1857,8 +1815,6 @@ async function editProfileSave() {
 }
 
 async function inlineEditText(el, { field, multiline }) {
-  if (CURRENT_PLAN !== "pro") return;
-
   const edit_token = getEditToken();
   if (!edit_token) {
     showToast("Session expired, please unlock again", "error");
@@ -2032,8 +1988,9 @@ function renderHighlights(posts) {
   const row = document.getElementById("highlights");
   row.innerHTML = "";
 
-  let MAX = 0;
-  if (CURRENT_PLAN === "pro") MAX = Infinity;
+  let MAX = Infinity;
+  // If we ever want to limit normal users again, we can use planAllows
+  // if (!planAllows(CURRENT_PLAN, "unlimited_highlights")) MAX = 6;
 
   const items = posts.filter(p => p.highlight && hasMedia(p) && !p.hide);
   const visibleItems = Number.isFinite(MAX) ? items.slice(0, MAX) : items;
