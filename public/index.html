@@ -143,29 +143,11 @@
 
       /* ---------- HERO ---------- */
       .hero {
-        padding: 160px 24px 100px;
+        padding: 40px 24px 80px;
         text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
-      }
-
-      h1 {
-        font-size: clamp(40px, 8vw, 84px);
-        font-weight: 700;
-        letter-spacing: -0.04em;
-        line-height: 1.05;
-        max-width: 14ch;
-        margin: 0 auto 24px;
-        color: #050505;
-      }
-
-      .hero p {
-        font-size: clamp(16px, 1.5vw, 20px);
-        color: var(--muted);
-        line-height: 1.6;
-        max-width: 60ch;
-        margin-bottom: 48px;
       }
 
       .cta-btn {
@@ -190,62 +172,60 @@
         position: relative;
         max-width: 1100px;
         width: 100%;
-        margin: 80px auto 0;
+        margin: 60px auto 0;
         padding: 0 20px;
+        perspective: 2500px;
+        transform-style: preserve-3d;
+      }
+
+      /* Stack effect layers */
+      .stack-layer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 40px;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        pointer-events: none;
+        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+        transform-style: preserve-3d;
+        top: 0;
+        left: 0;
+      }
+
+      .layer-1 {
+        z-index: 2;
+        transform: translate3d(-35px, 20px, -60px) rotateY(6deg);
+        opacity: 0.45;
+        box-shadow: -20px 20px 50px rgba(0, 0, 0, 0.05);
+      }
+
+      .layer-2 {
+        z-index: 1;
+        transform: translate3d(-70px, 40px, -120px) rotateY(6deg);
+        opacity: 0.2;
+        box-shadow: -20px 20px 50px rgba(0, 0, 0, 0.03);
       }
 
       .dashboard-card {
         background: #fff;
         border-radius: 40px;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        box-shadow: 0 50px 100px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        box-shadow: -30px 40px 100px rgba(0, 0, 0, 0.08);
         overflow: hidden;
         aspect-ratio: 16 / 9;
         position: relative;
+        z-index: 5;
+        transform: rotateY(6deg);
+        transform-style: preserve-3d;
+        /* Natural bottom fade */
+        mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
       }
 
-      .dashboard-card img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .floating-card {
-        position: absolute;
-        background: #fff;
-        padding: 16px 24px;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.06);
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        border: 1px solid rgba(0,0,0,0.05);
-        transition: all 0.5s ease;
-      }
-
-      .floating-card .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #eee;
-      }
-
-      .floating-card .info { text-align: left; }
-      .floating-card .info h4 { margin: 0; font-size: 14px; font-weight: 700; }
-      .floating-card .info p { margin: 2px 0 0; font-size: 12px; opacity: 0.5; }
-
-      .card-1 { top: 0%; right: -5%; z-index: 10; }
-      .card-2 { top: 30%; right: -8%; z-index: 9; }
-      .card-3 { top: 60%; right: -5%; z-index: 8; }
-
-      /* Admin mode indicator */
       .__adminOutline {
         outline: 2px solid #3b82f6;
         outline-offset: 4px;
-      }
-
-      @media (max-width: 1100px) {
-        .floating-card { display: none; }
       }
 
       /* Logo strip */
@@ -342,42 +322,23 @@
 
     <main>
       <section class="hero">
-        <h1 id="heroHeading">Build, automate, and scale AI workflows faster</h1>
-        <p id="heroSubtext">We help startups and enterprises unlock growth through modern software, intelligent automation, and AI-powered workflows built for real.</p>
-        
-        <a href="setup.html" class="cta-btn" id="ctaBtn">
-          Get Started
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
-        </a>
-
         <div class="mockup-container">
+          <div class="stack-layer layer-2"></div>
+          <div class="stack-layer layer-1"></div>
+          
           <div class="dashboard-card shadow-lg" id="dashboardPreview">
-            <img src="https://images.unsplash.com/photo-1551288049-bb848a55a110?auto=format&fit=crop&q=80&w=1200" alt="Dashboard Mockup" />
+            <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
           </div>
+        </div>
 
-          <div class="floating-card card-1">
-            <div class="avatar" style="background-color: #004d40;"></div>
-            <div class="info">
-              <h4>Ellie joined team developers</h4>
-              <p>04 April, 2021 | 04:00 PM</p>
-            </div>
-          </div>
-
-          <div class="floating-card card-2">
-            <div class="avatar" style="background-color: #1a1a1a;"></div>
-            <div class="info">
-              <h4>Jenny joined team HR</h4>
-              <p>04 April, 2021 | 04:00 PM</p>
-            </div>
-          </div>
-
-          <div class="floating-card card-3">
-            <div class="avatar" style="background-color: #2d6a4f;"></div>
-            <div class="info">
-              <h4>Adam got employee of the month</h4>
-              <p>03 April, 2021 | 02:00 PM</p>
-            </div>
-          </div>
+        <div style="margin-top: 60px;">
+          <a href="setup.html" class="cta-btn" id="ctaBtn">
+            Get Started
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+          </a>
         </div>
 
         <div class="logo-strip">
