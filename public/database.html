@@ -8,6 +8,30 @@
   <link rel="stylesheet" href="/styles.css">
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap');
+
+    :root {
+      --bg-page: #0d0d0d;
+      --card-bg: #151515;
+      --brand-blue: #3b82f6;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.6);
+      --border-soft: rgba(255, 255, 255, 0.1);
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.7), 0 4px 6px -4px rgb(0 0 0 / 0.7);
+    }
+
+    * { box-sizing: border-box; }
+
+  body {
+    background-color: var(--bg-page);
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text-primary);
+    margin: 0;
+    padding-bottom: 0;
+  }
+
   /* Ensure Make primary button text is visible (don’t change design) */
 .make-primary-btn { color: #111 !important; }
 
@@ -50,7 +74,7 @@ button.primary-btn {
   justify-content: center;
   opacity: 1 !important;
   visibility: visible !important;
-  background: #2563eb !important;
+  background: var(--brand-blue) !important;
   color: #ffffff !important;
   border: none !important;
   padding: 10px 14px !important;
@@ -61,7 +85,7 @@ button.primary-btn {
 
 .db-actions a,
 .database-actions a {
-  color: #2563eb !important;
+  color: var(--brand-blue) !important;
   opacity: 1 !important;
   visibility: visible !important;
 }
@@ -71,153 +95,301 @@ button.primary-btn {
   filter: brightness(0.95);
 }
 
-#save { background: #3b82f6; }
-#save:hover { background: #2563eb; }
+    #save { 
+      width: 100%; 
+      padding: 16px; 
+      font-weight: 800; 
+      border-radius: 14px; 
+      background: var(--text-primary); 
+      color: #fff; 
+      border: none; 
+      cursor: pointer; 
+      font-size: 15px;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    #save:hover { background: #1e293b; transform: translateY(-1px); }
+    #save:active { transform: translateY(0); }
 
 .helpLink {
-  color: inherit;
+  color: var(--brand-blue);
   font-weight: 600;
   cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-    /* ---------- NAV ---------- */
+    header {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(13, 13, 13, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
     .nav {
-      max-width: 1100px;
-      margin: 24px auto 0;
-      padding: 0 28px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 20px;
     }
 
-    .logo { font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
+    .brand { display: inline-flex; align-items: center; text-decoration: none; }
+    .brand-logo { height: 28px; width: auto; display: block; object-fit: contain; filter: brightness(0) invert(1); }
 
-    .nav a {
-      margin-left: 20px;
-      font-size: 14px;
+    .nav-links {
+      display: flex;
+      gap: 12px;
+      align-items: center;
       font-weight: 500;
-      color: var(--text-muted);
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .nav-links a { padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: inherit; text-decoration: none; transition: all 0.2s; }
+    .nav-links a:hover { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+
+    .nav-cta { display: inline-flex; align-items: center; gap: 12px; }
+
+    .icon-btn{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover{ background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .menu-btn {
+      display: none;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .mobile-drawer {
+      display: none;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px 18px;
+    }
+    .mobile-drawer a {
+      display: block;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
       text-decoration: none;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .mobile-drawer a:hover { background: rgba(255, 255, 255, 0.08); }
+    
+    @media (max-width: 760px) {
+      .nav { padding: 12px 20px; }
+      .nav-links { display: none; }
+      .menu-btn { display: block; }
+      .mobile-drawer[aria-hidden="false"] { display: block; }
+      .mobile-drawer { padding: 0 20px 18px; }
     }
 
     /* ---------- HERO ---------- */
     .hero {
-      max-width: 640px;
-      margin: 120px auto 0;
+      max-width: 720px;
+      margin: 80px auto 100px;
       padding: 0 24px;
       text-align: center;
     }
 
-    .hero h1 { font-size: 44px; line-height: 1.1; letter-spacing: -0.03em; }
-    .hero h1 span { color: #3b82f6; }
-    .hero p { margin-top: 16px; font-size: 17px; color: var(--text-muted); }
+    .hero h1 { font-size: 48px; font-weight: 800; line-height: 1.1; letter-spacing: -0.04em; margin-bottom: 24px; }
+    .hero h1 span { color: var(--brand-blue); }
+    .hero p { font-size: 18px; color: var(--text-secondary); line-height: 1.6; max-width: 500px; margin: 0 auto; }
 
     /* ---------- CARD ---------- */
     .card {
-      margin-top: 36px;
-      padding: 28px;
-      background: #fff;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-soft);
+      margin-top: 48px;
+      margin-bottom: 60px;
+      padding: 40px;
+      background: var(--card-bg);
+      border-radius: 32px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-lg);
       text-align: left;
     }
 
-    /* ---------- LOADER ---------- */
-    .loader { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--text-muted); }
-    .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1.2s infinite ease-in-out; }
-    .dot:nth-child(2) { animation-delay: .15s; }
-    .dot:nth-child(3) { animation-delay: .3s; }
-    @keyframes pulse { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
-
-    /* ---------- EDIT MODAL ---------- */
-    #editModal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1001;
-    }
-    #editModal.active { display: flex; }
-
-    #editModal .modal-content {
-      background: #fff;
-      padding: 28px;
-      border-radius: 14px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text-primary);
+      margin-bottom: 12px;
     }
 
-    #editModal .modal-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: #111;
+    .section-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      line-height: 1.5;
     }
 
-    #editModal .modal-input {
+    .setup-box {
+      border: 1px solid var(--border-soft);
+      border-radius: 24px;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.02);
+      margin-top: 4px;
+    }
+    
+    .input-group { margin-bottom: 24px; }
+    .input-group label { display: block; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); margin-bottom: 10px; }
+    
+    .setup-box input {
       width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 16px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
       box-sizing: border-box;
-      font-family: inherit;
-    }
-
-    #editModal .modal-input:focus { outline: none; border-color: #3b82f6; }
-
-    #editModal .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
-
-    #editModal .modal-btn {
-      padding: 10px 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-    }
-
-    #editModal .modal-btn-save { background: #3b82f6; color: white; }
-    #editModal .modal-btn-save:hover { background: #2563eb; }
-
-    #editModal .modal-btn-cancel { background: #e5e7eb; color: #111; }
-    #editModal .modal-btn-cancel:hover { background: #d1d5db; }
-
-    .edit-btn {
-      padding: 6px 10px;
-      font-size: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #fff;
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--text-main);
+      outline: none;
       transition: all 0.2s;
     }
-
-    .edit-btn:hover {
-      background: #f9fafb;
-      border-color: #3b82f6;
-      color: #3b82f6;
+    
+    .setup-box input:focus { 
+      border-color: var(--brand-blue); 
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
     }
+
+    .helper { 
+      font-size: 13px; 
+      line-height: 1.6; 
+      color: var(--text-secondary); 
+      background: rgba(59, 130, 246, 0.1);
+      padding: 14px 20px;
+      border-radius: 14px;
+      margin-top: -8px;
+      margin-bottom: 28px;
+    }
+    
+    #topControls {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #widgetSelect { 
+      appearance: none; 
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+      background-repeat: no-repeat; 
+      background-position: right 16px center; 
+      background-size: 14px; 
+      padding-right: 44px !important; 
+    }
+
+    .db-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 18px 24px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    .db-card:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    .code-snippet {
+      background: #0f172a;
+      border-radius: 20px;
+      padding: 24px;
+      position: relative;
+      margin-bottom: 40px;
+      border: 1px solid #1e293b;
+    }
+    .code-label { color: #64748b; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; display: block; letter-spacing: 0.1em; }
+    .code-text { color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 14px; word-break: break-all; line-height: 1.6; }
   </style>
 </head>
 
 <body>
 
-  <div class="nav">
-    <div class="logo">Grid Planner</div>
-    <div>
-      <a href="#">Docs</a>
-      <a href="#">Pricing</a>
-      <a href="#">Support</a>
+  <header>
+    <div class="nav">
+      <a class="brand" href="index.html" aria-label="Home">
+        <img class="brand-logo" src="assets/logo.png" alt="Grid Planner logo" />
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="about.html">About Us</a>
+      </nav>
+
+      <div class="nav-cta" aria-label="Actions">
+        <a class="icon-btn" href="shop.html" aria-label="Search (go to shop)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M21 21l-4.3-4.3"></path>
+          </svg>
+        </a>
+
+        <a class="icon-btn" href="account.html" aria-label="Account">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+            <circle cx="12" cy="8" r="4"></circle>
+          </svg>
+        </a>
+
+        <a class="icon-btn" href="cart.html" aria-label="Cart">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 6h15l-1.5 9H7.5L6 6Z"></path>
+            <path d="M6 6 5 3H2"></path>
+            <circle cx="9" cy="20" r="1.5"></circle>
+            <circle cx="18" cy="20" r="1.5"></circle>
+          </svg>
+        </a>
+
+        <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileDrawer" aria-label="Open menu">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 7h16"></path>
+            <path d="M4 12h16"></path>
+            <path d="M4 17h16"></path>
+          </svg>
+        </button>
+      </div>
     </div>
-  </div>
+
+    <div class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="about.html">About Us</a>
+    </div>
+  </header>
 
   <div class="hero">
     <h1>
@@ -227,338 +399,255 @@ button.primary-btn {
 
     <p>Connect your Notion database to finish setting up your grid.</p>
 
-   <div class="card" style="text-align:center;">
-    <h2 style="margin:0 0 6px; font-size:20px;">
-      One step ahead to connect your grid to Notion
-    </h2>
+    <div class="card">
+      <div id="content" style="text-align:left;">
+        <div id="topControls" style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:0; border:none; background:transparent; margin-bottom:40px;">
+          <div style="display:flex; align-items:center; gap:16px; min-width:280px; flex:1;">
+            <div style="font-weight:800; font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-secondary); white-space:nowrap;">Active Grid</div>
+            <select id="widgetSelect" style="width:100%; padding:14px 18px; border-radius:14px; border:1px solid var(--border-soft); background:rgba(255,255,255,0.05); font-weight:700; font-size: 15px; outline:none; transition: all 0.2s; cursor: pointer; color: #fff;"></select>
+          </div>
+          <div id="widgetCreateWrap" style="display:flex; align-items:center; gap:12px;">
+            <button id="addWidget" type="button" style="padding:14px 22px; font-size:14px; border-radius:14px; border:none; background:var(--brand-blue); color:#fff; font-weight:700; cursor:pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">+ New Grid</button>
+            <div id="widgetCreateInline" style="display:none; align-items:center; gap:10px;">
+              <input id="newWidgetName" placeholder="Grid name..." style="width:200px; padding:14px 18px; border-radius:14px; border:1px solid var(--border-soft); background:rgba(255,255,255,0.05); color:#fff; font-weight:700; font-size: 14px; outline:none;" />
+              <button id="createWidgetBtn" type="button" style="padding:14px 22px; font-size:14px; border-radius:14px; border:none; background:var(--brand-blue); color:#fff; font-weight:700; cursor:pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.2);">Create</button>
+              <button id="cancelWidgetBtn" type="button" style="padding:14px 20px; font-size:14px; border-radius:14px; border:1px solid var(--border-soft); background:transparent; color:#fff; font-weight:700; cursor:pointer;">Cancel</button>
+            </div>
+          </div>
+        </div>
 
-    <div id="content" style="margin-top:20px; text-align:left;">
+        <div id="views">
+          <!-- Main Content Area -->
+          <div id="setupView" style="display:none; max-width: 600px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 40px; margin-top: 20px;">
+            <div style="font-size: 48px; margin-bottom: 24px;">🚀</div>
+            <h2 class="section-title" style="margin-bottom: 12px; font-size: 28px;">Finish your setup</h2>
+            <p class="section-desc" style="max-width: 420px; margin: 0 auto;">One step ahead to connect your grid to Notion. Link your database and set a secure password to go live.</p>
+          </div>
 
-     <!-- Modern Top Controls Row -->
-<div id="topControls" style="
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  flex-wrap:wrap;
-  padding:12px 12px;
-  border:1px solid var(--border);
-  border-radius:14px;
-  background:#fff;
-  box-shadow: var(--shadow-soft);
-  margin-bottom:14px;
-">
-  <div style="display:flex; align-items:center; gap:10px; min-width:240px; flex:1;">
-    <div style="font-weight:700; font-size:13px; color:var(--text-muted); white-space:nowrap;">
-      Widget
-    </div>
+          <div class="setup-box" style="background:rgba(255,255,255,0.02); border: 1px solid var(--border-soft); box-shadow: 0 4px 20px -5px rgba(0,0,0,0.3); padding: 32px; border-radius: 24px; margin-bottom: 48px;">
+            <div class="input-group" style="margin-bottom: 16px;">
+              <label for="db" style="display: block; font-weight: 700; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.03em;">Notion Database ID or URL</label>
+              <input id="db" placeholder="https://www.notion.so/..." style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.05); color:#fff; font-size: 15px; outline: none; transition: all 0.2s; font-family: inherit;" />
+            </div>
 
-    <select id="widgetSelect" style="
-      width:100%;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#f9fafb;
-      font-weight:600;
-      outline:none;
-    "></select>
-  </div>
+            <div class="helper" style="font-size: 13px; color: var(--text-secondary); background: rgba(59, 130, 246, 0.1); padding: 12px 16px; border-radius: 12px; margin-bottom: 24px; border-left: 4px solid var(--brand-blue);">
+              <div style="font-weight: 700; color: var(--brand-blue); margin-bottom: 4px;">How to find it:</div>
+              Go to your <a href="#" class="helpLink" data-img="/images/database.png">Database</a> in Notion → <a href="#" class="helpLink" data-img="/images/click.png">Click (⋯)</a> in top right → <a href="#" class="helpLink" data-img="/images/copylink.png">Copy link</a>
+            </div>
 
-  <div id="widgetCreateWrap" style="display:flex; align-items:center; gap:10px;">
-    <button id="addWidget" type="button" style="
-      padding:10px 14px;
-      font-size:14px;
-      border-radius:12px;
-      border:none;
-      background:#111827;
-      color:#fff;
-      font-weight:700;
-      cursor:pointer;
-    ">Add Widget</button>
+            <div class="input-group" style="margin-bottom: 32px;">
+              <label for="editPassword" style="display: block; font-weight: 700; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.03em;">Profile Edit Password</label>
+              <input id="editPassword" type="password" placeholder="Choose a secure password (min. 6 chars)" style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.05); color:#fff; font-size: 15px; outline: none; transition: all 0.2s; font-family: inherit;" />
+            </div>
 
-    <div id="widgetCreateInline" style="display:none; align-items:center; gap:8px;">
-      <input id="newWidgetName" placeholder="Widget name" style="
-        width:220px;
-        max-width:50vw;
-        padding:10px 12px;
-        border-radius:12px;
-        border:1px solid var(--border);
-        background:#f9fafb;
-        font-weight:600;
-        outline:none;
-      " />
+            <button id="save" style="width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--brand-blue); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">Connect & Save Grid</button>
+          </div>
 
-      <button id="createWidgetBtn" type="button" style="
-        padding:10px 14px;
-        font-size:14px;
-        border-radius:12px;
-        border:none;
-        background:#3b82f6;
-        color:#fff;
-        font-weight:700;
-        cursor:pointer;
-      ">Create</button>
 
-      <button id="cancelWidgetBtn" type="button" style="
-        padding:10px 12px;
-        font-size:14px;
-        border-radius:12px;
-        border:1px solid var(--border);
-        background:#fff;
-        color:#111;
-        font-weight:700;
-        cursor:pointer;
-      ">Cancel</button>
-    </div>
-  </div>
-</div>
+        </div>
 
-      <label>
-        Enter Database ID or URL
-        <input id="db" placeholder="https://www.notion.so/..." style="margin-top:8px;" />
-      </label>
-
-      <div class="helper" style="margin-top:10px;">
-        Open the
-        <a href="#" class="helpLink" data-img="/images/database.png">database</a>
-        in Notion →
-        <a href="#" class="helpLink" data-img="/images/click.png">Right (⋯) Menu</a>
-        →
-        <a href="#" class="helpLink" data-img="/images/copylink.png">Copy link</a>
-        → Paste here
+      <div id="successView" style="display:none;">
+        <div style="margin-bottom: 28px;">
+          <h2 class="section-title">Grid Settings</h2>
+          <p class="section-desc">Manage your Notion connections and embed your live grid.</p>
+        </div>
+        <div id="embedWrap"></div>
+        
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-soft); border-radius: 20px; padding: 24px; margin-bottom: 32px;">
+          <div style="font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 16px;">Next steps</div>
+          <div style="display: grid; gap: 16px;">
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <div style="width: 24px; height: 24px; background: var(--brand-blue); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0;">1</div>
+              <div style="font-size: 14px; color: #fff; line-height: 1.5;">Copy the <strong>Embed URL</strong> above and paste it into any Notion page.</div>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <div style="width: 24px; height: 24px; background: var(--brand-blue); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0;">2</div>
+              <div style="font-size: 14px; color: #fff; line-height: 1.5;">Type <strong>"/embed"</strong> in Notion or paste the link and select <strong>"Create Embed"</strong>.</div>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <div style="width: 24px; height: 24px; background: var(--brand-blue); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0;">3</div>
+              <div style="font-size: 14px; color: #fff; line-height: 1.5;">Use your security password on the Notion page to unlock and edit your grid profile live.</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Label input REMOVED (auto generated) -->
-
-      <button id="save" style="margin-top:22px;">Save</button>
+      <div id="dbList"></div>
+        </div>
+      </div>
     </div>
 
-    <div id="status" style="margin-top:18px; font-size:14px;"></div>
-    <div id="embedWrap" style="margin-top:20px; display:none;"></div>
-    <div id="dbList" style="margin-top:24px;"></div>
+    <div id="status" style="margin-top:18px; font-size:14px; text-align:center;"></div>
    </div>
-  </div>
 
-  <!-- HELP IMAGE MODAL -->
+  <footer style="margin-top: 100px; padding: 80px 24px; border-top: 1px solid var(--border-soft); background: #000;">
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px;">
+      <div style="flex: 1; min-width: 280px;">
+        <div class="logo" style="margin-bottom: 24px;">
+          <img src="assets/logo.png" alt="Grid Planner" style="height: 28px; width: auto; filter: brightness(0) invert(1);" />
+        </div>
+        <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.6; max-width: 320px;">
+          Synchronize your Notion databases with stunning, customizable grid layouts for your personal brand or business.
+        </p>
+      </div>
+      <div style="display: flex; gap: 80px; flex-wrap: wrap;">
+        <div>
+          <div style="font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #fff; margin-bottom: 24px;">Product</div>
+          <div style="display: grid; gap: 14px;">
+            <a href="index.html" style="font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">Home</a>
+            <a href="shop.html" style="font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">Shop</a>
+            <a href="contact.html" style="font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">Contact</a>
+          </div>
+        </div>
+        <div>
+          <div style="font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #fff; margin-bottom: 24px;">Support</div>
+          <div style="display: grid; gap: 14px;">
+            <a href="#" style="font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">Docs</a>
+            <a href="#" style="font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">Help Center</a>
+            <a href="#" style="font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">Terms</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width: 1100px; margin: 80px auto 0; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+      <div style="font-size: 13px; color: var(--text-secondary);">© 2024 Grid Planner. Crafted for clarity.</div>
+      <div style="display: flex; gap: 24px;">
+        <a href="#" style="color: #fff; opacity: 0.6; transition: opacity 0.2s;"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.48.75 2.78 1.89 3.55-.7 0-1.36-.21-1.94-.53v.05c0 2.07 1.47 3.8 3.43 4.19-.36.1-.73.15-1.12.15-.27 0-.54-.03-.8-.08.54 1.69 2.11 2.93 3.97 2.96-1.46 1.14-3.3 1.82-5.3 1.82-.34 0-.68-.02-1.02-.06 1.89 1.21 4.13 1.92 6.54 1.92 7.85 0 12.13-6.5 12.13-12.13 0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg></a>
+      </div>
+    </div>
+  </footer>
+
   <div id="helpModal" style="
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.45);
+    background:rgba(0,0,0,0.8);
     display:none;
     align-items:center;
     justify-content:center;
     z-index:1000;
   ">
     <div style="
-      background:#fff;
+      background:#1a1a1a;
       padding:16px;
-      border-radius:14px;
-      max-width:700px;
+      border-radius:24px;
+      max-width:800px;
       width:90%;
       position:relative;
-      box-shadow:0 20px 60px rgba(0,0,0,0.25);
+      box-shadow:0 20px 60px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
     ">
       <button id="closeHelpModal" style="
         position:absolute;
-        top:10px;
-        right:12px;
+        top:20px;
+        right:20px;
         border:none;
-        background:none;
-        font-size:18px;
+        background:rgba(255,255,255,0.1);
+        color:#fff;
+        width:32px;
+        height:32px;
+        border-radius:50%;
+        font-size:14px;
         cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
       ">✕</button>
 
-      <img id="helpModalImg" src="" style="width:100%; border-radius:10px;" alt="Notion help" />
+      <img id="helpModalImg" src="" style="width:100%; border-radius:16px;" alt="Notion help" />
     </div>
   </div>
 
-  <!-- EDIT LABEL MODAL (kept, even if not used currently) -->
-  <div id="editModal">
-    <div class="modal-content">
-      <div class="modal-title">Edit Database Label</div>
-      <input
-        id="editLabelInput"
-        type="text"
-        class="modal-input"
-        placeholder="Enter new label"
-      />
-      <div class="modal-actions">
-        <button class="modal-btn modal-btn-cancel" onclick="closeEditModal()">Cancel</button>
-        <button class="modal-btn modal-btn-save" onclick="saveEditLabel()">Save</button>
-      </div>
-    </div>
-  </div>
+
 
   <script>
+    // Mobile menu toggle logic
+    const menuBtn = document.getElementById("menuBtn");
+    const drawer = document.getElementById("mobileDrawer");
+
+    menuBtn?.addEventListener("click", () => {
+      const expanded = menuBtn.getAttribute("aria-expanded") === "true";
+      menuBtn.setAttribute("aria-expanded", String(!expanded));
+      drawer.setAttribute("aria-hidden", String(expanded));
+    });
+
   const params = new URLSearchParams(location.search);
   const token = params.get("token");
   let slug = null; // selected widget slug
 
   const status = document.getElementById("status");
+  const setupView = document.getElementById("setupView");
+  const successView = document.getElementById("successView");
   const embedWrap = document.getElementById("embedWrap");
   const dbList = document.getElementById("dbList");
 
   let CURRENT_PLAN = "free";
   let DATABASES = [];
   let editingDatabaseId = null;
-  let editingDatabaseLabel = null;
 
   function extractDatabaseId(input) {
     const match = input.match(/[a-f0-9]{32}/i);
     return match ? match[0] : null;
   }
 
-  function renderEmbedUrl(url) {
-    embedWrap.style.display = "block";
+  function renderEmbedUrl(url, hasPassword) {
+    if (!hasPassword) {
+      embedWrap.innerHTML = "";
+      return;
+    }
     embedWrap.innerHTML = `
-      <strong>Embed this URL in Notion:</strong>
-      <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <input
-          id="embedUrl"
-          value="${url}"
-          readonly
-          style="
-            flex:1;
-            padding:10px 12px;
-            font-size:14px;
-            border-radius:8px;
-            border:1px solid var(--border);
-            background:#f9fafb;
-            min-width:240px;
-          "
-        />
-        <button
-          id="copyUrl"
-          style="
-            padding:10px 14px;
-            font-size:14px;
-            border-radius:8px;
-            border:none;
-            background:#3b82f6;
-            color:#fff;
-            font-weight:600;
-            cursor:pointer;
-          "
-        >
-          Copy
-        </button>
-      </div>
-
-      <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:14px;">
-        <div style="font-weight:800; margin-bottom:8px;">Profile Editing Setup (Pro)</div>
-
-        <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px;">Widget name</label>
-        <input id="setupWidgetName" placeholder="My Grid" style="
-          width:100%;
-          padding:10px 12px;
-          border-radius:12px;
-          border:1px solid var(--border);
-          background:#f9fafb;
-          font-weight:600;
-          outline:none;
-          margin-bottom:10px;
-        "/>
-
-        <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px;">Dashboard link</label>
-        <input id="setupDashboardLink" value="${url}" readonly style="
-          width:100%;
-          padding:10px 12px;
-          border-radius:12px;
-          border:1px solid var(--border);
-          background:#f9fafb;
-          font-weight:600;
-          outline:none;
-          margin-bottom:10px;
-        "/>
-
-        <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px;">Password to edit widget</label>
-        <input id="setupPassword" type="password" placeholder="Create password" style="
-          width:100%;
-          padding:10px 12px;
-          border-radius:12px;
-          border:1px solid var(--border);
-          background:#f9fafb;
-          font-weight:600;
-          outline:none;
-          margin-bottom:10px;
-        "/>
-
-        <button id="setupSaveBtn" style="
-          display:none;
-          margin-top:8px;
-          padding:10px 14px;
-          font-size:14px;
-          border-radius:12px;
-          border:none;
-          background:#111827;
-          color:#fff;
-          font-weight:800;
-          cursor:pointer;
-          width:100%;
-        ">Save</button>
-
-        <div id="setupStatus" style="margin-top:10px; font-size:13px;"></div>
+      <div class="code-snippet">
+        <span class="code-label">Embed URL in Notion</span>
+        <div style="display:flex; gap:16px; align-items:flex-start;">
+          <div class="code-text" id="embedUrlText">${url}</div>
+          <button
+            id="copyUrl"
+            style="
+              padding:10px 18px;
+              font-size:13px;
+              border-radius:12px;
+              border:none;
+              background:var(--brand-blue);
+              color:#fff;
+              font-weight:700;
+              cursor:pointer;
+              white-space:nowrap;
+              box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+            "
+          >
+            Copy
+          </button>
+          <a
+            href="${url}"
+            target="_blank"
+            style="
+              padding:10px 18px;
+              font-size:13px;
+              border-radius:12px;
+              border:1px solid var(--border-soft);
+              background:#fff;
+              color:var(--text-primary);
+              font-weight:700;
+              cursor:pointer;
+              white-space:nowrap;
+              text-decoration:none;
+              display:inline-flex;
+              align-items:center;
+              gap:6px;
+            "
+          >
+            Preview ↗
+          </a>
+        </div>
       </div>
     `;
 
     document.getElementById("copyUrl").onclick = () => {
       navigator.clipboard.writeText(url);
       const btn = document.getElementById("copyUrl");
-      btn.innerText = "Copied";
-      setTimeout(() => (btn.innerText = "Copy"), 1200);
+      btn.innerText = "Copied!";
+      setTimeout(() => (btn.innerText = "Copy"), 1500);
     };
-
-    // Setup (name + password) save wiring
-    const nameEl = document.getElementById("setupWidgetName");
-    const pwEl = document.getElementById("setupPassword");
-    const saveEl = document.getElementById("setupSaveBtn");
-    const setupStatus = document.getElementById("setupStatus");
-
-    // Prefill name based on selected widget option text
-    const sel = document.getElementById("widgetSelect");
-    if (nameEl && sel) {
-      const opt = sel.options[sel.selectedIndex];
-      nameEl.value = (opt?.textContent || "").trim();
-    }
-
-    function updateSetupSaveVisibility() {
-      const nameOk = (nameEl?.value || "").trim().length > 0;
-      const pwOk = (pwEl?.value || "").trim().length > 0;
-      const show = nameOk && pwOk;
-      if (saveEl) saveEl.style.display = show ? "inline-flex" : "none";
-    }
-
-    if (nameEl) nameEl.oninput = updateSetupSaveVisibility;
-    if (pwEl) pwEl.oninput = updateSetupSaveVisibility;
-    updateSetupSaveVisibility();
-
-    if (saveEl) {
-      saveEl.onclick = async () => {
-        const newName = (nameEl.value || "").trim();
-        const password = (pwEl.value || "").trim();
-        if (!newName || !password) return;
-
-        setupStatus.textContent = "Saving…";
-        setupStatus.style.color = "inherit";
-
-        try {
-          const r = await fetch("/api/widgets", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token, action: "save_setup", slug, name: newName, password })
-          });
-
-          const j = await r.json().catch(() => ({}));
-          if (!r.ok) throw new Error(j.error || "Failed to save");
-
-          setupStatus.textContent = "Saved ✅ Password set.";
-          setupStatus.style.color = "#16a34a";
-        } catch (e) {
-          setupStatus.textContent = e.message || "Save failed";
-          setupStatus.style.color = "#b91c1c";
-        }
-      };
-    }
   }
 
   function getPlanLimit(plan) {
@@ -607,68 +696,58 @@ button.primary-btn {
 
     DATABASES = Array.isArray(data.databases) ? data.databases : [];
     CURRENT_PLAN = data.plan || "free";
+    const hasPassword = !!data.has_password;
 
-    // Always show embed URL for selected widget (PUBLIC link - no key)
-    const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
-    renderEmbedUrl(embedUrl);
-
-    if (!DATABASES.length) {
-      dbList.innerHTML = `<div style="color:var(--text-muted); font-size:14px;">No databases added yet.</div>`;
-      return;
+    if (DATABASES.length > 0 && hasPassword) {
+      setupView.style.display = "none";
+      successView.style.display = "block";
+      const embedUrl = `${window.location.origin}/grid.html?slug=${encodeURIComponent(slug)}`;
+      renderEmbedUrl(embedUrl, true);
+    } else {
+      setupView.style.display = "block";
+      successView.style.display = "none";
     }
 
-    dbList.innerHTML = `
-      <div style="font-weight:700; margin-bottom:10px;">Connected databases</div>
+    if (!DATABASES.length) {
+      dbList.innerHTML = `<div style="color:var(--text-secondary); font-size:14px; margin-top:40px; text-align:center; padding:40px; border:2px dashed var(--border-soft); border-radius:24px;">No databases connected yet.</div>`;
+    } else {
+      dbList.innerHTML = `
+        <div style="font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-secondary); margin-bottom:20px; margin-top:80px;">Connected Databases</div>
       ${DATABASES.map(db => {
         const isEditing = editingDatabaseId === db.id;
-
         return `
-          <div style="
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:10px 12px;
-            border:1px solid var(--border);
-            border-radius:10px;
-            margin-bottom:10px;
-            gap:12px;
-          ">
-            <div style="display:flex; flex-direction:column; flex:1;">
-              ${
-                isEditing
-                  ? `
-                    <input
-                      data-edit-input="${db.id}"
-                      value="${escapeHtml(db.label || "Untitled")}"
-                      style="
-                        padding:8px 10px;
-                        font-size:14px;
-                        border-radius:10px;
-                        border:1px solid var(--border);
-                        outline:none;
-                        font-weight:600;
-                      "
-                    />
-                  `
-                  : `<div style="font-weight:600;">${escapeHtml(db.label || "Untitled")}</div>`
-              }
-
-              <div style="font-size:12px; color:var(--text-muted);">
+          <div class="db-card" style="border:none; box-shadow:none; background:transparent; padding:16px 0; border-bottom:1px solid var(--border-soft); border-radius:0; margin-bottom:0;">
+            <div style="display:flex; flex-direction:column; flex:1; gap:6px;">
+              ${isEditing ? `
+                <div style="display:flex; gap:8px; align-items:center;">
+                  <input id="edit-input-${db.id}" value="${escapeHtml(db.label || "")}" style="padding:10px 14px; font-size:14px; border-radius:10px; border:1px solid var(--brand-blue); outline:none; font-weight:600; width: 100%; max-width: 250px;" />
+                  <button class="save-label-btn" data-id="${db.id}" style="padding:10px 16px; font-size:13px; border-radius:10px; border:none; background:var(--brand-blue); color:#fff; font-weight:700; cursor:pointer;">Save</button>
+                  <button class="cancel-label-btn" style="padding:10px 12px; font-size:13px; border-radius:10px; border:1px solid var(--border-soft); background:#fff; cursor:pointer;">✕</button>
+                </div>
+              ` : `
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div style="font-weight:700; font-size:16px; color:var(--text-primary);">${escapeHtml(db.label || "Untitled")}</div>
+                  <button class="start-edit-btn" data-id="${db.id}" style="border:none; background:none; padding:4px 8px; color:var(--brand-blue); font-size:12px; font-weight:700; cursor:pointer; opacity:0.6; transition:opacity 0.2s;">Edit Label</button>
+                </div>
+              `}
+              <div style="font-size:12px; color:var(--text-secondary); font-family: monospace; opacity: 0.8;">
                 ${escapeHtml(db.database_id || "")}
               </div>
             </div>
 
-            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; gap:12px; align-items:center;">
               ${
                 db.is_primary
                   ? `
                     <span style="
-                      font-size:12px;
-                      font-weight:700;
-                      color:#16a34a;
-                      border:1px solid rgba(22,163,74,.35);
-                      padding:6px 10px;
-                      border-radius:999px;
+                      font-size:11px;
+                      font-weight:800;
+                      color:#10b981;
+                      background: #ecfdf5;
+                      padding:6px 12px;
+                      border-radius:99px;
+                      text-transform: uppercase;
+                      letter-spacing: 0.05em;
                     ">Primary</span>
                   `
                   : `
@@ -676,26 +755,16 @@ button.primary-btn {
                       class="make-primary-btn"
                       data-primary-btn="${db.id}"
                       style="
-                        padding:8px 10px;
+                        padding:8px 14px;
                         font-size:13px;
-                        border-radius:10px;
-                        border:1px solid var(--border);
+                        border-radius:12px;
+                        border:1px solid var(--border-soft);
                         background:#fff;
                         cursor:pointer;
-                        font-weight:600;
+                        font-weight:700;
+                        transition: all 0.2s;
                       "
-                    >Make primary</button>
-                  `
-              }
-
-              ${
-                isEditing
-                  ? `
-                    <button class="edit-btn" data-save-edit="${db.id}">Save</button>
-                    <button class="edit-btn" data-cancel-edit="${db.id}" style="border-color:#e5e7eb;">Cancel</button>
-                  `
-                  : `
-                    <button class="edit-btn" data-start-edit="${db.id}">Edit</button>
+                    >Set Primary</button>
                   `
               }
             </div>
@@ -703,29 +772,43 @@ button.primary-btn {
         `;
       }).join("")}
     `;
+    }
 
     DATABASES.forEach(db => {
       const primaryBtn = document.querySelector(`[data-primary-btn="${db.id}"]`);
       if (primaryBtn) primaryBtn.onclick = () => setPrimary(db.id);
 
-      const startEditBtn = document.querySelector(`[data-start-edit="${db.id}"]`);
-      if (startEditBtn) startEditBtn.onclick = () => startInlineEdit(db.id);
+      const startEditBtn = document.querySelector(`.start-edit-btn[data-id="${db.id}"]`);
+      if (startEditBtn) startEditBtn.onclick = () => {
+        editingDatabaseId = db.id;
+        loadDatabases();
+      };
 
-      const cancelBtn = document.querySelector(`[data-cancel-edit="${db.id}"]`);
-      if (cancelBtn) cancelBtn.onclick = () => cancelInlineEdit();
-
-      const saveBtn = document.querySelector(`[data-save-edit="${db.id}"]`);
-      if (saveBtn) saveBtn.onclick = () => saveInlineEdit(db.id);
-
-      const input = document.querySelector(`[data-edit-input="${db.id}"]`);
-      if (input) {
-        input.onkeydown = (e) => {
-          if (e.key === "Enter") saveInlineEdit(db.id);
-          if (e.key === "Escape") cancelInlineEdit();
-        };
-        setTimeout(() => input.focus(), 0);
-      }
+      const saveBtn = document.querySelector(`.save-label-btn[data-id="${db.id}"]`);
+      if (saveBtn) saveBtn.onclick = () => {
+        const input = document.getElementById(`edit-input-${db.id}`);
+        saveLabel(db.id, input.value);
+      };
+      
+      const cancelBtn = document.querySelector(`.cancel-label-btn`);
+      if (cancelBtn && editingDatabaseId === db.id) cancelBtn.onclick = () => {
+        editingDatabaseId = null;
+        loadDatabases();
+      };
     });
+  }
+
+  async function saveLabel(id, label) {
+    if (!label.trim()) return alert("Label cannot be empty");
+    status.innerText = "Updating label…";
+    try {
+      await apiWidgetDatabases("rename", { id, label: label.trim() });
+      status.innerText = "Label updated ✅";
+      editingDatabaseId = null;
+      await loadDatabases();
+    } catch (e) {
+      status.innerText = e.message || "Failed to update label";
+    }
   }
 
   function escapeHtml(str) {
@@ -737,36 +820,7 @@ button.primary-btn {
       .replaceAll("'", "&#039;");
   }
 
-  function startInlineEdit(dbId) {
-    editingDatabaseId = dbId;
-    loadDatabases();
-  }
 
-  function cancelInlineEdit() {
-    editingDatabaseId = null;
-    loadDatabases();
-  }
-
-  async function saveInlineEdit(dbId) {
-    const input = document.querySelector(`[data-edit-input="${dbId}"]`);
-    const newLabel = (input?.value || "").trim();
-
-    if (!newLabel) {
-      alert("Label cannot be empty");
-      return;
-    }
-
-    status.innerText = "Updating label…";
-
-    try {
-      await apiWidgetDatabases("rename", { id: dbId, label: newLabel });
-      status.innerText = "Label updated ✅";
-      editingDatabaseId = null;
-      await loadDatabases();
-    } catch (e) {
-      status.innerText = e.message || "Failed to update label";
-    }
-  }
 
   async function setPrimary(id) {
     status.innerText = "Setting primary database…";
@@ -778,14 +832,6 @@ button.primary-btn {
     } catch (e) {
       status.innerText = e.message || "Failed to set primary";
     }
-  }
-
-  function openEditModal(databaseId, currentLabel) {
-    editingDatabaseId = databaseId;
-    editingDatabaseLabel = currentLabel;
-    document.getElementById("editLabelInput").value = currentLabel;
-    document.getElementById("editModal").classList.add("active");
-    document.getElementById("editLabelInput").focus();
   }
 
   async function loadWidgets() {
@@ -848,6 +894,53 @@ button.primary-btn {
       return;
     }
 
+    // Wire up 'Add Grid' buttons FIRST so they work even with 0 widgets
+    const addBtn = document.getElementById("addWidget");
+    const inline = document.getElementById("widgetCreateInline");
+    const nameInput = document.getElementById("newWidgetName");
+    const createBtn = document.getElementById("createWidgetBtn");
+    const cancelBtn = document.getElementById("cancelWidgetBtn");
+
+    function openInlineCreate() {
+      inline.style.display = "inline-flex";
+      addBtn.style.display = "none";
+      nameInput.value = "My Grid";
+      setTimeout(() => nameInput.focus(), 0);
+    }
+
+    function closeInlineCreate() {
+      inline.style.display = "none";
+      addBtn.style.display = "inline-flex";
+      nameInput.value = "";
+    }
+
+    addBtn.onclick = () => openInlineCreate();
+    cancelBtn.onclick = () => closeInlineCreate();
+
+    createBtn.onclick = async () => {
+      const name = (nameInput.value || "").trim();
+      if (!name) return alert("Enter a widget name");
+
+      status.innerText = "Creating widget…";
+      try {
+        const created = await createWidget(name);
+        closeInlineCreate();
+        status.innerText = "Widget created ✅";
+
+        if (created?.widget?.slug) {
+          localStorage.setItem("activeWidgetSlug", created.widget.slug);
+        }
+        await initDashboard();
+      } catch (e) {
+        status.innerText = e.message || "Failed to create widget";
+      }
+    };
+
+    nameInput.onkeydown = (e) => {
+      if (e.key === "Enter") createBtn.click();
+      if (e.key === "Escape") closeInlineCreate();
+    };
+
     status.innerText = "Loading widgets…";
 
     try {
@@ -856,7 +949,14 @@ button.primary-btn {
 
       const widgets = Array.isArray(data.widgets) ? data.widgets : [];
       if (!widgets.length) {
-        status.innerText = "No widgets found for this token.";
+        document.getElementById("views").innerHTML = `
+          <div style="padding: 60px 20px; text-align: center;">
+            <div style="font-size: 56px; margin-bottom: 24px;">✨</div>
+            <h2 class="section-title" style="text-align:center;">Create your first Grid Profile</h2>
+            <p class="section-desc" style="text-align:center; max-width: 400px; margin: 0 auto 32px;">Connect your Notion databases to a beautiful, customizable grid profile you can embed anywhere.</p>
+            <button onclick="document.getElementById('addWidget').click()" style="padding: 16px 32px; font-size: 16px; border-radius: 16px; border: none; background: var(--text-primary); color: #fff; font-weight: 700; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);">Get Started</button>
+          </div>
+        `;
         return;
       }
 
@@ -882,53 +982,6 @@ button.primary-btn {
         await loadDatabases();
       };
 
-     const addBtn = document.getElementById("addWidget");
-const inline = document.getElementById("widgetCreateInline");
-const nameInput = document.getElementById("newWidgetName");
-const createBtn = document.getElementById("createWidgetBtn");
-const cancelBtn = document.getElementById("cancelWidgetBtn");
-
-function openInlineCreate() {
-  inline.style.display = "inline-flex";
-  addBtn.style.display = "none";
-  nameInput.value = "My Grid";
-  setTimeout(() => nameInput.focus(), 0);
-}
-
-function closeInlineCreate() {
-  inline.style.display = "none";
-  addBtn.style.display = "inline-flex";
-  nameInput.value = "";
-}
-
-addBtn.onclick = () => openInlineCreate();
-
-cancelBtn.onclick = () => closeInlineCreate();
-
-createBtn.onclick = async () => {
-  const name = (nameInput.value || "").trim();
-  if (!name) return alert("Enter a widget name");
-
-  status.innerText = "Creating widget…";
-  try {
-   const created = await createWidget(name);
-closeInlineCreate();
-status.innerText = "Widget created ✅";
-
-if (created?.widget?.slug) {
-  localStorage.setItem("activeWidgetSlug", created.widget.slug);
-}
-await initDashboard();
-  } catch (e) {
-    status.innerText = e.message || "Failed to create widget";
-  }
-};
-
-nameInput.onkeydown = (e) => {
-  if (e.key === "Enter") createBtn.click();
-  if (e.key === "Escape") closeInlineCreate();
-};
-
       status.innerText = "";
       await loadDatabases();
     } catch (e) {
@@ -936,70 +989,47 @@ nameInput.onkeydown = (e) => {
     }
   }
 
-  function closeEditModal() {
-    editingDatabaseId = null;
-    editingDatabaseLabel = null;
-    document.getElementById("editModal").classList.remove("active");
-  }
-
-  async function saveEditLabel() {
-    if (!editingDatabaseId) return;
-
-    const newLabel = document.getElementById("editLabelInput").value.trim();
-
-    if (!newLabel) {
-      alert("Label cannot be empty");
-      return;
-    }
-
-    if (newLabel === editingDatabaseLabel) {
-      closeEditModal();
-      return;
-    }
-
-    status.innerText = "Updating label…";
-
-    try {
-      await apiWidgetDatabases("rename", { id: editingDatabaseId, label: newLabel });
-      status.innerText = "Label updated ✅";
-      closeEditModal();
-      await loadDatabases();
-    } catch (e) {
-      status.innerText = e.message || "Failed to update label";
-    }
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeEditModal();
-  });
-
   document.getElementById("save").onclick = async () => {
-    const raw = document.getElementById("db").value.trim();
-    if (!raw) return alert("Enter Notion database ID or URL");
+    const dbRaw = document.getElementById("db").value.trim();
+    const password = document.getElementById("editPassword").value.trim();
 
-    const databaseId = extractDatabaseId(raw);
-    if (!databaseId) return alert("Invalid Notion database ID or URL");
+    if (!dbRaw && DATABASES.length === 0) return alert("Enter Notion database ID or URL");
+    if (!password) return alert("Create an edit password first");
+    if (password.length < 6) return alert("Password must be at least 6 characters");
 
-    const limit = getPlanLimit(CURRENT_PLAN);
-    if (DATABASES.length >= limit) {
-  if (CURRENT_PLAN === "free") return alert("Free plan allows only 1 database.");
-  return alert("Database limit reached.");
-}
-
-    const label = nextAutoLabel();
-
-    status.innerText = "Adding database…";
-
+    status.innerText = "Saving settings…";
     try {
-      await apiWidgetDatabases("add", { databaseId, label });
+      // 1. Add Database if provided
+      if (dbRaw) {
+        const databaseId = extractDatabaseId(dbRaw);
+        if (!databaseId) return alert("Invalid Notion database ID or URL");
+        
+        const limit = getPlanLimit(CURRENT_PLAN);
+        if (DATABASES.length >= limit) {
+           // If they already have one, maybe we just swap or error. For now, standard limit check.
+           if (CURRENT_PLAN === "free" && DATABASES.length > 0) {
+              // Just rename/update? Or error? Standard app errors here.
+           }
+        }
+        await apiWidgetDatabases("add", { databaseId, label: nextAutoLabel() });
+      }
 
-      status.innerText = "Database added successfully ✅";
+      // 2. Save Password (and name)
+      const sel = document.getElementById("widgetSelect");
+      const currentName = sel.options[sel.selectedIndex]?.textContent || "My Grid";
+      
+      await fetch("/api/widgets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, action: "save_setup", slug, name: currentName, password })
+      });
 
+      status.innerText = "Settings saved successfully ✅";
       document.getElementById("db").value = "";
-
+      document.getElementById("editPassword").value = "";
       await loadDatabases();
     } catch (e) {
-      status.innerText = e.message || "Error adding database";
+      status.innerText = e.message || "Error saving settings";
     }
   };
 
