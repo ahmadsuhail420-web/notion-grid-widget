@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yasah & Rifa - Wedding Invitation</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@200;300;400;600&family=Ms+Madi&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="template01.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-[#d4af37] font-montserrat overflow-x-hidden">
+    
+    <!-- Star Background -->
+    <div id="stars-container" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- Envelope Overlay (Landing) -->
+    <div id="envelope-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black transition-all duration-1000">
+        <div class="relative w-full max-w-lg aspect-[4/3] px-6 sm:px-0">
+            <!-- Envelope Body -->
+            <div id="envelope" class="relative w-full h-full bg-[#1a1a1a] border border-[#d4af37]/30 shadow-2xl rounded-sm cursor-pointer hover:scale-105 transition-transform duration-500 overflow-hidden group" onclick="openInvitation()">
+                <!-- Envelope Flap (Static for now) -->
+                <div class="absolute inset-x-0 top-0 h-1/2 bg-[#141414] border-b border-[#d4af37]/20 flex flex-col items-center justify-center space-y-4">
+                    <div class="text-3xl sm:text-5xl opacity-80 group-hover:opacity-100 transition-opacity">ي ر</div>
+                    <div class="text-center">
+                        <p class="text-[10px] tracking-[0.3em] font-cinzel opacity-60">YASAH & RIFA</p>
+                        <p class="text-[12px] font-ms-madi mt-1 opacity-80">Wedding Invitation · May 2026</p>
+                    </div>
+                </div>
+                
+                <!-- Seal -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#d4af37] via-[#f4e1a1] to-[#b8860b] rounded-full shadow-2xl flex items-center justify-center text-black/80 font-bold border-4 border-[#1a1a1a] z-10 transition-transform group-hover:scale-110">
+                    <span class="text-lg">ي ر</span>
+                </div>
+
+                <!-- Envelope Lower Part -->
+                <div class="absolute inset-x-0 bottom-0 h-1/2 bg-[#1a1a1a]"></div>
+                
+                <!-- Tap to open -->
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 text-center w-full">
+                    <div class="flex items-center justify-center gap-4 opacity-40">
+                        <div class="h-[1px] w-12 bg-[#d4af37]"></div>
+                        <p class="text-[10px] tracking-[0.4em] font-cinzel whitespace-nowrap">TAP TO OPEN</p>
+                        <div class="h-[1px] w-12 bg-[#d4af37]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container (Hidden until opened) -->
+    <div id="main-content" class="relative z-10 opacity-0 transition-opacity duration-1000 hidden">
+        
+        <!-- Header Sticky -->
+        <header class="fixed top-0 left-0 right-0 p-6 flex justify-between items-center z-50 mix-blend-difference pointer-events-none">
+            <div class="text-xl font-cinzel italic tracking-widest text-[#d4af37]">Y&R</div>
+            <div class="text-[10px] tracking-[0.2em] font-cinzel text-[#d4af37]">MAY · MMXXVI</div>
+        </header>
+
+        <!-- Section 1: Hero -->
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+            <!-- Immersive BG -->
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80" alt="Wedding" class="w-full h-full object-cover brightness-50">
+                <div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black"></div>
+            </div>
+            
+            <div class="relative z-10 text-center px-6">
+                <!-- Arabic Blessing -->
+                <div class="mb-8 overflow-hidden">
+                    <div class="text-3xl sm:text-4xl animate-fade-up">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+                    <p class="text-[10px] font-ms-madi tracking-widest mt-2 opacity-60">In the name of Allah, the Most Gracious, the Most Merciful</p>
+                </div>
+
+                <!-- Names -->
+                <div class="mb-12">
+                    <h1 class="text-7xl sm:text-9xl font-ms-madi text-white drop-shadow-2xl mb-2">Yasah</h1>
+                    <div class="flex items-center justify-center gap-4 text-[#d4af37] opacity-60">
+                        <span>✦</span>
+                        <span class="text-3xl font-ms-madi">weds</span>
+                        <span>✦</span>
+                    </div>
+                    <h1 class="text-7xl sm:text-9xl font-ms-madi text-white drop-shadow-2xl mt-2">Rifa</h1>
+                </div>
+
+                <!-- Date Summary -->
+                <div class="space-y-2 opacity-80">
+                    <div class="flex justify-center items-center gap-4 py-8">
+                        <span class="text-xs">☀</span>
+                        <span class="w-1 h-1 rounded-full bg-[#d4af37]"></span>
+                        <span class="text-xs">☀</span>
+                    </div>
+                    <p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel">FRIDAY · 09 MAY 2026 · NIKAH</p>
+                    <p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel">SATURDAY · 10 MAY 2026 · RECEPTION · 04:00 PM</p>
+                    <p class="text-[10px] sm:text-xs tracking-[0.2em] font-playfair italic mt-4 opacity-60">Kannur, Kerala</p>
+                </div>
+
+                <!-- Scroll hint -->
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 opacity-40 animate-bounce">
+                    <p class="text-[8px] tracking-[0.4em] font-cinzel">SCROLL</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Details of Blessed Days -->
+        <section class="py-24 px-6 max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="flex items-center justify-center gap-4 opacity-40 mb-4">
+                    <div class="h-[1px] w-8 bg-[#d4af37]"></div>
+                    <p class="text-[10px] tracking-[0.3em] font-cinzel">THE CELEBRATIONS</p>
+                    <div class="h-[1px] w-8 bg-[#d4af37]"></div>
+                </div>
+                <h2 class="text-4xl sm:text-5xl font-playfair italic">Details of the <span class="text-[#d4af37]">Blessed Days</span></h2>
+            </div>
+
+            <div class="space-y-12">
+                <!-- Nikah -->
+                <div class="relative group p-8 border border-[#d4af37]/20 bg-[#0a0a0a]/50 backdrop-blur-sm rounded-sm hover:border-[#d4af37]/50 transition-colors">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span class="text-4xl font-playfair text-[#d4af37]/30">01</span>
+                            <h3 class="text-3xl font-playfair italic mt-2">Nikah Ceremony</h3>
+                        </div>
+                        <span class="text-[10px] tracking-widest text-[#d4af37]/60">NIKAH</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                        <div class="space-y-4">
+                            <div class="flex gap-4">
+                                <span class="text-[10px] font-cinzel opacity-40">DATE</span>
+                                <p class="font-semibold">Friday, 09 May 2026</p>
+                            </div>
+                            <div class="flex gap-4">
+                                <span class="text-[10px] font-cinzel opacity-40">TIME</span>
+                                <p class="font-semibold italic">After Asr Namaz</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <span class="text-[10px] font-cinzel opacity-40">VENUE</span>
+                            <div>
+                                <p class="font-semibold">Puratheel Jumua Masjid</p>
+                                <p class="text-xs opacity-60 italic">Puratheel, Kannur</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reception -->
+                <div class="relative group border border-[#d4af37]/20 bg-[#0a0a0a]/50 backdrop-blur-sm rounded-sm overflow-hidden">
+                    <div class="bg-[#d4af37] h-2 w-full flex justify-center items-center">
+                        <div class="flex gap-2 text-[8px] text-black font-cinzel font-bold">
+                            <span>✦</span> WEDDING RECEPTION <span>✦</span>
+                        </div>
+                    </div>
+                    <div class="p-8 group-hover:border-[#d4af37]/50 transition-colors">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <span class="text-4xl font-playfair text-[#d4af37]/30">02</span>
+                                <h3 class="text-3xl font-playfair italic mt-2">Wedding Reception</h3>
+                            </div>
+                            <span class="text-[10px] tracking-widest text-[#d4af37]/60">RECEPTION</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm mb-8">
+                            <div class="space-y-4">
+                                <div class="flex gap-4">
+                                    <span class="text-[10px] font-cinzel opacity-40">DATE</span>
+                                    <p class="font-semibold">Saturday, 10 May 2026</p>
+                                </div>
+                                <div class="flex gap-4">
+                                    <span class="text-[10px] font-cinzel opacity-40">TIME</span>
+                                    <p class="font-semibold">04:00 PM — 08:00 PM</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <span class="text-[10px] font-cinzel opacity-40">VENUE</span>
+                                <div>
+                                    <p class="font-semibold">Bhanu's Beach Enclave</p>
+                                    <p class="text-xs opacity-60 italic">Palliyanmoola, Payyambalam Beach Road<br>Kannur, Kerala 670008</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex flex-wrap gap-4 pt-6 border-t border-[#d4af37]/10">
+                            <a href="#" class="flex-1 min-w-[120px] py-3 border border-[#d4af37]/30 text-[10px] font-cinzel tracking-widest text-center hover:bg-[#d4af37] hover:text-black transition-all">LOCATION</a>
+                            <a href="#" class="flex-1 min-w-[120px] py-3 border border-[#d4af37]/30 text-[10px] font-cinzel tracking-widest text-center hover:bg-[#d4af37] hover:text-black transition-all">GOOGLE CAL</a>
+                            <a href="#" class="flex-1 min-w-[120px] py-3 border border-[#d4af37]/30 text-[10px] font-cinzel tracking-widest text-center hover:bg-[#d4af37] hover:text-black transition-all">APPLE CAL</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: RSVP -->
+        <section class="py-24 bg-[#0a0a0a]/80 backdrop-blur-md border-y border-[#d4af37]/10">
+            <div class="max-w-xl mx-auto px-6 text-center">
+                <div class="mb-12">
+                    <p class="text-[10px] tracking-[0.3em] font-cinzel opacity-40 mb-4 uppercase">RECEPTION RSVP</p>
+                    <h2 class="text-4xl font-playfair italic mb-4">Will you join us?</h2>
+                    <p class="text-xs font-montserrat opacity-60 italic">Kindly confirm your attendance for the Reception</p>
+                </div>
+                
+                <form id="rsvp-form" class="space-y-6 text-left">
+                    <div>
+                        <input type="text" placeholder="Your full name" class="w-full bg-transparent border-b border-[#d4af37]/30 py-4 px-2 focus:outline-none focus:border-[#d4af37] transition-colors placeholder:text-[#d4af37]/30 text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button type="button" class="py-4 border border-[#d4af37]/30 text-[10px] tracking-widest font-cinzel hover:bg-[#d4af37] hover:text-black transition-all">✦ ATTENDING</button>
+                        <button type="button" class="py-4 border border-[#d4af37]/30 text-[10px] tracking-widest font-cinzel hover:border-red-500 hover:text-red-500 transition-all">REGRETS</button>
+                    </div>
+                    <div>
+                        <input type="number" placeholder="Number of guests" class="w-full bg-transparent border-b border-[#d4af37]/30 py-4 px-2 focus:outline-none focus:border-[#d4af37] transition-colors placeholder:text-[#d4af37]/30 text-sm">
+                    </div>
+                    <div>
+                        <textarea placeholder="Your duas & wishes for Yasah & Rifa..." rows="3" class="w-full bg-transparent border-b border-[#d4af37]/30 py-4 px-2 focus:outline-none focus:border-[#d4af37] transition-colors placeholder:text-[#d4af37]/30 text-sm resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-[#d4af37] text-black py-5 text-[10px] tracking-[0.4em] font-cinzel font-bold shadow-2xl hover:bg-[#f4e1a1] transition-all">SEND RSVP</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Section 4: Families -->
+        <section class="py-24 px-6 max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="text-[10px] tracking-[0.3em] font-cinzel opacity-40 mb-4 uppercase">WITH THE BLESSINGS OF</p>
+                <h2 class="text-5xl font-playfair italic">Our Families</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Groom side -->
+                <div class="text-center p-12 border border-[#d4af37]/10 bg-[#050505] rounded-sm">
+                    <p class="text-[10px] font-cinzel tracking-widest opacity-40 mb-6 uppercase">GROOM</p>
+                    <h3 class="text-5xl font-ms-madi text-white mb-6">Yasah</h3>
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-cinzel opacity-40 uppercase">Son of</p>
+                        <p class="text-lg font-montserrat font-semibold">Sirajudheen P</p>
+                        <p class="text-lg font-montserrat font-semibold">& Sabira T</p>
+                    </div>
+                    <div class="mt-8 pt-8 border-t border-[#d4af37]/10">
+                        <p class="text-[10px] font-cinzel opacity-40 uppercase mb-4">GRANDPARENTS</p>
+                        <p class="text-sm italic opacity-60">M.S Abdul Rahman (Late) & Nafeesa T</p>
+                        <p class="text-sm italic opacity-60">Hamid (Late) & Hajara (Late)</p>
+                    </div>
+                </div>
+
+                <!-- Bride side -->
+                <div class="text-center p-12 border border-[#d4af37]/10 bg-[#050505] rounded-sm">
+                    <p class="text-[10px] font-cinzel tracking-widest opacity-40 mb-6 uppercase">BRIDE</p>
+                    <h3 class="text-5xl font-ms-madi text-white mb-6">Rifa</h3>
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-cinzel opacity-40 uppercase">Daughter of</p>
+                        <p class="text-lg font-montserrat font-semibold">Mustafa T</p>
+                        <p class="text-lg font-montserrat font-semibold">& Safeena K.M</p>
+                    </div>
+                    <div class="mt-8 pt-8 border-t border-[#d4af37]/10">
+                        <p class="text-[10px] font-cinzel opacity-40 uppercase mb-4">GRANDPARENTS</p>
+                        <p class="text-sm italic opacity-60">Kadar Kutty & Zainaba (Late)</p>
+                        <p class="text-sm italic opacity-60">Kutty Ali (Late) & Nafeesa (Late)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mt-8 gap-4 opacity-40">
+                <span>✦</span> <span>✦</span> <span>✦</span>
+            </div>
+        </section>
+
+        <!-- Section 5: Get in touch -->
+        <section class="py-24 px-6 bg-[#0a0a0a]/40">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-12">
+                    <div class="flex items-center justify-center gap-4 opacity-20 mb-4">
+                        <div class="h-[1px] w-8 bg-[#d4af37]"></div>
+                        <p class="text-[10px] tracking-[0.2em] font-cinzel">GET IN TOUCH</p>
+                        <div class="h-[1px] w-8 bg-[#d4af37]"></div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="flex items-center justify-between p-6 border border-[#d4af37]/10 bg-black/50">
+                        <div>
+                            <p class="text-[8px] font-cinzel opacity-40 uppercase mb-1">GROOM'S FATHER</p>
+                            <p class="text-xl font-playfair italic">Sirajudheen P</p>
+                        </div>
+                        <div class="flex gap-4">
+                             <a href="#" class="w-8 h-8 rounded-full border border-[#d4af37]/30 flex items-center justify-center text-[10px] hover:bg-[#d4af37] hover:text-black transition-all">📞</a>
+                             <a href="#" class="w-8 h-8 rounded-full border border-[#d4af37]/30 flex items-center justify-center text-[10px] hover:bg-[#d4af37] hover:text-black transition-all">💬</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-6 border border-[#d4af37]/10 bg-black/50">
+                        <div>
+                            <p class="text-[8px] font-cinzel opacity-40 uppercase mb-1">BRIDE'S FATHER</p>
+                            <p class="text-xl font-playfair italic">Mustafa T</p>
+                        </div>
+                        <div class="flex gap-4">
+                             <a href="#" class="w-8 h-8 rounded-full border border-[#d4af37]/30 flex items-center justify-center text-[10px] hover:bg-[#d4af37] hover:text-black transition-all">📞</a>
+                             <a href="#" class="w-8 h-8 rounded-full border border-[#d4af37]/30 flex items-center justify-center text-[10px] hover:bg-[#d4af37] hover:text-black transition-all">💬</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Duas & Wishes Display -->
+        <section class="py-24 px-6 max-w-4xl mx-auto text-center">
+             <p class="text-[10px] tracking-[0.3em] font-cinzel opacity-40 mb-4 uppercase">DUAS & WISHES</p>
+             <h2 class="text-5xl font-playfair italic mb-12">Send your heartfelt<br>duas & wishes</h2>
+             
+             <div class="p-8 border border-[#d4af37]/10 bg-[#050505] rounded-sm mb-12">
+                 <form id="wishes-form" class="space-y-6 text-left">
+                     <input type="text" placeholder="Your Name" class="w-full bg-black border border-[#d4af37]/20 p-4 focus:outline-none focus:border-[#d4af37]/60 text-sm">
+                     <textarea placeholder="Write your duas and wishes for Yasah & Rifa..." rows="4" class="w-full bg-black border border-[#d4af37]/20 p-4 focus:outline-none focus:border-[#d4af37]/60 text-sm resize-none"></textarea>
+                     <button type="submit" class="w-full bg-[#d4af37]/60 text-black py-4 text-[10px] tracking-[0.3em] font-cinzel font-bold hover:bg-[#d4af37] transition-all">SEND WISHES</button>
+                 </form>
+                 <p class="text-[8px] font-cinzel opacity-20 uppercase mt-8">0 Duas & Wishes</p>
+             </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-24 px-6 text-center">
+            <div class="mb-16">
+                <!-- Final Blessing -->
+                 <div class="inline-block border-y border-[#d4af37]/10 py-12 px-12">
+                     <div class="text-4xl text-[#d4af37] mb-6">بَارَكَ اللَّهُ لَكُمَا</div>
+                     <p class="text-xs italic font-montserrat opacity-60">With best compliments from<br>Yasah & Rifa Families</p>
+                 </div>
+            </div>
+
+            <div class="space-y-6">
+                <h3 class="text-5xl font-ms-madi text-[#d4af37]">Yasah & Rifa</h3>
+                <div class="text-[10px] tracking-[0.3em] font-cinzel opacity-40 uppercase">
+                    09 · MAY · 2026 · NIKAH<br>
+                    10 · MAY · 2026 · RECEPTION · KANNUR, KERALA
+                </div>
+            </div>
+
+            <div class="mt-24 opacity-20 text-[8px] tracking-widest font-cinzel italic">
+                Crafted with ♡ by Digi Wed
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Background Music -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button id="music-toggle" class="w-12 h-12 rounded-full bg-black/50 border border-[#d4af37]/20 backdrop-blur-md flex items-center justify-center text-xl hover:bg-[#d4af37] hover:text-black transition-all">
+            <span id="music-icon">🎵</span>
+        </button>
+    </div>
+
+    <audio id="bg-music" loop>
+        <!-- Sophisticated background instrumental or relative audio -->
+        <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_4421f2bd84.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="template01.js"></script>
+</body>
+</html>
