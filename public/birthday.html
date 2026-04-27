@@ -109,7 +109,7 @@
         /* Birthday Content */
         #birthday-hero {
             position: relative;
-            z-index: 5;
+            z-index: 20;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -117,7 +117,7 @@
             justify-content: center;
             text-align: center;
             opacity: 0;
-            transition: opacity 1.5s ease 0.5s;
+            transition: opacity 1s ease;
             background: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
         }
 
@@ -130,6 +130,7 @@
             -webkit-text-fill-color: transparent;
             animation: shine 3s linear infinite;
             display: inline-block;
+            font-weight: 700;
         }
 
         @keyframes shine {
@@ -138,7 +139,7 @@
 
         .mashura-name {
             animation: floatText 3s ease-in-out infinite;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
         }
 
         @keyframes floatText {
@@ -157,6 +158,7 @@
             z-index: 10;
             opacity: 0;
             transition: opacity 2s ease;
+            background: transparent;
         }
 
         .glitter-active #glitter-canvas {
@@ -218,38 +220,47 @@
 
         .balloon {
             position: absolute;
-            width: 60px;
-            height: 70px;
-            background: radial-gradient(circle at 30% 30%, #ff8fa3, #ff4d6d);
+            width: 70px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #ff8fa3, #ff4d6d, #8a001a);
             border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3), 5px 10px 20px rgba(255, 77, 109, 0.2);
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.3), 5px 10px 30px rgba(0,0,0,0.4);
             animation: sway 6s ease-in-out infinite;
             transform-origin: bottom center;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
         }
 
-        .balloon::before { /* Heart shape for balloon */
+        .balloon::after {
             content: '';
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: inherit;
-            border-radius: inherit;
-            transform: rotate(-15deg);
+            top: 15%;
+            left: 20%;
+            width: 25%;
+            height: 20%;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            filter: blur(2px);
         }
 
         .balloon-string {
             position: absolute;
-            bottom: -80px;
+            bottom: -150px;
             left: 50%;
             width: 1px;
-            height: 100px;
-            background: rgba(255,255,255,0.3);
+            height: 150px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
             transform-origin: top;
+            animation: stringMove 6s ease-in-out infinite;
+        }
+
+        @keyframes stringMove {
+            0%, 100% { transform: rotate(2deg); }
+            50% { transform: rotate(-2deg); }
         }
 
         @keyframes sway {
-            0%, 100% { transform: translate(0, 0) rotate(2deg); }
-            50% { transform: translate(15px, -10px) rotate(-2deg); }
+            0%, 100% { transform: translateY(0) rotate(3deg); }
+            50% { transform: translateY(-15px) rotate(-3deg); }
         }
 
         /* 3D Cake CSS - New 2 Tier Pink */
@@ -465,8 +476,8 @@
     <section id="birthday-hero">
         <div class="px-6 relative z-20">
             <p class="font-cinzel text-gold tracking-[0.4em] mb-4 text-xs opacity-60">A VERY SPECIAL DAY</p>
-            <h1 class="text-6xl sm:text-8xl font-playfair font-bold mb-6 italic gold-shimmer">Happy Birthday</h1>
-            <h2 class="text-5xl sm:text-7xl font-vibes text-white mb-12 mashura-name">Mashura</h2>
+            <h1 class="text-7xl sm:text-9xl font-playfair font-bold mb-6 italic gold-shimmer drop-shadow-2xl">Happy Birthday</h1>
+            <h2 class="text-6xl sm:text-8xl font-vibes text-white mb-12 mashura-name">Mashura</h2>
             
             <div class="max-w-md mx-auto opacity-70">
                 <p class="text-sm tracking-widest leading-relaxed">
@@ -515,24 +526,24 @@
         </div>
 
         <!-- Dessert Scene Components -->
-        <div class="relative flex items-end justify-center w-full h-1/2 mb-20">
+        <div class="relative flex items-center justify-center w-full h-full">
             <!-- Vase & Roses -->
-            <div class="roses-vase left-[15%]">
+            <div class="roses-vase left-[10%] bottom-[30%]">
                 <div class="rose-flower" style="left: 10px; top: -15px;"></div>
                 <div class="rose-flower" style="left: 30px; top: -25px;"></div>
                 <div class="rose-flower" style="left: 20px; top: -10px;"></div>
             </div>
 
             <!-- Gift Boxes -->
-            <div class="gift-box left-[25%] bottom-[50px] rotate-[-5deg]">
+            <div class="gift-box left-[20%] bottom-[25%] rotate-[-5deg]">
                 <div class="gift-ribbon"></div>
             </div>
-            <div class="gift-box left-[20%] bottom-[20px] scale-[0.8] rotate-[10deg]">
+            <div class="gift-box left-[18%] bottom-[22%] scale-[0.8] rotate-[10deg]">
                 <div class="gift-ribbon"></div>
             </div>
 
             <!-- Cake -->
-            <div class="cake" id="cake-container">
+            <div class="cake translate-y-[20px]" id="cake-container">
                 <div class="cake-layer cake-layer-2">
                     <div class="cake-icing"></div>
                     <div class="cake-flower"></div>
@@ -549,11 +560,11 @@
             </div>
 
             <!-- Champagne Glasses -->
-            <div class="flex gap-12 right-[20%] absolute bottom-[40px]">
+            <div class="flex gap-16 right-[15%] absolute bottom-[28%] scale-125">
                 <div class="glass">
                     <div class="drink"></div>
                 </div>
-                <div class="glass translate-x-4 translate-y-2 scale-[1.1]">
+                <div class="glass translate-x-4 translate-y-2">
                     <div class="drink"></div>
                 </div>
             </div>
@@ -603,12 +614,20 @@
         }
 
         function openDoors() {
+            const wrapper = document.getElementById('door-wrapper');
+            if (!wrapper || wrapper.classList.contains('is-opening')) return;
+            
+            wrapper.classList.add('is-opening');
             document.activeElement.blur();
+            
             document.getElementById('left-door').classList.add('open-left');
             document.getElementById('right-door').classList.add('open-right');
             document.getElementById('door-backdrop').style.opacity = '0';
             document.getElementById('door-hint').style.opacity = '0';
             
+            // Allow clicking through immediately
+            wrapper.style.pointerEvents = 'none';
+
             setTimeout(() => {
                 document.getElementById('birthday-hero').style.opacity = '1';
                 document.body.classList.add('glitter-active');
@@ -618,13 +637,13 @@
                 
                 // Allow scrolling after reveal
                 document.body.style.overflow = 'auto';
-            }, 500);
+            }, 300);
 
             // Hide the entire door mechanism so it's not blocking everything
             setTimeout(() => {
-                document.getElementById('door-wrapper').style.opacity = '0';
+                wrapper.style.opacity = '0';
                 setTimeout(() => {
-                    document.getElementById('door-wrapper').style.display = 'none';
+                    wrapper.style.display = 'none';
                 }, 1000);
             }, 2500);
 
@@ -679,6 +698,13 @@
                 }).onfinish = () => conf.remove();
             }
         }
+
+        // Initial listener
+        document.getElementById('door-wrapper').addEventListener('click', openDoors);
+        document.getElementById('door-wrapper').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            openDoors();
+        }, { once: true });
 
         // Lock scroll initially
         document.body.style.overflow = 'hidden';
