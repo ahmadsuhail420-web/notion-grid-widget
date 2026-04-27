@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wedding Templates - Sync & Style</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+    <style>
+      @import "tailwindcss";
+
+      :root {
+        --primary: #9c404d;
+        --bg-cream: #FFF9F9;
+        --text-dark: #2d0a0e;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-cream);
+        color: var(--text-dark);
+      }
+
+      h1, h2, h3, .font-serif {
+        font-family: 'Playfair Display', serif;
+      }
+
+      .bg-pattern {
+        background-color: var(--bg-cream);
+        background-image: radial-gradient(rgba(156, 64, 77, 0.05) 1px, transparent 1px);
+        background-size: 50px 50px;
+      }
+
+      .scroll-reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease-out;
+      }
+
+      .scroll-reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .shiny-border {
+        @apply border border-[#9c404d]/10 transition-all duration-300;
+      }
+
+      .shiny-border:hover {
+        @apply border-[#9c404d]/30 shadow-lg;
+      }
+    </style>
+  </head>
+  <body class="bg-pattern min-h-screen">
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100">
+      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
+        
+        <div class="hidden md:flex items-center space-x-12 text-[14px] font-medium text-gray-700">
+          <a href="/" class="hover:text-[#9c404d] transition-colors">Home</a>
+          <a href="/templates" class="text-[#9c404d] font-bold">Templates</a>
+          <a href="/login" class="bg-[#9c404d] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg transition-all">Get Started</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="pt-40 pb-16 px-6">
+      <div class="max-w-7xl mx-auto text-center">
+        <span class="text-[#9c404d] italic font-serif text-lg block mb-4 scroll-reveal">Collection 2026</span>
+        <h1 class="text-5xl md:text-7xl font-serif text-[#2d0a0e] font-bold mb-6 scroll-reveal" style="transition-delay: 100ms;">
+          The Template <span class="italic text-[#9c404d]">Gallery</span>
+        </h1>
+        <p class="text-gray-500 max-w-2xl mx-auto scroll-reveal leading-relaxed" style="transition-delay: 200ms;">
+          Explore our hand-crafted, high-performance wedding invitation templates. Each design is optimized for both visual storytelling and interactive guest engagement.
+        </p>
+      </div>
+    </header>
+
+    <!-- Template Grid -->
+    <main class="py-12 px-6">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <!-- Template 1 -->
+          <div class="bg-white rounded-3xl overflow-hidden shiny-border group scroll-reveal">
+            <div class="relative aspect-[4/5] overflow-hidden bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1541250848049-b4f71413cc30?auto=format&fit=crop&q=80&w=800" alt="Royal Affair" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 p-8">
+                <a href="/template01" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-xl">Live Demo</a>
+                <a href="/login" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-xl">Select</a>
+              </div>
+            </div>
+            <div class="p-8">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-xl font-serif font-bold text-[#2d0a0e]">Royal Affair (01)</h3>
+                <span class="text-[10px] uppercase tracking-widest bg-[#fdf2f3] text-[#9c404d] px-2 py-1 rounded font-bold">Premium</span>
+              </div>
+              <p class="text-gray-400 text-sm italic">Classical, Elegant, Gold & Maroon</p>
+            </div>
+          </div>
+
+          <!-- Template 2 -->
+          <div class="bg-white rounded-3xl overflow-hidden shiny-border group scroll-reveal" style="transition-delay: 100ms;">
+            <div class="relative aspect-[4/5] overflow-hidden bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800" alt="Modern Minimal" class="w-full h-full object-cover grayscale">
+              <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                 <span class="bg-white/90 text-[#2d0a0e] px-6 py-3 rounded-xl font-bold shadow-xl">Coming Soon</span>
+              </div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-xl font-serif font-bold text-[#2d0a0e] opacity-50">Modern Minimal (02)</h3>
+              <p class="text-gray-400 text-sm italic">Clean, Spacious, Contemporary</p>
+            </div>
+          </div>
+
+          <!-- Template 3 -->
+          <div class="bg-white rounded-3xl overflow-hidden shiny-border group scroll-reveal" style="transition-delay: 200ms;">
+            <div class="relative aspect-[4/5] overflow-hidden bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=800" alt="Floral Garden" class="w-full h-full object-cover grayscale">
+              <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                 <span class="bg-white/90 text-[#2d0a0e] px-6 py-3 rounded-xl font-bold shadow-xl">Coming Soon</span>
+              </div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-xl font-serif font-bold text-[#2d0a0e] opacity-50">Floral Garden (03)</h3>
+              <p class="text-gray-400 text-sm italic">Soft, Dreamy, Romantic</p>
+            </div>
+          </div>
+
+          <!-- Template 4 -->
+          <div class="bg-white rounded-3xl overflow-hidden shiny-border group scroll-reveal" style="transition-delay: 300ms;">
+             <div class="relative aspect-[4/5] overflow-hidden bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&q=80&w=800" alt="Golden Glow" class="w-full h-full object-cover grayscale">
+              <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                 <span class="bg-white/90 text-[#2d0a0e] px-6 py-3 rounded-xl font-bold shadow-xl">Coming Soon</span>
+              </div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-xl font-serif font-bold text-[#2d0a0e] opacity-50">Golden Glow (04)</h3>
+              <p class="text-gray-400 text-sm italic">Luxury, Glitter, Celebration</p>
+            </div>
+          </div>
+          
+          <!-- Template 5 -->
+          <div class="bg-white rounded-3xl overflow-hidden shiny-border group scroll-reveal" style="transition-delay: 400ms;">
+             <div class="relative aspect-[4/5] overflow-hidden bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80&w=800" alt="Vintage Charm" class="w-full h-full object-cover grayscale">
+              <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                 <span class="bg-white/90 text-[#2d0a0e] px-6 py-3 rounded-xl font-bold shadow-xl">Coming Soon</span>
+              </div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-xl font-serif font-bold text-[#2d0a0e] opacity-50">Vintage Charm (05)</h3>
+              <p class="text-gray-400 text-sm italic">Rustic, Nostalgic, Warm</p>
+            </div>
+          </div>
+
+          <!-- Template 6 -->
+          <div class="bg-white rounded-3xl overflow-hidden shiny-border group scroll-reveal" style="transition-delay: 500ms;">
+             <div class="relative aspect-[4/5] overflow-hidden bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=800" alt="Boho Spirit" class="w-full h-full object-cover grayscale">
+              <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                 <span class="bg-white/90 text-[#2d0a0e] px-6 py-3 rounded-xl font-bold shadow-xl">Coming Soon</span>
+              </div>
+            </div>
+            <div class="p-8">
+              <h3 class="text-xl font-serif font-bold text-[#2d0a0e] opacity-50">Boho Spirit (06)</h3>
+              <p class="text-gray-400 text-sm italic">Artistic, Free, Earthy</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-pattern border-t border-[#9c404d]/10 mt-24">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <p class="text-sm text-gray-400 font-medium">© 2026 Sync & Style. All templates are property of Sync & Style.</p>
+      </div>
+    </footer>
+
+    <script>
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+    </script>
+  </body>
+</html>
