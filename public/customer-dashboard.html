@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sync & Style</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import "tailwindcss";
+        :root {
+            --primary: #9c404d;
+            --bg-cream: #FBFBFB;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); }
+        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="bg-white border-b border-gray-100 p-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
+            <div class="flex items-center space-x-6 text-sm">
+                <span id="user-welcome" class="text-gray-500">Loading...</span>
+                <button onclick="handleLogout()" class="text-[#9c404d] font-bold">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6 md:p-12">
+        <div class="mb-12">
+            <h1 class="text-4xl font-serif font-bold mb-2">My Dashboard</h1>
+            <p class="text-gray-500">Manage your templates and guest invitations.</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="flex border-b border-gray-200 mb-8 space-x-8">
+            <button onclick="switchTab('templates')" id="tab-templates" class="pb-4 px-2 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all">My Templates</button>
+            <button onclick="switchTab('invites')" id="tab-invites" class="pb-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all">All Invites</button>
+            <button onclick="switchTab('add-guests')" id="tab-add-guests" class="pb-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all">Add Special Guests</button>
+        </div>
+
+        <!-- Tab Content: Templates -->
+        <div id="content-templates" class="tab-content transition-opacity duration-300">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-serif font-bold">Purchased Templates</h2>
+                <button onclick="createInvitation()" id="create-btn" class="bg-[#9c404d] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#7d333e] transition-all text-sm">
+                    + New Template
+                </button>
+            </div>
+            <div id="invitation-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
+                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
+                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: All Invites -->
+        <div id="content-invites" class="tab-content hidden opacity-0 transition-opacity duration-300">
+            <h2 class="text-2xl font-serif font-bold mb-8">Guest Invitations</h2>
+            <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                        <tr>
+                            <th class="px-8 py-4">Guest Name</th>
+                            <th class="px-8 py-4">Phone Number</th>
+                            <th class="px-8 py-4">Status</th>
+                            <th class="px-8 py-4 text-right">Share Invitation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guest-list-body" class="divide-y divide-gray-50">
+                        <!-- Guests will be loaded here -->
+                    </tbody>
+                </table>
+                <div id="guest-empty-state" class="p-12 text-center text-gray-400 hidden">
+                    No guests added yet. Go to "Add Special Guests" to start.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Add Guests -->
+        <div id="content-add-guests" class="tab-content hidden opacity-0 transition-opacity duration-300">
+            <div class="max-w-xl">
+                <h2 class="text-2xl font-serif font-bold mb-2">Send Personal Invitations</h2>
+                <p class="text-gray-500 mb-8">Add individual guests to send them a customized link with their name.</p>
+                
+                <form onsubmit="handleAddGuest(event)" class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Guest Full Name</label>
+                        <input type="text" name="guest_name" required placeholder="e.g. John Doe" 
+                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number (with country code)</label>
+                        <input type="tel" name="guest_phone" required placeholder="e.g. +91 9876543210" 
+                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all">
+                    </div>
+                    <button type="submit" id="add-guest-btn" 
+                            class="w-full bg-[#9c404d] text-white py-4 rounded-xl font-bold hover:bg-[#7d333e] transition-all shadow-lg shadow-[#9c404d]/20">
+                        Add to List & Generate Link
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Activity Feed (Optional, moved to bottom) -->
+        <div class="mt-24 pt-12 border-t border-gray-100">
+            <h2 class="text-xl font-serif font-bold mb-6">Recent Activity</h2>
+            <div id="activity-feed" class="bg-white rounded-3xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
+                <div class="p-10 text-center text-gray-400 italic text-sm">
+                    No recent activity to show.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let sb;
+        let currentUser;
+        let currentTab = 'templates';
+
+        async function initSupabase() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                
+                if (!config.supabaseUrl || !config.supabaseAnonKey) {
+                    console.error('Supabase config missing.');
+                    return;
+                }
+
+                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+                
+                // Check session
+                const { data: { session } } = await sb.auth.getSession();
+                if (!session) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                currentUser = session.user;
+                
+                // Update welcome message
+                const firstName = currentUser.user_metadata.first_name || 'Customer';
+                document.getElementById('user-welcome').innerText = `Welcome, ${firstName}`;
+
+                // Initial fetch
+                fetchInvitations();
+                fetchGuests();
+            } catch (err) {
+                console.error('Error initializing Supabase:', err);
+            }
+        }
+
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('opacity-100');
+                content.classList.add('opacity-0');
+            });
+
+            // Reset all tab buttons
+            document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('border-[#9c404d]', 'text-[#9c404d]', 'font-bold');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Show active tab content
+            const activeContent = document.getElementById(`content-${tabId}`);
+            activeContent.classList.remove('hidden');
+            setTimeout(() => {
+                activeContent.classList.remove('opacity-0');
+                activeContent.classList.add('opacity-100');
+            }, 50);
+
+            // Set active tab button
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.add('border-[#9c404d]', 'text-[#9c404d]', 'font-bold');
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+
+            currentTab = tabId;
+        }
+
+        async function fetchInvitations() {
+            if (!sb) return;
+
+            const { data, error } = await sb
+                .from('customer_invitations')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching invitations:', error);
+                return;
+            }
+
+            renderInvitations(data);
+        }
+
+        async function fetchGuests() {
+            if (!sb) return;
+
+            const { data, error } = await sb
+                .from('guest_list')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching guests:', error);
+                // The table might not exist yet, we'll gracefully handle it
+                document.getElementById('guest-empty-state').classList.remove('hidden');
+                document.getElementById('guest-empty-state').innerText = "Please ensure the 'guest_list' table is created in Supabase.";
+                return;
+            }
+
+            renderGuests(data);
+        }
+
+        function renderInvitations(invitations) {
+            const grid = document.getElementById('invitation-grid');
+            
+            if (invitations.length === 0) {
+                grid.innerHTML = `
+                    <div onclick="createInvitation()" class="col-span-1 md:col-span-3 bg-white/50 border-2 border-dashed border-[#9c404d]/20 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-[#fdf2f3] transition-colors">
+                        <div class="w-16 h-16 bg-[#fdf2f3] rounded-full flex items-center justify-center mb-4 text-[#9c404d] group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-serif font-bold mb-2">No Purchased Templates</h3>
+                        <p class="text-gray-400 mb-6">Start by creating your first wedding invitation template.</p>
+                        <span class="bg-[#9c404d] text-white px-8 py-3 rounded-lg font-bold">Create Now</span>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = invitations.map(invitation => `
+                <div class="bg-white rounded-3xl p-8 border border-[#9c404d]/10 shadow-sm hover:translate-y-[-4px] transition-all duration-300">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="px-3 py-1 ${invitation.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} text-[10px] uppercase tracking-widest font-bold rounded-full">
+                            ${invitation.status}
+                        </span>
+                        <span class="text-gray-300 text-[10px]">ID: #${invitation.id.slice(0, 8)}</span>
+                    </div>
+                    <h3 class="text-xl font-serif font-bold mb-2">${invitation.title}</h3>
+                    <p class="text-gray-400 text-xs mb-6 italic">Created on ${new Date(invitation.created_at).toLocaleDateString()}</p>
+                    <div class="flex space-x-3 text-sm">
+                        <button class="flex-1 py-2 border border-[#9c404d]/20 hover:bg-[#9c404d]/5 transition-colors font-medium rounded-lg">Edit Details</button>
+                        <button onclick="window.open('/template01', '_blank')" class="flex-1 py-2 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-colors font-medium rounded-lg text-center">Preview</button>
+                    </div>
+                </div>
+            `).join('');
+
+            grid.innerHTML = html;
+        }
+
+        function renderGuests(guests) {
+            const body = document.getElementById('guest-list-body');
+            const emptyState = document.getElementById('guest-empty-state');
+
+            if (guests.length === 0) {
+                body.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            body.innerHTML = guests.map(guest => {
+                const inviteLink = `${window.location.origin}/template01?guest=${encodeURIComponent(guest.name)}`;
+                const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
+                
+                return `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-8 py-5 font-medium text-gray-800">${guest.name}</td>
+                        <td class="px-8 py-5 text-gray-500 font-mono text-sm">${guest.phone}</td>
+                        <td class="px-8 py-5">
+                            <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-wider">${guest.status || 'Added'}</span>
+                        </td>
+                        <td class="px-8 py-5 text-right">
+                            <div class="flex justify-end space-x-3">
+                                <a href="https://wa.me/${guest.phone.replace(/\D/g, '')}?text=${message}" target="_blank" title="WhatsApp" class="p-2 hover:bg-green-50 text-green-600 rounded-full transition-colors">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.765-5.764-5.765zm3.394 8.163c-.147.416-.855.762-1.156.789-.3.027-.601.121-1.74-.355-1.457-.607-2.393-2.094-2.466-2.191-.073-.097-.593-.791-.593-1.503 0-.712.373-1.063.506-1.205.133-.142.29-.178.387-.178.097 0 .193.001.277.005.088.004.208-.033.325.249.117.282.401.977.436 1.048.035.071.058.154.011.248-.047.094-.07.153-.141.236-.071.083-.148.185-.212.248-.069.068-.142.143-.061.282.081.139.362.597.776.967.534.477.986.626 1.125.696.14.07.221.058.303-.038.082-.096.347-.406.44-.544.093-.138.186-.117.311-.071.125.046.793.374.93.443s.228.104.262.161c.034.057.034.331-.113.747z"/></svg>
+                                </a>
+                                <a href="mailto:?subject=You are Invited!&body=${message}" title="Email" class="p-2 hover:bg-blue-50 text-blue-600 rounded-full transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </a>
+                                <a href="https://www.instagram.com/direct/inbox/" target="_blank" title="Instagram" class="p-2 hover:bg-pink-50 text-pink-600 rounded-full transition-colors">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function handleAddGuest(e) {
+            e.preventDefault();
+            if (!sb || !currentUser) return;
+
+            const form = e.target;
+            const name = form.guest_name.value;
+            const phone = form.guest_phone.value;
+            const btn = document.getElementById('add-guest-btn');
+
+            btn.disabled = true;
+            btn.innerText = "Adding...";
+
+            const { data, error } = await sb
+                .from('guest_list')
+                .insert([
+                    {
+                        user_id: currentUser.id,
+                        name: name,
+                        phone: phone,
+                        status: 'Added'
+                    }
+                ])
+                .select();
+
+            if (error) {
+                alert('Error adding guest. Please ensure the "guest_list" table exists in your Supabase project.');
+                console.error(error);
+            } else {
+                alert(`Successfully added ${name}. You can now share the link from the "All Invites" tab.`);
+                form.reset();
+                fetchGuests();
+                switchTab('invites');
+            }
+
+            btn.disabled = false;
+            btn.innerText = "Add to List & Generate Link";
+        }
+
+        async function createInvitation() {
+            if (!sb || !currentUser) return;
+
+            const title = prompt("Enter a title for your invitation:", "Our Beautiful Wedding");
+            if (!title) return;
+
+            const btn = document.getElementById('create-btn');
+            btn.disabled = true;
+            btn.innerText = "Creating...";
+
+            const { data, error } = await sb
+                .from('customer_invitations')
+                .insert([
+                    { 
+                        user_id: currentUser.id, 
+                        title: title, 
+                        status: 'draft',
+                        template_type: 'classic',
+                        wedding_details: {} 
+                    }
+                ])
+                .select();
+
+            if (error) {
+                alert('Error creating invitation: ' + error.message);
+            } else {
+                fetchInvitations();
+            }
+
+            btn.disabled = false;
+            btn.innerText = "+ New Template";
+        }
+
+        async function handleLogout() {
+            if (sb) {
+                await sb.auth.signOut();
+                window.location.href = '/login';
+            }
+        }
+
+        initSupabase();
+    </script>
+
+</body>
+</html>
