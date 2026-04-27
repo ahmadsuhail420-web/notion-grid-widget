@@ -38,7 +38,17 @@
             perspective: 2000px;
             z-index: 100;
             display: flex;
+            background: transparent; /* Allow content behind to show through when doors open */
+            transition: opacity 1s ease 2s; /* Fade out whole mechanism after reveal */
+        }
+
+        /* Black barrier behind doors to hide content before opening */
+        .door-backdrop {
+            position: absolute;
+            inset: 0;
             background: #000;
+            z-index: -1;
+            transition: opacity 0.8s ease; /* Immediate fade for better UX */
         }
 
         .door {
@@ -98,6 +108,8 @@
 
         /* Birthday Content */
         #birthday-hero {
+            position: relative;
+            z-index: 5;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -299,6 +311,7 @@
 
     <!-- Door Entrance -->
     <div id="door-wrapper" onclick="openDoors()">
+        <div class="door-backdrop" id="door-backdrop"></div>
         <div id="left-door" class="door door-left">
             <div class="door-panel"></div>
             <div class="handle"></div>
@@ -309,7 +322,7 @@
         </div>
         
         <!-- Hint -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div id="door-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none">
             <p class="text-gold font-cinzel text-sm tracking-[0.5em] animate-pulse">TAP TO ENTER</p>
         </div>
     </div>
@@ -406,9 +419,10 @@
             document.activeElement.blur();
             document.getElementById('left-door').classList.add('open-left');
             document.getElementById('right-door').classList.add('open-right');
+            document.getElementById('door-backdrop').style.opacity = '0';
+            document.getElementById('door-hint').style.opacity = '0';
             
             setTimeout(() => {
-                document.getElementById('door-wrapper').style.pointerEvents = 'none';
                 document.getElementById('birthday-hero').style.opacity = '1';
                 document.body.classList.add('glitter-active');
                 
@@ -418,6 +432,14 @@
                 // Allow scrolling after reveal
                 document.body.style.overflow = 'auto';
             }, 500);
+
+            // Hide the entire door mechanism so it's not blocking everything
+            setTimeout(() => {
+                document.getElementById('door-wrapper').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('door-wrapper').style.display = 'none';
+                }, 1000);
+            }, 2500);
 
             console.log("Welcome to Mashura's Birthday");
         }
