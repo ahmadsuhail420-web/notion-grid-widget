@@ -157,10 +157,56 @@
         left: -50%;
         opacity: 1;
       }
+
+      @media (max-width: 768px) {
+        .group-hover\:translate-y-4 {
+          transform: translateY(0) !important;
+          opacity: 1 !important;
+        }
+        
+        .group:active .card-glare::after,
+        .group.is-touched .card-glare::after {
+          opacity: 1;
+          top: -50%;
+          left: -50%;
+        }
+        
+        .is-touched .group-hover\:opacity-100 {
+          opacity: 1 !important;
+          pointer-events: auto !important;
+        }
+
+        .is-touched .group-hover\:translate-y-4 {
+          opacity: 0 !important;
+          transform: translateY(1rem) !important;
+        }
+      }
     </style>
   </head>
   <body class="bg-pattern min-h-screen">
     <div id="toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col gap-3"></div>
+    <script>
+      // Handle mobile touch better
+      document.addEventListener('DOMContentLoaded', () => {
+        const cards = document.querySelectorAll('.group');
+        cards.forEach(card => {
+          card.addEventListener('click', function(e) {
+            // If it's a mobile device and not yet touched, show hover state instead of firing link
+            if (window.innerWidth <= 768 && !this.classList.contains('is-touched')) {
+              e.preventDefault();
+              cards.forEach(c => c.classList.remove('is-touched'));
+              this.classList.add('is-touched');
+            }
+          });
+        });
+        
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.group')) {
+            cards.forEach(c => c.classList.remove('is-touched'));
+          }
+        });
+      });
+    </script>
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100">
       <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
