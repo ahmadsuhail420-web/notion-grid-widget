@@ -17,9 +17,19 @@
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); }
         h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+        .toast {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(1rem);
+            opacity: 0;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="min-h-screen">
+    <div id="toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col gap-3"></div>
     <nav class="bg-white border-b border-gray-100 p-6">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
@@ -323,17 +333,45 @@
                 .select();
 
             if (error) {
-                alert('Error adding guest. Please ensure the "guest_list" table exists in your Supabase project.');
+                showToast('Error: Failed to save guest', 'error');
                 console.error(error);
             } else {
-                alert(`Successfully added ${name}. You can now share the link from the "All Invites" tab.`);
+                showToast('Saved Successfully!', 'success');
                 form.reset();
                 fetchGuests();
-                switchTab('invites');
+                setTimeout(() => switchTab('invites'), 1000);
             }
 
             btn.disabled = false;
             btn.innerText = "Add to List & Generate Link";
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-[#9c404d]' : 'bg-red-600';
+            
+            toast.className = `toast px-6 py-4 rounded-xl text-white font-bold shadow-2xl ${bgColor} flex items-center space-x-3`;
+            toast.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'success' ? 
+                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>' : 
+                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>'}
+                </svg>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         async function createInvitation() {
@@ -360,8 +398,9 @@
                 .select();
 
             if (error) {
-                alert('Error creating invitation: ' + error.message);
+                showToast('Error: ' + error.message, 'error');
             } else {
+                showToast('Template Created!', 'success');
                 fetchInvitations();
             }
 
