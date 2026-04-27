@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Invitation - Sync & Style</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import "tailwindcss";
+        :root {
+            --primary: #9c404d;
+            --bg-cream: #FBFBFB;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); }
+        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+        
+        .form-section {
+            @apply bg-white p-8 rounded-3xl border border-gray-100 shadow-sm mb-8;
+        }
+        .label {
+            @apply block text-xs font-bold text-[#9c404d] uppercase tracking-widest mb-2;
+        }
+        .input {
+            @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="bg-white border-b border-gray-100 p-6">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="/customer-dashboard" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
+            <div class="flex items-center space-x-6 text-sm">
+                <a href="/customer-dashboard" class="text-gray-500 hover:text-[#9c404d]">Dashboard</a>
+                <button onclick="handleLogout()" class="text-[#9c404d] font-bold">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6 md:p-12">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h1 id="editor-title" class="text-4xl font-serif font-bold mb-2">Edit Wedding Invitation</h1>
+                <p class="text-gray-500">Fill in the details for your special day.</p>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="previewInvitation()" class="px-6 py-2 border border-[#9c404d] text-[#9c404d] font-bold rounded-lg hover:bg-[#9c404d]/5">Preview</button>
+                <button onclick="saveChanges()" id="save-btn" class="px-8 py-2 bg-[#9c404d] text-white font-bold rounded-lg hover:bg-[#7d333e] shadow-lg shadow-[#9c404d]/20">Save Everything</button>
+            </div>
+        </div>
+
+        <form id="invitation-form">
+            <!-- Names & Dates -->
+            <div class="form-section">
+                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">Groom & Bride</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="label">Groom's Name</label>
+                        <input type="text" name="groom_name" class="input" placeholder="e.g. Yasah">
+                    </div>
+                    <div>
+                        <label class="label">Bride's Name</label>
+                        <input type="text" name="bride_name" class="input" placeholder="e.g. Rifa">
+                    </div>
+                    <div>
+                        <label class="label">Title / Heading</label>
+                        <input type="text" name="title" class="input" placeholder="e.g. Our Beautiful Wedding">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Details -->
+            <div class="form-section">
+                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">The Events</h2>
+                <div class="space-y-8">
+                    <!-- Nikah -->
+                    <div class="p-6 bg-gray-50 rounded-2xl">
+                        <h3 class="text-lg font-bold mb-4 flex items-center text-gray-700">
+                             Nikah Details
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">Nikah Date</label>
+                                <input type="date" name="nikah_date" class="input">
+                            </div>
+                            <div>
+                                <label class="label">Nikah Time</label>
+                                <input type="time" name="nikah_time" class="input">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="label">Nikah Venue Name</label>
+                                <input type="text" name="nikah_venue" class="input" placeholder="e.g. Al-Noor Grand Mosque">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reception -->
+                    <div class="p-6 bg-gray-50 rounded-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-700">Reception Details</h3>
+                            <label class="flex items-center space-x-2 text-sm text-gray-500">
+                                <input type="checkbox" name="has_reception" onchange="toggleReception(this.checked)">
+                                <span>Include Reception?</span>
+                            </label>
+                        </div>
+                        <div id="reception-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 pointer-events-none transition-all">
+                            <div>
+                                <label class="label">Reception Date</label>
+                                <input type="date" name="reception_date" class="input">
+                            </div>
+                            <div>
+                                <label class="label">Reception Time</label>
+                                <input type="time" name="reception_time" class="input">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="label">Reception Venue Name</label>
+                                <input type="text" name="reception_venue" class="input" placeholder="e.g. Royal Banquet Hall">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location & Place -->
+            <div class="form-section">
+                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">Location</h2>
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label class="label">General Location / City</label>
+                        <input type="text" name="place" class="input" placeholder="e.g. Malappuram, Kerala">
+                    </div>
+                    <div>
+                        <label class="label">Google Maps URL</label>
+                        <input type="url" name="map_url" class="input" placeholder="https://maps.app.goo.gl/...">
+                        <p class="text-[10px] text-gray-400 mt-1 italic">Paste the "Share" link from Google Maps here.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Family Details -->
+            <div class="form-section">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-xl font-serif font-bold">Family Details</h2>
+                    <button type="button" onclick="addFamilyMember()" class="text-xs font-bold text-[#9c404d] hover:underline">+ Add Member</button>
+                </div>
+                <div id="family-list" class="space-y-4">
+                    <!-- Family members added here -->
+                </div>
+                <p class="text-[10px] text-gray-400 mt-4">Add important family members like Parents, Brothers, etc.</p>
+            </div>
+
+            <!-- Contact Details -->
+            <div class="form-section">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-xl font-serif font-bold">Contact Person</h2>
+                    <button type="button" onclick="addContact()" class="text-xs font-bold text-[#9c404d] hover:underline">+ Add Contact</button>
+                </div>
+                <div id="contact-list" class="space-y-4">
+                    <!-- Contacts added here -->
+                </div>
+            </div>
+            
+            <div class="flex justify-center pt-8 pb-20">
+                <button type="button" onclick="saveChanges()" class="w-full max-w-md py-4 bg-[#9c404d] text-white font-bold rounded-2xl hover:bg-[#7d333e] shadow-xl shadow-[#9c404d]/20 transition-all active:scale-95">
+                    Save Invitation Changes
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        let sb;
+        let currentUser;
+        let invitationId;
+        let invitationData;
+
+        async function initSupabase() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+                
+                const { data: { session } } = await sb.auth.getSession();
+                if (!session) {
+                    window.location.href = '/login';
+                    return;
+                }
+                currentUser = session.user;
+
+                // Get ID from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                invitationId = urlParams.get('id');
+
+                if (!invitationId) {
+                    alert('No invitation ID provided.');
+                    window.location.href = '/customer-dashboard';
+                    return;
+                }
+
+                loadInvitationData();
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        }
+
+        async function loadInvitationData() {
+            const { data, error } = await sb
+                .from('customer_invitations')
+                .select('*')
+                .eq('id', invitationId)
+                .single();
+
+            if (error) {
+                alert('Could not load invitation');
+                return;
+            }
+
+            invitationData = data;
+            const details = data.wedding_details || {};
+            
+            const form = document.getElementById('invitation-form');
+            form.groom_name.value = details.groom_name || '';
+            form.bride_name.value = details.bride_name || '';
+            form.title.value = data.title || '';
+            form.nikah_date.value = details.nikah_date || '';
+            form.nikah_time.value = details.nikah_time || '';
+            form.nikah_venue.value = details.nikah_venue || '';
+            form.place.value = details.place || '';
+            form.map_url.value = details.map_url || '';
+
+            if (details.has_reception) {
+                form.has_reception.checked = true;
+                toggleReception(true);
+                form.reception_date.value = details.reception_date || '';
+                form.reception_time.value = details.reception_time || '';
+                form.reception_venue.value = details.reception_venue || '';
+            }
+
+            // Load Family
+            if (details.family && details.family.length > 0) {
+                details.family.forEach(member => addFamilyMember(member));
+            } else {
+                // Add default placeholders if empty
+                addFamilyMember({ relation: 'Father', name: '' });
+                addFamilyMember({ relation: 'Mother', name: '' });
+            }
+
+            // Load Contacts
+            if (details.contacts && details.contacts.length > 0) {
+                details.contacts.forEach(contact => addContact(contact));
+            } else {
+                addContact({ label: 'Main Contact', phone: '' });
+            }
+        }
+
+        function toggleReception(checked) {
+            const fields = document.getElementById('reception-fields');
+            if (checked) {
+                fields.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                fields.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        function addFamilyMember(data = { relation: '', name: '' }) {
+            const container = document.getElementById('family-list');
+            const id = Date.now() + Math.random();
+            const div = document.createElement('div');
+            div.className = "flex gap-4 items-center bg-white p-3 border border-gray-100 rounded-xl family-member-row";
+            div.innerHTML = `
+                <input type="text" placeholder="Relation (e.g Father)" value="${data.relation}" class="w-1/3 px-3 py-2 text-sm border-b focus:border-[#9c404d] outline-none family-relation">
+                <input type="text" placeholder="Name" value="${data.name}" class="w-2/3 px-3 py-2 text-sm border-b focus:border-[#9c404d] outline-none family-name">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-300 hover:text-red-500">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addContact(data = { label: '', phone: '' }) {
+            const container = document.getElementById('contact-list');
+            const div = document.createElement('div');
+            div.className = "flex gap-4 items-center bg-white p-3 border border-gray-100 rounded-xl contact-row";
+            div.innerHTML = `
+                <input type="text" placeholder="Label (e.g. Brother)" value="${data.label}" class="w-1/3 px-3 py-2 text-sm border-b focus:border-[#9c404d] outline-none contact-label">
+                <input type="tel" placeholder="Phone (e.g. +91...)" value="${data.phone}" class="w-2/3 px-3 py-2 text-sm border-b focus:border-[#9c404d] outline-none contact-phone">
+                <button type="button" onclick="this.parentElement.remove()" class="text-red-300 hover:text-red-500">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        async function saveChanges() {
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Saving...";
+
+            const form = document.getElementById('invitation-form');
+            
+            // Gather Family
+            const family = [];
+            document.querySelectorAll('.family-member-row').forEach(row => {
+                const relation = row.querySelector('.family-relation').value;
+                const name = row.querySelector('.family-name').value;
+                if (relation || name) family.push({ relation, name });
+            });
+
+            // Gather Contacts
+            const contacts = [];
+            document.querySelectorAll('.contact-row').forEach(row => {
+                const label = row.querySelector('.contact-label').value;
+                const phone = row.querySelector('.contact-phone').value;
+                if (label || phone) contacts.push({ label, phone });
+            });
+
+            const wedding_details = {
+                groom_name: form.groom_name.value,
+                bride_name: form.bride_name.value,
+                nikah_date: form.nikah_date.value,
+                nikah_time: form.nikah_time.value,
+                nikah_venue: form.nikah_venue.value,
+                has_reception: form.has_reception.checked,
+                reception_date: form.reception_date.value,
+                reception_time: form.reception_time.value,
+                reception_venue: form.reception_venue.value,
+                place: form.place.value,
+                map_url: form.map_url.value,
+                family: family,
+                contacts: contacts
+            };
+
+            const { error } = await sb
+                .from('customer_invitations')
+                .update({ 
+                    title: form.title.value,
+                    wedding_details: wedding_details
+                })
+                .eq('id', invitationId);
+
+            if (error) {
+                alert('Error saving: ' + error.message);
+            } else {
+                alert('Changes saved successfully!');
+            }
+
+            saveBtn.disabled = false;
+            saveBtn.innerText = "Save Everything";
+        }
+
+        function previewInvitation() {
+            window.open(`/template01?id=${invitationId}`, '_blank');
+        }
+
+        async function handleLogout() {
+            if (sb) {
+                await sb.auth.signOut();
+                window.location.href = '/login';
+            }
+        }
+
+        initSupabase();
+    </script>
+</body>
+</html>
