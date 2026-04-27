@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sync & Style</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import "tailwindcss";
+        :root {
+            --primary: #9c404d;
+            --bg-cream: #FFF9F9;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-cream);
+            background-image: radial-gradient(rgba(156, 64, 77, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+
+        .btn-primary {
+          @apply bg-[#9c404d] text-white px-8 py-3 font-bold transition-all duration-300 border-2 border-white shadow-[0_5px_15px_rgba(156,64,77,0.2)] hover:bg-[#7d333e] active:scale-95 text-center;
+          font-family: 'Times New Roman', Times, serif;
+          border-radius: 0;
+        }
+
+        .input-field {
+          @apply w-full px-4 py-3 bg-white border border-[#9c404d]/20 rounded-none focus:outline-none focus:border-[#9c404d]/50 transition-all;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Simple Navbar -->
+    <nav class="p-8">
+        <div class="max-w-7xl mx-auto">
+            <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex items-center justify-center px-6 pb-20">
+        <div class="max-w-md w-full">
+            <div id="login-container" class="bg-white border border-[#9c404d]/20 p-10 shadow-2xl relative overflow-hidden">
+                <!-- Decorative element -->
+                <div class="absolute -top-10 -right-10 w-24 h-24 bg-[#fdf2f3] rounded-full opacity-50"></div>
+                
+                <div id="login-form">
+                    <h2 class="text-3xl font-serif font-bold text-[#2d0a0e] mb-2">Welcome Back</h2>
+                    <p class="text-gray-400 text-sm mb-10 italic">Login to manage your invitations</p>
+                    
+                    <form class="space-y-6" onsubmit="handleLogin(event)">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Email Address</label>
+                            <input type="email" placeholder="you@example.com" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Password</label>
+                            <input type="password" placeholder="••••••••" class="input-field" required>
+                        </div>
+                        <button type="submit" class="btn-primary w-full uppercase tracking-widest">Login</button>
+                    </form>
+                    
+                    <p class="mt-8 text-center text-sm text-gray-500">
+                        Don't have an account? 
+                        <button onclick="toggleForm()" class="text-[#9c404d] font-bold hover:underline">Create Account</button>
+                    </p>
+                </div>
+
+                <div id="signup-form" class="hidden">
+                    <h2 class="text-3xl font-serif font-bold text-[#2d0a0e] mb-2">Create Account</h2>
+                    <p class="text-gray-400 text-sm mb-10 italic">Join for your perfect invitation</p>
+                    
+                    <form class="space-y-6" onsubmit="handleSignup(event)">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">First Name</label>
+                                <input type="text" placeholder="John" class="input-field" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Last Name</label>
+                                <input type="text" placeholder="Doe" class="input-field" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Email Address</label>
+                            <input type="email" placeholder="you@example.com" class="input-field" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Password</label>
+                            <input type="password" placeholder="••••••••" class="input-field" required>
+                        </div>
+                        <button type="submit" class="btn-primary w-full uppercase tracking-widest">Sign Up</button>
+                    </form>
+                    
+                    <p class="mt-8 text-center text-sm text-gray-500">
+                        Already have an account? 
+                        <button onclick="toggleForm()" class="text-[#9c404d] font-bold hover:underline">Login instead</button>
+                    </p>
+                </div>
+            </div>
+            
+            <p class="text-center mt-12">
+                <a href="/" class="text-sm text-gray-400 hover:text-[#9c404d] transition-colors">← Back to Home</a>
+            </p>
+        </div>
+    </main>
+
+    <script>
+        let sb;
+
+        async function initSupabase() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                
+                if (!config.supabaseUrl || !config.supabaseAnonKey) {
+                    console.error('Supabase config missing. Please check your environment variables.');
+                    return;
+                }
+
+                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+                
+                // Check if already logged in
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
+                    window.location.href = '/customer-dashboard';
+                }
+            } catch (err) {
+                console.error('Error initializing Supabase:', err);
+            }
+        }
+
+        initSupabase();
+
+        function toggleForm() {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            
+            if (loginForm.classList.contains('hidden')) {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+
+            if (!sb) {
+                alert('Supabase is not initialized. Please check your configuration.');
+                return;
+            }
+
+            const button = e.target.querySelector('button');
+            const originalText = button.innerText;
+            button.innerText = 'Logging in...';
+            button.disabled = true;
+
+            try {
+                const { data, error } = await sb.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+
+                if (error) {
+                    alert(error.message);
+                    button.innerText = originalText;
+                    button.disabled = false;
+                } else {
+                    window.location.href = '/customer-dashboard';
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('An unexpected error occurred during login.');
+                button.innerText = originalText;
+                button.disabled = false;
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const firstName = e.target.querySelectorAll('input')[0].value;
+            const lastName = e.target.querySelectorAll('input')[1].value;
+            const email = e.target.querySelector('input[type="email"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+
+            if (!sb) {
+                alert('Supabase is not initialized. Please check your configuration.');
+                return;
+            }
+
+            const button = e.target.querySelector('button');
+            const originalText = button.innerText;
+            button.innerText = 'Creating account...';
+            button.disabled = true;
+
+            try {
+                const { data, error } = await sb.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                        }
+                    }
+                });
+
+                if (error) {
+                    alert(error.message);
+                    button.innerText = originalText;
+                    button.disabled = false;
+                } else {
+                    alert('Registration successful! Please check your email for a verification link or try logging in.');
+                    toggleForm();
+                    button.innerText = originalText;
+                    button.disabled = false;
+                }
+            } catch (err) {
+                console.error('Signup error:', err);
+                alert('An unexpected error occurred during signup.');
+                button.innerText = originalText;
+                button.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
