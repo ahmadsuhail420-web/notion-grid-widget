@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zareqia - Create Wedding Invitation Webpage Online</title>
+    <title>Sync & Style - Create Wedding Invitation Webpage Online</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
 
       :root {
         --primary: #9c404d;
-        --bg-cream: #FBFBFB;
+        --bg-cream: #FFF9F9;
         --text-dark: #2d0a0e;
         --text-muted: #6b4a4e;
       }
@@ -107,26 +107,56 @@
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100">
       <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Zareqia</a>
+        <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
         
         <div class="hidden md:flex items-center space-x-12 text-[14px] font-medium text-gray-700">
           <a href="#features" class="hover:text-[#9c404d] transition-colors">Features</a>
           <a href="#how-it-works" class="hover:text-[#9c404d] transition-colors">How It Works</a>
           <a href="#pricing" class="hover:text-[#9c404d] transition-colors">Pricing</a>
           <a href="/login" class="hover:text-[#9c404d] transition-colors">Login</a>
-          <a href="/main" class="bg-[#9c404d] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Get Started</a>
+          <a href="#templates" class="bg-[#9c404d] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Get Started</a>
         </div>
         
-        <button class="md:hidden text-gray-600">
+        <button id="mobile-menu-btn" class="md:hidden text-gray-600 focus:outline-none">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m7 6H4"></path></svg>
         </button>
       </div>
     </nav>
 
+    <!-- Mobile Menu Sidebar -->
+    <div id="mobile-menu" class="fixed inset-0 z-[60] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+      <!-- Backdrop -->
+      <div id="mobile-menu-backdrop" class="absolute inset-0 bg-[#2d0a0e]/20 backdrop-blur-sm"></div>
+      
+      <!-- Sidebar Content -->
+      <div class="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl flex flex-col p-8">
+        <div class="flex items-center justify-between mb-12">
+          <span class="text-xl font-serif font-bold text-[#9c404d] italic">Sync & Style</span>
+          <button id="mobile-menu-close" class="text-gray-400 hover:text-[#9c404d] transition-colors focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        
+        <div class="flex flex-col space-y-8 text-lg font-medium text-gray-700">
+          <a href="#features" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Features</a>
+          <a href="#how-it-works" class="mobile-nav-link hover:text-[#9c404d] transition-colors">How It Works</a>
+          <a href="#pricing" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Pricing</a>
+          <a href="/login" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Login</a>
+          <div class="pt-8 mt-auto">
+            <a href="#templates" class="mobile-nav-link block bg-[#9c404d] text-white px-7 py-4 rounded-lg font-bold text-center hover:bg-[#7d333e] transition-all">Get Started</a>
+          </div>
+        </div>
+
+        <div class="mt-auto text-center">
+            <p class="text-xs text-gray-400">© 2026 Sync & Style</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Hero Section -->
-    <section class="pt-40 pb-12 px-6 relative overflow-hidden">
+    <section class="pt-32 pb-12 px-6 relative overflow-hidden">
       <div class="max-w-5xl mx-auto text-center relative z-10">
-        <div class="mb-6 scroll-reveal">
+        <div class="mb-4 scroll-reveal">
           <span class="text-sm md:text-base font-light text-gray-400 tracking-[0.1em] uppercase">Skip the Paper. Go Stunning</span>
         </div>
         
@@ -144,7 +174,7 @@
         </p>
         
         <div class="flex flex-col sm:flex-row items-center justify-center gap-5 scroll-reveal" style="transition-delay: 400ms;">
-          <a href="/dashboard" class="btn-primary flex items-center group uppercase tracking-widest text-sm">
+          <a href="/login" class="btn-primary flex items-center group uppercase tracking-widest text-sm">
             Create My Invitation
             <svg class="w-5 h-5 ml-3 transition-transform group-hover:translate-x-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </a>
@@ -502,6 +532,34 @@
       </div>
     </section>
 
+    <!-- Templates Section -->
+    <section id="templates" class="py-24 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+           <span class="text-[#9c404d] italic block mb-2 font-serif text-lg">Masterpieces</span>
+           <h2 class="text-4xl md:text-5xl font-serif font-bold text-[#2d0a0e] mb-4">Choose Your <span class="italic text-[#9c404d]">Style</span></h2>
+           <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-6"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <!-- Template 1: The Royal Affair -->
+          <div class="group cursor-pointer scroll-reveal">
+            <div class="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gray-100 mb-6 border border-[#9c404d]/5">
+              <div class="absolute inset-0 bg-gradient-to-t from-[#2d0a0e]/60 to-transparent flex items-end p-8 opacity-0 group-hover:opacity-100 transition-opacity z-10 text-center">
+                <div class="flex flex-col gap-2 w-full">
+                  <a href="/template01" target="_blank" class="bg-white text-[#9c404d] px-6 py-2 rounded-lg font-bold text-sm w-full text-center hover:bg-gray-100 transition-all">Preview Demo</a>
+                  <a href="/login" class="bg-[#9c404d] text-white px-6 py-2 rounded-lg font-bold text-sm w-full text-center hover:bg-[#7d333e] transition-all">Select Template</a>
+                </div>
+              </div>
+              <img src="https://images.unsplash.com/photo-1541250848049-b4f71413cc30?auto=format&fit=crop&q=80&w=600" alt="Royal Wedding Template" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            </div>
+            <h3 class="text-xl font-serif font-bold text-[#2d0a0e]">The Royal Affair (01)</h3>
+            <p class="text-sm text-gray-400 font-medium">Classical, Elegant, Gold & Maroon</p>
+          </div>
+        </div>
+      </div>
+    </section>
+ 
     <!-- Pricing -->
     <section id="pricing" class="py-24 px-6 relative">
       <div class="max-w-7xl mx-auto">
@@ -534,7 +592,7 @@
                <div class="flex items-center"><svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Google Maps integration</div>
              </div>
              
-             <a href="/dashboard" class="btn-primary w-full inline-block text-center flex items-center justify-center group">
+             <a href="/login" class="btn-primary w-full inline-block text-center flex items-center justify-center group">
                Start Creating 
                <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
              </a>
@@ -593,7 +651,7 @@
         <h2 class="text-4xl md:text-5xl font-serif mb-10 text-[#2d0a0e]">Ready to Create Your <span class="italic text-[#9c404d]">Perfect Invitation</span>?</h2>
         <p class="text-gray-500 mb-12 max-w-xl mx-auto">Join hundreds of couples who chose elegance for their special day.</p>
         
-        <a href="/dashboard" class="btn-primary inline-flex items-center group uppercase tracking-widest text-sm">
+        <a href="#templates" class="btn-primary inline-flex items-center group uppercase tracking-widest text-sm">
           Start Creating Your Invitation
           <svg class="w-5 h-5 ml-3 transition-transform group-hover:translate-x-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </a>
@@ -604,7 +662,7 @@
     <footer class="py-12 bg-pattern border-t border-[#9c404d]/10">
       <div class="max-w-7xl mx-auto px-6 text-center">
         <div class="mb-10">
-          <a href="/" class="text-xl font-serif font-bold text-[#9c404d] italic">Zareqia</a>
+          <a href="/" class="text-xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
         </div>
         
         <div class="flex flex-wrap justify-center gap-x-10 gap-y-4 text-sm font-medium text-gray-500 mb-10">
@@ -620,7 +678,7 @@
           <a href="#" class="hover:text-[#9c404d] transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
         </div>
         
-        <p class="text-sm text-gray-400">© 2026 Zareqia. Crafted with ❤</p>
+        <p class="text-sm text-gray-400">© 2026 Sync & Style. Crafted with ❤</p>
         <p class="text-[10px] text-gray-300 mt-4">Digital wedding invitation service • No physical products shipped</p>
       </div>
     </footer>
@@ -651,10 +709,41 @@
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
           e.preventDefault();
-          document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-          });
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth'
+            });
+          }
         });
+      });
+
+      // Mobile Menu Logic
+      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenuClose = document.getElementById('mobile-menu-close');
+      const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+      const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+      function toggleMobileMenu(show) {
+        if (show) {
+          mobileMenu.classList.remove('translate-x-full');
+          document.body.style.overflow = 'hidden';
+        } else {
+          mobileMenu.classList.add('translate-x-full');
+          document.body.style.overflow = '';
+        }
+      }
+
+      mobileMenuBtn.addEventListener('click', () => toggleMobileMenu(true));
+      mobileMenuClose.addEventListener('click', () => toggleMobileMenu(false));
+      mobileMenuBackdrop.addEventListener('click', () => toggleMobileMenu(false));
+      
+      mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => toggleMobileMenu(false));
       });
     </script>
   </body>
