@@ -175,6 +175,29 @@
                     button.innerText = originalText;
                     button.disabled = false;
                 } else {
+                    // Check if we need to create a template immediately
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const templateId = urlParams.get('template');
+                    
+                    if (templateId) {
+                        const { data: invData, error: invError } = await sb
+                            .from('customer_invitations')
+                            .insert([
+                                { 
+                                    user_id: data.user.id, 
+                                    title: 'My Wedding Invitation', 
+                                    status: 'draft',
+                                    template_type: templateId,
+                                    wedding_details: {} 
+                                }
+                            ])
+                            .select();
+                        
+                        if (!invError && invData.length > 0) {
+                            window.location.href = `/editor?id=${invData[0].id}`;
+                            return;
+                        }
+                    }
                     window.location.href = '/customer-dashboard';
                 }
             } catch (err) {
