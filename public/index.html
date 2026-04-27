@@ -96,6 +96,102 @@
         display: inline-block;
         animation: wowPulse 2.5s ease-in-out infinite;
       }
+
+      @keyframes shimmerWow {
+        0% { background-position: -100% 0; }
+        50% { background-position: 100% 0; }
+        100% { background-position: -100% 0; }
+      }
+
+      @keyframes shimmerPhrase {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
+      .wow-shimmer {
+        background: linear-gradient(
+          90deg, 
+          #9c404d 10%, 
+          rgba(212, 175, 55, 0.3) 50%, 
+          #9c404d 90%
+        );
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmerWow 6s ease-in-out infinite;
+        display: inline-block;
+        font-weight: 800;
+        filter: drop-shadow(0 0 1px rgba(212, 175, 55, 0.1));
+      }
+
+      .phrase-shimmer {
+        background: linear-gradient(
+          90deg, 
+          #9c404d 10%, 
+          rgba(212, 175, 55, 0.25) 25%, 
+          #9c404d 40%, 
+          #9c404d 60%, 
+          rgba(212, 175, 55, 0.25) 75%, 
+          #9c404d 90%
+        );
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmerPhrase 10s linear infinite;
+        display: inline-block;
+        filter: drop-shadow(0 0 1px rgba(212, 175, 55, 0.05));
+      }
+
+      .premium-shimmer {
+        background: linear-gradient(
+          110deg, 
+          #9c404d 10%, 
+          #9c404d 35%, 
+          rgba(212, 175, 55, 0.4) 50%, 
+          #9c404d 65%, 
+          #9c404d 90%
+        );
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer 12s infinite linear;
+        display: inline-block;
+        font-weight: 800;
+      }
+
+      /* Glare effect for cards */
+      .card-glare {
+        position: relative;
+        overflow: hidden;
+      }
+      .card-glare::after {
+        content: "";
+        position: absolute;
+        top: -150%;
+        left: -150%;
+        width: 300%;
+        height: 300%;
+        background: linear-gradient(
+          45deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.1) 45%,
+          rgba(255, 255, 255, 0.5) 50%,
+          rgba(255, 255, 255, 0.1) 55%,
+          transparent 100%
+        );
+        transition: all 0.7s;
+        transform: rotate(45deg);
+        pointer-events: none;
+        opacity: 0;
+      }
+      .group:hover .card-glare::after {
+        top: -50%;
+        left: -50%;
+        opacity: 1;
+      }
     </style>
   </head>
   <body class="bg-pattern min-h-screen">
@@ -164,7 +260,7 @@
         
         <h1 class="text-5xl md:text-8xl font-serif text-[#2d0a0e] font-bold leading-[1.1] mb-8 scroll-reveal" style="transition-delay: 100ms;">
           Wedding Invitations That <br>
-          <span class="text-[#9c404d] italic wow-animate">Wow</span><span class="text-[#2d0a0e] italic">—Instantly</span>
+          <span class="italic wow-shimmer wow-animate">Wow</span><span class="text-[#2d0a0e] italic">—Instantly</span>
         </h1>
         
         <div class="mb-8 scroll-reveal" style="transition-delay: 200ms;">
@@ -204,16 +300,119 @@
     <!-- Separation -->
     <div class="max-w-20 mx-auto h-px bg-[#9c404d]/30 scroll-reveal"></div>
 
-    <!-- Templates Section -->
-    <section id="templates" class="py-16 px-6">
+    <!-- Templates Intro Section -->
+    <section id="templates-intro" class="py-16 px-6">
       <div class="max-w-7xl mx-auto">
         <div class="max-w-4xl mx-auto bg-white/60 border border-[#9c404d]/20 rounded-[28px] p-8 md:p-12 text-center scroll-reveal shiny-border">
           <h2 class="text-2xl md:text-3xl font-serif mb-8 leading-tight">
-            Access to <span class="text-[#9c404d] font-bold">Premium Wedding Invitation Templates</span> in just One Time Payment
+            Access to <span class="phrase-shimmer font-bold">Premium Wedding Invitation Templates</span> in just One Time Payment
           </h2>
           <p class="text-gray-500 text-sm md:text-lg max-w-2xl mx-auto leading-relaxed">
             Choose a template, fill in your wedding details, and get a personalized invitation webpage you can share via WhatsApp, email, or any platform.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Templates Gallery Section -->
+    <section id="templates" class="py-24 px-6 bg-[#fcf9f4]">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+           <span class="text-[#9c404d] italic block mb-2 font-serif text-lg">Masterpieces</span>
+           <h2 class="text-4xl md:text-5xl font-serif font-bold text-[#2d0a0e] mb-4">Choose Your <span class="italic text-[#9c404d]">Style</span></h2>
+           <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-6"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <!-- Template 1: The Royal Affair -->
+          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/60 transition-all duration-500 scroll-reveal card-glare">
+            <img src="https://images.unsplash.com/photo-1541250848049-b4f71413cc30?auto=format&fit=crop&q=80&w=800" alt="Royal Affair" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+            
+            <!-- Premium Badge (Top Right) -->
+            <div class="absolute top-4 right-4 z-20">
+              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
+            </div>
+
+            <!-- Bottom Info Layer (Always Visible) -->
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-px bg-[#9c404d]/30"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Luxury Series</span>
+              </div>
+              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Royal Affair</h3>
+              <p class="text-[#9c404d]/60 text-xs font-medium italic">Classical & Elegant Aesthetics</p>
+            </div>
+
+            <!-- Hover Interaction Layer (Buttons) -->
+            <div class="absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6">
+               <h3 class="text-2xl font-serif font-bold text-white mb-6 transform -translate-y-4 group-hover:translate-y-0 transition-transform">Royal Affair</h3>
+               <div class="flex flex-col gap-3 w-full max-w-[160px]">
+                  <a href="/templates/template01.html" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
+                  <a href="/login" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</a>
+               </div>
+            </div>
+          </div>
+
+          <!-- Template 2: Modern Minimal -->
+          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 100ms;">
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800" alt="Modern Minimal" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+            
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-px bg-[#9c404d]/30"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Trend Series</span>
+              </div>
+              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Modern Minimal</h3>
+              <p class="text-[#9c404d]/60 text-xs font-medium italic">Clean & Contemporary Design</p>
+            </div>
+
+            <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
+               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
+            </div>
+          </div>
+
+          <!-- Template 3: Floral Garden -->
+          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 200ms;">
+            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=800" alt="Floral Garden" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+            
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-px bg-[#9c404d]/30"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Nature Series</span>
+              </div>
+              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Floral Garden</h3>
+              <p class="text-[#9c404d]/60 text-xs font-medium italic">Soft & Romantic Ambiance</p>
+            </div>
+
+            <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
+               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
+            </div>
+          </div>
+
+          <!-- Template 4: Golden Glow -->
+          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 300ms;">
+            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&q=80&w=800" alt="Golden Glow" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+            
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-px bg-[#9c404d]/30"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Prestige Series</span>
+              </div>
+              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Golden Glow</h3>
+              <p class="text-[#9c404d]/60 text-xs font-medium italic">Pure Luxury & Radiance</p>
+            </div>
+
+            <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
+               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center scroll-reveal">
+          <a href="/templates" class="btn-outline px-12 inline-flex items-center group">
+            View All Templates
+            <svg class="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+          </a>
         </div>
       </div>
     </section>
@@ -534,93 +733,6 @@
       </div>
     </section>
 
-    <!-- Templates Section -->
-    <section id="templates" class="py-24 px-6 bg-white">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-16 scroll-reveal">
-           <span class="text-[#9c404d] italic block mb-2 font-serif text-lg">Masterpieces</span>
-           <h2 class="text-4xl md:text-5xl font-serif font-bold text-[#2d0a0e] mb-4">Choose Your <span class="italic text-[#9c404d]">Style</span></h2>
-           <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-6"></div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          <!-- Template 1: The Royal Affair -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-sm border border-gray-100 scroll-reveal">
-            <img src="https://images.unsplash.com/photo-1541250848049-b4f71413cc30?auto=format&fit=crop&q=80&w=800" alt="Royal Affair" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-            
-            <!-- Premium Badge (Top Right) -->
-            <div class="absolute top-4 right-4 z-20">
-              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
-            </div>
-
-            <!-- Bottom Info Layer (Always Visible) -->
-            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10 transition-opacity group-hover:opacity-0">
-              <h3 class="text-xl font-serif font-bold text-white">Royal Affair</h3>
-              <p class="text-white/70 text-xs italic">Classical & Elegant</p>
-            </div>
-
-            <!-- Hover Interaction Layer (Buttons) -->
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6">
-               <h3 class="text-2xl font-serif font-bold text-white mb-6 transform -translate-y-4 group-hover:translate-y-0 transition-transform">Royal Affair</h3>
-               <div class="flex flex-col gap-3 w-full max-w-[160px]">
-                  <a href="/template01" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                  <a href="/login" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</a>
-               </div>
-            </div>
-          </div>
-
-          <!-- Template 2: Modern Minimal -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-sm border border-gray-100 scroll-reveal" style="transition-delay: 100ms;">
-            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800" alt="Modern Minimal" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            
-            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10">
-              <h3 class="text-xl font-serif font-bold text-white">Modern Minimal</h3>
-              <p class="text-white/70 text-xs italic">Clean & Contemporary</p>
-            </div>
-
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
-            </div>
-          </div>
-
-          <!-- Template 3: Floral Garden -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-sm border border-gray-100 scroll-reveal" style="transition-delay: 200ms;">
-            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=800" alt="Floral Garden" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            
-            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10">
-              <h3 class="text-xl font-serif font-bold text-white">Floral Garden</h3>
-              <p class="text-white/70 text-xs italic">Soft & Romantic</p>
-            </div>
-
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
-            </div>
-          </div>
-
-          <!-- Template 4: Golden Glow -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-sm border border-gray-100 scroll-reveal" style="transition-delay: 300ms;">
-            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&q=80&w=800" alt="Golden Glow" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            
-            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10">
-              <h3 class="text-xl font-serif font-bold text-white">Golden Glow</h3>
-              <p class="text-white/70 text-xs italic">Pure Luxury</p>
-            </div>
-
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="text-center scroll-reveal">
-          <a href="/templates" class="btn-outline px-12 inline-flex items-center group">
-            View All Templates
-            <svg class="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-          </a>
-        </div>
-      </div>
-    </section>
- 
     <!-- Pricing -->
     <section id="pricing" class="py-24 px-6 relative">
       <div class="max-w-7xl mx-auto">
