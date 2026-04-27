@@ -105,21 +105,50 @@
             justify-content: center;
             text-align: center;
             opacity: 0;
-            transition: opacity 1s ease 1s;
+            transition: opacity 1.5s ease 0.5s;
+            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
         }
 
         .gold-shimmer {
-            background: linear-gradient(to right, #d4af37 20%, #f4e1a1 40%, #f4e1a1 60%, #d4af37 80%);
+            background: linear-gradient(to right, #d4af37 20%, #f4e1a1 40%, #ffffff 50%, #f4e1a1 60%, #d4af37 80%);
             background-size: 200% auto;
             color: #000;
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shine 3s linear infinite;
+            display: inline-block;
         }
 
         @keyframes shine {
             to { background-position: 200% center; }
+        }
+
+        .mashura-name {
+            animation: floatText 3s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes floatText {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Glitter Background */
+        #glitter-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .glitter-active #glitter-canvas {
+            opacity: 1;
         }
 
         /* Cake Scene */
@@ -285,12 +314,14 @@
         </div>
     </div>
 
+    <canvas id="glitter-canvas"></canvas>
+
     <!-- Birthday Content -->
     <section id="birthday-hero">
-        <div class="px-6">
+        <div class="px-6 relative z-20">
             <p class="font-cinzel text-gold tracking-[0.4em] mb-4 text-xs opacity-60">A VERY SPECIAL DAY</p>
             <h1 class="text-6xl sm:text-8xl font-playfair font-bold mb-6 italic gold-shimmer">Happy Birthday</h1>
-            <h2 class="text-5xl sm:text-7xl font-vibes text-white mb-12">Mashura</h2>
+            <h2 class="text-5xl sm:text-7xl font-vibes text-white mb-12 mashura-name">Mashura</h2>
             
             <div class="max-w-md mx-auto opacity-70">
                 <p class="text-sm tracking-widest leading-relaxed">
@@ -335,6 +366,42 @@
     </section>
 
     <script>
+        const canvas = document.getElementById('glitter-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initGlitter() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speed: Math.random() * 0.5 + 0.2,
+                    opacity: Math.random(),
+                    change: Math.random() * 0.05
+                });
+            }
+        }
+
+        function animateGlitter() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y -= p.speed;
+                if (p.y < 0) p.y = canvas.height;
+                p.opacity += p.change;
+                if (p.opacity > 1 || p.opacity < 0) p.change *= -1;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${Math.max(0, p.opacity)})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(animateGlitter);
+        }
+
         function openDoors() {
             document.activeElement.blur();
             document.getElementById('left-door').classList.add('open-left');
@@ -343,14 +410,24 @@
             setTimeout(() => {
                 document.getElementById('door-wrapper').style.pointerEvents = 'none';
                 document.getElementById('birthday-hero').style.opacity = '1';
+                document.body.classList.add('glitter-active');
+                
+                initGlitter();
+                animateGlitter();
                 
                 // Allow scrolling after reveal
                 document.body.style.overflow = 'auto';
             }, 500);
 
-            // Audio trigger could go here
             console.log("Welcome to Mashura's Birthday");
         }
+
+        window.addEventListener('resize', () => {
+            if (document.body.classList.contains('glitter-active')) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
 
         function cutCake() {
             const knife = document.getElementById('birthday-knife');
