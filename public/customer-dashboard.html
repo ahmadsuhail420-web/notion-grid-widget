@@ -259,7 +259,7 @@
                     <p class="text-gray-400 text-xs mb-6 italic">Created on ${new Date(invitation.created_at).toLocaleDateString()}</p>
                     <div class="flex space-x-3 text-sm">
                         <button onclick="editInvitation('${invitation.id}')" class="flex-1 py-2 border border-[#9c404d]/20 hover:bg-[#9c404d]/5 transition-colors font-medium rounded-lg">Edit Details</button>
-                        <button onclick="window.open('/template01?id=${invitation.id}', '_blank')" class="flex-1 py-2 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-colors font-medium rounded-lg text-center">Preview</button>
+                        <button onclick="window.open('/templates/template01?id=${invitation.id}', '_blank')" class="flex-1 py-2 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-colors font-medium rounded-lg text-center">Preview</button>
                     </div>
                 </div>
             `).join('');
