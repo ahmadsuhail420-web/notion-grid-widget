@@ -101,7 +101,7 @@
             
             <div class="relative z-10 text-center px-6">
                 <!-- Arabic Blessing -->
-                <div class="mb-4 flex flex-col items-center">
+                <div class="mb-2 flex flex-col items-center -translate-y-8">
                     <div class="inline-block overflow-hidden rtl" dir="rtl">
                         <div class="text-2xl sm:text-3xl typewriter font-luxury tracking-widest text-gold">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
                     </div>
@@ -133,13 +133,47 @@
             </div>
 
             <!-- Scroll hint -->
-            <div id="scroll-hint" class="fixed bottom-12 left-1/2 -translate-x-1/2 opacity-60 animate-bounce text-cream z-20 pointer-events-none text-center">
-                <p class="text-[14px] sm:text-[16px] tracking-[0.8em] font-cinzel font-bold border-t border-gold/30 pt-4 px-6">SCROLL</p>
+            <div id="scroll-hint" class="fixed bottom-8 right-8 opacity-40 animate-pulse text-cream z-20 pointer-events-none">
+                <div class="flex flex-col items-center">
+                    <p class="text-[8px] tracking-[0.6em] font-cinzel font-bold mb-2">SCROLL</p>
+                    <div class="h-8 w-[0.5px] bg-gold/50"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Invitation Message -->
+        <section class="relative py-40 px-6 overflow-hidden bg-[#0a0f0d] flex items-center justify-center min-h-[70vh]">
+            <!-- Decorative Swashes -->
+            <div class="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-8">
+                <div class="swash-line"></div>
+                <div class="flex justify-around mt-[-4px] px-12">
+                    <div class="w-1 h-1 rounded-full bg-gold/40"></div>
+                    <div class="w-1 h-1 rounded-full bg-gold/60"></div>
+                    <div class="w-1 h-1 rounded-full bg-gold/40"></div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-8">
+                <div class="swash-line rotate-180"></div>
+                <div class="flex justify-around mb-[-4px] px-12">
+                    <div class="w-1 h-1 rounded-full bg-gold/40"></div>
+                    <div class="w-1 h-1 rounded-full bg-gold/60"></div>
+                    <div class="w-1 h-1 rounded-full bg-gold/40"></div>
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="reveal">
+                    <p class="text-2xl sm:text-3xl md:text-4xl text-cream font-playfair font-normal italic leading-[1.8] tracking-wide px-8 opacity-90">
+                        “With hearts full of love and joy, we warmly invite you to share in the celebration of our union. 
+                        Your presence would mean the world to us as we begin this beautiful journey together.”
+                    </p>
+                </div>
             </div>
         </section>
 
         <!-- Section 2: Details of Blessed Days -->
-        <section class="py-24 px-6 max-w-4xl mx-auto">
+        <section class="py-24 px-6 max-w-4xl mx-auto -mt-16">
             <div class="text-center mb-16">
                 <div class="flex items-center justify-center gap-4 opacity-40 mb-4">
                     <div class="h-[1px] w-8 bg-gold"></div>
@@ -151,7 +185,10 @@
 
             <div class="flex flex-col items-center gap-12 max-w-sm mx-auto">
                 <!-- Nikah Ceremony Card -->
-                <div class="gold-shimmer-border reveal w-full bg-[#0a0a0a] flex flex-col items-center justify-center py-16 px-8 text-center" style="transition-delay: 100ms;">
+                <div id="nikah-card" class="gold-shimmer-border reveal w-full bg-[#0a0a0a] flex flex-col items-center justify-center py-16 px-8 text-center relative" style="transition-delay: 100ms;">
+                    <!-- Glitter Anchor -->
+                    <div id="glitter-trigger" class="absolute top-0 left-0 w-full h-1 pointer-events-none"></div>
+                    
                     <div class="text-gold text-sm font-cinzel tracking-[0.4em] mb-10">NIKAH CEREMONY</div>
                     
                     <div class="space-y-6 w-full text-cream">
@@ -246,16 +283,18 @@
                     
                     <form id="rsvp-form" class="space-y-8 text-left max-w-md mx-auto">
                         <div class="relative">
-                            <input type="text" placeholder="YOUR FULL NAME" class="w-full bg-transparent border-b border-gold/30 py-4 px-2 focus:outline-none focus:border-gold transition-colors placeholder:text-gold/30 text-[10px] font-cinzel tracking-widest text-cream uppercase">
+                            <input type="text" name="guest_name" id="rsvp-name" required placeholder="YOUR FULL NAME" class="w-full bg-transparent border-b border-gold/30 py-4 px-2 focus:outline-none focus:border-gold transition-colors placeholder:text-gold/30 text-[10px] font-cinzel tracking-widest text-cream uppercase">
                         </div>
                         <div class="relative">
-                            <input type="number" placeholder="HOW MANY ARE ATTENDING?" min="1" class="w-full bg-transparent border-b border-gold/30 py-4 px-2 focus:outline-none focus:border-gold transition-colors placeholder:text-gold/30 text-[10px] font-cinzel tracking-widest text-cream uppercase">
+                            <input type="number" name="guest_count" id="rsvp-count" required placeholder="HOW MANY ARE ATTENDING?" min="1" class="w-full bg-transparent border-b border-gold/30 py-4 px-2 focus:outline-none focus:border-gold transition-colors placeholder:text-gold/30 text-[10px] font-cinzel tracking-widest text-cream uppercase">
                         </div>
                         <div class="grid grid-cols-2 gap-6">
-                            <button type="button" class="py-4 border border-gold/30 text-[10px] tracking-[0.3em] font-cinzel text-cream hover:bg-gold hover:text-black transition-all">ATTENDING</button>
-                            <button type="button" class="py-4 border border-gold/30 text-[10px] tracking-[0.3em] font-cinzel text-cream hover:border-red-900 transition-all">DECLINE</button>
+                            <button type="button" id="rsvp-attending" class="rsvp-btn py-4 border border-gold/30 text-[10px] tracking-[0.3em] font-cinzel text-cream hover:bg-gold hover:text-black transition-all active" onclick="setRsvpStatus(true)">ATTENDING</button>
+                            <button type="button" id="rsvp-decline" class="rsvp-btn py-4 border border-gold/30 text-[10px] tracking-[0.3em] font-cinzel text-cream hover:border-red-900 transition-all" onclick="setRsvpStatus(false)">DECLINE</button>
                         </div>
-                        <button type="submit" class="w-full bg-gold text-black py-5 text-[10px] tracking-[0.4em] font-cinzel font-bold shadow-2xl hover:bg-[#f4e1a1] transition-all">SUBMIT RSVP</button>
+                        <input type="hidden" name="status" id="rsvp-status-input" value="attending">
+                        <button type="submit" id="rsvp-submit" class="w-full bg-gold text-black py-5 text-[10px] tracking-[0.4em] font-cinzel font-bold shadow-2xl hover:bg-[#f4e1a1] transition-all">SUBMIT RSVP</button>
+                        <p id="rsvp-message" class="text-[9px] text-center font-cinzel tracking-widest text-gold mt-4 hidden"></p>
                     </form>
                 </div>
             </div>
@@ -322,9 +361,9 @@
                     <p class="text-[10px] tracking-[0.4em] font-cinzel text-gold mb-4 uppercase opacity-60">Get in Touch</p>
                 </div>
                 
-                <div id="contact-display-stack" class="flex flex-col gap-6">
+                <div id="contact-display-stack" class="flex flex-col gap-6 items-center">
                     <!-- Groom Side Box -->
-                    <div id="groom-contact-box" class="reveal gold-shimmer-border p-6 bg-black/40 text-center relative overflow-hidden">
+                    <div id="groom-contact-box" class="reveal gold-shimmer-border p-6 bg-black/40 text-center relative overflow-hidden w-full max-w-sm">
                         <div class="relative z-10">
                             <p class="text-[9px] font-cinzel tracking-[0.5em] text-gold uppercase mb-6 opacity-60">Groom's Father</p>
                             <div id="groom-contacts-list" class="space-y-4">
@@ -334,7 +373,7 @@
                     </div>
 
                     <!-- Bride Side Box -->
-                    <div id="bride-contact-box" class="reveal gold-shimmer-border p-6 bg-black/40 text-center relative overflow-hidden">
+                    <div id="bride-contact-box" class="reveal gold-shimmer-border p-6 bg-black/40 text-center relative overflow-hidden w-full max-w-sm">
                         <div class="relative z-10">
                             <p class="text-[9px] font-cinzel tracking-[0.5em] text-gold uppercase mb-6 opacity-60">Bride's Father</p>
                             <div id="bride-contacts-list" class="space-y-4">
@@ -391,7 +430,7 @@
                 </div>
 
                 <div class="mt-32 opacity-30 text-[8px] tracking-[0.5em] font-cinzel uppercase text-cream">
-                    Designed for your special day by Digi Wed
+                    Designed for your special day by Sync & Style
                 </div>
             </div>
         </footer>
