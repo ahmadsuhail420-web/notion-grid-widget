@@ -13,72 +13,81 @@
         @import "tailwindcss";
         :root {
             --primary: #9c404d;
+            --groom-accent: #2c3e50;
+            --bride-accent: #c0392b;
             --bg-cream: #FBFBFB;
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); font-size: 14px; }
         h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
         
         .form-section {
-            @apply bg-white p-8 rounded-3xl border border-gray-100 shadow-sm mb-8;
+            @apply bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm mb-6;
         }
         .label {
-            @apply block text-xs font-bold text-[#9c404d] uppercase tracking-widest mb-2;
+            @apply block text-[10px] font-bold text-[#9c404d] uppercase tracking-widest mb-1.5;
         }
         .input {
-            @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all;
+            @apply w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all text-sm;
+        }
+        /* Mobile friendly adjustments */
+        @media (max-width: 640px) {
+            .form-section { @apply p-4; }
+            h1 { @apply text-xl; }
+            h2 { @apply text-sm; }
+            .label { @apply text-[9px]; }
         }
     </style>
 </head>
-<body class="min-h-screen">
-    <nav class="bg-white border-b border-gray-100 p-6">
+<body class="min-h-screen text-gray-800">
+    <nav class="bg-white border-b border-gray-50 p-4 md:p-6 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="/customer-dashboard" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
-            <div class="flex items-center space-x-6 text-sm">
-                <a href="/customer-dashboard" class="text-gray-500 hover:text-[#9c404d]">Dashboard</a>
+            <a href="/customer-dashboard" class="text-xl md:text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
+            <div class="flex items-center space-x-4 md:space-x-6 text-xs md:text-sm">
+                <a href="/customer-dashboard" class="text-gray-400 hover:text-[#9c404d]">Dashboard</a>
                 <button onclick="handleLogout()" class="text-[#9c404d] font-bold">Logout</button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto p-6 md:p-12">
-        <div class="flex justify-between items-end mb-12">
+    <main class="max-w-3xl mx-auto p-4 md:p-12">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-8 gap-4">
             <div>
-                <h1 id="editor-title" class="text-4xl font-serif font-bold mb-2">Edit Wedding Invitation</h1>
-                <p class="text-gray-500">Fill in the details for Template 01 (Royal Wedding Elegance).</p>
+                <h1 id="editor-title" class="text-2xl md:text-3xl font-serif font-bold mb-1">Edit Invitation</h1>
+                <p class="text-xs md:text-sm text-gray-400">Template 01: Royal Elegance</p>
             </div>
-            <div class="flex space-x-4">
-                <button onclick="previewInvitation()" class="px-6 py-2 border border-[#9c404d] text-[#9c404d] font-bold rounded-lg hover:bg-[#9c404d]/5">Preview</button>
-                <button onclick="saveChanges()" id="save-btn" class="px-8 py-2 bg-[#9c404d] text-white font-bold rounded-lg hover:bg-[#7d333e] shadow-lg shadow-[#9c404d]/20">Save Everything</button>
+            <div class="flex space-x-2 md:space-x-3">
+                <button onclick="previewInvitation()" class="flex-1 md:flex-none px-4 py-2 border border-[#9c404d] text-[#9c404d] font-bold text-xs rounded-lg hover:bg-[#9c404d]/5">Preview</button>
+                <button onclick="saveChanges()" id="save-btn" class="flex-1 md:flex-none px-6 py-2 bg-[#9c404d] text-white font-bold text-xs rounded-lg hover:bg-[#7d333e] shadow-md shadow-[#9c404d]/10">Save</button>
             </div>
         </div>
 
         <form id="invitation-form">
             <!-- Names & Dates -->
             <div class="form-section">
-                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">Main Details</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="label">Groom's Name</label>
-                        <input type="text" name="groom_name" class="input" placeholder="e.g. Yasah">
+                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-gray-400 tracking-wider">CORE DETAILS</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-3 bg-blue-50/50 rounded-xl border border-blue-50">
+                        <label class="label text-blue-900!">Groom's Name</label>
+                        <input type="text" name="groom_name" class="input border-blue-100! focus:border-blue-500!" placeholder="e.g. Yasah">
                     </div>
-                    <div>
-                        <label class="label">Bride's Name</label>
-                        <input type="text" name="bride_name" class="input" placeholder="e.g. Rifa">
+                    <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-50">
+                        <label class="label text-rose-900!">Bride's Name</label>
+                        <input type="text" name="bride_name" class="input border-rose-100! focus:border-rose-500!" placeholder="e.g. Rifa">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="label">Invitation Title / Heading</label>
-                        <input type="text" name="title" class="input" placeholder="e.g. Our Beautiful Wedding">
+                        <label class="label">Invitation Title</label>
+                        <input type="text" name="title" class="input" placeholder="e.g. Our Wedding">
                     </div>
                 </div>
             </div>
 
             <!-- Event Details -->
             <div class="form-section">
-                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">Event Information</h2>
-                <div class="space-y-8">
+                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-gray-400 tracking-wider">EVENT SCHEDULE</h2>
+                <div class="space-y-4">
                     <!-- Nikah -->
-                    <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                        <h3 class="text-lg font-bold mb-4 flex items-center text-gray-700">
+                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
+                        <h3 class="text-xs font-bold mb-4 text-[#9c404d] uppercase tracking-widest border-l-2 border-[#9c404d] pl-2">
                              Nikah Ceremony
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,24 +96,23 @@
                                 <input type="date" name="nikah_date" class="input">
                             </div>
                             <div>
-                                <label class="label">Nikah Time (24h format for auto-prayer logic)</label>
+                                <label class="label">Nikah Time</label>
                                 <input type="time" name="nikah_time" class="input">
-                                <p class="text-[9px] text-gray-400 mt-1 uppercase tracking-tighter italic">Will be displayed as "After Asr", "Before Zuhr", etc.</p>
                             </div>
                             <div class="md:col-span-2">
                                 <label class="label">Nikah Venue</label>
-                                <input type="text" name="nikah_venue" class="input" placeholder="e.g. Al-Noor Grand Mosque, Kannur">
+                                <input type="text" name="nikah_venue" class="input" placeholder="Venue details">
                             </div>
                         </div>
                     </div>
 
                     <!-- Reception -->
-                    <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold text-gray-700">Reception Party</h3>
-                            <label class="flex items-center space-x-2 text-sm text-gray-500 cursor-pointer">
+                            <h3 class="text-xs font-bold text-[#9c404d] uppercase tracking-widest border-l-2 border-[#9c404d] pl-2">Reception Party</h3>
+                            <label class="flex items-center space-x-2 text-[10px] text-gray-400 cursor-pointer">
                                 <input type="checkbox" name="has_reception" onchange="toggleReception(this.checked)" class="accent-[#9c404d]">
-                                <span>Include Reception?</span>
+                                <span>Include?</span>
                             </label>
                         </div>
                         <div id="reception-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 pointer-events-none transition-all">
@@ -118,7 +126,7 @@
                             </div>
                             <div class="md:col-span-2">
                                 <label class="label">Reception Venue</label>
-                                <input type="text" name="reception_venue" class="input" placeholder="e.g. Royal Banquet Hall, Thalassery">
+                                <input type="text" name="reception_venue" class="input" placeholder="Venue details">
                             </div>
                         </div>
                     </div>
@@ -126,46 +134,46 @@
             </div>
 
             <!-- Groom's Family -->
-            <div class="form-section">
-                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">Groom's Family Details</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-section border-l-4 border-blue-200">
+                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-blue-900! tracking-wider">GROOM'S FAMILY</h2>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="label">Father's Name</label>
+                        <label class="label">Father</label>
                         <input type="text" name="groom_father" class="input">
                     </div>
                     <div>
-                        <label class="label">Mother's Name</label>
+                        <label class="label">Mother</label>
                         <input type="text" name="groom_mother" class="input">
                     </div>
                     <div>
-                        <label class="label">Grandfather's Name</label>
+                        <label class="label">Grandpa</label>
                         <input type="text" name="groom_grandpa" class="input">
                     </div>
                     <div>
-                        <label class="label">Grandmother's Name</label>
+                        <label class="label">Grandma</label>
                         <input type="text" name="groom_grandma" class="input">
                     </div>
                 </div>
             </div>
 
             <!-- Bride's Family -->
-            <div class="form-section">
-                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">Bride's Family Details</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-section border-l-4 border-rose-200">
+                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-rose-900! tracking-wider">BRIDE'S FAMILY</h2>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="label">Father's Name</label>
+                        <label class="label">Father</label>
                         <input type="text" name="bride_father" class="input">
                     </div>
                     <div>
-                        <label class="label">Mother's Name</label>
+                        <label class="label">Mother</label>
                         <input type="text" name="bride_mother" class="input">
                     </div>
                     <div>
-                        <label class="label">Grandfather's Name</label>
+                        <label class="label">Grandpa</label>
                         <input type="text" name="bride_grandpa" class="input">
                     </div>
                     <div>
-                        <label class="label">Grandmother's Name</label>
+                        <label class="label">Grandma</label>
                         <input type="text" name="bride_grandma" class="input">
                     </div>
                 </div>
@@ -173,33 +181,33 @@
 
             <!-- Location -->
             <div class="form-section">
-                <h2 class="text-xl font-serif font-bold mb-6 border-b pb-4">Location</h2>
-                <div class="grid grid-cols-1 gap-6">
+                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-gray-400 tracking-wider">MAPS & LOCATION</h2>
+                <div class="grid grid-cols-1 gap-4">
                     <div>
-                        <label class="label">General Location / City</label>
-                        <input type="text" name="place" class="input" placeholder="e.g. Malappuram, Kerala">
+                        <label class="label">City/Place</label>
+                        <input type="text" name="place" class="input" placeholder="e.g. Kannur">
                     </div>
                     <div>
-                        <label class="label">Google Maps URL</label>
-                        <input type="url" name="map_url" class="input" placeholder="https://maps.app.goo.gl/...">
+                        <label class="label">Google Maps Link</label>
+                        <input type="url" name="map_url" class="input" placeholder="Paste link here">
                     </div>
                 </div>
             </div>
 
             <!-- Contact Details -->
             <div class="form-section">
-                <div class="flex justify-between items-center mb-6 border-b pb-4">
-                    <h2 class="text-xl font-serif font-bold">Contact Persons</h2>
-                    <button type="button" onclick="addContact()" class="text-xs font-bold text-[#9c404d] hover:underline">+ Add Contact</button>
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h2 class="text-sm font-serif font-bold text-gray-400 tracking-wider">CONTACTS</h2>
+                    <button type="button" onclick="addContact()" class="text-[10px] font-bold text-[#9c404d] hover:underline uppercase">+ Add</button>
                 </div>
-                <div id="contact-list" class="space-y-4">
+                <div id="contact-list" class="space-y-3">
                     <!-- Contacts added here -->
                 </div>
             </div>
             
-            <div class="flex justify-center pt-8 pb-20">
-                <button type="button" onclick="saveChanges()" class="w-full max-w-md py-4 bg-[#9c404d] text-white font-bold rounded-2xl hover:bg-[#7d333e] shadow-xl shadow-[#9c404d]/20 transition-all active:scale-95">
-                    Update Invitation
+            <div class="flex justify-center pt-4 pb-20">
+                <button type="button" onclick="saveChanges()" class="w-full py-3.5 bg-[#9c404d] text-white font-bold rounded-xl hover:bg-[#7d333e] shadow-lg shadow-[#9c404d]/20 transition-all active:scale-95 text-sm uppercase tracking-widest">
+                    Save Invitation
                 </button>
             </div>
         </form>
@@ -306,15 +314,15 @@
         function addContact(data = { name: '', relation: '', phone: '' }) {
             const container = document.getElementById('contact-list');
             const div = document.createElement('div');
-            div.className = "flex flex-col gap-3 bg-white p-4 border border-gray-100 rounded-2xl contact-row shadow-sm";
+            div.className = "flex flex-col gap-2 bg-gray-50 p-4 rounded-xl contact-row border border-gray-100";
             div.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Name" value="${data.name || ''}" class="px-3 py-2 text-sm border-b focus:border-[#9c404d] outline-none contact-name">
-                    <input type="text" placeholder="Relation (e.g. Brother)" value="${data.relation || ''}" class="px-3 py-2 text-sm border-b focus:border-[#9c404d] outline-none contact-relation">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" placeholder="Name" value="${data.name || ''}" class="px-2 py-1.5 text-xs border-b focus:border-[#9c404d] outline-none contact-name bg-transparent">
+                    <input type="text" placeholder="Relation" value="${data.relation || ''}" class="px-2 py-1.5 text-xs border-b focus:border-[#9c404d] outline-none contact-relation bg-transparent">
                 </div>
-                <div class="flex gap-4 items-center">
-                    <input type="tel" placeholder="Phone (e.g. +91...)" value="${data.phone || ''}" class="flex-1 px-3 py-2 text-sm border-b focus:border-[#9c404d] outline-none contact-phone">
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-300 hover:text-red-500 text-xl px-2">✕</button>
+                <div class="flex gap-2 items-center">
+                    <input type="tel" placeholder="Phone" value="${data.phone || ''}" class="flex-1 px-2 py-1.5 text-xs border-b focus:border-[#9c404d] outline-none contact-phone bg-transparent">
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-gray-300 hover:text-red-500 text-sm px-1 italic uppercase font-bold">Delete</button>
                 </div>
             `;
             container.appendChild(div);
