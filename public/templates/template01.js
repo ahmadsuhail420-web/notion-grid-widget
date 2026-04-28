@@ -114,13 +114,114 @@ if (musicToggle && music) {
 }
 
 // Form Handlers
+// Form Handlers - Dua & Wishes
 const wishesForm = document.getElementById('wishes-form');
 if (wishesForm) {
-    wishesForm.addEventListener('submit', (e) => {
+    wishesForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        alert('Thank you for your beautiful duas & wishes!');
-        wishesForm.reset();
+        
+        const nameInput = wishesForm.querySelector('input[placeholder="NAME"]');
+        const messageInput = wishesForm.querySelector('textarea');
+        const submitBtn = wishesForm.querySelector('button[type="submit"]');
+        
+        const guestName = nameInput?.value || 'Anonymous';
+        const guestMessage = messageInput?.value || '';
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        
+        if (!id || !sb) {
+            alert('Could not submit dua. Please refresh and try again.');
+            return;
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'SENDING...';
+        
+        try {
+            // Fetch current wishes
+            const { data: invData, error: fetchErr } = await sb
+                .from('customer_invitations')
+                .select('wishes')
+                .eq('id', id)
+                .single();
+            
+            if (fetchErr) throw fetchErr;
+            
+            let wishes = invData?.wishes || [];
+            if (!Array.isArray(wishes)) wishes = [];
+            
+            // Add new wish
+            wishes.push({
+                name: guestName,
+                message: guestMessage,
+                submitted_at: new Date().toISOString()
+            });
+            
+            // Update database
+            const { error: updateErr } = await sb
+                .from('customer_invitations')
+                .update({ wishes: wishes })
+                .eq('id', id);
+            
+            if (updateErr) throw updateErr;
+            
+            // Show success message
+            alert('Thank you for your beautiful duas & wishes! Your message has been saved.');
+            wishesForm.reset();
+            submitBtn.innerText = 'SEND DUAS';
+            submitBtn.disabled = false;
+            
+            // Load and display wishes
+            loadWishes();
+            
+        } catch (err) {
+            console.error('Wish submission error:', err);
+            alert('Error submitting dua. Please try again.');
+            submitBtn.innerText = 'SEND DUAS';
+            submitBtn.disabled = false;
+        }
     });
+}
+
+// Load and display wishes
+async function loadWishes() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    
+    if (!id || !sb) return;
+    
+    try {
+        const { data, error } = await sb
+            .from('customer_invitations')
+            .select('wishes')
+            .eq('id', id)
+            .single();
+        
+        if (error || !data?.wishes) return;
+        
+        const wishesDisplay = document.getElementById('wishes-display');
+        if (!wishesDisplay) return;
+        
+        const wishes = Array.isArray(data.wishes) ? data.wishes : [];
+        
+        if (wishes.length === 0) {
+            wishesDisplay.innerHTML = '<p class="text-center text-cream/50 italic">No wishes yet. Be the first to send one!</p>';
+            return;
+        }
+        
+        wishesDisplay.innerHTML = wishes
+            .sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at))
+            .map(wish => `
+                <div class="gold-shimmer-border p-6 bg-[#050505]">
+                    <p class="text-sm italic text-cream leading-relaxed">"${wish.message}"</p>
+                    <p class="text-xs font-cinzel text-gold mt-4 tracking-widest uppercase">— ${wish.name}</p>
+                    <p class="text-[9px] text-cream/30 mt-2">${new Date(wish.submitted_at).toLocaleDateString()}</p>
+                </div>
+            `).join('');
+    } catch (err) {
+        console.error('Error loading wishes:', err);
+    }
 }
 
 // Glitter Celebration Trigger - Shows full opacity glitter with raining effect
@@ -731,23 +832,20 @@ function applyDynamicData(data) {
     if (footerNames.length > 0) footerNames[0].innerText = `${groomName.toUpperCase()} & ${brideName.toUpperCase()}`;
 
     // Map - FIXED: Properly update iframe src to refresh the map
-    const iframeElement = document.querySelector('section:has(iframe) iframe');
-    const mapSection = iframeElement?.parentElement?.parentElement;
+        
+    const mapIframe = document.getElementById('map-iframe');
+    const mapBtn = document.getElementById('map-directions-btn');
+    const mapSection = mapIframe?.parentElement?.parentElement;
     
-    if (iframeElement && mapSection) {
+    if (mapIframe && mapBtn && mapSection) {
         if (details.map_url && details.map_url.trim()) {
-            // Update iframe with the map URL
-            iframeElement.src = details.map_url;
+            // Update iframe src with the provided map URL
+            mapIframe.src = details.map_url;
+            mapBtn.href = details.map_url;
             mapSection.classList.remove('hidden');
-            
-            // Also update the button link
-            const mapBtn = mapSection.querySelector('a');
-            if (mapBtn) {
-                mapBtn.href = details.map_url;
-                mapBtn.setAttribute('target', '_blank');
-            }
+            console.log('Map URL loaded:', details.map_url);
         } else {
-            // Hide map section if no URL provided
+            // Show placeholder if no map URL
             mapSection.classList.add('hidden');
         }
     }
@@ -760,6 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlitterShower();
     handleScrollHint();
     setupGlitterTrigger();
+    loadWishes();  // ADD THIS LINE
     
     const rsvpFormEl = document.getElementById('rsvp-form');
     if (rsvpFormEl) rsvpFormEl.addEventListener('submit', handleRsvpSubmit);
