@@ -318,13 +318,33 @@
         </section>
 
         <!-- Section: Reception Location -->
+        <!-- FIND THIS (lines 321-329): -->
+        <!-- Section: Reception Location -->
         <section class="py-24 px-6 text-center">
             <h2 class="text-3xl font-luxury mb-12 tracking-wider text-cream">RECEPTION LOCATION</h2>
             <div class="max-w-4xl mx-auto gold-shimmer-border aspect-video rounded-sm overflow-hidden bg-cream/5">
                 <!-- Replace with real embed if needed, using placeholder for design -->
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15629.8392170319!2d75.3400!3d11.8700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba422!2sKannur%2C%20Kerala!5e0!3m2!1sen!2sin!4v1234567890" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15629.8392170319!2d75.3400!3d11.8700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba422!2sKannur%2C%20Ke[...]
             </div>
-            <a href="https://goo.gl/maps/..." target="_blank" class="inline-block mt-8 px-12 py-4 border border-gold text-[10px] font-cinzel tracking-widest text-cream hover:bg-gold hover:text-black transition-all">Get Directions</a>
+            <a href="https://goo.gl/maps/..." target="_blank" class="inline-block mt-8 px-12 py-4 border border-gold text-[10px] font-cinzel tracking-widest text-cream hover:bg-gold hover:text-bl[...]
+        </section>
+
+<!-- REPLACE WITH THIS: -->
+        <!-- Section: Reception Location -->
+        <section class="py-24 px-6 text-center">
+            <h2 class="text-3xl font-luxury mb-12 tracking-wider text-cream">RECEPTION LOCATION</h2>
+            <div class="max-w-4xl mx-auto gold-shimmer-border aspect-video rounded-sm overflow-hidden bg-cream/5">
+                <!-- Map iframe - will be dynamically updated -->
+                <iframe id="map-iframe" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15629.8392170319!2d75.3400!3d11.8700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba4229f5e5e5e5d%3A0x5e5e5e5e5e5e5e5e!2sKannur%2C%20Kerala!5e0!3m2!1sen!2sin!4v1234567890">
+                </iframe>
+            </div>
+            <a id="map-directions-btn" href="https://maps.google.com" target="_blank" class="inline-block mt-8 px-12 py-4 border border-gold text-[10px] font-cinzel tracking-widest text-cream hover:bg-gold hover:text-black transition-all uppercase">Get Directions</a>
         </section>
 
         <!-- Section 4: Families -->
