@@ -528,7 +528,12 @@ function applyDynamicData(data) {
                 gp.innerHTML = `
                     <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.bride_grandpa || ''}</p>
                     <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.bride_grandma || ''}</p>
-          // Contacts
+                `;
+            }
+        }
+    }
+
+    // Contacts
     const groomDisplay = document.getElementById('groom-contacts-list');
     const brideDisplay = document.getElementById('bride-contacts-list');
     const contactSection = groomDisplay?.closest('section');
@@ -536,13 +541,22 @@ function applyDynamicData(data) {
     if (groomDisplay && brideDisplay) {
         const contacts = details.contacts || [];
         if (contacts.length > 0) {
-            contactSection.classList.remove('hidden');
+            if (contactSection) contactSection.classList.remove('hidden');
             
             const groomSide = contacts.filter(c => c.side === 'groom');
             const brideSide = contacts.filter(c => c.side === 'bride');
 
-            if (groomSide.length === 0) document.getElementById('groom-contact-box').classList.add('hidden');
-            if (brideSide.length === 0) document.getElementById('bride-contact-box').classList.add('hidden');
+            const groomBox = document.getElementById('groom-contact-box');
+            const brideBox = document.getElementById('bride-contact-box');
+            
+            if (groomBox) {
+                if (groomSide.length === 0) groomBox.classList.add('hidden');
+                else groomBox.classList.remove('hidden');
+            }
+            if (brideBox) {
+                if (brideSide.length === 0) brideBox.classList.add('hidden');
+                else brideBox.classList.remove('hidden');
+            }
 
             const renderContact = (c) => `
                 <div class="text-center group">
@@ -559,10 +573,10 @@ function applyDynamicData(data) {
                 </div>
             `;
 
-            groomDisplay.innerHTML = groomSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10"></div>');
-            brideDisplay.innerHTML = brideSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10"></div>');
+            if (groomDisplay) groomDisplay.innerHTML = groomSide.length > 0 ? groomSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10 my-6"></div>') : '';
+            if (brideDisplay) brideDisplay.innerHTML = brideSide.length > 0 ? brideSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10 my-6"></div>') : '';
         } else {
-            contactSection.classList.add('hidden');
+            if (contactSection) contactSection.classList.add('hidden');
         }
     }
 
