@@ -12,8 +12,8 @@ function openInvitation() {
     if (instructions) instructions.style.opacity = '0';
     
     // 2. Play music immediately
-    if (music) {
-        music.play().catch(e => console.log("Autoplay prevented"));
+    if (music && music.src && music.src !== window.location.href) {
+        music.play().catch(e => console.log("Autoplay prevented, requires user interaction"));
         isMusicPlaying = true;
         if (musicIcon) musicIcon.innerText = '🎵';
     }
@@ -528,14 +528,9 @@ function applyDynamicData(data) {
                 gp.innerHTML = `
                     <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.bride_grandpa || ''}</p>
                     <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.bride_grandma || ''}</p>
-                `;
-            }
-        }
-    }
-
-    // Contacts
-    const groomDisplay = document.getElementById('groom-contacts-display');
-    const brideDisplay = document.getElementById('bride-contacts-display');
+          // Contacts
+    const groomDisplay = document.getElementById('groom-contacts-list');
+    const brideDisplay = document.getElementById('bride-contacts-list');
     const contactSection = groomDisplay?.closest('section');
 
     if (groomDisplay && brideDisplay) {
@@ -546,21 +541,40 @@ function applyDynamicData(data) {
             const groomSide = contacts.filter(c => c.side === 'groom');
             const brideSide = contacts.filter(c => c.side === 'bride');
 
+            if (groomSide.length === 0) document.getElementById('groom-contact-box').classList.add('hidden');
+            if (brideSide.length === 0) document.getElementById('bride-contact-box').classList.add('hidden');
+
             const renderContact = (c) => `
-                <div class="gold-shimmer-border reveal p-6 bg-black/50 text-center">
-                    <p class="text-[8px] font-cinzel opacity-40 uppercase tracking-[0.3em] mb-3">${c.relation || 'FAMILY'}</p>
-                    <h4 class="text-lg font-luxury tracking-wider text-cream uppercase mb-4">${c.name || ''}</h4>
-                    <a href="tel:${c.phone}" class="inline-block px-8 py-2 border border-gold/20 text-[8px] font-cinzel tracking-widest uppercase text-cream hover:bg-gold hover:text-black transition-all">
-                        Call
-                    </a>
+                <div class="text-center group">
+                    <p class="text-[9px] font-cinzel opacity-40 uppercase tracking-[0.4em] mb-2">${c.relation || 'FAMILY'}</p>
+                    <h4 class="text-2xl font-luxury tracking-[0.1em] text-cream uppercase mb-4">${c.name || ''}</h4>
+                    <div class="flex items-center justify-center gap-6">
+                        <a href="tel:${c.phone}" class="p-3 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="Call">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </a>
+                        <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="p-3 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="WhatsApp">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        </a>
+                    </div>
                 </div>
             `;
 
-            groomDisplay.innerHTML = groomSide.length > 0 ? groomSide.map(renderContact).join('') : '<p class="text-center opacity-30 text-[9px] font-cinzel">No contacts listed</p>';
-            brideDisplay.innerHTML = brideSide.length > 0 ? brideSide.map(renderContact).join('') : '<p class="text-center opacity-30 text-[9px] font-cinzel">No contacts listed</p>';
+            groomDisplay.innerHTML = groomSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10"></div>');
+            brideDisplay.innerHTML = brideSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10"></div>');
         } else {
             contactSection.classList.add('hidden');
         }
+    }
+
+    // Background Music
+    if (details.bg_music && details.bg_music !== 'none') {
+        const music = document.getElementById('bg-music');
+        if (music) {
+            music.src = details.bg_music;
+            music.load();
+        }
+    } else if (details.bg_music === 'none') {
+        document.getElementById('music-toggle')?.classList.add('hidden');
     }
 
     // Footer
