@@ -21,13 +21,13 @@
         h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
         
         .form-section {
-            @apply bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm mb-6;
+            @apply bg-white p-6 md:p-10 rounded-2xl border border-gray-100 shadow-sm mb-16;
         }
         .label {
-            @apply block text-[10px] font-bold text-[#9c404d] uppercase tracking-widest mb-1.5;
+            @apply block text-[10px] font-bold text-[#9c404d] uppercase tracking-widest mb-3 opacity-60;
         }
         .input {
-            @apply w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all text-sm;
+            @apply w-full px-1 py-2 rounded-none border-b-2 border-gray-100 focus:outline-none focus:border-[#9c404d] transition-all text-sm bg-transparent;
         }
         /* Mobile friendly adjustments */
         @media (max-width: 640px) {
@@ -64,18 +64,18 @@
         <form id="invitation-form">
             <!-- Names & Dates -->
             <div class="form-section">
-                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-gray-400 tracking-wider">CORE DETAILS</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-3 bg-blue-50/50 rounded-xl border border-blue-50">
-                        <label class="label text-blue-900!">Groom's Name</label>
+                <h2 class="text-xs font-serif font-bold mb-8 border-b pb-2 text-gray-400 tracking-[0.2em] uppercase">Core Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="p-4 bg-blue-50/30 rounded-xl">
+                        <label class="label text-blue-900!">Groom Name:</label>
                         <input type="text" name="groom_name" class="input border-blue-100! focus:border-blue-500!" placeholder="e.g. Yasah">
                     </div>
-                    <div class="p-3 bg-rose-50/50 rounded-xl border border-rose-50">
-                        <label class="label text-rose-900!">Bride's Name</label>
+                    <div class="p-4 bg-rose-50/30 rounded-xl">
+                        <label class="label text-rose-900!">Bride Name:</label>
                         <input type="text" name="bride_name" class="input border-rose-100! focus:border-rose-500!" placeholder="e.g. Rifa">
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="label">Invitation Title</label>
+                    <div class="md:col-span-2 px-4">
+                        <label class="label">Invitation Title:</label>
                         <input type="text" name="title" class="input" placeholder="e.g. Our Wedding">
                     </div>
                 </div>
@@ -135,46 +135,46 @@
 
             <!-- Groom's Family -->
             <div class="form-section border-l-4 border-blue-200">
-                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-blue-900! tracking-wider">GROOM'S FAMILY</h2>
-                <div class="grid grid-cols-2 gap-4">
+                <h2 class="text-xs font-serif font-bold mb-8 border-b pb-2 text-blue-900! tracking-[0.2em] uppercase">Groom's Family</h2>
+                <div class="grid grid-cols-2 gap-8 px-4">
                     <div>
-                        <label class="label">Father</label>
-                        <input type="text" name="groom_father" class="input">
+                        <label class="label text-blue-800/50!">Father:</label>
+                        <input type="text" name="groom_father" class="input border-blue-100!">
                     </div>
                     <div>
-                        <label class="label">Mother</label>
-                        <input type="text" name="groom_mother" class="input">
+                        <label class="label text-blue-800/50!">Mother:</label>
+                        <input type="text" name="groom_mother" class="input border-blue-100!">
                     </div>
                     <div>
-                        <label class="label">Grandpa</label>
-                        <input type="text" name="groom_grandpa" class="input">
+                        <label class="label text-blue-800/50!">Grandpa:</label>
+                        <input type="text" name="groom_grandpa" class="input border-blue-100!">
                     </div>
                     <div>
-                        <label class="label">Grandma</label>
-                        <input type="text" name="groom_grandma" class="input">
+                        <label class="label text-blue-800/50!">Grandma:</label>
+                        <input type="text" name="groom_grandma" class="input border-blue-100!">
                     </div>
                 </div>
             </div>
 
             <!-- Bride's Family -->
             <div class="form-section border-l-4 border-rose-200">
-                <h2 class="text-sm font-serif font-bold mb-4 border-b pb-2 text-rose-900! tracking-wider">BRIDE'S FAMILY</h2>
-                <div class="grid grid-cols-2 gap-4">
+                <h2 class="text-xs font-serif font-bold mb-8 border-b pb-2 text-rose-900! tracking-[0.2em] uppercase">Bride's Family</h2>
+                <div class="grid grid-cols-2 gap-8 px-4">
                     <div>
-                        <label class="label">Father</label>
-                        <input type="text" name="bride_father" class="input">
+                        <label class="label text-rose-800/50!">Father:</label>
+                        <input type="text" name="bride_father" class="input border-rose-100!">
                     </div>
                     <div>
-                        <label class="label">Mother</label>
-                        <input type="text" name="bride_mother" class="input">
+                        <label class="label text-rose-800/50!">Mother:</label>
+                        <input type="text" name="bride_mother" class="input border-rose-100!">
                     </div>
                     <div>
-                        <label class="label">Grandpa</label>
-                        <input type="text" name="bride_grandpa" class="input">
+                        <label class="label text-rose-800/50!">Grandpa:</label>
+                        <input type="text" name="bride_grandpa" class="input border-rose-100!">
                     </div>
                     <div>
-                        <label class="label">Grandma</label>
-                        <input type="text" name="bride_grandma" class="input">
+                        <label class="label text-rose-800/50!">Grandma:</label>
+                        <input type="text" name="bride_grandma" class="input border-rose-100!">
                     </div>
                 </div>
             </div>
@@ -196,12 +196,26 @@
 
             <!-- Contact Details -->
             <div class="form-section">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h2 class="text-sm font-serif font-bold text-gray-400 tracking-wider">CONTACTS</h2>
-                    <button type="button" onclick="addContact()" class="text-[10px] font-bold text-[#9c404d] hover:underline uppercase">+ Add</button>
-                </div>
-                <div id="contact-list" class="space-y-3">
-                    <!-- Contacts added here -->
+                <h2 class="text-xs font-serif font-bold mb-8 border-b pb-2 text-gray-400 tracking-[0.2em] uppercase text-center">Contact Details</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <!-- Groom Side -->
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-[10px] font-bold text-blue-900 tracking-widest uppercase">Groom Side</h3>
+                            <button type="button" onclick="addContact('groom')" class="text-[9px] font-bold text-[#9c404d] hover:underline uppercase">+ Add</button>
+                        </div>
+                        <div id="groom-contact-list" class="space-y-4"></div>
+                    </div>
+
+                    <!-- Bride Side -->
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-[10px] font-bold text-rose-900 tracking-widest uppercase">Bride Side</h3>
+                            <button type="button" onclick="addContact('bride')" class="text-[9px] font-bold text-[#9c404d] hover:underline uppercase">+ Add</button>
+                        </div>
+                        <div id="bride-contact-list" class="space-y-4"></div>
+                    </div>
                 </div>
             </div>
             
@@ -295,10 +309,13 @@
 
             // Load Contacts
             if (details.contacts && details.contacts.length > 0) {
-                details.contacts.forEach(contact => addContact(contact));
+                details.contacts.forEach(contact => {
+                    const side = (contact.side === 'bride') ? 'bride' : 'groom';
+                    addContact(side, contact);
+                });
             } else {
-                addContact({ name: '', relation: 'Groom Side', phone: '' });
-                addContact({ name: '', relation: 'Bride Side', phone: '' });
+                addContact('groom', { name: '', relation: 'Father', phone: '' });
+                addContact('bride', { name: '', relation: 'Father', phone: '' });
             }
         }
 
@@ -311,18 +328,20 @@
             }
         }
 
-        function addContact(data = { name: '', relation: '', phone: '' }) {
-            const container = document.getElementById('contact-list');
+        function addContact(side, data = { name: '', relation: '', phone: '' }) {
+            const container = document.getElementById(side + '-contact-list');
+            const colorClass = side === 'groom' ? 'blue' : 'rose';
             const div = document.createElement('div');
-            div.className = "flex flex-col gap-2 bg-gray-50 p-4 rounded-xl contact-row border border-gray-100";
+            div.className = `flex flex-col gap-2 p-3 rounded-xl contact-row border border-${colorClass}-50 bg-${colorClass}-50/20 shadow-sm`;
+            div.setAttribute('data-side', side);
             div.innerHTML = `
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="text" placeholder="Name" value="${data.name || ''}" class="px-2 py-1.5 text-xs border-b focus:border-[#9c404d] outline-none contact-name bg-transparent">
-                    <input type="text" placeholder="Relation" value="${data.relation || ''}" class="px-2 py-1.5 text-xs border-b focus:border-[#9c404d] outline-none contact-relation bg-transparent">
+                    <input type="text" placeholder="Name" value="${data.name || ''}" class="px-1 py-1 text-xs border-b border-${colorClass}-100 focus:border-${colorClass}-500 outline-none contact-name bg-transparent">
+                    <input type="text" placeholder="Relation" value="${data.relation || ''}" class="px-1 py-1 text-xs border-b border-${colorClass}-100 focus:border-${colorClass}-500 outline-none contact-relation bg-transparent">
                 </div>
                 <div class="flex gap-2 items-center">
-                    <input type="tel" placeholder="Phone" value="${data.phone || ''}" class="flex-1 px-2 py-1.5 text-xs border-b focus:border-[#9c404d] outline-none contact-phone bg-transparent">
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-gray-300 hover:text-red-500 text-sm px-1 italic uppercase font-bold">Delete</button>
+                    <input type="tel" placeholder="Phone" value="${data.phone || ''}" class="flex-1 px-1 py-1 text-xs border-b border-${colorClass}-100 focus:border-${colorClass}-500 outline-none contact-phone bg-transparent">
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-gray-300 hover:text-red-500 text-sm px-1 italic uppercase font-bold">✕</button>
                 </div>
             `;
             container.appendChild(div);
@@ -341,7 +360,8 @@
                 const name = row.querySelector('.contact-name').value;
                 const relation = row.querySelector('.contact-relation').value;
                 const phone = row.querySelector('.contact-phone').value;
-                if (name || relation || phone) contacts.push({ name, relation, phone });
+                const side = row.getAttribute('data-side');
+                if (name || relation || phone) contacts.push({ name, relation, phone, side });
             });
 
             const wedding_details = {
