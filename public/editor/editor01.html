@@ -69,7 +69,14 @@
             </div>
         </div>
 
-        <form id="invitation-form">
+        <!-- Tab Controls -->
+        <div class="flex border-b border-gray-200 mb-8">
+            <button onclick="switchTab('edit')" id="tab-edit" class="px-6 py-3 text-xs font-bold uppercase tracking-widest border-b-2 border-[#9c404d] text-[#9c404d] transition-all">Edit invitation</button>
+            <button onclick="switchTab('rsvp')" id="tab-rsvp" class="px-6 py-3 text-xs font-bold uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-all">RSVP List <span id="rsvp-count-pill" class="ml-2 bg-gray-100 px-2 py-0.5 rounded-full text-[10px] hidden">0</span></button>
+        </div>
+
+        <div id="edit-pane">
+            <form id="invitation-form">
             <!-- Names & Dates -->
             <div class="form-section">
                 <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Core Details</h2>
@@ -256,6 +263,37 @@
                 </button>
             </div>
         </form>
+        </div>
+
+        <!-- RSVP Pane -->
+        <div id="rsvp-pane" class="hidden pb-20">
+            <div class="form-section">
+                <div class="flex justify-between items-center mb-10 border-b pb-4">
+                    <h2 class="text-[11px] font-serif font-bold text-gray-400 tracking-[0.3em] uppercase">RSVP Management</h2>
+                    <div class="text-right">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Total Attendees</p>
+                        <p id="total-guest-count" class="text-2xl font-bold text-[#9c404d]">0</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-100">
+                                <th class="py-4 font-bold text-gray-400 uppercase tracking-widest text-[9px]">Guest Name</th>
+                                <th class="py-4 font-bold text-gray-400 uppercase tracking-widest text-[9px]">Status</th>
+                                <th class="py-4 font-bold text-gray-400 uppercase tracking-widest text-[9px]">Count</th>
+                                <th class="py-4 font-bold text-gray-400 uppercase tracking-widest text-[9px]">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rsvp-table-body" class="divide-y divide-gray-50">
+                            <!-- RSVP rows will be added here -->
+                        </tbody>
+                    </table>
+                    <div id="no-rsvp-msg" class="py-12 text-center text-gray-300 italic hidden">No RSVP responses received yet</div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script>
@@ -363,6 +401,8 @@
                 addContact('groom', { name: '', relation: 'Father', phone: '' });
                 addContact('bride', { name: '', relation: 'Father', phone: '' });
             }
+
+            loadRsvpList();
         }
 
         function toggleReception(checked) {
@@ -506,6 +546,100 @@
                 await sb.auth.signOut();
                 window.location.href = '/login';
             }
+        }
+
+        function getArabicInitial(name) {
+            if (!name) return '';
+            const firstLetter = name.trim().charAt(0).toUpperCase();
+            const mapping = {
+                'A': 'ا', 'B': 'ب', 'C': 'ك', 'D': 'د', 'E': 'إ', 'F': 'ف', 'G': 'ج', 'H': 'ه', 'I': 'ي', 'J': 'ج',
+                'K': 'ك', 'L': 'ل', 'M': 'م', 'N': 'ن', 'O': 'و', 'P': 'ب', 'Q': 'ق', 'R': 'ر', 'S': 'س', 'T': 'ت',
+                'U': 'و', 'V': 'ف', 'W': 'و', 'X': 'كس', 'Y': 'ي', 'Z': 'ز'
+            };
+            return mapping[firstLetter] || firstLetter;
+        }
+
+        function switchTab(tab) {
+            const editPane = document.getElementById('edit-pane');
+            const rsvpPane = document.getElementById('rsvp-pane');
+            const editTab = document.getElementById('tab-edit');
+            const rsvpTab = document.getElementById('tab-rsvp');
+            const saveBtn = document.getElementById('save-btn');
+
+            if (tab === 'edit') {
+                editPane.classList.remove('hidden');
+                rsvpPane.classList.add('hidden');
+                editTab.classList.add('border-[#9c404d]', 'text-[#9c404d]');
+                editTab.classList.remove('border-transparent', 'text-gray-400');
+                rsvpTab.classList.remove('border-[#9c404d]', 'text-[#9c404d]');
+                rsvpTab.classList.add('border-transparent', 'text-gray-400');
+                saveBtn.classList.remove('hidden');
+            } else {
+                editPane.classList.add('hidden');
+                rsvpPane.classList.remove('hidden');
+                rsvpTab.classList.add('border-[#9c404d]', 'text-[#9c404d]');
+                rsvpTab.classList.remove('border-transparent', 'text-gray-400');
+                editTab.classList.remove('border-[#9c404d]', 'text-[#9c404d]');
+                editTab.classList.add('border-transparent', 'text-gray-400');
+                saveBtn.classList.add('hidden');
+                loadRsvpList();
+            }
+        }
+
+        async function loadRsvpList() {
+            const { data, error } = await sb
+                .from('customer_invitations')
+                .select('rsvps')
+                .eq('id', invitationId)
+                .single();
+
+            if (error) return;
+
+            const rsvps = data.rsvps || [];
+            const tbody = document.getElementById('rsvp-table-body');
+            const emptyMsg = document.getElementById('no-rsvp-msg');
+            const totalCountEl = document.getElementById('total-guest-count');
+            const pill = document.getElementById('rsvp-count-pill');
+            
+            tbody.innerHTML = '';
+            
+            if (rsvps.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                totalCountEl.innerText = '0';
+                pill.classList.add('hidden');
+                return;
+            }
+
+            emptyMsg.classList.add('hidden');
+            pill.innerText = rsvps.length;
+            pill.classList.remove('hidden');
+
+            let total = 0;
+            const sortedRsvps = [...rsvps].sort((a, b) => new Date(b.submitted_at || b.timestamp) - new Date(a.submitted_at || a.timestamp));
+
+            sortedRsvps.forEach(rsvp => {
+                const count = parseInt(rsvp.guest_count || rsvp.count) || 0;
+                if (rsvp.status === 'attending') total += count;
+                
+                const dateRaw = rsvp.submitted_at || rsvp.timestamp;
+                const date = dateRaw ? new Date(dateRaw).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-4 font-medium text-gray-800">${rsvp.guest_name || rsvp.name || 'Unknown'}</td>
+                    <td class="py-4">
+                        <span class="px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-tighter ${rsvp.status === 'attending' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                            ${rsvp.status === 'attending' ? 'Attending' : 'Declined'}
+                        </span>
+                    </td>
+                    <td class="py-4 font-bold text-[#9c404d]">${count}</td>
+                    <td class="py-4 text-gray-400 text-[10px]">${date}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            totalCountEl.innerText = total;
         }
 
         initSupabase();
