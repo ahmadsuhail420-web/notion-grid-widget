@@ -558,3 +558,31 @@ section:has(> div > div > .font-playfair.font-light) {
 section:has(> div > div > .font-playfair.font-light) p {
     font-weight: 300 !important;
 }
+
+/* Remove any blue border/overlay from hero section */
+section:first-of-type,
+.hero-exclusive-bg {
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+/* Ensure hero section ends cleanly without color bars */
+section:first-of-type::after {
+    display: none !important;
+}
+
+/* Override any overflow issues */
+body, html {
+    background-color: #000 !important;
+}
+
+#main-content {
+    background-color: #000 !important;
+}
+
+/* Fix any border-radius or shadow that might show colors */
+.hero-exclusive-bg {
+    box-shadow: none !important;
+    outline: none !important;
+}
