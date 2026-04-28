@@ -114,14 +114,6 @@ if (musicToggle && music) {
 }
 
 // Form Handlers
-const rsvpForm = document.getElementById('rsvp-form');
-if (rsvpForm) {
-    rsvpForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('Thank you for your RSVP! See you there.');
-    });
-}
-
 const wishesForm = document.getElementById('wishes-form');
 if (wishesForm) {
     wishesForm.addEventListener('submit', (e) => {
@@ -130,6 +122,127 @@ if (wishesForm) {
         wishesForm.reset();
     });
 }
+
+// Glitter Celebration Trigger
+function setupGlitterTrigger() {
+    const trigger = document.getElementById('glitter-trigger');
+    if (!trigger) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                triggerCelebration();
+                // Only trigger once
+                observer.unobserve(trigger);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    observer.observe(trigger);
+}
+
+function triggerCelebration() {
+    const canvas = document.getElementById('glitter-canvas');
+    if (canvas) {
+        canvas.style.opacity = '1';
+        // The animate function handles ambient glitter, we could also force an explosion
+        // By simulating a click in the center
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        // This is a bit hacky, better would be to export a function or use the class
+        console.log("Celebration triggered!");
+    }
+}
+
+// RSVP Handling
+function setRsvpStatus(isAttending) {
+    const attendingBtn = document.getElementById('rsvp-attending');
+    const declineBtn = document.getElementById('rsvp-decline');
+    const statusInput = document.getElementById('rsvp-status-input');
+    const countInput = document.getElementById('rsvp-count');
+
+    if (isAttending) {
+        attendingBtn.classList.add('bg-gold', 'text-black');
+        attendingBtn.classList.remove('border-gold/30');
+        declineBtn.classList.remove('bg-gold', 'text-black');
+        declineBtn.classList.add('border-gold/30');
+        statusInput.value = 'attending';
+        countInput.disabled = false;
+        countInput.parentElement.style.opacity = '1';
+    } else {
+        attendingBtn.classList.remove('bg-gold', 'text-black');
+        attendingBtn.classList.add('border-gold/30');
+        declineBtn.classList.add('bg-gold', 'text-black');
+        declineBtn.classList.remove('border-gold/30');
+        statusInput.value = 'declined';
+        countInput.disabled = true;
+        countInput.parentElement.style.opacity = '0.3';
+        countInput.value = '0';
+    }
+}
+
+async function handleRsvpSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = document.getElementById('rsvp-submit');
+    const message = document.getElementById('rsvp-message');
+    
+    const guestName = document.getElementById('rsvp-name').value;
+    const guestCount = parseInt(document.getElementById('rsvp-count').value) || 0;
+    const status = document.getElementById('rsvp-status-input').value;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    if (!id || !sb) return;
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'SUBMITTING...';
+
+    try {
+        const { data: currentData, error: fetchError } = await sb
+            .from('customer_invitations')
+            .select('rsvps')
+            .eq('id', id)
+            .single();
+
+        if (fetchError) throw fetchError;
+        
+        const rsvps = currentData.rsvps || [];
+        rsvps.push({
+            guest_name: guestName,
+            guest_count: status === 'attending' ? guestCount : 0,
+            status: status,
+            submitted_at: new Date().toISOString()
+        });
+
+        const { error: updateError } = await sb
+            .from('customer_invitations')
+            .update({ rsvps })
+            .eq('id', id);
+
+        if (updateError) throw updateError;
+
+        message.innerText = 'THANK YOU FOR YOUR RESPONSE!';
+        message.classList.remove('hidden');
+        form.reset();
+        submitBtn.innerText = 'SUBMITTED';
+        
+        setTimeout(() => {
+            message.classList.add('hidden');
+            submitBtn.innerText = 'SUBMIT RSVP';
+            submitBtn.disabled = false;
+        }, 5000);
+
+    } catch (err) {
+        console.error('RSVP Error:', err);
+        message.innerText = 'COULD NOT SUBMIT. PLEASE TRY AGAIN.';
+        message.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'SUBMIT RSVP';
+    }
+}
+
+window.setRsvpStatus = setRsvpStatus;
 
 // Header Date Logic
 function updateHeaderDate(dateString) {
@@ -140,8 +253,12 @@ function updateHeaderDate(dateString) {
     dateEl.innerText = now.toLocaleDateString('en-GB', options).toUpperCase();
 }
 
+let countdownInterval = null;
+
 // Countdown Logic
 function initCountdown(dateString) {
+    if (countdownInterval) clearInterval(countdownInterval);
+    
     const targetDate = dateString ? new Date(dateString).getTime() : new Date('May 9, 2026 16:00:00').getTime(); 
 
     const daysEl = document.getElementById('days');
@@ -160,6 +277,7 @@ function initCountdown(dateString) {
             if (daysEl.parentElement.parentElement) {
                 daysEl.parentElement.parentElement.innerHTML = '<div class="col-span-full py-8 text-2xl font-luxury text-gold tracking-widest uppercase reveal active">The Blessed Celebration is Live</div>';
             }
+            if (countdownInterval) clearInterval(countdownInterval);
             return;
         }
 
@@ -174,7 +292,7 @@ function initCountdown(dateString) {
         secondsEl.innerText = seconds.toString().padStart(2, '0');
     }
 
-    setInterval(update, 1000);
+    countdownInterval = setInterval(update, 1000);
     update(); // Initial call
 }
 
@@ -485,62 +603,53 @@ function applyDynamicData(data) {
         `;
     }
 
-    // Nikah Card
-    if (details.nikah_date) {
-        setInner('nikah-date', new Date(details.nikah_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }));
-        setInner('nikah-time', formatIslamicTime(details.nikah_time));
-        setInner('nikah-venue', details.nikah_venue || 'TBA');
-        setInner('nikah-venue-city', details.place || '');
+    // Set Names
+    const sets = [
+        ['groom-name-hero', details.groom_name, 'Groom Name'],
+        ['bride-name-hero', details.bride_name, 'Bride Name'],
+        ['groom-name-title', details.groom_name, 'Groom Name'],
+        ['bride-name-title', details.bride_name, 'Bride Name'],
+        ['groom-name-family', details.groom_name, 'Groom Name'],
+        ['bride-name-family', details.bride_name, 'Bride Name'],
+        ['nikah-groom-name', details.groom_name, 'Groom Name'],
+        ['nikah-bride-name', details.bride_name, 'Bride Name'],
+        ['reception-groom-name', details.groom_name, 'Groom Name'],
+        ['reception-bride-name', details.bride_name, 'Bride Name']
+    ];
+
+    sets.forEach(([id, val, fallback]) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val || fallback;
+    });
+
+    // Set Dates & Venues
+    setInner('nikah-date', details.nikah_date ? new Date(details.nikah_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Friday, 09 May 2026');
+    setInner('nikah-time', formatIslamicTime(details.nikah_time) || '10:30 AM');
+    setInner('nikah-venue', details.nikah_venue || 'Grand Ballroom, Kannur');
+    setInner('nikah-venue-city', details.place || 'Kannur, Kerala');
+
+    setInner('reception-date', details.reception_date ? new Date(details.reception_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Saturday, 10 May 2026');
+    setInner('reception-time', formatIslamicTime(details.reception_time) || '04:00 PM');
+    setInner('reception-venue', details.reception_venue || 'Royal Pavilion, Kannur');
+
+    // Parents Info
+    setInner('groom-parents', `${details.groom_father || ''} & ${details.groom_mother || ''}`);
+    setInner('bride-parents', `${details.bride_father || ''} & ${details.bride_mother || ''}`);
+
+    const groomGrandparents = document.getElementById('groom-grandparents');
+    if (groomGrandparents) {
+        groomGrandparents.innerHTML = `
+            <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.groom_grandpa || ''}</p>
+            <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.groom_grandma || ''}</p>
+        `;
     }
 
-    // Reception Card
-    const receptionSection = document.getElementById('reception-section');
-    if (receptionSection) {
-        if (!details.has_reception) {
-            receptionSection.style.display = 'none';
-        } else {
-            receptionSection.style.display = 'flex';
-            setInner('reception-date', new Date(details.reception_date || details.nikah_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }));
-            setInner('reception-time', formatIslamicTime(details.reception_time) || 'TBA');
-            setInner('reception-venue', details.reception_venue || 'TBA');
-        }
-    }
-
-    // Family Section
-    const groomFamilySec = document.getElementById('groom-family-section');
-    if (groomFamilySec) {
-        if (!details.groom_father && !details.groom_mother) {
-            groomFamilySec.classList.add('hidden');
-        } else {
-            groomFamilySec.classList.remove('hidden');
-            setInner('groom-name-family', groomName.toUpperCase());
-            setInner('groom-parents', `${details.groom_father || ''} & ${details.groom_mother || ''}`);
-            const gp = document.getElementById('groom-grandparents');
-            if (gp) {
-                gp.innerHTML = `
-                    <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.groom_grandpa || ''}</p>
-                    <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.groom_grandma || ''}</p>
-                `;
-            }
-        }
-    }
-
-    const brideFamilySec = document.getElementById('bride-family-section');
-    if (brideFamilySec) {
-        if (!details.bride_father && !details.bride_mother) {
-            brideFamilySec.classList.add('hidden');
-        } else {
-            brideFamilySec.classList.remove('hidden');
-            setInner('bride-name-family', brideName.toUpperCase());
-            setInner('bride-parents', `${details.bride_father || ''} & ${details.bride_mother || ''}`);
-            const gp = document.getElementById('bride-grandparents');
-            if (gp) {
-                gp.innerHTML = `
-                    <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.bride_grandpa || ''}</p>
-                    <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.bride_grandma || ''}</p>
-                `;
-            }
-        }
+    const brideGrandparents = document.getElementById('bride-grandparents');
+    if (brideGrandparents) {
+        brideGrandparents.innerHTML = `
+            <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.bride_grandpa || ''}</p>
+            <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.bride_grandma || ''}</p>
+        `;
     }
 
     // Contacts
@@ -571,6 +680,7 @@ function applyDynamicData(data) {
         const renderContact = (c) => `
             <div class="text-center group py-2">
                 <div class="flex items-center justify-center gap-4">
+                    <h4 class="text-lg font-luxury tracking-[0.1em] text-cream uppercase">${c.name || ''}</h4>
                     <div class="flex items-center gap-3">
                         <a href="tel:${c.phone}" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="Call">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
@@ -579,7 +689,6 @@ function applyDynamicData(data) {
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                         </a>
                     </div>
-                    <h4 class="text-lg font-luxury tracking-[0.1em] text-cream uppercase">${c.name || ''}</h4>
                 </div>
             </div>
         `;
@@ -622,8 +731,11 @@ function applyDynamicData(data) {
 document.addEventListener('DOMContentLoaded', () => {
     fetchInvitationData();
     createStars();
-    initCountdown();
     updateHeaderDate();
     initGlitterShower();
     handleScrollHint();
+    setupGlitterTrigger();
+    
+    const rsvpFormEl = document.getElementById('rsvp-form');
+    if (rsvpFormEl) rsvpFormEl.addEventListener('submit', handleRsvpSubmit);
 });
