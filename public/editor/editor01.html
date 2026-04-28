@@ -73,14 +73,14 @@
             <!-- Names & Dates -->
             <div class="form-section">
                 <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Core Details</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div class="p-6 bg-blue-50/20 rounded-2xl border-t-4 border-blue-100">
-                        <label class="label text-blue-900!">Groom Name:</label>
-                        <input type="text" name="groom_name" class="input focus:border-blue-500!" placeholder="Enter Groom Name here...">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
+                        <label class="label">Groom Name:</label>
+                        <input type="text" name="groom_name" class="input" placeholder="Enter Groom Name here...">
                     </div>
-                    <div class="p-6 bg-rose-50/20 rounded-2xl border-t-4 border-rose-100">
-                        <label class="label text-rose-900!">Bride Name:</label>
-                        <input type="text" name="bride_name" class="input focus:border-rose-500!" placeholder="Enter Bride Name here...">
+                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
+                        <label class="label">Bride Name:</label>
+                        <input type="text" name="bride_name" class="input" placeholder="Enter Bride Name here...">
                     </div>
                     <div class="md:col-span-2 px-4">
                         <label class="label">Invitation Title:</label>
@@ -407,8 +407,8 @@
             const file = input.files[0];
             if (!file) return;
 
-            if (file.size > 2 * 1024 * 1024) { // 2MB limit
-                status.innerText = "❌ File too large (max 2MB)";
+            if (file.size > 700 * 1024) { // 700KB limit
+                status.innerText = "❌ File too large (max 700KB)";
                 status.className = "text-[9px] mt-2 text-red-500 font-bold";
                 input.value = '';
                 return;
@@ -498,7 +498,7 @@
         }
 
         function previewInvitation() {
-            window.open(`/templates/template01?id=${invitationId}`, '_blank');
+            window.open(`/templlates/template01?id=${invitationId}`, '_blank');
         }
 
         async function handleLogout() {
