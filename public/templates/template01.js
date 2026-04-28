@@ -26,7 +26,7 @@ function openInvitation() {
         // Show glitter and stars
         const glitter = document.getElementById('glitter-canvas');
         const stars = document.getElementById('stars-container');
-        if (glitter) glitter.style.opacity = '1';
+        if (glitter) glitter.style.opacity = '0';
         if (stars) stars.style.opacity = '1';
 
         // 4. Final Stage: Show main content
@@ -123,7 +123,7 @@ if (wishesForm) {
     });
 }
 
-// Glitter Celebration Trigger - FIXED to work properly on Nikah card
+// Glitter Celebration Trigger - Now shows full opacity glitter with raining effect
 function setupGlitterTrigger() {
     const trigger = document.getElementById('glitter-trigger');
     if (!trigger) return;
@@ -142,8 +142,9 @@ function setupGlitterTrigger() {
 function triggerCelebration() {
     const canvas = document.getElementById('glitter-canvas');
     if (canvas) {
-        // Ensure canvas is visible and emit glitter burst
-        canvas.style.opacity = '0.6'; // Reduced from 1 for less intense effect
+        // Show glitter at full opacity and maintain it while scrolling in nikah section
+        canvas.style.opacity = '1';
+        canvas.style.transition = 'opacity 0.3s ease';
         console.log("Glitter celebration triggered for Nikah section!");
     }
 }
@@ -198,15 +199,19 @@ async function handleRsvpSubmit(e) {
     submitBtn.innerText = 'SUBMITTING...';
 
     try {
+        // Fetch current data
         const { data: currentData, error: fetchError } = await sb
             .from('customer_invitations')
             .select('rsvps')
             .eq('id', id)
             .single();
 
-        if (fetchError) throw fetchError;
+        if (fetchError) {
+            console.error('Fetch error:', fetchError);
+            throw new Error('Could not retrieve current RSVP data');
+        }
         
-        const rsvps = currentData.rsvps || [];
+        const rsvps = currentData?.rsvps || [];
         rsvps.push({
             guest_name: guestName,
             guest_count: status === 'attending' ? guestCount : 0,
@@ -214,12 +219,16 @@ async function handleRsvpSubmit(e) {
             submitted_at: new Date().toISOString()
         });
 
+        // Update with new array
         const { error: updateError } = await sb
             .from('customer_invitations')
-            .update({ rsvps })
+            .update({ rsvps: rsvps })
             .eq('id', id);
 
-        if (updateError) throw updateError;
+        if (updateError) {
+            console.error('Update error:', updateError);
+            throw new Error('Could not update RSVP');
+        }
 
         message.innerText = 'THANK YOU FOR YOUR RESPONSE!';
         message.style.color = '#d4af37';
@@ -297,7 +306,7 @@ function initCountdown(dateString) {
     update(); // Initial call
 }
 
-// Particle System for Glitter Shower - REDUCED INTENSITY
+// Particle System for Glitter Shower - Full opacity falling particles
 class GlitterParticle {
     constructor(canvas, ctx, isExplosion = false, x, y) {
         this.canvas = canvas;
@@ -309,25 +318,25 @@ class GlitterParticle {
     reset(x, y) {
         this.x = x !== undefined ? x : Math.random() * this.canvas.width;
         this.y = y !== undefined ? y : (this.isExplosion ? y : -20);
-        this.size = Math.random() * 2.5 + 0.5; // Reduced from 1-4 to 0.5-3
+        this.size = Math.random() * 3 + 1;
         
         if (this.isExplosion) {
             const angle = Math.random() * Math.PI * 2;
-            const velocity = Math.random() * 6 + 1; // Reduced from 2-10
+            const velocity = Math.random() * 8 + 2;
             this.vx = Math.cos(angle) * velocity;
             this.vy = Math.sin(angle) * velocity;
             this.life = 1.0;
             this.decay = Math.random() * 0.02 + 0.01;
         } else {
-            this.vx = (Math.random() - 0.5) * 0.8; // Reduced movement
-            this.vy = Math.random() * 1 + 0.3; // Reduced from 0.5-2
+            this.vx = (Math.random() - 0.5) * 1;
+            this.vy = Math.random() * 1.5 + 0.5;
             this.life = 1.0;
             this.decay = 0;
         }
 
-        this.opacity = Math.random() * 0.4 + 0.1; // Reduced from 0.2-0.8
+        this.opacity = 1.0; // Full opacity
         this.color = Math.random() > 0.3 ? '#d4af37' : '#fff9ed';
-        this.shimmerSpeed = Math.random() * 0.08 + 0.03; // Reduced shimmer speed
+        this.shimmerSpeed = Math.random() * 0.1 + 0.05;
         this.shimmerPhase = Math.random() * Math.PI * 2;
     }
 
@@ -339,7 +348,7 @@ class GlitterParticle {
             this.life -= this.decay;
         } else {
             this.x += this.vx;
-            this.y += this.vy + (scrollVelocity * 8 * intensity); // Reduced from 10
+            this.y += this.vy + (scrollVelocity * 10 * intensity);
             this.shimmerPhase += this.shimmerSpeed;
         }
         
@@ -347,7 +356,7 @@ class GlitterParticle {
     }
 
     draw() {
-        const alpha = (this.isExplosion ? this.life : this.opacity) * (0.4 + 0.4 * Math.sin(this.shimmerPhase)); // Reduced from 0.5+0.5
+        const alpha = this.isExplosion ? this.life : (this.opacity * (0.6 + 0.4 * Math.sin(this.shimmerPhase)));
         if (alpha <= 0) return;
         
         this.ctx.beginPath();
@@ -372,7 +381,7 @@ function initGlitterShower() {
     resize();
 
     let particles = [];
-    const maxAmbient = 50; // Reduced from 100
+    const maxAmbient = 80;
     
     // Initial ambient particles
     for(let i=0; i<maxAmbient; i++) {
@@ -391,7 +400,7 @@ function initGlitterShower() {
             return;
         }
 
-        for(let i=0; i<20; i++) { // Reduced from 40
+        for(let i=0; i<30; i++) {
             particles.push(new GlitterParticle(canvas, ctx, true, e.clientX, e.clientY));
         }
     });
@@ -405,7 +414,7 @@ function initGlitterShower() {
             return;
         }
 
-        for(let i=0; i<12; i++) { // Reduced from 25
+        for(let i=0; i<20; i++) {
             particles.push(new GlitterParticle(canvas, ctx, true, touch.clientX, touch.clientY));
         }
     }, {passive: true});
@@ -417,12 +426,11 @@ function initGlitterShower() {
         scrollVelocity = Math.abs(currentScrollY - lastScrollY) * 0.1;
         lastScrollY = currentScrollY;
 
-        // Calculate intensity based on scroll progress
-        // Start shower after initial scroll
+        // Calculate intensity based on scroll progress - shows glitter more when scrolling to nikah
         const intensity = Math.min(1, Math.max(0, (currentScrollY - 50) / 400));
         
-        // Spawn more particles if scrolling and intensity > 0 - REDUCED SPAWN RATE
-        if (currentScrollY > 50 && Math.random() < 0.2 * intensity) { // Reduced from 0.4
+        // Spawn more particles if scrolling and intensity > 0
+        if (currentScrollY > 50 && Math.random() < 0.3 * intensity) {
             particles.push(new GlitterParticle(canvas, ctx, false));
         }
 
@@ -437,8 +445,8 @@ function initGlitterShower() {
             particles.push(new GlitterParticle(canvas, ctx, false));
         }
 
-        // Limit total particles for performance - Reduced from 800
-        if (particles.length > 400) particles.splice(0, particles.length - 400);
+        // Limit total particles for performance
+        if (particles.length > 600) particles.splice(0, particles.length - 600);
 
         requestAnimationFrame(animate);
     }
@@ -676,7 +684,7 @@ function applyDynamicData(data) {
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                         </a>
                         <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="WhatsApp">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.75 15.02A6.8 6.8 0 0 0 21 14c-2.837 0-5.5 1.067-7.5 3l-1.83-2.44a13 13 0 0 0 9.33-9.33l2.44 1.83c-1.933 2-3 4.663-3 7.5 0 .3.025.6.05.9l-1.24.1z"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a6 6 0 0 0-6-6H9a6 6 0 0 0-6 6v6a6 6 0 0 0 6 6h6a6 6 0 0 0 6-6v-6Z"></path></svg>
                         </a>
                     </div>
                 </div>
@@ -705,14 +713,20 @@ function applyDynamicData(data) {
     const footerNames = document.querySelectorAll('footer h3');
     if (footerNames.length > 0) footerNames[0].innerText = `${groomName.toUpperCase()} & ${brideName.toUpperCase()}`;
 
-    // Map
+    // Map - Fixed to properly update
     const mapSection = document.querySelector('iframe')?.parentElement?.parentElement;
     if (mapSection) {
         if (!details.map_url) {
             mapSection.classList.add('hidden');
         } else {
             mapSection.classList.remove('hidden');
+            const iframe = mapSection.querySelector('iframe');
             const mapBtn = mapSection.querySelector('a');
+            
+            // Update iframe src to refresh the map
+            if (iframe && details.map_url) {
+                iframe.src = details.map_url;
+            }
             if (mapBtn) mapBtn.href = details.map_url;
         }
     }
