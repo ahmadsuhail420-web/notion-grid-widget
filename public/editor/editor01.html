@@ -218,6 +218,22 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Background Music Selection -->
+            <div class="form-section">
+                <h2 class="text-xs font-serif font-bold mb-8 border-b pb-2 text-gray-400 tracking-[0.2em] uppercase">Background Music</h2>
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label class="label">Select Music Track</label>
+                        <select name="bg_music" class="input">
+                            <option value="https://cdn.pixabay.com/audio/2022/03/10/audio_4421f2bd84.mp3">Royal Instrumental (Violin)</option>
+                            <option value="https://cdn.pixabay.com/audio/2022/01/18/audio_2d0ccf0848.mp3">Dreamy Piano & Strings</option>
+                            <option value="https://cdn.pixabay.com/audio/2021/11/25/audio_91b32e02f9.mp3">Elegant Acoustic Guitar</option>
+                            <option value="none">No Music</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             
             <div class="flex justify-center pt-4 pb-20">
                 <button type="button" onclick="saveChanges()" class="w-full py-3.5 bg-[#9c404d] text-white font-bold rounded-xl hover:bg-[#7d333e] shadow-lg shadow-[#9c404d]/20 transition-all active:scale-95 text-sm uppercase tracking-widest">
@@ -284,6 +300,7 @@
             form.nikah_date.value = details.nikah_date || '';
             form.nikah_time.value = details.nikah_time || '';
             form.nikah_venue.value = details.nikah_venue || '';
+            form.bg_music.value = details.bg_music || 'https://cdn.pixabay.com/audio/2022/03/10/audio_4421f2bd84.mp3';
             
             // Family Fields
             form.groom_father.value = details.groom_father || '';
@@ -387,6 +404,7 @@
                 reception_venue: form.reception_venue.value,
                 place: form.place.value,
                 map_url: form.map_url.value,
+                bg_music: form.bg_music.value,
                 contacts: contacts
             };
 
@@ -409,7 +427,7 @@
         }
 
         function previewInvitation() {
-            window.open(`/templates/template01?id=${invitationId}`, '_blank');
+            window.open(`/template01?id=${invitationId}`, '_blank');
         }
 
         async function handleLogout() {
