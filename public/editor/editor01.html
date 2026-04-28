@@ -100,15 +100,15 @@
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">Nikah Date</label>
+                                <label class="label">Nikah Date:</label>
                                 <input type="date" name="nikah_date" class="input">
                             </div>
                             <div>
-                                <label class="label">Nikah Time</label>
+                                <label class="label">Nikah Time:</label>
                                 <input type="time" name="nikah_time" class="input">
                             </div>
                             <div class="md:col-span-2">
-                                <label class="label">Nikah Venue</label>
+                                <label class="label">Nikah Venue:</label>
                                 <input type="text" name="nikah_venue" class="input" placeholder="Venue details">
                             </div>
                         </div>
@@ -125,15 +125,15 @@
                         </div>
                         <div id="reception-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50 pointer-events-none transition-all">
                             <div>
-                                <label class="label">Reception Date</label>
+                                <label class="label">Reception Date:</label>
                                 <input type="date" name="reception_date" class="input">
                             </div>
                             <div>
-                                <label class="label">Reception Time</label>
+                                <label class="label">Reception Time:</label>
                                 <input type="time" name="reception_time" class="input">
                             </div>
                             <div class="md:col-span-2">
-                                <label class="label">Reception Venue</label>
+                                <label class="label">Reception Venue:</label>
                                 <input type="text" name="reception_venue" class="input" placeholder="Venue details">
                             </div>
                         </div>
@@ -192,11 +192,11 @@
                 <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Maps & Location</h2>
                 <div class="grid grid-cols-1 gap-4">
                     <div>
-                        <label class="label">City/Place</label>
+                        <label class="label">City/Place:</label>
                         <input type="text" name="place" class="input" placeholder="e.g. Kannur">
                     </div>
                     <div>
-                        <label class="label">Google Maps Link</label>
+                        <label class="label">Google Maps Link:</label>
                         <input type="url" name="map_url" class="input" placeholder="Paste link here">
                     </div>
                 </div>
@@ -498,7 +498,7 @@
         }
 
         function previewInvitation() {
-            window.open(`/templates/template01?id=${invitationId}`, '_blank');
+            window.open(`/templates/template01.html?id=${invitationId}`, '_blank');
         }
 
         async function handleLogout() {
