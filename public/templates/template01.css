@@ -3,10 +3,10 @@
     --soft-gold: #f4e1a1;
     --dark-gold: #b8860b;
     --off-white: #fff9ed;
-    --royal: #d4af37; /* Re-using gold as royal, or can use a deep red if needed */
+    --royal: #d4af37;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@200;300;400;600&family=Ms+Madi&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Great+Vibes&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&family=Cookie&family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&family=Noto+Sans+Tifinagh&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@200;300;400;600&family=Ms+Madi&family=Cookie&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Great+Vibes&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&family=Noto+Sans+Tifinagh&display=swap');
 
 * {
     margin: 0;
@@ -37,8 +37,8 @@ body {
     width: 100vw;
     height: 100vh;
     pointer-events: none;
-    z-index: 50; /* Changed from 9999 to be behind envelope overlay */
-    opacity: 0; /* Hidden until opened */
+    z-index: 50;
+    opacity: 0;
     transition: opacity 1.5s ease;
 }
 
@@ -485,4 +485,49 @@ html {
     0% { transform: translate(-50%, -50%) translateY(0px); }
     50% { transform: translate(-50%, -50%) translateY(-10px); }
     100% { transform: translate(-50%, -50%) translateY(0px); }
+}
+
+/* Swash Line Decorative */
+.swash-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    width: 100%;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    /* Footer Barakallah and names on one line */
+    #footer-compliments {
+        white-space: nowrap;
+        font-size: 0.75rem;
+    }
+
+    /* Reduce quote font weight on mobile */
+    .text-2xl.sm\:text-3xl.md\:text-4xl {
+        font-weight: 300;
+    }
+
+    /* Quote styling */
+    [class*="font-playfair"][class*="italic"] {
+        font-weight: 300;
+        letter-spacing: 0.5px;
+    }
+}
+
+/* Quote specific styling - light weight */
+.font-playfair.font-light.italic {
+    font-weight: 300;
+    opacity: 0.92;
+}
+
+/* Reduced glitter effect - fewer particles and lower opacity */
+@media (prefers-reduced-motion: no-preference) {
+    #glitter-canvas {
+        opacity: 0.4;
+    }
+}
+
+/* Glitter particles reduced */
+.glitter-particle {
+    opacity: 0.3;
 }
