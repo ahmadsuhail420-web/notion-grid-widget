@@ -74,13 +74,13 @@
             <div class="form-section">
                 <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Core Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div class="p-6 bg-red-50/20 rounded-2xl border-t-4 border-red-100">
-                        <label class="label text-red-900!">Groom Name:</label>
-                        <input type="text" name="groom_name" class="input focus:border-red-500!" placeholder="Enter Groom Name here...">
+                    <div class="p-6 bg-blue-50/20 rounded-2xl border-t-4 border-blue-100">
+                        <label class="label text-blue-900!">Groom Name:</label>
+                        <input type="text" name="groom_name" class="input focus:border-blue-500!" placeholder="Enter Groom Name here...">
                     </div>
-                    <div class="p-6 bg-red-50/20 rounded-2xl border-t-4 border-red-100">
-                        <label class="label text-red-900!">Bride Name:</label>
-                        <input type="text" name="bride_name" class="input focus:border-red-500!" placeholder="Enter Bride Name here...">
+                    <div class="p-6 bg-rose-50/20 rounded-2xl border-t-4 border-rose-100">
+                        <label class="label text-rose-900!">Bride Name:</label>
+                        <input type="text" name="bride_name" class="input focus:border-rose-500!" placeholder="Enter Bride Name here...">
                     </div>
                     <div class="md:col-span-2 px-4">
                         <label class="label">Invitation Title:</label>
@@ -230,15 +230,22 @@
             <!-- Background Music Selection -->
             <div class="form-section">
                 <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Background Music</h2>
-                <div class="grid grid-cols-1 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                        <label class="label">Select Music Track</label>
-                        <select name="bg_music" class="input">
+                        <label class="label">Select Preset Track</label>
+                        <select name="bg_music_preset" class="input" onchange="handleMusicSourceChange(this.value)">
                             <option value="https://cdn.pixabay.com/audio/2022/03/10/audio_4421f2bd84.mp3">Royal Instrumental (Violin)</option>
                             <option value="https://cdn.pixabay.com/audio/2022/01/18/audio_2d0ccf0848.mp3">Dreamy Piano & Strings</option>
                             <option value="https://cdn.pixabay.com/audio/2021/11/25/audio_91b32e02f9.mp3">Elegant Acoustic Guitar</option>
+                            <option value="custom">Upload Custom Music / Link</option>
                             <option value="none">No Music</option>
                         </select>
+                    </div>
+                    <div id="custom-music-input" class="hidden">
+                        <label class="label">Upload Audio File (.mp3)</label>
+                        <input type="file" id="music-upload-btn" accept="audio/*" class="input border-dashed" onchange="handleFileUpload(this)">
+                        <p id="upload-status" class="text-[9px] mt-2 text-gray-400"></p>
+                        <input type="hidden" name="bg_music_custom" id="bg_music_custom">
                     </div>
                 </div>
             </div>
@@ -308,7 +315,21 @@
             form.nikah_date.value = details.nikah_date || '';
             form.nikah_time.value = details.nikah_time || '';
             form.nikah_venue.value = details.nikah_venue || '';
-            form.bg_music.value = details.bg_music || 'https://cdn.pixabay.com/audio/2022/03/10/audio_4421f2bd84.mp3';
+            
+            // Music handling
+            const savedMusic = details.bg_music || '';
+            const presets = ['https://cdn.pixabay.com/audio/2022/03/10/audio_4421f2bd84.mp3', 'https://cdn.pixabay.com/audio/2022/01/18/audio_2d0ccf0848.mp3', 'https://cdn.pixabay.com/audio/2021/11/25/audio_91b32e02f9.mp3', 'none'];
+            if (presets.includes(savedMusic)) {
+                form.bg_music_preset.value = savedMusic || presets[0];
+                handleMusicSourceChange(savedMusic);
+            } else if (savedMusic.startsWith('data:') || savedMusic.startsWith('http')) {
+                form.bg_music_preset.value = 'custom';
+                document.getElementById('bg_music_custom').value = savedMusic;
+                document.getElementById('custom-music-input').classList.remove('hidden');
+                document.getElementById('upload-status').innerText = "✅ Saved custom music active";
+            } else {
+                form.bg_music_preset.value = presets[0];
+            }
             
             // Family Fields
             form.groom_father.value = details.groom_father || '';
@@ -372,12 +393,54 @@
             container.appendChild(div);
         }
 
+        function handleMusicSourceChange(val) {
+            const customInput = document.getElementById('custom-music-input');
+            if (val === 'custom') {
+                customInput.classList.remove('hidden');
+            } else {
+                customInput.classList.add('hidden');
+            }
+        }
+
+        function handleFileUpload(input) {
+            const status = document.getElementById('upload-status');
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                status.innerText = "❌ File too large (max 2MB)";
+                status.className = "text-[9px] mt-2 text-red-500 font-bold";
+                input.value = '';
+                return;
+            }
+
+            status.innerText = "⏳ Processing...";
+            status.className = "text-[9px] mt-2 text-blue-500 font-bold animate-pulse";
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('bg_music_custom').value = e.target.result;
+                status.innerText = "✅ Ready (Custom file processed)";
+                status.className = "text-[9px] mt-2 text-green-600 font-bold";
+            };
+            reader.onerror = () => {
+                status.innerText = "❌ Error reading file";
+            };
+            reader.readAsDataURL(file);
+        }
+
         async function saveChanges() {
             const saveBtn = document.getElementById('save-btn');
             saveBtn.disabled = true;
             saveBtn.innerText = "Saving...";
 
             const form = document.getElementById('invitation-form');
+
+            // Determine Music
+            let finalMusic = form.bg_music_preset.value;
+            if (finalMusic === 'custom') {
+                finalMusic = document.getElementById('bg_music_custom').value || 'none';
+            }
 
             // Gather Contacts
             const contacts = [];
@@ -412,7 +475,7 @@
                 reception_venue: form.reception_venue.value,
                 place: form.place.value,
                 map_url: form.map_url.value,
-                bg_music: form.bg_music.value,
+                bg_music: finalMusic,
                 contacts: contacts
             };
 
@@ -435,7 +498,7 @@
         }
 
         function previewInvitation() {
-            window.open(`/template01?id=${invitationId}`, '_blank');
+            window.open(`/templates/template01?id=${invitationId}`, '_blank');
         }
 
         async function handleLogout() {
