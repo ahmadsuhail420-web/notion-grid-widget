@@ -419,6 +419,11 @@ function formatIslamicTime(timeStr) {
 function applyDynamicData(data) {
     const details = data.wedding_details || {};
     window.wedding_nikah_date = details.nikah_date ? `${details.nikah_date} ${details.nikah_time || '00:00'}` : null;
+    
+    // Refresh countdown if it's already running or about to start
+    if (window.wedding_nikah_date) {
+        initCountdown(window.wedding_nikah_date);
+    }
 
     const groomName = details.groom_name || 'YASAH';
     const brideName = details.bride_name || 'RIFA';
@@ -548,40 +553,39 @@ function applyDynamicData(data) {
         if (contacts.length > 0) {
             if (contactSection) contactSection.classList.remove('hidden');
             
-            const groomSide = contacts.filter(c => c.side === 'groom');
-            const brideSide = contacts.filter(c => c.side === 'bride');
+        const groomSide = contacts.filter(c => c.side === 'groom');
+        const brideSide = contacts.filter(c => c.side === 'bride');
 
-            const groomBox = document.getElementById('groom-contact-box');
-            const brideBox = document.getElementById('bride-contact-box');
-            
-            if (groomBox) {
-                if (groomSide.length === 0) groomBox.classList.add('hidden');
-                else groomBox.classList.remove('hidden');
-            }
-            if (brideBox) {
-                if (brideSide.length === 0) brideBox.classList.add('hidden');
-                else brideBox.classList.remove('hidden');
-            }
+        const groomBox = document.getElementById('groom-contact-box');
+        const brideBox = document.getElementById('bride-contact-box');
+        
+        if (groomBox) {
+            if (groomSide.length === 0) groomBox.classList.add('hidden');
+            else groomBox.classList.remove('hidden');
+        }
+        if (brideBox) {
+            if (brideSide.length === 0) brideBox.classList.add('hidden');
+            else brideBox.classList.remove('hidden');
+        }
 
-            const renderContact = (c) => `
-                <div class="text-center group py-4">
-                    <p class="text-[8px] font-cinzel opacity-40 uppercase tracking-[0.4em] mb-3">${c.relation || 'FAMILY'}</p>
-                    <div class="flex items-center justify-center gap-4">
-                        <h4 class="text-xl font-luxury tracking-[0.1em] text-cream uppercase">${c.name || ''}</h4>
-                        <div class="flex items-center gap-2">
-                            <a href="tel:${c.phone}" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="Call">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                            </a>
-                            <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="WhatsApp">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                            </a>
-                        </div>
+        const renderContact = (c) => `
+            <div class="text-center group py-2">
+                <div class="flex items-center justify-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <a href="tel:${c.phone}" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="Call">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </a>
+                        <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="WhatsApp">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        </a>
                     </div>
+                    <h4 class="text-lg font-luxury tracking-[0.1em] text-cream uppercase">${c.name || ''}</h4>
                 </div>
-            `;
+            </div>
+        `;
 
-            if (groomDisplay) groomDisplay.innerHTML = groomSide.length > 0 ? groomSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10 my-6"></div>') : '';
-            if (brideDisplay) brideDisplay.innerHTML = brideSide.length > 0 ? brideSide.map(renderContact).join('<div class="h-[1px] w-8 mx-auto bg-gold/10 my-6"></div>') : '';
+        if (groomDisplay) groomDisplay.innerHTML = groomSide.length > 0 ? groomSide.map(renderContact).join('') : '';
+        if (brideDisplay) brideDisplay.innerHTML = brideSide.length > 0 ? brideSide.map(renderContact).join('') : '';
         } else {
             if (contactSection) contactSection.classList.add('hidden');
         }
