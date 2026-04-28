@@ -28,7 +28,14 @@
             word-spacing: 0.5rem;
         }
         .input {
-            @apply w-full px-1 py-2 rounded-none border-b-2 border-gray-100 focus:outline-none focus:border-[#9c404d] transition-all text-sm bg-transparent;
+            @apply w-full px-1 py-2 rounded-none border-b-2 border-gray-300 focus:outline-none focus:border-[#9c404d] transition-all text-sm bg-transparent;
+            box-shadow: none;
+        }
+        .input::placeholder {
+            @apply text-gray-300 italic;
+        }
+        .input-group {
+            @apply relative mb-2;
         }
         /* Mobile friendly adjustments */
         @media (max-width: 640px) {
@@ -66,18 +73,18 @@
             <!-- Names & Dates -->
             <div class="form-section">
                 <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Core Details</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="p-4 bg-blue-50/30 rounded-xl">
-                        <label class="label text-blue-900!">Groom Name:</label>
-                        <input type="text" name="groom_name" class="input border-blue-100! focus:border-blue-500!" placeholder="e.g. Yasah">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="p-6 bg-red-50/20 rounded-2xl border-t-4 border-red-100">
+                        <label class="label text-red-900!">Groom Name:</label>
+                        <input type="text" name="groom_name" class="input focus:border-red-500!" placeholder="Enter Groom Name here...">
                     </div>
-                    <div class="p-4 bg-rose-50/30 rounded-xl">
-                        <label class="label text-rose-900!">Bride Name:</label>
-                        <input type="text" name="bride_name" class="input border-rose-100! focus:border-rose-500!" placeholder="e.g. Rifa">
+                    <div class="p-6 bg-red-50/20 rounded-2xl border-t-4 border-red-100">
+                        <label class="label text-red-900!">Bride Name:</label>
+                        <input type="text" name="bride_name" class="input focus:border-red-500!" placeholder="Enter Bride Name here...">
                     </div>
                     <div class="md:col-span-2 px-4">
                         <label class="label">Invitation Title:</label>
-                        <input type="text" name="title" class="input" placeholder="e.g. Our Wedding">
+                        <input type="text" name="title" class="input" placeholder="e.g. Save The Date">
                     </div>
                 </div>
             </div>
@@ -135,47 +142,47 @@
             </div>
 
             <!-- Groom's Family -->
-            <div class="form-section border-l-4 border-blue-200">
-                <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-blue-900! tracking-[0.3em] uppercase">Groom's Family</h2>
+            <div class="form-section border-l-4 border-red-200">
+                <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-red-900! tracking-[0.3em] uppercase">Groom's Family</h2>
                 <div class="grid grid-cols-2 gap-8 px-4">
                     <div>
-                        <label class="label text-blue-800/50!">Father:</label>
-                        <input type="text" name="groom_father" class="input border-blue-100!">
+                        <label class="label text-red-800/50!">Father:</label>
+                        <input type="text" name="groom_father" class="input">
                     </div>
                     <div>
-                        <label class="label text-blue-800/50!">Mother:</label>
-                        <input type="text" name="groom_mother" class="input border-blue-100!">
+                        <label class="label text-red-800/50!">Mother:</label>
+                        <input type="text" name="groom_mother" class="input">
                     </div>
                     <div>
-                        <label class="label text-blue-800/50!">Grandpa:</label>
-                        <input type="text" name="groom_grandpa" class="input border-blue-100!">
+                        <label class="label text-red-800/50!">Grandpa:</label>
+                        <input type="text" name="groom_grandpa" class="input">
                     </div>
                     <div>
-                        <label class="label text-blue-800/50!">Grandma:</label>
-                        <input type="text" name="groom_grandma" class="input border-blue-100!">
+                        <label class="label text-red-800/50!">Grandma:</label>
+                        <input type="text" name="groom_grandma" class="input">
                     </div>
                 </div>
             </div>
 
             <!-- Bride's Family -->
-            <div class="form-section border-l-4 border-rose-200">
-                <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-rose-900! tracking-[0.3em] uppercase">Bride's Family</h2>
+            <div class="form-section border-l-4 border-red-200">
+                <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-red-900! tracking-[0.3em] uppercase">Bride's Family</h2>
                 <div class="grid grid-cols-2 gap-8 px-4">
                     <div>
-                        <label class="label text-rose-800/50!">Father:</label>
-                        <input type="text" name="bride_father" class="input border-rose-100!">
+                        <label class="label text-red-800/50!">Father:</label>
+                        <input type="text" name="bride_father" class="input">
                     </div>
                     <div>
-                        <label class="label text-rose-800/50!">Mother:</label>
-                        <input type="text" name="bride_mother" class="input border-rose-100!">
+                        <label class="label text-red-800/50!">Mother:</label>
+                        <input type="text" name="bride_mother" class="input">
                     </div>
                     <div>
-                        <label class="label text-rose-800/50!">Grandpa:</label>
-                        <input type="text" name="bride_grandpa" class="input border-rose-100!">
+                        <label class="label text-red-800/50!">Grandpa:</label>
+                        <input type="text" name="bride_grandpa" class="input">
                     </div>
                     <div>
-                        <label class="label text-rose-800/50!">Grandma:</label>
-                        <input type="text" name="bride_grandma" class="input border-rose-100!">
+                        <label class="label text-red-800/50!">Grandma:</label>
+                        <input type="text" name="bride_grandma" class="input">
                     </div>
                 </div>
             </div>
@@ -203,7 +210,7 @@
                     <!-- Groom Side -->
                     <div>
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-[10px] font-bold text-blue-900 tracking-widest uppercase">Groom Side</h3>
+                            <h3 class="text-[10px] font-bold text-red-900 tracking-widest uppercase">Groom Side</h3>
                             <button type="button" onclick="addContact('groom')" class="text-[9px] font-bold text-[#9c404d] hover:underline uppercase">+ Add</button>
                         </div>
                         <div id="groom-contact-list" class="space-y-4"></div>
@@ -212,7 +219,7 @@
                     <!-- Bride Side -->
                     <div>
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-[10px] font-bold text-rose-900 tracking-widest uppercase">Bride Side</h3>
+                            <h3 class="text-[10px] font-bold text-red-900 tracking-widest uppercase">Bride Side</h3>
                             <button type="button" onclick="addContact('bride')" class="text-[9px] font-bold text-[#9c404d] hover:underline uppercase">+ Add</button>
                         </div>
                         <div id="bride-contact-list" class="space-y-4"></div>
@@ -348,17 +355,17 @@
 
         function addContact(side, data = { name: '', relation: '', phone: '' }) {
             const container = document.getElementById(side + '-contact-list');
-            const colorClass = side === 'groom' ? 'blue' : 'rose';
+            const colorClass = 'red';
             const div = document.createElement('div');
             div.className = `flex flex-col gap-2 p-3 rounded-xl contact-row border border-${colorClass}-50 bg-${colorClass}-50/20 shadow-sm`;
             div.setAttribute('data-side', side);
             div.innerHTML = `
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="text" placeholder="Name" value="${data.name || ''}" class="px-1 py-1 text-xs border-b border-${colorClass}-100 focus:border-${colorClass}-500 outline-none contact-name bg-transparent">
-                    <input type="text" placeholder="Relation" value="${data.relation || ''}" class="px-1 py-1 text-xs border-b border-${colorClass}-100 focus:border-${colorClass}-500 outline-none contact-relation bg-transparent">
+                    <input type="text" placeholder="Name" value="${data.name || ''}" class="px-1 py-1 text-xs border-b border-red-100 focus:border-red-500 outline-none contact-name bg-transparent">
+                    <input type="text" placeholder="Relation" value="${data.relation || ''}" class="px-1 py-1 text-xs border-b border-red-100 focus:border-red-500 outline-none contact-relation bg-transparent">
                 </div>
                 <div class="flex gap-2 items-center">
-                    <input type="tel" placeholder="Phone" value="${data.phone || ''}" class="flex-1 px-1 py-1 text-xs border-b border-${colorClass}-100 focus:border-${colorClass}-500 outline-none contact-phone bg-transparent">
+                    <input type="tel" placeholder="Phone" value="${data.phone || ''}" class="flex-1 px-1 py-1 text-xs border-b border-red-100 focus:border-red-500 outline-none contact-phone bg-transparent">
                     <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-gray-300 hover:text-red-500 text-sm px-1 italic uppercase font-bold">✕</button>
                 </div>
             `;
