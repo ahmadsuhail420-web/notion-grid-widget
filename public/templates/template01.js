@@ -207,19 +207,27 @@ async function handleRsvpSubmit(e) {
     submitBtn.innerText = 'SUBMITTING...';
 
     try {
-        // Fetch current data
-        const { data: currentData, error: fetchError } = await sb
+        // Fetch current invitation data
+        const { data: invitationData, error: fetchError } = await sb
             .from('customer_invitations')
-            .select('rsvps')
+            .select('*')
             .eq('id', id)
             .single();
 
         if (fetchError) {
             console.error('Fetch error:', fetchError);
-            throw new Error('Could not retrieve current RSVP data: ' + fetchError.message);
+            throw new Error('Could not retrieve invitation data');
         }
+
+        // Initialize or get existing RSVPs array
+        let rsvps = invitationData?.rsvps || [];
         
-        const rsvps = currentData?.rsvps || [];
+        // Ensure it's an array
+        if (!Array.isArray(rsvps)) {
+            rsvps = [];
+        }
+
+        // Add new RSVP
         rsvps.push({
             guest_name: guestName,
             guest_count: status === 'attending' ? guestCount : 0,
@@ -227,7 +235,7 @@ async function handleRsvpSubmit(e) {
             submitted_at: new Date().toISOString()
         });
 
-        // Update with new array
+        // Update the invitation with new RSVPs
         const { error: updateError } = await sb
             .from('customer_invitations')
             .update({ rsvps: rsvps })
@@ -244,6 +252,7 @@ async function handleRsvpSubmit(e) {
         form.reset();
         submitBtn.innerText = 'SUBMITTED';
         
+        // Reset button after 5 seconds
         setTimeout(() => {
             message.classList.add('hidden');
             submitBtn.innerText = 'SUBMIT RSVP';
@@ -252,7 +261,7 @@ async function handleRsvpSubmit(e) {
 
     } catch (err) {
         console.error('RSVP Error:', err);
-        message.innerText = 'COULD NOT SUBMIT: ' + err.message;
+        message.innerText = 'COULD NOT SUBMIT. PLEASE TRY AGAIN.';
         message.style.color = '#ff6b6b';
         message.classList.remove('hidden');
         submitBtn.disabled = false;
@@ -722,18 +731,23 @@ function applyDynamicData(data) {
     if (footerNames.length > 0) footerNames[0].innerText = `${groomName.toUpperCase()} & ${brideName.toUpperCase()}`;
 
     // Map - FIXED: Properly update iframe src to refresh the map
-    const iframeElement = document.querySelector('iframe');
-    if (iframeElement && details.map_url) {
-        iframeElement.src = details.map_url;
-        const mapSection = iframeElement.parentElement?.parentElement;
-        if (mapSection) {
+    const iframeElement = document.querySelector('section:has(iframe) iframe');
+    const mapSection = iframeElement?.parentElement?.parentElement;
+    
+    if (iframeElement && mapSection) {
+        if (details.map_url && details.map_url.trim()) {
+            // Update iframe with the map URL
+            iframeElement.src = details.map_url;
             mapSection.classList.remove('hidden');
+            
+            // Also update the button link
             const mapBtn = mapSection.querySelector('a');
-            if (mapBtn) mapBtn.href = details.map_url;
-        }
-    } else if (iframeElement) {
-        const mapSection = iframeElement.parentElement?.parentElement;
-        if (mapSection) {
+            if (mapBtn) {
+                mapBtn.href = details.map_url;
+                mapBtn.setAttribute('target', '_blank');
+            }
+        } else {
+            // Hide map section if no URL provided
             mapSection.classList.add('hidden');
         }
     }
