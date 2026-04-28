@@ -401,23 +401,19 @@ function getArabicInitial(name) {
 
 function formatIslamicTime(timeStr) {
     if (!timeStr) return 'TBA';
-    // If user typed text, just return it
-    if (isNaN(parseInt(timeStr.split(':')[0]))) return timeStr;
-
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const totalMinutes = hours * 60 + minutes;
-
-    // Approximated Prayer Windows (Standard simplified logic)
-    if (totalMinutes < 300) return "Before Fajr Namaz";
-    if (totalMinutes < 360) return "After Fajr Namaz";
-    if (totalMinutes < 720) return "Before Zuhur Namaz";
-    if (totalMinutes < 810) return "After Zuhur Namaz";
-    if (totalMinutes < 960) return "Before Asr Namaz";
-    if (totalMinutes < 1050) return "After Asr Namaz";
-    if (totalMinutes < 1110) return "Before Maghrib Namaz";
-    if (totalMinutes < 1170) return "After Maghrib Namaz";
-    if (totalMinutes < 1290) return "After Ish'a Namaz";
-    return "Late Night";
+    // If user provided a time string like "14:30", convert to "2:30 PM"
+    if (timeStr.includes(':')) {
+        try {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const h = hours % 12 || 12;
+            const m = minutes.toString().padStart(2, '0');
+            return `${h}:${m} ${ampm}`;
+        } catch(e) {
+            return timeStr;
+        }
+    }
+    return timeStr;
 }
 
 function applyDynamicData(data) {
@@ -444,14 +440,10 @@ function applyDynamicData(data) {
     setInner('footer-compliments', `With best compliments from the Families of ${groomName} & ${brideName}`);
     
     // Envelope
-    const envelopeNames = document.querySelector('.envelope-card h3');
+    setInner('envelope-display-date', details.nikah_date ? new Date(details.nikah_date).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }) : 'May 09, 2026');
+    
+    const envelopeNames = document.querySelector('#envelope .envelope-card h3');
     if (envelopeNames) envelopeNames.innerText = `${groomName.toUpperCase()} & ${brideName.toUpperCase()}`;
-
-    const envelopeDate = document.querySelector('.envelope-card .mt-6 p');
-    if (envelopeDate) {
-        const d = details.nikah_date ? new Date(details.nikah_date).toLocaleDateString('en-US', { month: 'long', day: '2-digit' }) : 'May 09';
-        envelopeDate.innerText = `${d}, ${new Date().getFullYear()}`;
-    }
 
     // Hero
     const heroGroom = document.getElementById('hero-groom-name');
@@ -473,8 +465,9 @@ function applyDynamicData(data) {
         if (details.nikah_date) {
             html += `<p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel uppercase">Friday · ${new Date(details.nikah_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })} · Nikah</p>`;
         }
-        if (details.has_reception && details.reception_date) {
-            html += `<p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel uppercase">Saturday · ${new Date(details.reception_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })} · Reception</p>`;
+        if (details.has_reception && (details.reception_date || details.nikah_date)) {
+            const rDate = details.reception_date || details.nikah_date;
+            html += `<p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel uppercase">Saturday · ${new Date(rDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })} · Reception</p>`;
         }
         html += `<p class="text-[10px] sm:text-xs tracking-[0.2em] font-playfair italic mt-4 opacity-60">${details.place || 'Kannur, Kerala'}</p>`;
         eventSummary.innerHTML = `
@@ -499,11 +492,11 @@ function applyDynamicData(data) {
     const receptionSection = document.getElementById('reception-section');
     if (receptionSection) {
         if (!details.has_reception) {
-            receptionSection.classList.add('hidden');
+            receptionSection.style.display = 'none';
         } else {
-            receptionSection.classList.remove('hidden');
+            receptionSection.style.display = 'flex';
             setInner('reception-date', new Date(details.reception_date || details.nikah_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }));
-            setInner('reception-time', details.reception_time || 'TBA');
+            setInner('reception-time', formatIslamicTime(details.reception_time) || 'TBA');
             setInner('reception-venue', details.reception_venue || 'TBA');
         }
     }
