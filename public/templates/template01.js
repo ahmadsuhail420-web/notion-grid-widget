@@ -426,6 +426,10 @@ function applyDynamicData(data) {
 
     const groomName = details.groom_name || 'YASAH';
     const brideName = details.bride_name || 'RIFA';
+
+    // Update Document Title
+    document.title = `${groomName} & ${brideName} - Wedding Invitation`;
+
     const arabicGroom = getArabicInitial(groomName);
     const arabicBride = getArabicInitial(brideName);
 
@@ -437,6 +441,8 @@ function applyDynamicData(data) {
     setInner('flap-initials', `${groomName.charAt(0)} & ${brideName.charAt(0)}`);
     setInner('header-initials', `${groomName.charAt(0)} & ${brideName.charAt(0)}`);
 
+    setInner('footer-compliments', `With best compliments from the Families of ${groomName} & ${brideName}`);
+    
     // Envelope
     const envelopeNames = document.querySelector('.envelope-card h3');
     if (envelopeNames) envelopeNames.innerText = `${groomName.toUpperCase()} & ${brideName.toUpperCase()}`;
