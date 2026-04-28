@@ -660,6 +660,50 @@ function formatIslamicTime(timeStr) {
     }
     return timeStr;
 }
+// MAP URL CONVERTER - Converts Google Maps links to valid embed URLs
+function convertMapUrlToEmbedUrl(mapUrl) {
+    if (!mapUrl || typeof mapUrl !== 'string') return null;
+    
+    try {
+        // If already an embed URL, return as is
+        if (mapUrl.includes('maps/embed?pb=')) {
+            return mapUrl;
+        }
+        
+        // Handle goo.gl shortened links - they work fine in iframes
+        if (mapUrl.includes('goo.gl') || mapUrl.includes('maps.app.goo.gl')) {
+            return mapUrl;
+        }
+        
+        // Handle direct Google Maps URLs with coordinates
+        if (mapUrl.includes('@') && mapUrl.includes(',')) {
+            const match = mapUrl.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+            if (match) {
+                const lat = match[1];
+                const lng = match[2];
+                return `https://www.google.com/maps?q=${lat},${lng}&hl=en&z=15&output=embed`;
+            }
+        }
+        
+        // For any other Google Maps URL, try to create an embed version
+        if (mapUrl.includes('maps.google.com') || mapUrl.includes('google.com/maps')) {
+            const urlObj = new URL(mapUrl);
+            const query = urlObj.searchParams.get('q') || '';
+            
+            if (query) {
+                return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+            }
+            
+            return `https://www.google.com/maps?output=embed`;
+        }
+        
+        // Default: return original URL
+        return mapUrl;
+    } catch (error) {
+        console.error('Error converting map URL:', error);
+        return mapUrl;
+    }
+}
 
 function applyDynamicData(data) {
     const details = data.wedding_details || {};
@@ -833,22 +877,34 @@ function applyDynamicData(data) {
 
     // Map - FIXED: Properly update iframe src to refresh the map
         
-    const mapIframe = document.getElementById('map-iframe');
-    const mapBtn = document.getElementById('map-directions-btn');
-    const mapSection = mapIframe?.parentElement?.parentElement;
-    
-    if (mapIframe && mapBtn && mapSection) {
-        if (details.map_url && details.map_url.trim()) {
-            // Update iframe src with the provided map URL
-            mapIframe.src = details.map_url;
-            mapBtn.href = details.map_url;
-            mapSection.classList.remove('hidden');
-            console.log('Map URL loaded:', details.map_url);
-        } else {
-            // Show placeholder if no map URL
+    // MAP - FIXED: Convert any Google Maps URL to valid embed format
+const mapIframe = document.getElementById('map-iframe');
+const mapBtn = document.getElementById('map-directions-btn');
+const mapSection = mapIframe?.parentElement?.parentElement;
+
+if (mapIframe && mapBtn && mapSection) {
+    if (details.map_url && details.map_url.trim()) {
+        try {
+            // Convert the map URL to a valid embed URL
+            const embedUrl = convertMapUrlToEmbedUrl(details.map_url);
+            
+            if (embedUrl) {
+                mapIframe.src = embedUrl;
+                mapBtn.href = details.map_url; // Keep original for "Get Directions"
+                mapSection.classList.remove('hidden');
+                console.log('✅ Map loaded successfully:', embedUrl);
+            } else {
+                console.warn('⚠️ Could not convert map URL');
+                mapSection.classList.add('hidden');
+            }
+        } catch (error) {
+            console.error('❌ Map error:', error);
             mapSection.classList.add('hidden');
         }
+    } else {
+        mapSection.classList.add('hidden');
     }
+} 
 }
 
 document.addEventListener('DOMContentLoaded', () => {
