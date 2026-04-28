@@ -284,7 +284,7 @@
             emptyState.classList.add('hidden');
             
             body.innerHTML = guests.map(guest => {
-                const inviteLink = `${window.location.origin}/template01?guest=${encodeURIComponent(guest.name)}`;
+                const inviteLink = `${window.location.origin}/templates/template01?guest=${encodeURIComponent(guest.name)}`;
                 const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
                 
                 return `
