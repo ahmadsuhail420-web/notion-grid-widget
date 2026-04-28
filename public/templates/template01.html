@@ -434,18 +434,19 @@
                     <form id="wishes-form" class="space-y-10 text-left">
                         <div class="relative">
                             <label class="text-[8px] font-cinzel tracking-widest text-gold uppercase absolute -top-4 left-0">Your Name</label>
-                            <input type="text" placeholder="NAME" class="w-full bg-transparent border-b border-gold/20 py-4 px-0 focus:outline-none focus:border-gold text-cream tracking-widest text-[10px] font-cinzel uppercase">
+                            <input type="text" placeholder="NAME" required class="w-full bg-transparent border-b border-gold/20 py-4 px-0 focus:outline-none focus:border-gold text-cream tracking-widest text-sm">
                         </div>
                         <div class="relative">
                             <label class="text-[8px] font-cinzel tracking-widest text-gold uppercase absolute -top-4 left-0">Your Message</label>
-                            <textarea placeholder="WRITE YOUR DUAS..." rows="4" class="w-full bg-transparent border-b border-gold/20 py-4 px-0 focus:outline-none focus:border-gold text-cream tracking-widest text-[10px] font-cinzel uppercase resize-none"></textarea>
+                            <textarea placeholder="WRITE YOUR DUAS..." rows="4" required class="w-full bg-transparent border-b border-gold/20 py-4 px-0 focus:outline-none focus:border-gold text-cream tracking-widest text-sm resize-none"></textarea>
                         </div>
-                        <button type="submit" class="w-full py-5 bg-gold text-black font-cinzel font-bold text-[10px] tracking-[0.4em] hover:bg-[#f4e1a1] transition-all">SEND DUAS</button>
+                        <button type="submit" class="w-full py-5 bg-gold text-black font-cinzel font-bold text-[10px] tracking-[0.4em] hover:bg-[#f4e1a1] transition-all uppercase">Send Duas</button>
                     </form>
                 </div>
                 
+                <!-- Display submitted wishes -->
                 <div id="wishes-display" class="mt-24 space-y-12 text-cream">
-                    <!-- Wishes will be listed here if implemented -->
+                    <p class="text-center text-cream/50 italic">No wishes yet. Be the first to send one!</p>
                 </div>
             </div>
         </section>
