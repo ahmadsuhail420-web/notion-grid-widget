@@ -531,3 +531,30 @@ html {
 .glitter-particle {
     opacity: 0.3;
 }
+
+/* QUOTE STYLING - Ensure light font weight */
+.font-playfair.font-light.italic {
+    font-weight: 300 !important;
+    letter-spacing: 0.5px;
+    opacity: 0.92;
+}
+
+/* Remove blue gradient from hero - ensure black background only */
+.hero-exclusive-bg {
+    background-color: #000 !important;
+    background-image: none !important;
+}
+
+/* Glitter full opacity when triggered */
+#glitter-canvas.glitter-active {
+    opacity: 1 !important;
+}
+
+/* Quote text styling to prevent bold */
+section:has(> div > div > .font-playfair.font-light) {
+    background-color: #0a0f0d;
+}
+
+section:has(> div > div > .font-playfair.font-light) p {
+    font-weight: 300 !important;
+}
