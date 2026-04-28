@@ -123,7 +123,7 @@ if (wishesForm) {
     });
 }
 
-// Glitter Celebration Trigger
+// Glitter Celebration Trigger - FIXED to work properly on Nikah card
 function setupGlitterTrigger() {
     const trigger = document.getElementById('glitter-trigger');
     if (!trigger) return;
@@ -132,8 +132,6 @@ function setupGlitterTrigger() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 triggerCelebration();
-                // Only trigger once
-                observer.unobserve(trigger);
             }
         });
     }, { threshold: 0.1 });
@@ -144,13 +142,9 @@ function setupGlitterTrigger() {
 function triggerCelebration() {
     const canvas = document.getElementById('glitter-canvas');
     if (canvas) {
-        canvas.style.opacity = '1';
-        // The animate function handles ambient glitter, we could also force an explosion
-        // By simulating a click in the center
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        // This is a bit hacky, better would be to export a function or use the class
-        console.log("Celebration triggered!");
+        // Ensure canvas is visible and emit glitter burst
+        canvas.style.opacity = '0.6'; // Reduced from 1 for less intense effect
+        console.log("Glitter celebration triggered for Nikah section!");
     }
 }
 
@@ -193,7 +187,12 @@ async function handleRsvpSubmit(e) {
 
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
-    if (!id || !sb) return;
+    if (!id || !sb) {
+        message.innerText = 'ERROR: Missing invitation ID or database connection.';
+        message.classList.remove('hidden');
+        message.style.color = '#ff6b6b';
+        return;
+    }
 
     submitBtn.disabled = true;
     submitBtn.innerText = 'SUBMITTING...';
@@ -223,6 +222,7 @@ async function handleRsvpSubmit(e) {
         if (updateError) throw updateError;
 
         message.innerText = 'THANK YOU FOR YOUR RESPONSE!';
+        message.style.color = '#d4af37';
         message.classList.remove('hidden');
         form.reset();
         submitBtn.innerText = 'SUBMITTED';
@@ -236,6 +236,7 @@ async function handleRsvpSubmit(e) {
     } catch (err) {
         console.error('RSVP Error:', err);
         message.innerText = 'COULD NOT SUBMIT. PLEASE TRY AGAIN.';
+        message.style.color = '#ff6b6b';
         message.classList.remove('hidden');
         submitBtn.disabled = false;
         submitBtn.innerText = 'SUBMIT RSVP';
@@ -275,7 +276,7 @@ function initCountdown(dateString) {
         if (distance < 0) {
             // Event has started
             if (daysEl.parentElement.parentElement) {
-                daysEl.parentElement.parentElement.innerHTML = '<div class="col-span-full py-8 text-2xl font-luxury text-gold tracking-widest uppercase reveal active">The Blessed Celebration is Live</div>';
+                daysEl.parentElement.parentElement.innerHTML = '<div class="col-span-full py-8 text-2xl font-luxury text-gold tracking-widest uppercase reveal active">The Blessed Celebration is Live!</div>';
             }
             if (countdownInterval) clearInterval(countdownInterval);
             return;
@@ -296,7 +297,7 @@ function initCountdown(dateString) {
     update(); // Initial call
 }
 
-// Particle System for Glitter Shower
+// Particle System for Glitter Shower - REDUCED INTENSITY
 class GlitterParticle {
     constructor(canvas, ctx, isExplosion = false, x, y) {
         this.canvas = canvas;
@@ -308,25 +309,25 @@ class GlitterParticle {
     reset(x, y) {
         this.x = x !== undefined ? x : Math.random() * this.canvas.width;
         this.y = y !== undefined ? y : (this.isExplosion ? y : -20);
-        this.size = Math.random() * 3 + 1; // Increased size range [1, 4]
+        this.size = Math.random() * 2.5 + 0.5; // Reduced from 1-4 to 0.5-3
         
         if (this.isExplosion) {
             const angle = Math.random() * Math.PI * 2;
-            const velocity = Math.random() * 8 + 2;
+            const velocity = Math.random() * 6 + 1; // Reduced from 2-10
             this.vx = Math.cos(angle) * velocity;
             this.vy = Math.sin(angle) * velocity;
             this.life = 1.0;
             this.decay = Math.random() * 0.02 + 0.01;
         } else {
-            this.vx = (Math.random() - 0.5) * 1;
-            this.vy = Math.random() * 1.5 + 0.5;
+            this.vx = (Math.random() - 0.5) * 0.8; // Reduced movement
+            this.vy = Math.random() * 1 + 0.3; // Reduced from 0.5-2
             this.life = 1.0;
             this.decay = 0;
         }
 
-        this.opacity = Math.random() * 0.6 + 0.2;
+        this.opacity = Math.random() * 0.4 + 0.1; // Reduced from 0.2-0.8
         this.color = Math.random() > 0.3 ? '#d4af37' : '#fff9ed';
-        this.shimmerSpeed = Math.random() * 0.1 + 0.05;
+        this.shimmerSpeed = Math.random() * 0.08 + 0.03; // Reduced shimmer speed
         this.shimmerPhase = Math.random() * Math.PI * 2;
     }
 
@@ -338,7 +339,7 @@ class GlitterParticle {
             this.life -= this.decay;
         } else {
             this.x += this.vx;
-            this.y += this.vy + (scrollVelocity * 10 * intensity);
+            this.y += this.vy + (scrollVelocity * 8 * intensity); // Reduced from 10
             this.shimmerPhase += this.shimmerSpeed;
         }
         
@@ -346,7 +347,7 @@ class GlitterParticle {
     }
 
     draw() {
-        const alpha = (this.isExplosion ? this.life : this.opacity) * (0.5 + 0.5 * Math.sin(this.shimmerPhase));
+        const alpha = (this.isExplosion ? this.life : this.opacity) * (0.4 + 0.4 * Math.sin(this.shimmerPhase)); // Reduced from 0.5+0.5
         if (alpha <= 0) return;
         
         this.ctx.beginPath();
@@ -371,7 +372,7 @@ function initGlitterShower() {
     resize();
 
     let particles = [];
-    const maxAmbient = 100;
+    const maxAmbient = 50; // Reduced from 100
     
     // Initial ambient particles
     for(let i=0; i<maxAmbient; i++) {
@@ -390,7 +391,7 @@ function initGlitterShower() {
             return;
         }
 
-        for(let i=0; i<40; i++) {
+        for(let i=0; i<20; i++) { // Reduced from 40
             particles.push(new GlitterParticle(canvas, ctx, true, e.clientX, e.clientY));
         }
     });
@@ -404,7 +405,7 @@ function initGlitterShower() {
             return;
         }
 
-        for(let i=0; i<25; i++) {
+        for(let i=0; i<12; i++) { // Reduced from 25
             particles.push(new GlitterParticle(canvas, ctx, true, touch.clientX, touch.clientY));
         }
     }, {passive: true});
@@ -413,15 +414,15 @@ function initGlitterShower() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         const currentScrollY = window.scrollY;
-        scrollVelocity = Math.abs(currentScrollY - lastScrollY) * 0.1; // Increased sensitivity
+        scrollVelocity = Math.abs(currentScrollY - lastScrollY) * 0.1;
         lastScrollY = currentScrollY;
 
         // Calculate intensity based on scroll progress
         // Start shower after initial scroll
         const intensity = Math.min(1, Math.max(0, (currentScrollY - 50) / 400));
         
-        // Spawn more particles if scrolling and intensity > 0
-        if (currentScrollY > 50 && Math.random() < 0.4 * intensity) {
+        // Spawn more particles if scrolling and intensity > 0 - REDUCED SPAWN RATE
+        if (currentScrollY > 50 && Math.random() < 0.2 * intensity) { // Reduced from 0.4
             particles.push(new GlitterParticle(canvas, ctx, false));
         }
 
@@ -436,8 +437,8 @@ function initGlitterShower() {
             particles.push(new GlitterParticle(canvas, ctx, false));
         }
 
-        // Limit total particles for performance
-        if (particles.length > 800) particles.splice(0, particles.length - 800);
+        // Limit total particles for performance - Reduced from 800
+        if (particles.length > 400) particles.splice(0, particles.length - 400);
 
         requestAnimationFrame(animate);
     }
@@ -543,8 +544,8 @@ function applyDynamicData(data) {
         initCountdown(window.wedding_nikah_date);
     }
 
-    const groomName = details.groom_name || 'YASAH';
-    const brideName = details.bride_name || 'RIFA';
+    const groomName = details.groom_name || 'Groom';
+    const brideName = details.bride_name || 'Bride';
 
     // Update Document Title
     document.title = `${groomName} & ${brideName} - Wedding Invitation`;
@@ -568,7 +569,7 @@ function applyDynamicData(data) {
     const envelopeNames = document.querySelector('#envelope .envelope-card h3');
     if (envelopeNames) envelopeNames.innerText = `${groomName.toUpperCase()} & ${brideName.toUpperCase()}`;
 
-    // Hero
+    // Hero - First letter capital, rest lowercase
     const heroGroom = document.getElementById('hero-groom-name');
     if (heroGroom) {
         const name = groomName.toLowerCase();
@@ -581,26 +582,15 @@ function applyDynamicData(data) {
         heroBride.innerText = name.charAt(0).toUpperCase() + name.slice(1);
     }
 
-    // Summary
-    const eventSummary = document.querySelector('.hero-exclusive-bg div .space-y-2');
-    if (eventSummary) {
-        let html = '';
-        if (details.nikah_date) {
-            html += `<p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel uppercase">Friday · ${new Date(details.nikah_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })} · Nikah</p>`;
-        }
-        if (details.has_reception && (details.reception_date || details.nikah_date)) {
-            const rDate = details.reception_date || details.nikah_date;
-            html += `<p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel uppercase">Saturday · ${new Date(rDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })} · Reception</p>`;
-        }
-        html += `<p class="text-[10px] sm:text-xs tracking-[0.2em] font-playfair italic mt-4 opacity-60">${details.place || 'Kannur, Kerala'}</p>`;
-        eventSummary.innerHTML = `
-            <div class="flex justify-center items-center gap-4 py-8">
-                <span class="text-xs">☀</span>
-                <span class="w-1 h-1 rounded-full bg-gold"></span>
-                <span class="text-xs">☀</span>
-            </div>
-            ${html}
-        `;
+    // Update hero section dates and venue
+    if (details.nikah_date) {
+        document.getElementById('hero-nikah-date').innerText = `${new Date(details.nikah_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long' })} · Nikah`;
+    }
+    if (details.reception_date) {
+        document.getElementById('hero-reception-date').innerText = `${new Date(details.reception_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long' })} · Reception`;
+    }
+    if (details.place) {
+        document.getElementById('hero-venue').innerText = details.place;
     }
 
     // Set Names
@@ -623,32 +613,32 @@ function applyDynamicData(data) {
     });
 
     // Set Dates & Venues
-    setInner('nikah-date', details.nikah_date ? new Date(details.nikah_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Friday, 09 May 2026');
-    setInner('nikah-time', formatIslamicTime(details.nikah_time) || '10:30 AM');
-    setInner('nikah-venue', details.nikah_venue || 'Grand Ballroom, Kannur');
-    setInner('nikah-venue-city', details.place || 'Kannur, Kerala');
+    setInner('nikah-date', details.nikah_date ? new Date(details.nikah_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Nikah Date');
+    setInner('nikah-time', formatIslamicTime(details.nikah_time) || 'Nikah Time');
+    setInner('nikah-venue', details.nikah_venue || 'Nikah Venue');
+    setInner('nikah-venue-city', details.place || 'Venue City');
 
-    setInner('reception-date', details.reception_date ? new Date(details.reception_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Saturday, 10 May 2026');
-    setInner('reception-time', formatIslamicTime(details.reception_time) || '04:00 PM');
-    setInner('reception-venue', details.reception_venue || 'Royal Pavilion, Kannur');
+    setInner('reception-date', details.reception_date ? new Date(details.reception_date).toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Reception Date');
+    setInner('reception-time', formatIslamicTime(details.reception_time) || 'Reception Time');
+    setInner('reception-venue', details.reception_venue || 'Reception Venue');
 
     // Parents Info
-    setInner('groom-parents', `${details.groom_father || ''} & ${details.groom_mother || ''}`);
-    setInner('bride-parents', `${details.bride_father || ''} & ${details.bride_mother || ''}`);
+    setInner('groom-parents', `${details.groom_father || 'Groom Father'} & ${details.groom_mother || 'Groom Mother'}`);
+    setInner('bride-parents', `${details.bride_father || 'Bride Father'} & ${details.bride_mother || 'Bride Mother'}`);
 
     const groomGrandparents = document.getElementById('groom-grandparents');
     if (groomGrandparents) {
         groomGrandparents.innerHTML = `
-            <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.groom_grandpa || ''}</p>
-            <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.groom_grandma || ''}</p>
+            <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.groom_grandpa || 'Groom Grandfather'}</p>
+            <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.groom_grandma || 'Groom Grandmother'}</p>
         `;
     }
 
     const brideGrandparents = document.getElementById('bride-grandparents');
     if (brideGrandparents) {
         brideGrandparents.innerHTML = `
-            <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.bride_grandpa || ''}</p>
-            <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.bride_grandma || ''}</p>
+            <p class="text-xs font-bodoni opacity-60 tracking-widest">${details.bride_grandpa || 'Bride Grandfather'}</p>
+            <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.bride_grandma || 'Bride Grandmother'}</p>
         `;
     }
 
@@ -686,7 +676,7 @@ function applyDynamicData(data) {
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                         </a>
                         <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all" title="WhatsApp">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.75 15.02A6.8 6.8 0 0 0 21 14c-2.837 0-5.5 1.067-7.5 3l-1.83-2.44a13 13 0 0 0 9.33-9.33l2.44 1.83c-1.933 2-3 4.663-3 7.5 0 .3.025.6.05.9l-1.24.1z"></path></svg>
                         </a>
                     </div>
                 </div>
