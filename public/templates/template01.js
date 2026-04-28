@@ -123,7 +123,7 @@ if (wishesForm) {
     });
 }
 
-// Glitter Celebration Trigger - Now shows full opacity glitter with raining effect
+// Glitter Celebration Trigger - Shows full opacity glitter with raining effect
 function setupGlitterTrigger() {
     const trigger = document.getElementById('glitter-trigger');
     if (!trigger) return;
@@ -142,7 +142,7 @@ function setupGlitterTrigger() {
 function triggerCelebration() {
     const canvas = document.getElementById('glitter-canvas');
     if (canvas) {
-        // Show glitter at full opacity and maintain it while scrolling in nikah section
+        // Show glitter at full opacity when nikah section is visible
         canvas.style.opacity = '1';
         canvas.style.transition = 'opacity 0.3s ease';
         console.log("Glitter celebration triggered for Nikah section!");
@@ -188,8 +188,16 @@ async function handleRsvpSubmit(e) {
 
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
-    if (!id || !sb) {
-        message.innerText = 'ERROR: Missing invitation ID or database connection.';
+    
+    if (!id) {
+        message.innerText = 'ERROR: Missing invitation ID.';
+        message.classList.remove('hidden');
+        message.style.color = '#ff6b6b';
+        return;
+    }
+
+    if (!sb) {
+        message.innerText = 'ERROR: Database connection not initialized.';
         message.classList.remove('hidden');
         message.style.color = '#ff6b6b';
         return;
@@ -208,7 +216,7 @@ async function handleRsvpSubmit(e) {
 
         if (fetchError) {
             console.error('Fetch error:', fetchError);
-            throw new Error('Could not retrieve current RSVP data');
+            throw new Error('Could not retrieve current RSVP data: ' + fetchError.message);
         }
         
         const rsvps = currentData?.rsvps || [];
@@ -227,7 +235,7 @@ async function handleRsvpSubmit(e) {
 
         if (updateError) {
             console.error('Update error:', updateError);
-            throw new Error('Could not update RSVP');
+            throw new Error('Could not save RSVP: ' + updateError.message);
         }
 
         message.innerText = 'THANK YOU FOR YOUR RESPONSE!';
@@ -244,7 +252,7 @@ async function handleRsvpSubmit(e) {
 
     } catch (err) {
         console.error('RSVP Error:', err);
-        message.innerText = 'COULD NOT SUBMIT. PLEASE TRY AGAIN.';
+        message.innerText = 'COULD NOT SUBMIT: ' + err.message;
         message.style.color = '#ff6b6b';
         message.classList.remove('hidden');
         submitBtn.disabled = false;
@@ -426,10 +434,10 @@ function initGlitterShower() {
         scrollVelocity = Math.abs(currentScrollY - lastScrollY) * 0.1;
         lastScrollY = currentScrollY;
 
-        // Calculate intensity based on scroll progress - shows glitter more when scrolling to nikah
+        // Calculate intensity based on scroll progress
         const intensity = Math.min(1, Math.max(0, (currentScrollY - 50) / 400));
         
-        // Spawn more particles if scrolling and intensity > 0
+        // Spawn more particles if scrolling
         if (currentScrollY > 50 && Math.random() < 0.3 * intensity) {
             particles.push(new GlitterParticle(canvas, ctx, false));
         }
@@ -713,21 +721,20 @@ function applyDynamicData(data) {
     const footerNames = document.querySelectorAll('footer h3');
     if (footerNames.length > 0) footerNames[0].innerText = `${groomName.toUpperCase()} & ${brideName.toUpperCase()}`;
 
-    // Map - Fixed to properly update
-    const mapSection = document.querySelector('iframe')?.parentElement?.parentElement;
-    if (mapSection) {
-        if (!details.map_url) {
-            mapSection.classList.add('hidden');
-        } else {
+    // Map - FIXED: Properly update iframe src to refresh the map
+    const iframeElement = document.querySelector('iframe');
+    if (iframeElement && details.map_url) {
+        iframeElement.src = details.map_url;
+        const mapSection = iframeElement.parentElement?.parentElement;
+        if (mapSection) {
             mapSection.classList.remove('hidden');
-            const iframe = mapSection.querySelector('iframe');
             const mapBtn = mapSection.querySelector('a');
-            
-            // Update iframe src to refresh the map
-            if (iframe && details.map_url) {
-                iframe.src = details.map_url;
-            }
             if (mapBtn) mapBtn.href = details.map_url;
+        }
+    } else if (iframeElement) {
+        const mapSection = iframeElement.parentElement?.parentElement;
+        if (mapSection) {
+            mapSection.classList.add('hidden');
         }
     }
 }
