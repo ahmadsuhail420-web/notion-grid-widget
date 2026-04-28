@@ -74,12 +74,12 @@
             <div class="form-section">
                 <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Core Details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
-                        <label class="label">Groom Name:</label>
+                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100 flex items-center gap-4">
+                        <label class="label mb-0 shrink-0 whitespace-nowrap">Groom Name:</label>
                         <input type="text" name="groom_name" class="input" placeholder="Enter Groom Name here...">
                     </div>
-                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
-                        <label class="label">Bride Name:</label>
+                    <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100 flex items-center gap-4">
+                        <label class="label mb-0 shrink-0 whitespace-nowrap">Bride Name:</label>
                         <input type="text" name="bride_name" class="input" placeholder="Enter Bride Name here...">
                     </div>
                     <div class="md:col-span-2 px-4">
@@ -498,7 +498,7 @@
         }
 
         function previewInvitation() {
-            window.open(`/templlates/template01?id=${invitationId}`, '_blank');
+            window.open(`/templates/template01?id=${invitationId}`, '_blank');
         }
 
         async function handleLogout() {
