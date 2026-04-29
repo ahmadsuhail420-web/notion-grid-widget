@@ -18,8 +18,10 @@
       "destination": "/templates/:path*"
     },
     {
-      "source": "/((?!wedding|edit|api|templates)[^/]*)$",
-      "destination": "/$1.html"
+      "source": "/wedding/islamic-invitation", "destination": "/wedding/islamic-invitation.html"
+    },
+    {
+      "source": "/wedding/islamic-invitation-premium", "destination": "/wedding/islamic-invitation-premium.html"
     },
     {
       "source": "/:path*",
