@@ -305,7 +305,18 @@
         async function initSupabase() {
             try {
                 const response = await fetch('/api/config');
+                if (!response.ok) {
+                    const err = await response.json();
+                    console.error("Supabase config error:", err);
+                    return;
+                }
                 const config = await response.json();
+                
+                if (!config.supabaseUrl || !config.supabaseAnonKey) {
+                    console.error('Supabase config missing.');
+                    return;
+                }
+
                 sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
                 
                 const { data: { session } } = await sb.auth.getSession();
@@ -538,7 +549,7 @@
         }
 
         function previewInvitation() {
-            window.open(`/templates/template01.html?id=${invitationId}`, '_blank');
+            window.open(`/wedding/Islamic-invitation?id=${invitationId}`, '_blank');
         }
 
         async function handleLogout() {
