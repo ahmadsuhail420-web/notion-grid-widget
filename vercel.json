@@ -9,8 +9,12 @@
       "destination": "/admin/index.html"
     },
     {
+      "source": "/((?!wedding|edit|api)[^/]*)$",
+      "destination": "/$1.html"
+    },
+    {
       "source": "/:path*",
-      "destination": "/:path*.html"
+      "destination": "/:path*"
     }
   ],
   "headers": [
