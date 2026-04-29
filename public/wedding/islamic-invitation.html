@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wedding Invitation</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@200;300;400;600&family=Ms+Madi&family=Great+Vibes&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&family=Cookie&family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&family=Noto+Sans+Tifinagh&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #d4af37;
+            --cream: #fff9ed;
+            --black: #000000;
+            --ink:#3D0A18; --ink-2:#4A0F22;
+            --ivory:#f5efe3;
+            --gold-tp2:#b08d5b; --gold-2:#d4b57a; --gold-hi:#f3dfa1;
+            --gold-dim:rgba(176,141,91,.35);
+            --line:rgba(176,141,91,.22);
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
+        }
+
+        .gold-shimmer-border {
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            overflow: hidden;
+        }
+
+        .gold-shimmer-border::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(212, 175, 55, 0.1),
+                transparent
+            );
+            transition: 0.5s;
+            animation: shimmer 3s infinite;
+        }
+
+        .font-luxury { font-family: 'Cinzel', serif; }
+        .font-lobster { font-family: 'Lobster Two', cursive; }
+        .font-bjcree { font-family: 'Ms Madi', cursive; }
+        .font-calligraphy { font-family: 'Great Vibes', cursive; }
+        .font-idiqlat { font-family: 'Cookie', cursive; }
+        .font-bodoni { font-family: 'Libre Bodoni', serif; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Envelope Styles from TP2 */
+        #envelope-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: radial-gradient(800px 600px at 50% 50%,#4A1020 0%,#2D0714 70%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity .8s, visibility .8s;
+        }
+        #envelope-overlay.gone {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .env-wrap {
+            width: min(320px, 80vw);
+            aspect-ratio: 1.45/1;
+            position: relative;
+            perspective: 1200px;
+            cursor: pointer;
+        }
+        .env-body {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,#5A1828,#3D0A18);
+            border: 1px solid var(--gold-dim);
+            box-shadow: 0 30px 80px rgba(0,0,0,.8), inset 0 0 0 1px rgba(176,141,91,.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+            overflow: hidden;
+        }
+        .env-body::before {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 1px solid var(--gold-dim);
+            pointer-events: none;
+        }
+        .env-flap {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 56%;
+            background: linear-gradient(180deg,#6A2030,#3D0A18);
+            clip-path: polygon(0 0,100% 0, 50% 100%);
+            transform-origin: top;
+            transition: transform 1.4s cubic-bezier(.6,0,.2,1);
+            border-bottom: 1px solid var(--gold-dim);
+            z-index: 3;
+        }
+        .env-wrap.open .env-flap {
+            transform: rotateX(-180deg);
+        }
+        .env-seal {
+            position: absolute;
+            left: 50%;
+            top: 54%;
+            transform: translate(-50%, -50%);
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%,#f3dfa1,#b08d5b 55%,#6a4f1e);
+            box-shadow: 0 6px 20px rgba(176,141,91,.35), inset 0 -4px 8px rgba(0,0,0,.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bodoni Moda', serif;
+            font-style: italic;
+            color: #2a1f08;
+            font-size: 1.3rem;
+            z-index: 4;
+            transition: transform 1.2s, opacity .6s;
+        }
+        .env-wrap.open .env-seal {
+            transform: translate(-50%, -120%) scale(.6);
+            opacity: 0;
+        }
+        .env-monogram {
+            font-family: 'Bodoni Moda', serif;
+            font-style: italic;
+            font-size: 2.8rem;
+            color: var(--gold-hi);
+            line-height: 1;
+        }
+        .env-rule {
+            width: 80px;
+            height: 1px;
+            background: var(--gold-tp2);
+            opacity: .8;
+        }
+        .env-names {
+            font-family: 'Cinzel', serif;
+            font-size: .62rem;
+            letter-spacing: .35em;
+            color: var(--ivory);
+            opacity: .85;
+            text-align: center;
+            padding: 0 10px;
+        }
+        .env-date {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: .95rem;
+            color: var(--gold-2);
+        }
+        .env-cta {
+            position: absolute;
+            bottom: -2.4rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .4em;
+            color: var(--gold-tp2);
+            opacity: .75;
+            white-space: nowrap;
+        }
+        .env-cta::before, .env-cta::after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 1px;
+            background: var(--gold-tp2);
+            vertical-align: middle;
+            margin: 0 .6rem;
+            opacity: .6;
+        }
+
+        /* Typewriter Effect */
+        .typewriter {
+            overflow: hidden;
+            border-left: .15em solid #d4af37;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: 
+              typing 3.5s steps(40, end),
+              blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #d4af37; }
+        }
+
+        .premium-shimmer {
+            background: linear-gradient(
+                to right,
+                #fff 20%,
+                #d4af37 40%,
+                #d4af37 60%,
+                #fff 80%
+            );
+            background-size: 200% auto;
+            color: #000;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer-text 5s linear infinite;
+        }
+
+        @keyframes shimmer-text {
+            to { background-position: 200% center; }
+        }
+
+        .custom-divider {
+            height: 1px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent);
+            margin: 1.5rem 0;
+        }
+
+        #glitter-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: var(--opacity); }
+        }
+
+        .hero-exclusive-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%),
+                url('https://www.transparenttextures.com/patterns/dark-matter.png');
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .rsvp-btn.active {
+            background-color: #d4af37;
+            color: black;
+            border-color: #d4af37;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#fff9ed',
+                        gold: '#d4af37',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-black text-cream font-montserrat overflow-x-hidden overflow-y-hidden">
+    <canvas id="glitter-canvas"></canvas>
+    <!-- Star Background -->
+    <div id="stars-container" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- Envelope Overlay (Landing) -->
+    <div id="envelope-overlay">
+        <div class="env-wrap" id="envelope" onclick="openInvitation()">
+            <div class="env-flap"></div>
+            <div class="env-seal" id="seal-arabic">S</div>
+            <div class="env-body">
+                <div class="env-monogram" id="flap-initials">G & B</div>
+                <div class="env-rule"></div>
+                <div class="env-names" id="env-names-display">GROOM & BRIDE</div>
+                <div id="envelope-display-date" class="env-date">MAY 2026 • CITY</div>
+            </div>
+            <div class="env-cta">TAP TO OPEN</div>
+        </div>
+    </div>
+
+    <!-- Main Content Container (Hidden until opened) -->
+    <div id="main-content" class="relative z-10 opacity-0 transition-opacity duration-1000 hidden">
+        
+        <!-- Header Sticky -->
+        <header class="fixed top-0 left-0 right-0 p-6 flex justify-between items-center z-50 mix-blend-difference pointer-events-auto">
+            <div id="header-initials" class="text-xl font-cinzel italic tracking-widest text-gold pointer-events-none">G&B</div>
+            <div class="flex items-center gap-4">
+                <div id="header-actual-date" class="text-[10px] tracking-[0.2em] font-cinzel text-gold text-right uppercase pointer-events-none"></div>
+                <button onclick="shareInvitation()" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Section 1: Hero -->
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden hero-exclusive-bg" style="background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);">
+            <div class="relative z-10 text-center px-6">
+                <!-- Arabic Blessing -->
+                <div class="mb-2 flex flex-col items-center -translate-y-8">
+                    <div class="inline-block overflow-hidden rtl" dir="rtl">
+                        <div class="text-2xl sm:text-3xl typewriter font-luxury tracking-widest text-gold">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+                    </div>
+                    <p class="text-[9px] font-ms-madi tracking-widest mt-2 opacity-70 text-cream">In the name of Allah, the Most Gracious, the Most Merciful</p>
+                </div>
+
+                <!-- Names -->
+                <div class="mb-12">
+                    <h1 id="hero-groom-name" class="text-6xl sm:text-8xl font-lobster tracking-widest premium-shimmer drop-shadow-2xl mb-4 text-cream">Groom</h1>
+                    <div class="flex items-center justify-center gap-6 text-gold opacity-60">
+                        <span class="text-xl">✦</span>
+                        <span class="text-[10px] font-cinzel tracking-[0.5em] uppercase">and</span>
+                        <span class="text-xl">✦</span>
+                    </div>
+                    <h1 id="hero-bride-name" class="text-6xl sm:text-8xl font-lobster tracking-widest premium-shimmer drop-shadow-2xl mt-4 text-cream">Bride</h1>
+                </div>
+
+                <!-- Date Summary -->
+                <div class="space-y-2 opacity-80 text-cream reveal active" style="transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s;">
+                    <div class="flex justify-center items-center gap-4 py-8">
+                        <span class="text-xs">☀</span>
+                        <span class="w-1 h-1 rounded-full bg-gold"></span>
+                        <span class="text-xs">☀</span>
+                    </div>
+                    <p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel uppercase" id="hero-nikah-date">Nikah Date</p>
+                    <p class="text-[10px] sm:text-xs tracking-[0.3em] font-cinzel uppercase" id="hero-reception-date">Reception Date</p>
+                    <p class="text-[10px] sm:text-xs tracking-[0.2em] font-playfair italic mt-4 opacity-60" id="hero-venue">Venue Location</p>
+                </div>
+            </div>
+
+            <!-- Scroll hint -->
+            <div id="scroll-hint" class="fixed bottom-8 right-8 opacity-40 animate-pulse text-cream z-20 pointer-events-none">
+                <div class="flex flex-col items-center">
+                    <p class="text-[8px] tracking-[0.6em] font-cinzel font-bold mb-2">SCROLL</p>
+                    <div class="h-8 w-[0.5px] bg-gold/50"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Invitation Message with Wave Design -->
+        <section class="relative py-40 px-6 overflow-hidden bg-[#0a0f0d] flex items-center justify-center min-h-[70vh]">
+            <div class="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-8">
+                <svg class="w-full h-[40px]" viewBox="0 0 1000 200" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#d4af37;stop-opacity:0.3" />
+                            <stop offset="50%" style="stop-color:#d4af37;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#d4af37;stop-opacity:0.3" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M0,100 Q250,50 500,100 T1000,100" stroke="url(#waveGrad1)" stroke-width="2" fill="none"/>
+                    <circle cx="150" cy="80" r="4" fill="#d4af37" opacity="0.6"/>
+                    <circle cx="350" cy="120" r="4" fill="#d4af37" opacity="0.5"/>
+                    <circle cx="650" cy="90" r="4" fill="#d4af37" opacity="0.6"/>
+                    <circle cx="850" cy="110" r="4" fill="#d4af37" opacity="0.5"/>
+                </svg>
+            </div>
+
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="reveal">
+                    <p class="text-2xl sm:text-3xl md:text-4xl text-cream font-playfair font-light italic leading-[1.8] tracking-wide px-8 opacity-90">
+                        "With hearts full of love and joy, we warmly invite you to share in the celebration of our union. 
+                        Your presence would mean the world to us as we begin this beautiful journey together."
+                    </p>
+                </div>
+            </div>
+
+            <div class="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-lg px-8">
+                <svg class="w-full h-[40px]" viewBox="0 0 1000 200" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="waveGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#d4af37;stop-opacity:0.3" />
+                            <stop offset="50%" style="stop-color:#d4af37;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#d4af37;stop-opacity:0.3" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M0,100 Q250,150 500,100 T1000,100" stroke="url(#waveGrad2)" stroke-width="2" fill="none"/>
+                    <circle cx="150" cy="120" r="4" fill="#d4af37" opacity="0.6"/>
+                    <circle cx="350" cy="80" r="4" fill="#d4af37" opacity="0.5"/>
+                    <circle cx="650" cy="110" r="4" fill="#d4af37" opacity="0.6"/>
+                    <circle cx="850" cy="90" r="4" fill="#d4af37" opacity="0.5"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Section 2: Details of Blessed Days -->
+        <section class="py-24 px-6 max-w-4xl mx-auto -mt-16">
+            <div class="text-center mb-16">
+                <div class="flex items-center justify-center gap-4 opacity-40 mb-4">
+                    <div class="h-[1px] w-8 bg-gold"></div>
+                    <p class="text-[10px] tracking-[0.3em] font-cinzel text-cream">INVITATION</p>
+                    <div class="h-[1px] w-8 bg-gold"></div>
+                </div>
+                <h2 class="text-4xl sm:text-6xl font-cookie tracking-wide text-cream">Details of the <span class="text-gold">Blessed</span> Days</h2>
+            </div>
+
+            <div class="flex flex-col items-center gap-12 max-w-sm mx-auto">
+                <!-- Nikah Ceremony Card -->
+                <div id="nikah-card" class="gold-shimmer-border reveal w-full bg-[#0a0a0a] flex flex-col items-center justify-center py-16 px-8 text-center relative" style="transition-delay: 100ms;">
+                    <div id="glitter-trigger" class="absolute top-0 left-0 w-full h-1 pointer-events-none"></div>
+                    <div class="text-gold text-sm font-cinzel tracking-[0.4em] mb-10">NIKAH CEREMONY</div>
+                    <div class="space-y-6 w-full text-cream">
+                        <div class="group">
+                            <p class="text-xs font-cinzel opacity-40 uppercase tracking-widest mb-2">Date:</p>
+                            <p id="nikah-date" class="text-2xl font-luxury uppercase tracking-wider">Nikah Date</p>
+                        </div>
+                        <div class="custom-divider"></div>
+                        <div class="group">
+                            <p class="text-xs font-cinzel opacity-40 uppercase tracking-widest mb-2">Time:</p>
+                            <p id="nikah-time" class="text-2xl font-luxury uppercase tracking-wider">Nikah Time</p>
+                        </div>
+                        <div class="custom-divider"></div>
+                        <div class="group">
+                            <p class="text-xs font-cinzel opacity-40 uppercase tracking-widest mb-2">Venue:</p>
+                            <p id="nikah-venue" class="text-2xl font-luxury uppercase tracking-wider">Nikah Venue</p>
+                            <p id="nikah-venue-city" class="text-xs opacity-60 italic mt-2">Venue City</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wedding Reception Card -->
+                <div id="reception-section" class="gold-shimmer-border reveal w-full bg-[#0a0a0a] flex flex-col overflow-hidden" style="transition-delay: 300ms;">
+                    <div class="bg-gold py-3 w-full text-center">
+                        <p class="text-[10px] text-black font-cinzel font-bold tracking-[0.4em] uppercase">Wedding Reception</p>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center justify-center py-16 px-8 text-center space-y-6 text-cream">
+                        <div class="group w-full text-center">
+                            <p class="text-xs font-cinzel opacity-40 uppercase tracking-widest mb-2">Date:</p>
+                            <p id="reception-date" class="text-2xl font-luxury uppercase tracking-wider">Reception Date</p>
+                        </div>
+                        <div class="custom-divider"></div>
+                        <div class="group w-full text-center">
+                            <p class="text-xs font-cinzel opacity-40 uppercase tracking-widest mb-2">Time:</p>
+                            <p id="reception-time" class="text-2xl font-luxury uppercase tracking-wider">Reception Time</p>
+                        </div>
+                        <div class="custom-divider"></div>
+                        <div class="group w-full text-center">
+                            <p class="text-xs font-cinzel opacity-40 uppercase tracking-widest mb-2">Venue:</p>
+                            <p id="reception-venue" class="text-2xl font-luxury uppercase tracking-wider">Reception Venue</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Countdown -->
+        <section class="py-24 px-6 bg-black relative overflow-hidden">
+            <div class="max-w-4xl mx-auto text-center reveal">
+                <div class="flex items-center justify-center gap-4 opacity-40 mb-8">
+                    <div class="h-[1px] w-8 bg-gold"></div>
+                    <p class="text-[10px] tracking-[0.4em] font-cinzel text-cream uppercase">Counting down to the big day</p>
+                    <div class="h-[1px] w-8 bg-gold"></div>
+                </div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-3xl mx-auto">
+                    <div class="countdown-item gold-shimmer-border p-6 sm:p-8 flex flex-col items-center justify-center bg-[#050505]">
+                        <span id="days" class="text-4xl sm:text-5xl font-luxury text-gold mb-2 w-[2ch] inline-block text-center tabular-nums">00</span>
+                        <span class="text-[9px] tracking-[0.3em] font-cinzel opacity-40 uppercase">Days</span>
+                    </div>
+                    <div class="countdown-item gold-shimmer-border p-6 sm:p-8 flex flex-col items-center justify-center bg-[#050505]">
+                        <span id="hours" class="text-4xl sm:text-5xl font-luxury text-gold mb-2 w-[2ch] inline-block text-center tabular-nums">00</span>
+                        <span class="text-[9px] tracking-[0.3em] font-cinzel opacity-40 uppercase">Hours</span>
+                    </div>
+                    <div class="countdown-item gold-shimmer-border p-6 sm:p-8 flex flex-col items-center justify-center bg-[#050505]">
+                        <span id="minutes" class="text-4xl sm:text-5xl font-luxury text-gold mb-2 w-[2ch] inline-block text-center tabular-nums">00</span>
+                        <span class="text-[9px] tracking-[0.3em] font-cinzel opacity-40 uppercase">Minutes</span>
+                    </div>
+                    <div class="countdown-item gold-shimmer-border p-6 sm:p-8 flex flex-col items-center justify-center bg-[#050505]">
+                        <span id="seconds" class="text-4xl sm:text-5xl font-luxury text-gold mb-2 w-[2ch] inline-block text-center tabular-nums">00</span>
+                        <span class="text-[9px] tracking-[0.3em] font-cinzel opacity-40 uppercase">Seconds</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: RSVP -->
+        <section class="py-24 bg-[#050505] border-y border-gold/10">
+            <div class="max-w-2xl mx-auto px-6">
+                <div class="gold-shimmer-border reveal p-8 md:p-12 text-center bg-black/50">
+                    <p class="text-[10px] tracking-[0.4em] font-cinzel text-cream opacity-60 mb-6 uppercase">Attendance Confirmation</p>
+                    <h2 class="text-4xl font-bjcree text-gold mb-8 tracking-widest">RSVP</h2>
+                    <form id="rsvp-form" class="space-y-8 text-left max-w-md mx-auto">
+                        <div class="relative">
+                            <input type="text" name="guest_name" id="rsvp-name" required placeholder="YOUR FULL NAME" class="w-full bg-transparent border-b border-gold/30 py-4 px-2 focus:outline-none focus:border-gold transition-colors placeholder:text-gold/30 text-[10px] font-cinzel tracking-widest text-cream uppercase">
+                        </div>
+                        <div class="relative">
+                            <input type="number" name="guest_count" id="rsvp-count" required placeholder="HOW MANY ARE ATTENDING?" min="1" class="w-full bg-transparent border-b border-gold/30 py-4 px-2 focus:outline-none focus:border-gold transition-colors placeholder:text-gold/30 text-[10px] font-cinzel tracking-widest text-cream uppercase">
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <button type="button" id="rsvp-attending" class="rsvp-btn py-4 border border-gold/30 text-[10px] tracking-[0.3em] font-cinzel text-cream hover:bg-gold hover:text-black transition-all active" onclick="setRsvpStatus(true)">ATTENDING</button>
+                            <button type="button" id="rsvp-decline" class="rsvp-btn py-4 border border-gold/30 text-[10px] tracking-[0.3em] font-cinzel text-cream hover:border-red-900 transition-all" onclick="setRsvpStatus(false)">DECLINE</button>
+                        </div>
+                        <input type="hidden" name="status" id="rsvp-status-input" value="attending">
+                        <button type="submit" id="rsvp-submit" class="w-full bg-gold text-black py-5 text-[10px] tracking-[0.4em] font-cinzel font-bold shadow-2xl hover:bg-[#f4e1a1] transition-all">SUBMIT RSVP</button>
+                        <p id="rsvp-message" class="text-[9px] text-center font-cinzel tracking-widest text-gold mt-4 hidden"></p>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Reception Location -->
+        <section class="py-24 px-6 text-center">
+            <h2 class="text-3xl font-luxury mb-12 tracking-wider text-cream">RECEPTION LOCATION</h2>
+            <div class="max-w-4xl mx-auto gold-shimmer-border aspect-video rounded-sm overflow-hidden bg-cream/5">
+                <iframe id="map-iframe" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15629.8392170319!2d75.3400!3d11.8700!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba4229f5e5e5e5d%3A0x5e5e5e5e5e5e5e5e!2sKannur%2C%20Kerala!5e0!3m2!1sen!2sin!4v1234567890">
+                </iframe>
+            </div>
+            <a id="map-directions-btn" href="https://maps.google.com" target="_blank" class="inline-block mt-8 px-12 py-4 border border-gold text-[10px] font-cinzel tracking-widest text-cream hover:bg-gold hover:text-black transition-all uppercase">Get Directions</a>
+        </section>
+
+        <!-- Section 4: Families -->
+        <section class="py-24 px-6 max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="text-[10px] tracking-[0.3em] font-bodoni opacity-60 mb-4 uppercase text-gold">WITH THE BLESSINGS OF</p>
+                <h2 class="text-5xl font-bodoni tracking-widest text-cream">Our Families</h2>
+            </div>
+            <div class="space-y-12">
+                <div id="groom-family-section" class="gold-shimmer-border reveal p-12 bg-[#050505] text-center max-w-2xl mx-auto">
+                    <p class="text-[10px] font-cinzel tracking-[0.4em] text-gold mb-8 uppercase text-center">THE GROOM</p>
+                    <h3 id="groom-name-family" class="text-6xl font-bodoni tracking-widest premium-shimmer mb-8 text-center">Groom</h3>
+                    <div class="space-y-6 text-cream text-center">
+                        <p class="text-[10px] font-bodoni opacity-40 uppercase tracking-widest">Son of</p>
+                        <p id="groom-parents" class="text-2xl font-bodoni tracking-widest uppercase">Groom Father & Groom Mother</p>
+                    </div>
+                    <div class="custom-divider mt-12 w-1/3"></div>
+                    <div class="mt-8 text-cream text-center">
+                        <p class="text-[10px] font-bodoni opacity-40 uppercase mb-4 tracking-widest">GRANDPARENTS</p>
+                        <div id="groom-grandparents" class="space-y-2">
+                             <p class="text-xs font-bodoni opacity-60 tracking-widest">Groom Grandfather</p>
+                             <p class="text-xs font-bodoni opacity-60 tracking-widest">Groom Grandmother</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="bride-family-section" class="gold-shimmer-border reveal p-12 bg-[#050505] text-center max-w-2xl mx-auto">
+                    <p class="text-[10px] font-cinzel tracking-[0.4em] text-gold mb-8 uppercase text-center">THE BRIDE</p>
+                    <h3 id="bride-name-family" class="text-6xl font-bodoni tracking-widest premium-shimmer mb-8 text-center">Bride</h3>
+                    <div class="space-y-6 text-cream text-center">
+                        <p class="text-[10px] font-bodoni opacity-40 uppercase tracking-widest">Daughter of</p>
+                        <p id="bride-parents" class="text-2xl font-bodoni tracking-widest uppercase">Bride Father & Bride Mother</p>
+                    </div>
+                    <div class="custom-divider mt-12 w-1/3"></div>
+                    <div class="mt-8 text-cream text-center">
+                        <p class="text-[10px] font-bodoni opacity-40 uppercase mb-4 tracking-widest">GRANDPARENTS</p>
+                        <div id="bride-grandparents" class="space-y-2">
+                             <p class="text-xs font-bodoni opacity-60 tracking-widest">Bride Grandfather</p>
+                             <p class="text-xs font-bodoni opacity-60 tracking-widest">Bride Grandmother</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Get in touch -->
+        <section class="py-24 px-6 bg-[#0a0a0a]/40 border-t border-gold/10">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-16">
+                    <p class="text-[10px] tracking-[0.4em] font-cinzel text-gold mb-4 uppercase opacity-60">Get in Touch</p>
+                </div>
+                <div id="contact-display-stack" class="flex flex-col gap-6 items-center">
+                    <div id="groom-contact-box" class="reveal gold-shimmer-border p-6 bg-black/40 text-center relative overflow-hidden w-full max-w-sm">
+                        <div class="relative z-10">
+                            <p class="text-[9px] font-cinzel tracking-[0.5em] text-gold uppercase mb-6 opacity-60">Groom's Father</p>
+                            <div id="groom-contacts-list" class="space-y-4"></div>
+                        </div>
+                    </div>
+                    <div id="bride-contact-box" class="reveal gold-shimmer-border p-6 bg-black/40 text-center relative overflow-hidden w-full max-w-sm">
+                        <div class="relative z-10">
+                            <p class="text-[9px] font-cinzel tracking-[0.5em] text-gold uppercase mb-6 opacity-60">Bride's Father</p>
+                            <div id="bride-contacts-list" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Duas & Wishes -->
+        <section class="py-24 px-6 bg-black">
+            <div class="max-w-4xl mx-auto text-center">
+                <p class="text-[10px] tracking-[0.4em] font-cinzel text-gold mb-6 uppercase">Dua Wishes</p>
+                <h2 class="text-4xl md:text-5xl font-calligraphy text-cream mb-16 tracking-widest">Send your Heartfelt Duas</h2>
+                <div class="gold-shimmer-border reveal p-12 bg-[#050505] max-w-2xl mx-auto">
+                    <form id="wishes-form" class="space-y-10 text-left">
+                        <div class="relative">
+                            <label class="text-[8px] font-cinzel tracking-widest text-gold uppercase absolute -top-4 left-0">Your Name</label>
+                            <input type="text" placeholder="NAME" required class="w-full bg-transparent border-b border-gold/20 py-4 px-0 focus:outline-none focus:border-gold text-cream tracking-widest text-sm">
+                        </div>
+                        <div class="relative">
+                            <label class="text-[8px] font-cinzel tracking-widest text-gold uppercase absolute -top-4 left-0">Your Message</label>
+                            <textarea placeholder="WRITE YOUR DUAS..." rows="4" required class="w-full bg-transparent border-b border-gold/20 py-4 px-0 focus:outline-none focus:border-gold text-cream tracking-widest text-sm resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-5 bg-gold text-black font-cinzel font-bold text-[10px] tracking-[0.4em] hover:bg-[#f4e1a1] transition-all uppercase">Send Duas</button>
+                    </form>
+                </div>
+                <div id="wishes-display" class="mt-24 space-y-12 text-cream">
+                    <p class="text-center text-cream/50 italic">No wishes yet. Be the first to send one!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-32 px-6 text-center bg-black border-t border-gold/10">
+            <div class="max-w-4xl mx-auto">
+                <div class="inline-block gold-shimmer-border reveal py-16 px-16 bg-[#050505]">
+                    <div class="text-5xl text-gold mb-8 font-luxury tracking-widest">بَارَكَ اللَّهُ لَكُمَا</div>
+                    <div class="custom-divider w-1/4 opacity-40"></div>
+                    <p id="footer-compliments" class="text-xs font-idiqlat tracking-[0.2em] text-cream mt-8 uppercase text-center md:text-left">With best compliments from<br class="md:hidden">the Families of<br class="hidden md:inline"> Groom & Bride</p>
+                </div>
+                <div class="mt-24 space-y-8">
+                    <h3 class="text-4xl font-idiqlat text-gold tracking-[0.3em] uppercase">Groom & Bride</h3>
+                    <div class="text-[9px] tracking-[0.4em] font-cinzel text-cream/40 uppercase leading-relaxed">
+                        Nikah Date<br>
+                        Reception Date<br>
+                        Venue Location
+                    </div>
+                </div>
+                <div class="mt-32 opacity-30 text-[8px] tracking-[0.5em] font-cinzel uppercase text-cream">
+                    Designed for your special day by Sync & Style
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Background Music -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-4">
+        <button id="music-toggle" class="w-12 h-12 rounded-full bg-black/50 border border-[#d4af37]/20 backdrop-blur-md flex items-center justify-center text-xl hover:bg-[#d4af37] hover:text-black transition-all">
+            <span id="music-icon">🔇</span>
+        </button>
+    </div>
+
+    <audio id="bg-music" loop preload="auto">
+        <source id="music-source" src="" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let _supabase;
+        
+        async function initSupabase() {
+            try {
+                // Try to get config from the app
+                const response = await fetch('/api/config');
+                if (response.ok) {
+                    const config = await response.json();
+                    _supabase = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+                } else {
+                    // Fallback to hardcoded for preview/standalone if needed
+                    // (But ideally always fetch from API)
+                    _supabase = supabase.createClient('https://vifofwrypntkpsxndpys.supabase.co', 'FALLBACK_KEY');
+                }
+            } catch (e) {
+                console.warn('Supabase init failed, trying fallback');
+                _supabase = supabase.createClient('https://vifofwrypntkpsxndpys.supabase.co', 'FALLBACK_KEY');
+            }
+        }
+        
+        // Helper to get invitation ID from URL
+        function getInvitationId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id') || urlParams.get('invitation_id');
+        }
+
+        async function fetchInvitationData() {
+            if (!_supabase) await initSupabase();
+            const invitationId = getInvitationId();
+            if (!invitationId) {
+                console.warn('ID not found, using generic content');
+                return;
+            }
+
+            try {
+                // Fetch public invitation details
+                const { data: invitation, error } = await _supabase
+                    .from('invitations')
+                    .select('*')
+                    .eq('id', invitationId)
+                    .single();
+
+                if (error) throw error;
+                if (invitation) {
+                    updateUI(invitation);
+                }
+            } catch (error) {
+                console.error('Error fetching invitation:', error);
+            }
+        }
+
+        function updateUI(details) {
+            console.log('Updating UI with:', details);
+            
+            const groomName = details.groom_name || 'Groom';
+            const brideName = details.bride_name || 'Bride';
+            const shortGroom = groomName.split(' ')[0];
+            const shortBride = brideName.split(' ')[0];
+
+            // Helper to set inner textile safely
+            const setInner = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
+            };
+
+            // Envelope & Flap Initial
+            setInner('envelope-display-date', details.nikah_date ? `${new Date(details.nikah_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} • ${details.nikah_venue_city || ''}` : 'MAY 2026 • TRIVANDRUM');
+            setInner('flap-initials', `${shortGroom.charAt(0)} & ${shortBride.charAt(0)}`);
+            setInner('env-names-display', `${groomName} & ${brideName}`);
+            const sealArabic = document.getElementById('seal-arabic');
+            if (sealArabic) sealArabic.innerText = `${shortGroom.charAt(0)}`;
+
+            // Header & Hero
+            setInner('header-initials', `${shortGroom.charAt(0)} & ${shortBride.charAt(0)}`);
+            setInner('hero-groom-name', groomName);
+            setInner('hero-bride-name', brideName);
+            
+            // Format Dates for Hero
+            const nikahDateObj = details.nikah_date ? new Date(details.nikah_date) : null;
+            const receptionDateObj = details.reception_date ? new Date(details.reception_date) : null;
+            
+            setInner('hero-nikah-date', nikahDateObj ? `Nikah Ceremony: ${nikahDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}` : 'Nikah Ceremony');
+            setInner('hero-reception-date', receptionDateObj ? `Wedding Reception: ${receptionDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}` : 'Wedding Reception');
+            setInner('hero-venue', `${details.nikah_venue || 'Venue'}, ${details.nikah_venue_city || 'City'}`);
+
+            // Details Section
+            setInner('nikah-date', nikahDateObj ? nikahDateObj.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Nikah Date');
+            setInner('nikah-time', details.nikah_time ? formatIslamicTime(details.nikah_time) : 'Nikah Time');
+            setInner('nikah-venue', details.nikah_venue || 'Nikah Venue');
+            setInner('nikah-venue-city', details.nikah_venue_city || 'Nikah City');
+
+            // Reception
+            if (receptionDateObj) {
+                setInner('reception-date', receptionDateObj.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }));
+                setInner('reception-time', details.reception_time ? formatIslamicTime(details.reception_time) : 'Reception Time');
+                setInner('reception-venue', details.reception_venue || 'Reception Venue');
+            } else {
+                document.getElementById('reception-section')?.classList.add('hidden');
+            }
+
+            // Countdown Target
+            initCountdown(details.nikah_date);
+
+            // Families
+            setInner('groom-name-family', groomName);
+            setInner('groom-parents', `${details.groom_father || 'Groom Father'} & ${details.groom_mother || 'Groom Mother'}`);
+            setInner('bride-name-family', brideName);
+            setInner('bride-parents', `${details.bride_father || 'Bride Father'} & ${details.bride_mother || 'Bride Mother'}`);
+
+            const gGrandEl = document.getElementById('groom-grandparents');
+            if (gGrandEl && details.groom_grandpa) {
+                gGrandEl.innerHTML = `<p class="text-xs font-bodoni opacity-60 tracking-widest">${details.groom_grandpa}</p>
+                                     <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.groom_grandma || ''}</p>`;
+            }
+            const bGrandEl = document.getElementById('bride-grandparents');
+            if (bGrandEl && details.bride_grandpa) {
+                bGrandEl.innerHTML = `<p class="text-xs font-bodoni opacity-60 tracking-widest">${details.bride_grandpa}</p>
+                                     <p class="text-xs font-bodoni opacity-60 tracking-widest mt-2">${details.bride_grandma || ''}</p>`;
+            }
+
+            // Contacts
+            renderContacts(details.contacts);
+
+            // Map
+            if (details.map_url) {
+                const mapIframe = document.getElementById('map-iframe');
+                const mapBtn = document.getElementById('map-directions-btn');
+                if (mapIframe) mapIframe.src = convertMapUrlToEmbedUrl(details.map_url);
+                if (mapBtn) mapBtn.href = details.map_url;
+            }
+
+            // Music
+            if (details.bg_music && details.bg_music !== 'none') {
+                const music = document.getElementById('bg-music');
+                if (music) {
+                    music.src = details.bg_music;
+                    music.load();
+                }
+            } else if (details.bg_music === 'none') {
+                document.getElementById('music-toggle')?.classList.add('hidden');
+            }
+        }
+
+        function formatIslamicTime(timeStr) {
+            if (!timeStr) return '';
+            try {
+                const [hours, minutes] = timeStr.split(':');
+                const h = parseInt(hours);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                const h12 = h % 12 || 12;
+                return `${h12}:${minutes} ${ampm}`;
+            } catch (e) { return timeStr; }
+        }
+
+        function convertMapUrlToEmbedUrl(url) {
+            if (url.includes('google.com/maps/embed')) return url;
+            // Simplified conversion
+            if (url.includes('maps.app.goo.gl')) return `https://www.google.com/maps/embed/v1/place?key=YOUR_MAPS_KEY&q=${encodeURIComponent(url)}`;
+            return url;
+        }
+
+        // --- Animations & Other Logic ---
+
+        function openInvitation() {
+            const envelope = document.getElementById('envelope');
+            const overlay = document.getElementById('envelope-overlay');
+            const mainContent = document.getElementById('main-content');
+            const music = document.getElementById('bg-music');
+            
+            envelope.classList.add('open');
+            
+            setTimeout(() => {
+                overlay.classList.add('gone');
+                mainContent.classList.remove('hidden');
+                setTimeout(() => {
+                    mainContent.style.opacity = '1';
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('preview') !== 'true') {
+                        document.body.style.overflowY = 'auto';
+                    }
+                    revealOnScroll();
+                }, 500);
+            }, 1400);
+
+            if (music && music.src) {
+                music.play().then(() => {
+                    document.getElementById('music-icon').innerText = '🔊';
+                }).catch(e => console.log('Autoplay blocked'));
+            }
+        }
+
+        function initCountdown(dateStr) {
+            const targetDate = new Date(dateStr || '2026-05-09').getTime();
+            
+            function update() {
+                const now = new Date().getTime();
+                const diff = targetDate - now;
+
+                if (diff < 0) {
+                    document.getElementById('days').innerText = '00';
+                    document.getElementById('hours').innerText = '00';
+                    document.getElementById('minutes').innerText = '00';
+                    document.getElementById('seconds').innerText = '00';
+                    return;
+                }
+
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = d.toString().padStart(2, '0');
+                document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+                document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+                document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
+            }
+            
+            update();
+            setInterval(update, 1000);
+        }
+
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            const windowHeight = window.innerHeight;
+            reveals.forEach(el => {
+                const top = el.getBoundingClientRect().top;
+                if (top < windowHeight - 100) el.classList.add('active');
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+
+        // Music Toggle
+        document.getElementById('music-toggle').addEventListener('click', () => {
+            const music = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if (music.paused) {
+                music.play();
+                icon.innerText = '🔊';
+            } else {
+                music.pause();
+                icon.innerText = '🔇';
+            }
+        });
+
+        // RSVP Logic
+        let rsvpStatus = true;
+        function setRsvpStatus(attending) {
+            rsvpStatus = attending;
+            document.getElementById('rsvp-attending').classList.toggle('active', attending);
+            document.getElementById('rsvp-decline').classList.toggle('active', !attending);
+            document.getElementById('rsvp-status-input').value = attending ? 'attending' : 'decline';
+        }
+
+        async function handleRsvpSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('rsvp-submit');
+            const msg = document.getElementById('rsvp-message');
+            btn.disabled = true;
+            btn.innerText = 'SENDING...';
+
+            const formData = new FormData(e.target);
+            const data = {
+                invitation_id: getInvitationId(),
+                guest_name: formData.get('guest_name'),
+                guest_count: parseInt(formData.get('guest_count')),
+                status: formData.get('status'),
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                const { error } = await _supabase.from('rsvp').insert([data]);
+                if (error) throw error;
+                msg.innerText = 'THANK YOU FOR YOUR RESPONSE!';
+                msg.classList.remove('hidden');
+                e.target.reset();
+            } catch (err) {
+                msg.innerText = 'ERROR. PLEASE TRY AGAIN.';
+                msg.classList.remove('hidden');
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'SUBMIT RSVP';
+            }
+        }
+
+        // Wishes Logic
+        async function loadWishes() {
+            const invitationId = getInvitationId();
+            if (!invitationId) return;
+
+            try {
+                const { data, error } = await _supabase
+                    .from('wishes')
+                    .select('*')
+                    .eq('invitation_id', invitationId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                const container = document.getElementById('wishes-display');
+                if (data && data.length > 0) {
+                    container.innerHTML = data.map(w => `
+                        <div class="reveal active bg-white/5 p-8 rounded-lg border border-gold/10">
+                            <p class="text-xl font-playfair italic mb-4">"${w.message}"</p>
+                            <p class="text-[10px] font-cinzel tracking-[0.3em] text-gold uppercase">- ${w.name}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading wishes:', err);
+            }
+        }
+
+        document.getElementById('wishes-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const name = e.target.querySelector('input').value;
+            const message = e.target.querySelector('textarea').value;
+            
+            btn.disabled = true;
+            btn.innerText = 'SENDING...';
+
+            try {
+                const { error } = await _supabase.from('wishes').insert([{
+                    invitation_id: getInvitationId(),
+                    name,
+                    message,
+                    created_at: new Date().toISOString()
+                }]);
+                if (error) throw error;
+                e.target.reset();
+                loadWishes();
+            } catch (err) {
+                alert('Could not send wish');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'SEND DUAS';
+            }
+        });
+
+        // Background Effects
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                star.style.setProperty('--opacity', `${Math.random() * 0.7 + 0.3}`);
+                container.appendChild(star);
+            }
+        }
+
+        function renderContacts(contacts) {
+            const groomDisplay = document.getElementById('groom-contacts-list');
+            const brideDisplay = document.getElementById('bride-contacts-list');
+            if (!groomDisplay || !brideDisplay || !contacts) return;
+
+            const groomSide = contacts.filter(c => c.side === 'groom');
+            const brideSide = contacts.filter(c => c.side === 'bride');
+            
+            const render = c => `
+                <div class="text-center group py-2">
+                    <div class="flex items-center justify-center gap-4">
+                        <h4 class="text-lg font-luxury tracking-[0.1em] text-cream uppercase">${c.name}</h4>
+                        <a href="tel:${c.phone}" class="p-2 border border-gold/20 rounded-full hover:bg-gold/10 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </a>
+                    </div>
+                </div>`;
+
+            groomDisplay.innerHTML = groomSide.map(render).join('');
+            brideDisplay.innerHTML = brideSide.map(render).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isPreview = urlParams.get('preview') === 'true';
+
+            if (isPreview) {
+                const overlay = document.getElementById('envelope-overlay');
+                const mainContent = document.getElementById('main-content');
+                if (overlay) overlay.style.display = 'none';
+                if (mainContent) {
+                    mainContent.classList.remove('hidden');
+                    mainContent.style.opacity = '1';
+                }
+                document.body.style.overflow = 'hidden';
+            }
+
+            fetchInvitationData();
+            createStars();
+            loadWishes();
+            document.getElementById('rsvp-form').addEventListener('submit', handleRsvpSubmit);
+        });
+    </script>
+</body>
+</html>
