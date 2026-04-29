@@ -115,6 +115,11 @@
         async function initSupabase() {
             try {
                 const response = await fetch('/api/config');
+                if (!response.ok) {
+                    const err = await response.json();
+                    console.error("Supabase config error:", err);
+                    return;
+                }
                 const config = await response.json();
                 
                 if (!config.supabaseUrl || !config.supabaseAnonKey) {
@@ -194,7 +199,11 @@
                             .select();
                         
                         if (!invError && invData.length > 0) {
-                            window.location.href = `/editor?id=${invData[0].id}`;
+                            let editorPath = '/edit/islamic-invitation';
+                            if (templateId === 'template02' || templateId === 'tp2') {
+                                editorPath = '/edit/islamic-invitation-premium';
+                            }
+                            window.location.href = `${editorPath}?id=${invData[0].id}`;
                             return;
                         }
                     }
