@@ -1,3 +1,4 @@
+name=vercel.json
 {
   "rewrites": [
     {
@@ -9,7 +10,15 @@
       "destination": "/admin/index.html"
     },
     {
-      "source": "/((?!wedding|edit|api)[^/]*)$",
+      "source": "/templates",
+      "destination": "/templates.html"
+    },
+    {
+      "source": "/templates/:path*",
+      "destination": "/templates/:path*"
+    },
+    {
+      "source": "/((?!wedding|edit|api|templates)[^/]*)$",
       "destination": "/$1.html"
     },
     {
