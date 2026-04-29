@@ -23,6 +23,23 @@
         --text-muted: #6b4a4e;
       }
 
+      /* Iframe Scaling for Previews */
+      .iframe-preview-container {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .preview-iframe {
+        width: 300%;
+        height: 300%;
+        transform: scale(0.3333);
+        transform-origin: 0 0;
+        border: none;
+      }
+
       body {
         font-family: 'Inter', sans-serif;
         background-color: var(--bg-cream);
@@ -325,86 +342,114 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           <!-- Template 1: The Royal Affair -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/60 transition-all duration-500 scroll-reveal card-glare">
-            <img src="https://images.unsplash.com/photo-1541250848049-b4f71413cc30?auto=format&fit=crop&q=80&w=800" alt="Royal Affair" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+          <div class="group relative aspect-[4/5.5] overflow-hidden rounded-3xl bg-[#0a0a0a] shadow-2xl border-2 border-gold/20 hover:border-gold/60 transition-all duration-500 scroll-reveal card-glare">
+            <!-- Real Hero Preview -->
+            <div class="iframe-preview-container">
+              <iframe src="/wedding/Islamic-invitation.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
+            </div>
+            
+            <!-- Readability Overlay -->
+            <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-[5]"></div>
             
             <!-- Premium Badge (Top Right) -->
-            <div class="absolute top-4 right-4 z-20">
+            <div class="absolute top-4 right-4 z-40">
               <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
             </div>
 
             <!-- Bottom Info Layer (Always Visible) -->
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
               <div class="flex items-center gap-2 mb-2">
-                <div class="w-8 h-px bg-[#9c404d]/30"></div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Luxury Series</span>
+                <div class="w-8 h-px bg-[#d4af37]/40"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-bold">Luxury Series</span>
               </div>
-              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Royal Affair</h3>
-              <p class="text-[#9c404d]/60 text-xs font-medium italic">Classical & Elegant Aesthetics</p>
+              <h3 class="text-2xl font-serif font-bold text-white premium-shimmer leading-tight mb-1">Royal Affair</h3>
+              <p class="text-white/40 text-xs font-medium italic">Classical & Elegant Aesthetics</p>
             </div>
 
             <!-- Hover Interaction Layer (Buttons) -->
             <div class="absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6">
                <h3 class="text-2xl font-serif font-bold text-white mb-6 transform -translate-y-4 group-hover:translate-y-0 transition-transform">Royal Affair</h3>
                <div class="flex flex-col gap-3 w-full max-w-[160px]">
-                  <a href="/templates/template01.html" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                  <button onclick="handleSelectTemplate('template01')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
+                  <a href="/wedding/Islamic-invitation.html" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
+                  <button onclick="handleSelectTemplate('tp1')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
                </div>
             </div>
           </div>
 
           <!-- Template 2: Modern Minimal -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 100ms;">
-            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800" alt="Modern Minimal" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
-            
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <div class="flex items-center gap-2 mb-2">
-                <div class="w-8 h-px bg-[#9c404d]/30"></div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Trend Series</span>
-              </div>
-              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Modern Minimal</h3>
-              <p class="text-[#9c404d]/60 text-xs font-medium italic">Clean & Contemporary Design</p>
-            </div>
+          <div class="group relative aspect-[4/5.5] overflow-hidden rounded-3xl bg-white shadow-2xl border-2 border-gray-100 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 100ms;">
+             <!-- Real Hero Preview -->
+             <div class="iframe-preview-container">
+               <iframe src="/wedding/Islamic-invitation-premium.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
+             </div>
 
-            <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
-            </div>
+             <!-- Readability Overlay -->
+             <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/80 to-transparent z-[5]"></div>
+            
+             <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+               <div class="flex items-center gap-2 mb-2">
+                 <div class="w-8 h-px bg-[#9c404d]/30"></div>
+                 <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Trend Series</span>
+               </div>
+               <h3 class="text-2xl font-serif font-bold text-[#2d0a0e] leading-tight mb-1">Modern Minimal</h3>
+               <p class="text-[#9c404d]/60 text-xs font-medium italic">Clean & Contemporary Design</p>
+             </div>
+
+             <div class="absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6">
+                <h3 class="text-2xl font-serif font-bold text-white mb-6 transform -translate-y-4 group-hover:translate-y-0 transition-transform">Modern Minimal</h3>
+                <div class="flex flex-col gap-3 w-full max-w-[160px]">
+                   <a href="/wedding/Islamic-invitation-premium.html" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
+                   <button onclick="handleSelectTemplate('tp2')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
+                </div>
+             </div>
           </div>
 
           <!-- Template 3: Floral Garden -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 200ms;">
-            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=800" alt="Floral Garden" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+          <div class="group relative aspect-[4/5.5] overflow-hidden rounded-3xl bg-[#fdf5f7] shadow-2xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 200ms;">
+             <!-- Colored Placeholder for Unavailable Template -->
+             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#fdf5f7]">
+               <!-- Available Soon Overlay -->
+               <div class="absolute inset-0 bg-[#9c404d]/5 flex items-center justify-center group-hover:opacity-10 transition-opacity">
+                  <span class="bg-white/90 text-[#9c404d] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#9c404d]/10">Available Soon</span>
+               </div>
+             </div>
             
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <div class="flex items-center gap-2 mb-2">
-                <div class="w-8 h-px bg-[#9c404d]/30"></div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Nature Series</span>
-              </div>
-              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Floral Garden</h3>
-              <p class="text-[#9c404d]/60 text-xs font-medium italic">Soft & Romantic Ambiance</p>
-            </div>
+             <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+               <div class="flex items-center gap-2 mb-2">
+                 <div class="w-8 h-px bg-[#9c404d]/30"></div>
+                 <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Nature Series</span>
+               </div>
+               <h3 class="text-2xl font-serif font-bold text-[#2d0a0e] leading-tight mb-1">Floral Garden</h3>
+               <p class="text-[#9c404d]/60 text-xs font-medium italic">Soft & Romantic Ambiance</p>
+             </div>
 
-            <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
-            </div>
+             <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
+                <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
+             </div>
           </div>
 
           <!-- Template 4: Golden Glow -->
-          <div class="group relative aspect-[4/4.5] overflow-hidden rounded-3xl bg-white shadow-xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 300ms;">
-            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&q=80&w=800" alt="Golden Glow" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+          <div class="group relative aspect-[4/5.5] overflow-hidden rounded-3xl bg-[#111] shadow-2xl border-2 border-[#d4af37]/20 hover:border-[#d4af37]/60 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 300ms;">
+             <!-- Colored Placeholder for Unavailable Template -->
+             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
+               <!-- Available Soon Overlay -->
+               <div class="absolute inset-0 bg-[#d4af37]/5 flex items-center justify-center group-hover:opacity-10 transition-opacity">
+                  <span class="bg-white/90 text-[#d4af37] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#d4af37]/10">Available Soon</span>
+               </div>
+             </div>
             
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <div class="flex items-center gap-2 mb-2">
-                <div class="w-8 h-px bg-[#9c404d]/30"></div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Prestige Series</span>
-              </div>
-              <h3 class="text-2xl font-serif font-bold premium-shimmer leading-tight mb-1">Golden Glow</h3>
-              <p class="text-[#9c404d]/60 text-xs font-medium italic">Pure Luxury & Radiance</p>
-            </div>
+             <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+               <div class="flex items-center gap-2 mb-2">
+                 <div class="w-8 h-px bg-[#d4af37]/40"></div>
+                 <span class="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-bold">Prestige Series</span>
+               </div>
+               <h3 class="text-2xl font-serif font-bold text-white premium-shimmer leading-tight mb-1">Golden Glow</h3>
+               <p class="text-white/40 text-xs font-medium italic">Pure Luxury & Radiance</p>
+             </div>
 
-            <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
-            </div>
+             <div class="absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
+                <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Available Soon</span>
+             </div>
           </div>
         </div>
 
@@ -867,8 +912,17 @@
       async function initSupabase() {
         try {
           const res = await fetch('/api/config');
+          if (!res.ok) {
+            const err = await res.json();
+            console.error("Supabase config error:", err);
+            return;
+          }
           const config = await res.json();
-          sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+          if (config.supabaseUrl && config.supabaseAnonKey) {
+            sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+          } else {
+            console.error("Supabase config missing fields:", config);
+          }
         } catch (e) {
           console.error("Supabase init failed", e);
         }
