@@ -348,7 +348,7 @@
                     <p class="text-gray-400 text-xs mb-6 italic">Created on ${new Date(invitation.created_at).toLocaleDateString()}</p>
                     <div class="flex space-x-3 text-sm">
                         <button onclick="editInvitation('${invitation.id}', '${invitation.template_type}')" class="flex-1 py-2 border border-[#9c404d]/20 hover:bg-[#9c404d]/5 transition-colors font-medium rounded-lg">Edit Details</button>
-                        <button onclick="window.open('/${invitation.template_type || 'template01'}?id=${invitation.id}', '_blank')" class="flex-1 py-2 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-colors font-medium rounded-lg text-center">Preview</button>
+                        <button onclick="window.open((invitation.template_type === 'tp1' ? '/wedding/Islamic-invitation.html' : invitation.template_type === 'tp2' ? '/wedding/Islamic-invitation-premium.html' : '/' + (invitation.template_type || 'tp1') + '.html') + '?id=' + invitation.id, '_blank')" class="flex-1 py-2 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-colors font-medium rounded-lg text-center">Preview</button>
                     </div>
                 </div>
             `).join('');
@@ -357,7 +357,7 @@
         }
 
         function editInvitation(id, templateType) {
-            const editorPath = (templateType === 'template01') ? '/editor01' : '/editor';
+            const editorPath = (templateType === 'template01' || templateType === 'tp1') ? '/editor/editor01.html' : '/editor';
             window.location.href = `${editorPath}?id=${id}`;
         }
 
@@ -374,7 +374,7 @@
             emptyState.classList.add('hidden');
             
             body.innerHTML = guests.map(guest => {
-                const inviteLink = `${window.location.origin}/template01?guest=${encodeURIComponent(guest.name)}`;
+                const inviteLink = `${window.location.origin}/wedding/Islamic-invitation.html?guest=${encodeURIComponent(guest.name)}`;
                 const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
                 
                 return `
@@ -485,7 +485,7 @@
                         user_id: currentUser.id, 
                         title: title, 
                         status: 'draft',
-                        template_type: 'template01',
+                        template_type: 'tp1',
                         wedding_details: {} 
                     }
                 ])
