@@ -907,30 +907,30 @@
         }
 
         async function fetchInvitationData() {
-            if (!_supabase) await initSupabase();
-            const invitationId = getInvitationId();
-            if (!invitationId) {
-                console.warn('ID not found, using generic content');
-                return;
-            }
+    if (!_supabase) await initSupabase();
+    const invitationId = getInvitationId();
+    if (!invitationId) {
+        console.warn('ID not found, using generic content');
+        return;
+    }
 
-            try {
-                // Fetch public invitation details
-                const { data: invitation, error } = await _supabase
-                    .from('invitations')
-                    .select('*')
-                    .eq('id', invitationId)
-                    .single();
+    try {
+        // Fetch invitation details from correct table
+        const { data: invitation, error } = await _supabase
+            .from('customer_invitations')  // ← FIXED
+            .select('*')
+            .eq('id', invitationId)
+            .single();
 
-                if (error) throw error;
-                if (invitation) {
-                    updateUI(invitation);
-                }
-            } catch (error) {
-                console.error('Error fetching invitation:', error);
-            }
+        if (error) throw error;
+        if (invitation) {
+            const details = invitation.wedding_details || invitation;  // ← FIXED
+            updateUI(details);
         }
-
+    } catch (error) {
+        console.error('Error fetching invitation:', error);
+    }
+}
         // Arabic Initial Mapping
         const arabicInitialMap = {
             'A': 'أ', 'B': 'ب', 'C': 'ث', 'D': 'د', 'E': 'إ', 'F': 'ف', 'G': 'ج', 
