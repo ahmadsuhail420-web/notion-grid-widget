@@ -941,36 +941,90 @@
                 drawer.id = 'inline-editor-drawer';
                 drawer.style.cssText = 'position:fixed; top:0; right:0; width:100%; max-width:400px; height:100vh; z-index:999999; background:rgba(20,5,10,0.95); backdrop-filter:blur(10px); border-left:1px solid rgba(212,175,55,0.3); transform:translateX(100%); transition:transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow:-10px 0 30px rgba(0,0,0,0.5); overflow-y:auto; color:#fff9ed; font-family:"Inter", sans-serif;';
                 
+                const style = document.createElement('style');
+                style.textContent = `
+                    #inline-editor-drawer::-webkit-scrollbar { width: 6px; }
+                    #inline-editor-drawer::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+                    #inline-editor-drawer::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.5); border-radius: 3px; }
+                    #inline-editor-drawer::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.8); }
+                    .ed-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px; }
+                    .ed-input[type="time"]::-webkit-calendar-picker-indicator, .ed-input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+                    .ed-label { display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px; margin-top:20px; }
+                    .ed-section-title { font-family:'Playfair Display', serif; color:#d4af37; font-size:18px; margin-top:30px; margin-bottom:10px; border-bottom:1px solid rgba(212,175,55,0.3); padding-bottom:5px;}
+                `;
+                document.head.appendChild(style);
+
                 drawer.innerHTML = `
-                    <div style="padding:30px;">
+                    <div style="padding:30px; padding-bottom:60px;">
                         <h2 style="font-family:'Playfair Display', serif; color:#d4af37; font-size:24px; margin-bottom:20px; text-transform:uppercase; letter-spacing:0.1em; display:flex; justify-content:space-between; align-items:center;">
                             Edit Details
                             <button onclick="closeEditMode()" style="background:transparent; border:none; color:#fff; font-size:24px; cursor:pointer;">&times;</button>
                         </h2>
-                        <div id="inline-editor-fields" style="display:flex; flex-direction:column; gap:15px;">
-                            <div><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Groom Name</label><input type="text" id="ed-groom" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <div><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Bride Name</label><input type="text" id="ed-bride" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <div style="margin-top:20px;"><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Nikah Date</label><input type="date" id="ed-n-date" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <div><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Nikah Time</label><input type="text" placeholder="e.g. 10:00 AM" id="ed-n-time" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <div><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Nikah Venue</label><input type="text" id="ed-n-venue" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <div><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Nikah City</label><input type="text" id="ed-n-city" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <div style="margin-top:20px;"><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Reception Date</label><input type="date" id="ed-r-date" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <div><label style="display:block; font-size:10px; color:#d4af37; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:5px;">Reception City/Place</label><input type="text" id="ed-r-city" oninput="liveUpdate()" style="width:100%; background:transparent; border:none; border-bottom:1px solid rgba(212,175,55,0.3); padding:8px 0; color:#fff; outline:none; font-size:14px;"></div>
-                            <button id="save-inline-btn" onclick="saveInlineChanges()" style="width:100%; padding:15px; background:#d4af37; color:#15040a; font-weight:bold; border:none; border-radius:8px; margin-top:30px; cursor:pointer; font-size:12px; letter-spacing:0.05em;">SAVE CHANGES</button>
+                        <div id="inline-editor-fields" style="display:flex; flex-direction:column; gap:8px;">
+                            
+                            <div class="ed-section-title">Main Details</div>
+                            <div><label class="ed-label">Title</label><input type="text" id="ed-title" oninput="liveUpdate()" class="ed-input"></div>
+                            
+                            <div class="ed-section-title">Groom</div>
+                            <div><label class="ed-label">Groom Name</label><input type="text" id="ed-groom" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Father's Name</label><input type="text" id="ed-gf" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Mother's Name</label><input type="text" id="ed-gm" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Grandfather's Name</label><input type="text" id="ed-ggf" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Grandmother's Name</label><input type="text" id="ed-ggm" oninput="liveUpdate()" class="ed-input"></div>
+
+                            <div class="ed-section-title">Bride</div>
+                            <div><label class="ed-label">Bride Name</label><input type="text" id="ed-bride" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Father's Name</label><input type="text" id="ed-bf" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Mother's Name</label><input type="text" id="ed-bm" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Grandfather's Name</label><input type="text" id="ed-bgf" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Grandmother's Name</label><input type="text" id="ed-bgm" oninput="liveUpdate()" class="ed-input"></div>
+
+                            <div class="ed-section-title">Nikah</div>
+                            <div><label class="ed-label">Date</label><input type="date" id="ed-n-date" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Time</label><input type="time" id="ed-n-time" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Venue Name</label><input type="text" id="ed-n-venue" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">City</label><input type="text" id="ed-n-city" oninput="liveUpdate()" class="ed-input"></div>
+
+                            <div class="ed-section-title">Reception</div>
+                            <div><label class="ed-label">Date</label><input type="date" id="ed-r-date" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Time</label><input type="time" id="ed-r-time" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">Venue Name</label><input type="text" id="ed-r-venue" oninput="liveUpdate()" class="ed-input"></div>
+                            <div><label class="ed-label">City/Place</label><input type="text" id="ed-r-city" oninput="liveUpdate()" class="ed-input"></div>
+                            
+                            <div class="ed-section-title">Other</div>
+                            <div><label class="ed-label">Google Maps Link</label><input type="url" id="ed-map" oninput="liveUpdate()" class="ed-input" placeholder="https://maps.app.goo.gl/..."></div>
+
+                            <button id="save-inline-btn" onclick="saveInlineChanges()" style="width:100%; padding:15px; background:#d4af37; color:#15040a; font-weight:bold; border:none; border-radius:8px; margin-top:40px; cursor:pointer; font-size:12px; letter-spacing:0.05em; transition:all 0.3s;">SAVE CHANGES</button>
                         </div>
                     </div>
                 `;
                 document.body.appendChild(drawer);
             }
             
+            document.getElementById('ed-title').value = editorState.title || '';
             document.getElementById('ed-groom').value = editorState.groom_name || '';
+            document.getElementById('ed-gf').value = editorState.groom_father || '';
+            document.getElementById('ed-gm').value = editorState.groom_mother || '';
+            document.getElementById('ed-ggf').value = editorState.groom_grandpa || '';
+            document.getElementById('ed-ggm').value = editorState.groom_grandma || '';
+            
             document.getElementById('ed-bride').value = editorState.bride_name || '';
+            document.getElementById('ed-bf').value = editorState.bride_father || '';
+            document.getElementById('ed-bm').value = editorState.bride_mother || '';
+            document.getElementById('ed-bgf').value = editorState.bride_grandpa || '';
+            document.getElementById('ed-bgm').value = editorState.bride_grandma || '';
+            
             document.getElementById('ed-n-date').value = editorState.nikah_date || '';
             document.getElementById('ed-n-time').value = editorState.nikah_time || '';
             document.getElementById('ed-n-venue').value = editorState.nikah_venue || '';
             document.getElementById('ed-n-city').value = editorState.nikah_venue_city || '';
+            
             document.getElementById('ed-r-date').value = editorState.reception_date || '';
+            document.getElementById('ed-r-time').value = editorState.reception_time || '';
+            document.getElementById('ed-r-venue').value = editorState.reception_venue || '';
             document.getElementById('ed-r-city').value = editorState.place || '';
+            
+            document.getElementById('ed-map').value = editorState.map_url || '';
             
             void drawer.offsetWidth;
             drawer.style.transform = 'translateX(0)';
@@ -983,14 +1037,30 @@
         
         function liveUpdate() {
             if (!editorState) return;
+            editorState.title = document.getElementById('ed-title').value;
             editorState.groom_name = document.getElementById('ed-groom').value;
+            editorState.groom_father = document.getElementById('ed-gf').value;
+            editorState.groom_mother = document.getElementById('ed-gm').value;
+            editorState.groom_grandpa = document.getElementById('ed-ggf').value;
+            editorState.groom_grandma = document.getElementById('ed-ggm').value;
+            
             editorState.bride_name = document.getElementById('ed-bride').value;
+            editorState.bride_father = document.getElementById('ed-bf').value;
+            editorState.bride_mother = document.getElementById('ed-bm').value;
+            editorState.bride_grandpa = document.getElementById('ed-bgf').value;
+            editorState.bride_grandma = document.getElementById('ed-bgm').value;
+            
             editorState.nikah_date = document.getElementById('ed-n-date').value;
             editorState.nikah_time = document.getElementById('ed-n-time').value;
             editorState.nikah_venue = document.getElementById('ed-n-venue').value;
             editorState.nikah_venue_city = document.getElementById('ed-n-city').value;
+            
             editorState.reception_date = document.getElementById('ed-r-date').value;
+            editorState.reception_time = document.getElementById('ed-r-time').value;
+            editorState.reception_venue = document.getElementById('ed-r-venue').value;
             editorState.place = document.getElementById('ed-r-city').value;
+            
+            editorState.map_url = document.getElementById('ed-map').value;
             
             updateUI(editorState);
         }
