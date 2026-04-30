@@ -30,18 +30,18 @@
 </head>
 <body class="min-h-screen">
     <div id="toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col gap-3"></div>
-    <nav class="bg-white border-b border-gray-100 p-6">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
-            <div class="flex items-center space-x-6 text-sm">
-                <span id="user-welcome" class="text-gray-500">Loading...</span>
-                <button onclick="handleLogout()" class="text-[#9c404d] font-bold">Logout</button>
+    <nav class="bg-white border-b border-gray-100 p-4 md:p-6">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic text-center sm:text-left">Sync & Style</a>
+            <div class="flex items-center justify-center space-x-4 md:space-x-6 text-sm">
+                <span id="user-welcome" class="text-gray-500 truncate max-w-[150px] sm:max-w-none">Loading...</span>
+                <button onclick="handleLogout()" class="text-[#9c404d] font-bold whitespace-nowrap">Logout</button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto p-6 md:p-12">
-        <div class="mb-12">
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 md:p-12">
+        <div class="mb-8 md:mb-12">
             <h1 class="text-3xl md:text-4xl font-serif font-bold mb-2">My Dashboard</h1>
             <p class="text-gray-500">Manage your templates and guest invitations.</p>
         </div>
@@ -56,13 +56,13 @@
 
         <!-- Tab Content: Templates -->
         <div id="content-templates" class="tab-content transition-opacity duration-300">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-serif font-bold">Purchased Templates</h2>
-                <button onclick="createInvitation()" id="create-btn" class="bg-[#9c404d] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#7d333e] transition-all text-sm">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+                <h2 class="text-xl md:text-2xl font-serif font-bold">Purchased Templates</h2>
+                <button onclick="createInvitation()" id="create-btn" class="bg-[#9c404d] text-white px-6 py-3 sm:py-2 rounded-lg font-bold hover:bg-[#7d333e] transition-all text-sm w-full sm:w-auto">
                     + New Template
                 </button>
             </div>
-            <div id="invitation-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div id="invitation-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
                 <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
                 <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
@@ -71,8 +71,8 @@
 
         <!-- Tab Content: RSVP List -->
         <div id="content-rsvp" class="tab-content hidden opacity-0 transition-opacity duration-300">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-2xl font-serif font-bold">RSVP Responses <span id="rsvp-total-pill" class="ml-2 bg-[#9c404d] text-white px-3 py-1 rounded-full text-xs">0</span></h2>
+            <div class="flex justify-between items-center mb-6 md:mb-8">
+                <h2 class="text-xl md:text-2xl font-serif font-bold">RSVP Responses <span id="rsvp-total-pill" class="ml-2 bg-[#9c404d] text-white px-3 py-1 rounded-full text-[10px] md:text-xs">0</span></h2>
             </div>
             <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
                 <div class="overflow-x-auto">
@@ -99,7 +99,7 @@
 
         <!-- Tab Content: All Invites -->
         <div id="content-invites" class="tab-content hidden opacity-0 transition-opacity duration-300">
-            <h2 class="text-2xl font-serif font-bold mb-8">Guest Invitations</h2>
+            <h2 class="text-xl md:text-2xl font-serif font-bold mb-6 md:mb-8">Guest Invitations</h2>
             <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left min-w-[600px]">
@@ -124,11 +124,11 @@
 
         <!-- Tab Content: Add Guests -->
         <div id="content-add-guests" class="tab-content hidden opacity-0 transition-opacity duration-300">
-            <div class="max-w-xl">
-                <h2 class="text-2xl font-serif font-bold mb-2">Send Personal Invitations</h2>
-                <p class="text-gray-500 mb-8">Add individual guests to send them a customized link with their name.</p>
+            <div class="max-w-xl mx-auto md:mx-0">
+                <h2 class="text-xl md:text-2xl font-serif font-bold mb-2">Send Personal Invitations</h2>
+                <p class="text-gray-500 text-sm md:text-base mb-6 md:mb-8">Add individual guests to send them a customized link with their name.</p>
                 
-                <form onsubmit="handleAddGuest(event)" class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                <form onsubmit="handleAddGuest(event)" class="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Guest Full Name</label>
                         <input type="text" name="guest_name" required placeholder="e.g. John Doe" 
@@ -288,6 +288,7 @@
             currentTab = tabId;
         }
 
+        let globalInvitations = [];
         async function fetchInvitations() {
             if (!sb) return;
 
@@ -301,7 +302,11 @@
                 return;
             }
 
+            globalInvitations = data;
             renderInvitations(data);
+            
+            // Re-render guests if they were already loaded so they get correct IDs
+            if (window.lastGuests) renderGuests(window.lastGuests);
         }
 
         async function fetchGuests() {
@@ -320,6 +325,7 @@
                 return;
             }
 
+            window.lastGuests = data;
             renderGuests(data);
         }
 
@@ -328,20 +334,20 @@
             
             if (invitations.length === 0) {
                 grid.innerHTML = `
-                    <div onclick="createInvitation()" class="col-span-1 md:col-span-3 bg-white/50 border-2 border-dashed border-[#9c404d]/20 rounded-3xl p-12 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-[#fdf2f3] transition-colors">
+                    <div onclick="createInvitation()" class="col-span-1 md:col-span-3 bg-white/50 border-2 border-dashed border-[#9c404d]/20 rounded-3xl p-8 md:p-12 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-[#fdf2f3] transition-colors">
                         <div class="w-16 h-16 bg-[#fdf2f3] rounded-full flex items-center justify-center mb-4 text-[#9c404d] group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         </div>
-                        <h3 class="text-xl font-serif font-bold mb-2">No Purchased Templates</h3>
-                        <p class="text-gray-400 mb-6">Start by creating your first wedding invitation template.</p>
-                        <span class="bg-[#9c404d] text-white px-8 py-3 rounded-lg font-bold">Create Now</span>
+                        <h3 class="text-lg md:text-xl font-serif font-bold mb-2">No Purchased Templates</h3>
+                        <p class="text-gray-400 mb-6 text-sm md:text-base">Start by creating your first wedding invitation template.</p>
+                        <span class="bg-[#9c404d] text-white px-6 md:px-8 py-3 rounded-lg font-bold w-full sm:w-auto text-sm md:text-base">Create Now</span>
                     </div>
                 `;
                 return;
             }
 
             let html = invitations.map(invitation => `
-                <div class="bg-white rounded-3xl p-8 border border-[#9c404d]/10 shadow-sm hover:translate-y-[-4px] transition-all duration-300">
+                <div class="bg-white rounded-3xl p-6 md:p-8 border border-[#9c404d]/10 shadow-sm hover:translate-y-[-4px] transition-all duration-300">
                     <div class="flex items-center justify-between mb-6">
                         <span class="px-3 py-1 ${invitation.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'} text-[10px] uppercase tracking-widest font-bold rounded-full">
                             ${invitation.status}
@@ -380,7 +386,18 @@
             emptyState.classList.add('hidden');
             
             body.innerHTML = guests.map(guest => {
-                const inviteLink = `${window.location.origin}/wedding/islamic-invitation?guest=${encodeURIComponent(guest.name)}`;
+                let inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation`;
+                let idParam = '';
+                
+                if (globalInvitations && globalInvitations.length > 0) {
+                    const inv = globalInvitations[0]; // Use most recent by default
+                    if (inv.template_type === 'tp2' || inv.template_type === 'template02') {
+                        inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation-premium`;
+                    }
+                    idParam = `id=${inv.id}&`;
+                }
+
+                const inviteLink = `${inviteLinkUrl}?${idParam}guest=${encodeURIComponent(guest.name)}`;
                 const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
                 
                 return `
