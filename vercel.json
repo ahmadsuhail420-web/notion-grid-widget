@@ -21,7 +21,13 @@
       "source": "/wedding/islamic-invitation", "destination": "/wedding/islamic-invitation.html"
     },
     {
+      "source": "/edit/islamic-invitation", "destination": "/edit/islamic-invitation.html"
+    },
+    {
       "source": "/wedding/islamic-invitation-premium", "destination": "/wedding/islamic-invitation-premium.html"
+    },
+    {
+      "source": "/edit/islamic-invitation-premium", "destination": "/edit/islamic-invitation-premium.html"
     },
     {
       "source": "/customer-dashboard", "destination": "/customer-dashboard.html"
