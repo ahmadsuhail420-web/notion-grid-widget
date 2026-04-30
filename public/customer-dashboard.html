@@ -346,9 +346,8 @@
                     </div>
                     <h3 class="text-xl font-serif font-bold mb-2">${invitation.title}</h3>
                     <p class="text-gray-400 text-xs mb-6 italic">Created on ${new Date(invitation.created_at).toLocaleDateString()}</p>
-                    <div class="flex space-x-3 text-sm">
-                        <button onclick="editInvitation('${invitation.id}', '${invitation.template_type}')" class="flex-1 py-2 border border-[#9c404d]/20 hover:bg-[#9c404d]/5 transition-colors font-medium rounded-lg">Edit Details</button>
-                        <button onclick="window.open(((invitation.template_type === 'tp2' || invitation.template_type === 'template02') ? '/wedding/islamic-invitation-premium' : '/wedding/islamic-invitation') + '?id=' + invitation.id, '_blank')" class="flex-1 py-2 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-colors font-medium rounded-lg text-center">Preview</button>
+                    <div class="flex text-sm">
+                        <button onclick="window.open(((invitation.template_type === 'tp2' || invitation.template_type === 'template02') ? '/wedding/islamic-invitation-premium' : '/wedding/islamic-invitation') + '?id=' + invitation.id, '_blank')" class="w-full py-3 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-colors font-bold rounded-lg text-center">Open Template</button>
                     </div>
                 </div>
             `).join('');
@@ -472,37 +471,7 @@
         }
 
         async function createInvitation() {
-            if (!sb || !currentUser) return;
-
-            const title = prompt("Enter a title for your invitation:", "Our Beautiful Wedding");
-            if (!title) return;
-
-            const btn = document.getElementById('create-btn');
-            btn.disabled = true;
-            btn.innerText = "Creating...";
-
-            const { data, error } = await sb
-                .from('customer_invitations')
-                .insert([
-                    { 
-                        user_id: currentUser.id, 
-                        title: title, 
-                        status: 'draft',
-                        template_type: 'template01',
-                        wedding_details: {} 
-                    }
-                ])
-                .select();
-
-            if (error) {
-                showToast('Error: ' + error.message, 'error');
-            } else {
-                showToast('Template Created!', 'success');
-                fetchInvitations();
-            }
-
-            btn.disabled = false;
-            btn.innerText = "+ New Template";
+            window.location.href = '/templates';
         }
 
         async function handleLogout() {
