@@ -218,8 +218,6 @@
 
                 sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
                 
-                // Disable persistent sessions
-                await sb.auth.signOut();
                 
                 // Check session
                 const { data: { session } } = await sb.auth.getSession();
