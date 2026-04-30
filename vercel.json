@@ -24,6 +24,9 @@
       "source": "/wedding/islamic-invitation-premium", "destination": "/wedding/islamic-invitation-premium.html"
     },
     {
+      "source": "/customer-dashboard", "destination": "/customer-dashboard.html"
+    },
+    {
       "source": "/:path*",
       "destination": "/:path*"
     }
