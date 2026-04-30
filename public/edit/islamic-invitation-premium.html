@@ -12,25 +12,34 @@
     <style>
         @import "tailwindcss";
         :root {
-            --primary: #9c404d;
-            --groom-accent: #2c3e50;
-            --bride-accent: #c0392b;
-            --bg-cream: #FBFBFB;
+            --plum: #1a050a;
+            --gold: #b08d5b;
+            --gold-light: #f3dfa1;
+            --cream: #f5efe3;
+            --bg-page: #1a050a;
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); font-size: 14px; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-page); font-size: 14px; color: var(--cream); }
         h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
         
         .form-section {
-            @apply bg-white px-6 pb-6 pt-16 md:px-10 md:pb-10 md:pt-20 rounded-2xl border border-gray-100 shadow-sm mb-16;
+            @apply bg-white/5 px-6 pb-6 pt-16 md:px-10 md:pb-10 md:pt-20 rounded-2xl border border-gold/20 shadow-xl mb-16 backdrop-blur-md;
         }
         .label {
-            @apply block text-[10px] font-bold text-[#9c404d] uppercase tracking-widest mb-3 opacity-60;
+            @apply block text-[10px] font-bold text-gold uppercase tracking-widest mb-3 opacity-80;
             word-spacing: 0.5rem;
         }
         .input {
-            @apply w-full px-1 py-2 rounded-none border-b-2 border-gray-300 focus:outline-none focus:border-[#9c404d] transition-all text-sm bg-transparent;
+            @apply w-full px-1 py-2 rounded-none border-b-2 border-gold/20 focus:outline-none focus:border-gold transition-all text-sm bg-transparent text-cream placeholder-gold/30;
             box-shadow: none;
         }
+        nav {
+            @apply bg-black/20 border-b border-gold/10 backdrop-blur-md;
+        }
+        .bg-white { background-color: rgba(255, 255, 255, 0.05); }
+        .text-gray-800 { color: var(--cream); }
+        .text-gray-400 { color: rgba(245, 239, 227, 0.5); }
+        .bg-gray-50\/50 { background-color: rgba(255, 255, 255, 0.03); }
+        .border-gray-100 { border-color: rgba(176, 141, 91, 0.1); }
         /* Mobile friendly adjustments */
         @media (max-width: 640px) {
             .form-section { @apply p-4; }
@@ -38,12 +47,12 @@
     </style>
 </head>
 <body class="min-h-screen text-gray-800">
-    <nav class="bg-white border-b border-gray-50 p-4 md:p-6 sticky top-0 z-40">
+    <nav class="bg-white border-b border-gold/10 p-4 md:p-6 sticky top-0 z-40 bg-opacity-95 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="/customer-dashboard" class="text-xl md:text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
-            <div class="flex items-center space-x-4 md:space-x-6 text-xs md:text-sm">
-                <a href="/customer-dashboard" class="text-gray-400 hover:text-[#9c404d]">Dashboard</a>
-                <button onclick="handleLogout()" class="text-[#9c404d] font-bold">Logout</button>
+            <a href="/customer-dashboard" class="text-xl md:text-2xl font-serif font-bold text-plum italic tracking-tight">Sync & Style</a>
+            <div class="flex items-center space-x-4 md:space-x-6 text-[10px] md:text-xs">
+                <a href="/customer-dashboard" class="text-gray-400 font-bold uppercase tracking-widest hover:text-plum transition-colors">Dashboard</a>
+                <button onclick="handleLogout()" class="text-plum font-bold uppercase tracking-widest bg-gold/5 px-3 py-1.5 rounded-full hover:bg-gold/10">Logout</button>
             </div>
         </div>
     </nav>
@@ -55,13 +64,13 @@
                 <p class="text-xs md:text-sm text-gray-400">Template 02: Modern Minimal Premium</p>
             </div>
             <div class="flex space-x-2 md:space-x-3">
-                <button onclick="previewInvitation()" class="flex-1 md:flex-none px-4 py-2 border border-[#9c404d] text-[#9c404d] font-bold text-xs rounded-lg hover:bg-[#9c404d]/5">Preview</button>
-                <button onclick="saveChanges()" id="save-btn" class="flex-1 md:flex-none px-6 py-2 bg-[#9c404d] text-white font-bold text-xs rounded-lg hover:bg-[#7d333e] shadow-md shadow-[#9c404d]/10">Save</button>
+                <button onclick="previewInvitation()" class="flex-1 md:flex-none px-4 py-2 border border-plum text-plum font-bold text-xs rounded-lg hover:bg-plum/5">Preview</button>
+                <button onclick="saveChanges()" id="save-btn" class="flex-1 md:flex-none px-6 py-2 bg-plum text-white font-bold text-xs rounded-lg hover:bg-black shadow-md shadow-plum/10">Save</button>
             </div>
         </div>
 
         <div class="flex border-b border-gray-200 mb-8">
-            <button onclick="switchTab('edit')" id="tab-edit" class="px-6 py-3 text-xs font-bold uppercase tracking-widest border-b-2 border-[#9c404d] text-[#9c404d] transition-all">Edit invitation</button>
+            <button onclick="switchTab('edit')" id="tab-edit" class="px-6 py-3 text-xs font-bold uppercase tracking-widest border-b-2 border-plum text-plum transition-all">Edit invitation</button>
             <button onclick="switchTab('rsvp')" id="tab-rsvp" class="px-6 py-3 text-xs font-bold uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-all">RSVP List <span id="rsvp-count-pill" class="ml-2 bg-gray-100 px-2 py-0.5 rounded-full text-[10px] hidden">0</span></button>
         </div>
 
@@ -89,7 +98,7 @@
                     <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Event Schedule</h2>
                     <div class="space-y-4">
                         <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
-                             <h3 class="text-xs font-bold mb-4 text-[#9c404d] uppercase tracking-widest border-l-2 border-[#9c404d] pl-2">Nikah Ceremony</h3>
+                             <h3 class="text-xs font-bold mb-4 text-plum uppercase tracking-widest border-l-2 border-gold pl-2">Nikah Ceremony</h3>
                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div><label class="label">Date:</label><input type="date" name="nikah_date" class="input"></div>
                                 <div><label class="label">Time:</label><input type="time" name="nikah_time" class="input"></div>
@@ -98,7 +107,7 @@
                         </div>
                         <div class="p-5 bg-gray-50/50 rounded-xl border border-gray-100">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-xs font-bold text-[#9c404d] uppercase tracking-widest border-l-2 border-[#9c404d] pl-2">Reception</h3>
+                                <h3 class="text-xs font-bold text-plum uppercase tracking-widest border-l-2 border-gold pl-2">Reception</h3>
                                 <label class="flex items-center space-x-2 text-[10px] text-gray-400 cursor-pointer">
                                     <input type="checkbox" name="has_reception" onchange="toggleReception(this.checked)"><span>Include?</span>
                                 </label>
@@ -144,8 +153,8 @@
                 <div class="form-section">
                     <h2 class="text-[11px] font-serif font-bold mt-4 mb-10 border-b pb-3 text-gray-400 tracking-[0.3em] uppercase">Contacts</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div><div class="flex justify-between items-center mb-4"><h3 class="text-[10px] font-bold text-red-900 uppercase">Groom Side</h3><button type="button" onclick="addContact('groom')" class="text-[9px] font-bold text-[#9c404d] hover:underline">+ Add</button></div><div id="groom-contact-list" class="space-y-4"></div></div>
-                        <div><div class="flex justify-between items-center mb-4"><h3 class="text-[10px] font-bold text-red-900 uppercase">Bride Side</h3><button type="button" onclick="addContact('bride')" class="text-[9px] font-bold text-[#9c404d] hover:underline">+ Add</button></div><div id="bride-contact-list" class="space-y-4"></div></div>
+                        <div><div class="flex justify-between items-center mb-4"><h3 class="text-[10px] font-bold text-plum uppercase">Groom Side</h3><button type="button" onclick="addContact('groom')" class="text-[9px] font-bold text-gold hover:underline">+ Add</button></div><div id="groom-contact-list" class="space-y-4"></div></div>
+                        <div><div class="flex justify-between items-center mb-4"><h3 class="text-[10px] font-bold text-plum uppercase">Bride Side</h3><button type="button" onclick="addContact('bride')" class="text-[9px] font-bold text-gold hover:underline">+ Add</button></div><div id="bride-contact-list" class="space-y-4"></div></div>
                     </div>
                 </div>
 
