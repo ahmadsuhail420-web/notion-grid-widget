@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wedding Invitation</title>
+    <title>Royal Heritage | Wedding Invitation</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +25,10 @@
             --gold-dim:rgba(176,141,91,.35);
             --line:rgba(176,141,91,.22);
         }
+
+        /* Hide scrollbar */
+        ::-webkit-scrollbar { display: none; }
+        html { -ms-overflow-style: none; scrollbar-width: none; }
 
         body.no-scroll {
             overflow: hidden;
@@ -445,13 +449,13 @@
 
                 <!-- Names -->
                 <div class="mb-4 overflow-visible">
-                    <h1 id="hero-groom-name" class="text-6xl sm:text-7xl md:text-9xl font-lobster italic font-light tracking-tight silver-shimmer drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] mb-6 pb-4 text-cream min-h-[1.2em]">Groom</h1>
+                    <h1 id="hero-groom-name" class="text-6xl sm:text-7xl md:text-9xl font-lobster italic font-light tracking-tight silver-shimmer drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] mb-6 pb-4 text-cream min-h-[1.2em]">Arshad</h1>
                     <div class="flex items-center justify-center gap-8 text-gold py-2">
                         <div class="h-px w-8 sm:w-12 bg-gold opacity-30"></div>
                         <span class="text-3xl sm:text-4xl font-lobster italic font-light text-gold">&</span>
                         <div class="h-px w-8 sm:w-12 bg-gold opacity-30"></div>
                     </div>
-                    <h1 id="hero-bride-name" class="text-6xl sm:text-7xl md:text-9xl font-lobster italic font-light tracking-tight silver-shimmer drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] mt-6 pb-4 text-cream min-h-[1.2em]">Bride</h1>
+                    <h1 id="hero-bride-name" class="text-6xl sm:text-7xl md:text-9xl font-lobster italic font-light tracking-tight silver-shimmer drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] mt-6 pb-4 text-cream min-h-[1.2em]">Suhaila</h1>
                 </div>
 
                 <!-- Date Summary -->
@@ -461,9 +465,9 @@
                         <div class="w-8 h-px bg-gradient-to-r from-transparent via-gold to-transparent"></div>
                         <div class="w-1.5 h-1.5 rotate-45 border border-gold"></div>
                     </div>
-                    <p class="text-xs sm:text-sm tracking-[0.4em] font-luxury uppercase text-gold-light" id="hero-nikah-date">Nikah Date</p>
-                    <p class="text-xs sm:text-sm tracking-[0.4em] font-luxury uppercase text-gold-light" id="hero-reception-date">Reception Date</p>
-                    <p class="text-xs sm:text-sm tracking-[0.2em] font-classic italic mt-6 opacity-70" id="hero-venue">Venue Location</p>
+                    <p class="text-xs sm:text-sm tracking-[0.4em] font-luxury uppercase text-gold-light" id="hero-nikah-date">15 May 2026</p>
+                    <p class="text-xs sm:text-sm tracking-[0.4em] font-luxury uppercase text-gold-light" id="hero-reception-date">17 May 2026</p>
+                    <p class="text-xs sm:text-sm tracking-[0.2em] font-classic italic mt-6 opacity-70" id="hero-venue">Grand Ballroom, Kannur, Kerala</p>
                 </div>
             </div>
 
@@ -841,20 +845,20 @@
                     <p id="footer-compliments" class="text-[10px] sm:text-xs font-classic tracking-[0.2em] sm:tracking-[0.3em] text-gold-light leading-loose uppercase text-center">
                         with best compliments from<br class="md:hidden">
                         <span class="text-gold/40 text-[9px] sm:text-[10px] italic font-classic lowercase font-light tracking-normal mx-2 md:mx-4">the families of</span><br class="md:hidden">
-                        groom & bride
+                        <span id="footer-families-names">groom & bride</span>
                     </p>
                 </div>
                 
                 <div class="mt-24 space-y-10 reveal">
                     <div class="flex items-center justify-center gap-6 mb-12">
                         <div class="h-px w-12 bg-gold/20"></div>
-                        <h3 class="text-4xl sm:text-5xl font-idiqlat text-gold tracking-widest">Groom & Bride</h3>
+                        <h3 id="footer-couple-names" class="text-4xl sm:text-5xl font-idiqlat text-gold tracking-widest">Groom & Bride</h3>
                         <div class="h-px w-12 bg-gold/20"></div>
                     </div>
                     <div class="text-[10px] tracking-[0.5em] font-luxury text-gold-light/40 uppercase leading-[2.5] max-w-sm mx-auto">
-                        <span class="text-gold/60">Nikah Date</span> • <span class="text-gold/60">Reception Date</span><br>
+                        <span id="footer-nikah-date" class="text-gold/60">Nikah Date</span> • <span id="footer-reception-date" class="text-gold/60">Reception Date</span><br>
                         <span class="italic text-[9px] font-classic lowercase tracking-normal">at</span><br>
-                        Venue Location
+                        <span id="footer-venue-location">Venue Location</span>
                     </div>
                 </div>
 
@@ -903,30 +907,29 @@
         }
 
         async function fetchInvitationData() {
-    if (!_supabase) await initSupabase();
-    const invitationId = getInvitationId();
-    if (!invitationId) {
-        console.warn('ID not found, using generic content');
-        return;
-    }
+            if (!_supabase) await initSupabase();
+            const invitationId = getInvitationId();
+            if (!invitationId) {
+                console.warn('ID not found, using generic content');
+                return;
+            }
 
-    try {
-        // Fetch invitation details from correct table
-        const { data: invitation, error } = await _supabase
-            .from('customer_invitations')  // ← FIXED
-            .select('*')
-            .eq('id', invitationId)
-            .single();
+            try {
+                // Fetch public invitation details
+                const { data: invitation, error } = await _supabase
+                    .from('invitations')
+                    .select('*')
+                    .eq('id', invitationId)
+                    .single();
 
-        if (error) throw error;
-        if (invitation) {
-            const details = invitation.wedding_details || invitation;  // ← FIXED
-            updateUI(details);
+                if (error) throw error;
+                if (invitation) {
+                    updateUI(invitation);
+                }
+            } catch (error) {
+                console.error('Error fetching invitation:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error fetching invitation:', error);
-    }
-}
 
         // Arabic Initial Mapping
         const arabicInitialMap = {
@@ -1001,14 +1004,14 @@
 
             // Details Section
             setInner('nikah-date', nikahDateObj ? nikahDateObj.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) : 'Nikah Date');
-            setInner('nikah-time', details.nikah_time ? formatIslamicTime(details.nikah_time) : 'Nikah Time');
+            setInner('nikah-time', details.nikah_time ? formatislamicTime(details.nikah_time) : 'Nikah Time');
             setInner('nikah-venue', details.nikah_venue || 'Nikah Venue');
             setInner('nikah-venue-city', details.nikah_venue_city || 'Nikah City');
 
             // Reception
             if (receptionDateObj) {
                 setInner('reception-date', receptionDateObj.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }));
-                setInner('reception-time', details.reception_time ? formatIslamicTime(details.reception_time) : 'Reception Time');
+                setInner('reception-time', details.reception_time ? formatislamicTime(details.reception_time) : 'Reception Time');
                 setInner('reception-venue', details.reception_venue || 'Reception Venue');
             } else {
                 document.getElementById('reception-section')?.classList.add('hidden');
@@ -1045,6 +1048,21 @@
                 if (mapBtn) mapBtn.href = details.map_url;
             }
 
+            // Footer dynamic updates
+            setInner('footer-families-names', `${shortGroom} & ${shortBride}`);
+            setInner('footer-couple-names', `${groomName} & ${brideName}`);
+            
+            if (nikahDateObj) {
+                setInner('footer-nikah-date', nikahDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }));
+            }
+            if (receptionDateObj) {
+                setInner('footer-reception-date', receptionDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }));
+            }
+            
+            const venueStr = details.nikah_venue || details.reception_venue || 'Venue Location';
+            const cityStr = details.nikah_venue_city || details.reception_venue_city || '';
+            setInner('footer-venue-location', cityStr ? `${venueStr}, ${cityStr}` : venueStr);
+
             // Music
             if (details.bg_music && details.bg_music !== 'none') {
                 const music = document.getElementById('bg-music');
@@ -1069,7 +1087,7 @@
             }
         }
 
-        function formatIslamicTime(timeStr) {
+        function formatislamicTime(timeStr) {
             if (!timeStr) return '';
             try {
                 const [hours, minutes] = timeStr.split(':');
@@ -1421,6 +1439,8 @@
                     mainContent.style.opacity = '1';
                 }
                 document.body.classList.remove('no-scroll');
+                document.documentElement.style.overflow = 'hidden';
+                document.body.style.overflow = 'hidden';
             }
 
             fetchInvitationData();
