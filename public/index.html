@@ -993,32 +993,9 @@
         }
         const { data: { session } } = await sb.auth.getSession();
         if (!session) {
-          window.location.href = `/login?template=${templateId}`;
+          window.location.href = `/login`;
         } else {
-          try {
-            const { data, error } = await sb
-              .from('customer_invitations')
-              .insert([
-                { 
-                  user_id: session.user.id, 
-                  title: 'My Wedding Invitation', 
-                  status: 'draft',
-                  template_type: templateId,
-                  wedding_details: {} 
-                }
-              ])
-              .select();
-
-            if (error) throw error;
-            let editorPath = '/edit/islamic-invitation';
-            if (templateId === 'template02' || templateId === 'tp2') {
-              editorPath = '/edit/islamic-invitation-premium';
-            }
-            window.location.href = `${editorPath}?id=${data[0].id}`;
-          } catch (err) {
-            console.error('Error creating invitation:', err);
-            window.location.href = '/customer-dashboard';
-          }
+          window.location.href = '/customer-dashboard';
         }
       }
 
