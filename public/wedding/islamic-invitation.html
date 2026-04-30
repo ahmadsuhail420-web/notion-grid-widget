@@ -1071,9 +1071,12 @@
             btn.innerText = 'SAVING...';
             btn.style.opacity = '0.7';
             try {
+                const updateData = { wedding_details: editorState };
+                if (editorState.title) updateData.title = editorState.title;
+                
                 const { error } = await _supabase
                     .from('customer_invitations')
-                    .update({ wedding_details: editorState })
+                    .update(updateData)
                     .eq('id', getInvitationId());
                     
                 if (error) throw error;
@@ -1115,8 +1118,11 @@
                     editorState = details;
                     updateUI(details);
                     
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const isGuest = urlParams.has('guest_view') || urlParams.has('guest');
+                    
                     const { data: { session } } = await _supabase.auth.getSession();
-                    if (session && session.user.id === invitation.user_id) {
+                    if (session && session.user.id === invitation.user_id && !isGuest) {
                         const editBtn = document.getElementById('edit-template-btn');
                         if (editBtn) editBtn.classList.remove('hidden');
                     }
@@ -1142,6 +1148,7 @@
 
         function updateUI(details) {
             console.log('Updating UI with:', details);
+            if (details.title) document.title = details.title;
             
             const groomName = details.groom_name || 'Groom';
             const brideName = details.bride_name || 'Bride';
@@ -1340,10 +1347,14 @@
         }
 
         async function shareInvitation(event) {
+            const urlObj = new URL(window.location.href);
+            urlObj.searchParams.set('guest_view', 'true');
+            const shareUrl = urlObj.toString();
+
             const shareData = {
                 title: document.title || 'Wedding Invitation',
                 text: 'You are cordially invited to our wedding. Please find the details here:',
-                url: window.location.href,
+                url: shareUrl,
             };
 
             if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -1356,7 +1367,7 @@
                 }
             } else {
                 try {
-                    await navigator.clipboard.writeText(window.location.href);
+                    await navigator.clipboard.writeText(shareUrl);
                     // Using a custom message instead of alert if possible, but for simplicity:
                     const btn = event ? event.currentTarget : null;
                     if (btn) {
