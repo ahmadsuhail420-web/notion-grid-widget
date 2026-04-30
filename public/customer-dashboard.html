@@ -42,16 +42,16 @@
 
     <main class="max-w-7xl mx-auto p-6 md:p-12">
         <div class="mb-12">
-            <h1 class="text-4xl font-serif font-bold mb-2">My Dashboard</h1>
+            <h1 class="text-3xl md:text-4xl font-serif font-bold mb-2">My Dashboard</h1>
             <p class="text-gray-500">Manage your templates and guest invitations.</p>
         </div>
 
         <!-- Tab Navigation -->
-        <div class="flex border-b border-gray-200 mb-8 space-x-8">
-            <button onclick="switchTab('templates')" id="tab-templates" class="pb-4 px-2 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all">My Templates</button>
-            <button onclick="switchTab('invites')" id="tab-invites" class="pb-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all">All Invites</button>
-            <button onclick="switchTab('rsvp')" id="tab-rsvp" class="pb-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all">RSVP Responses</button>
-            <button onclick="switchTab('add-guests')" id="tab-add-guests" class="pb-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all">Add Special Guests</button>
+        <div class="flex overflow-x-auto whitespace-nowrap border-b border-gray-200 mb-8 space-x-4 md:space-x-8 pb-1 scrollbar-hide">
+            <button onclick="switchTab('templates')" id="tab-templates" class="pb-3 px-2 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all shrink-0">My Templates</button>
+            <button onclick="switchTab('invites')" id="tab-invites" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">All Invites</button>
+            <button onclick="switchTab('rsvp')" id="tab-rsvp" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">RSVP Responses</button>
+            <button onclick="switchTab('add-guests')" id="tab-add-guests" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">Add Special Guests</button>
         </div>
 
         <!-- Tab Content: Templates -->
@@ -75,20 +75,22 @@
                 <h2 class="text-2xl font-serif font-bold">RSVP Responses <span id="rsvp-total-pill" class="ml-2 bg-[#9c404d] text-white px-3 py-1 rounded-full text-xs">0</span></h2>
             </div>
             <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50 text-xs uppercase tracking-wider text-[#9c404d] font-bold">
-                        <tr>
-                            <th class="px-8 py-5">Invitation</th>
-                            <th class="px-8 py-5">Guest Name</th>
-                            <th class="px-8 py-5">Status</th>
-                            <th class="px-8 py-5 text-center">People</th>
-                            <th class="px-8 py-5 text-right">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rsvp-list-body" class="divide-y divide-gray-50">
-                        <!-- RSVP data will be loaded here -->
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead class="bg-gray-50 text-xs uppercase tracking-wider text-[#9c404d] font-bold">
+                            <tr>
+                                <th class="px-6 py-5 md:px-8">Invitation</th>
+                                <th class="px-6 py-5 md:px-8">Guest Name</th>
+                                <th class="px-6 py-5 md:px-8">Status</th>
+                                <th class="px-6 py-5 md:px-8 text-center">People</th>
+                                <th class="px-6 py-5 md:px-8 text-right">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rsvp-list-body" class="divide-y divide-gray-50">
+                            <!-- RSVP data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
                 <div id="rsvp-empty-state" class="p-20 text-center text-gray-400">
                     No RSVP responses received yet.
                 </div>
@@ -99,19 +101,21 @@
         <div id="content-invites" class="tab-content hidden opacity-0 transition-opacity duration-300">
             <h2 class="text-2xl font-serif font-bold mb-8">Guest Invitations</h2>
             <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500 font-bold">
-                        <tr>
-                            <th class="px-8 py-4">Guest Name</th>
-                            <th class="px-8 py-4">Phone Number</th>
-                            <th class="px-8 py-4">Status</th>
-                            <th class="px-8 py-4 text-right">Share Invitation</th>
-                        </tr>
-                    </thead>
-                    <tbody id="guest-list-body" class="divide-y divide-gray-50">
-                        <!-- Guests will be loaded here -->
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                            <tr>
+                                <th class="px-6 py-4 md:px-8">Guest Name</th>
+                                <th class="px-6 py-4 md:px-8">Phone Number</th>
+                                <th class="px-6 py-4 md:px-8">Status</th>
+                                <th class="px-6 py-4 md:px-8 text-right">Share Invitation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="guest-list-body" class="divide-y divide-gray-50">
+                            <!-- Guests will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
                 <div id="guest-empty-state" class="p-12 text-center text-gray-400 hidden">
                     No guests added yet. Go to "Add Special Guests" to start.
                 </div>
@@ -233,21 +237,21 @@
 
             body.innerHTML = allRsvps.map(rsvp => `
                 <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-8 py-5">
+                    <td class="px-6 py-5 md:px-8">
                         <div class="text-sm font-medium text-gray-800">${rsvp.invitation_title}</div>
                     </td>
-                    <td class="px-8 py-5">
+                    <td class="px-6 py-5 md:px-8">
                         <div class="text-sm text-gray-600">${rsvp.guest_name}</div>
                     </td>
-                    <td class="px-8 py-5">
+                    <td class="px-6 py-5 md:px-8">
                         <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${rsvp.status === 'attending' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}">
                             ${rsvp.status}
                         </span>
                     </td>
-                    <td class="px-8 py-5 text-center text-sm text-gray-600">
+                    <td class="px-6 py-5 md:px-8 text-center text-sm text-gray-600">
                         ${rsvp.guest_count || 1}
                     </td>
-                    <td class="px-8 py-5 text-right text-xs text-gray-400">
+                    <td class="px-6 py-5 md:px-8 text-right text-xs text-gray-400">
                         ${rsvp.submitted_at ? new Date(rsvp.submitted_at).toLocaleDateString() : 'N/A'}
                     </td>
                 </tr>
@@ -381,13 +385,13 @@
                 
                 return `
                     <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-8 py-5 font-medium text-gray-800">${guest.name}</td>
-                        <td class="px-8 py-5 text-gray-500 font-mono text-sm">${guest.phone}</td>
-                        <td class="px-8 py-5">
+                        <td class="px-6 py-5 md:px-8 font-medium text-gray-800 break-words max-w-[150px] md:max-w-none">${guest.name}</td>
+                        <td class="px-6 py-5 md:px-8 text-gray-500 font-mono text-xs md:text-sm whitespace-nowrap">${guest.phone}</td>
+                        <td class="px-6 py-5 md:px-8">
                             <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-wider">${guest.status || 'Added'}</span>
                         </td>
-                        <td class="px-8 py-5 text-right">
-                            <div class="flex justify-end space-x-3">
+                        <td class="px-6 py-5 md:px-8 text-right">
+                            <div class="flex justify-end space-x-2 md:space-x-3">
                                 <a href="https://wa.me/${guest.phone.replace(/\D/g, '')}?text=${message}" target="_blank" title="WhatsApp" class="p-2 hover:bg-green-50 text-green-600 rounded-full transition-colors">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.765-5.764-5.765zm3.394 8.163c-.147.416-.855.762-1.156.789-.3.027-.601.121-1.74-.355-1.457-.607-2.393-2.094-2.466-2.191-.073-.097-.593-.791-.593-1.503 0-.712.373-1.063.506-1.205.133-.142.29-.178.387-.178.097 0 .193.001.277.005.088.004.208-.033.325.249.117.282.401.977.436 1.048.035.071.058.154.011.248-.047.094-.07.153-.141.236-.071.083-.148.185-.212.248-.069.068-.142.143-.061.282.081.139.362.597.776.967.534.477.986.626 1.125.696.14.07.221.058.303-.038.082-.096.347-.406.44-.544.093-.138.186-.117.311-.071.125.046.793.374.93.443s.228.104.262.161c.034.057.034.331-.113.747z"/></svg>
                                 </a>
