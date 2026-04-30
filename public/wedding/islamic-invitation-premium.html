@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Sanoos S J & Dr. Shabnam S Salam | Wedding Invitation</title>
+<title>Minimalist Gold | Wedding Invitation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter+Tight:wght@300;400;500&family=Amiri:wght@400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet"/>
@@ -32,6 +32,9 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
 html,body{background:var(--ink);color:var(--ivory);font-family:var(--serif);scroll-behavior:smooth;}
+/* Hide scrollbar */
+::-webkit-scrollbar { display: none; }
+html { -ms-overflow-style: none; scrollbar-width: none; }
 body{overflow-x:hidden;}
 ::selection{background:var(--gold);color:var(--ink);}
 
@@ -43,7 +46,7 @@ body{overflow-x:hidden;}
   overflow:hidden;}
 .grain{position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.05;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/></svg>");}
-#dust{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.55;}
+#dust{position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.25;}
 
 /* ── ENVELOPE ── */
 #envelope{position:fixed;inset:0;z-index:200;background:radial-gradient(800px 600px at 50% 50%,#250810 0%,#15040a 70%);display:flex;align-items:center;justify-content:center;transition:opacity .8s,visibility .8s;}
@@ -53,7 +56,48 @@ body{overflow-x:hidden;}
 .env-body::before{content:"";position:absolute;inset:8px;border:1px solid var(--gold-dim);pointer-events:none;}
 .env-flap{position:absolute;left:0;right:0;top:0;height:56%;background:linear-gradient(180deg,#351018,#1a050a);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform 1.4s cubic-bezier(.6,0,.2,1);border-bottom:1px solid var(--gold-dim);z-index:3;}
 .env-wrap.open .env-flap{transform:rotateX(-180deg);}
-.env-seal{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f3dfa1,#b08d5b 55%,#6a4f1e);box-shadow:0 6px 20px rgba(176,141,91,.35),inset 0 -4px 8px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-style:italic;color:#2a1f08;font-size:1.3rem;z-index:4;transition:transform 1.2s,opacity .6s;}
+.env-seal {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  transform: translate(-50%, -50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 48% 52% 47% 53% / 51% 49% 52% 48%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-style: italic;
+  color: #593902;
+  text-shadow: 1px 1px 0 rgba(255,220,110,0.5);
+  z-index: 4;
+  transition: transform 1.2s, opacity .6s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+  background: #ca9221;
+}
+.env-seal::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 45% 55% 42% 58% / 54% 46% 56% 44%; 
+  background: linear-gradient(135deg, #ffd05c 0%, #ca9221 50%, #875b06 100%);
+  box-shadow: 
+      inset 0 1.5px 3px rgba(255,255,255,0.7),
+      inset 0 -1.5px 3px rgba(0,0,0,0.5);
+  z-index: -2;
+}
+.env-seal::after {
+  content: '';
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 49% 51% 50% 50% / 50% 49% 51% 50%;
+  background: linear-gradient(135deg, #d39d2f, #b98418);
+  box-shadow: 
+      inset 0 1.5px 2px rgba(0,0,0,0.4),
+      0 1px 1px rgba(255,255,255,0.5);
+  z-index: -1;
+}
 .env-wrap.open .env-seal{transform:translate(-50%,-120%) scale(.6);opacity:0;}
 .env-monogram{font-family:var(--serif);font-style:italic;font-size:2.8rem;color:var(--gold-hi);line-height:1;}
 .env-rule{width:80px;height:1px;background:var(--gold);opacity:.8;}
@@ -241,7 +285,7 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
       <div class="env-date">Wedding Invitation · June 2026</div>
     </div>
     <div class="env-flap"></div>
-    <div class="env-seal">س ش</div>
+    <div class="env-seal" id="seal-arabic">س ش</div>
     <div class="env-cta">TAP TO OPEN</div>
   </div>
 </div>
@@ -262,14 +306,14 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
   <div class="hero-arabic-en">In the name of Allah, the Most Gracious, the Most Merciful</div>
 
   <div class="hero-gline"></div>
-  <div class="hero-name"><span class="shine">Sanoos S J</span></div>
+  <div class="hero-name"><span class="shine" id="hero-groom-name">Arshad Ahmed</span></div>
   <div class="hero-amp">✦ weds ✦</div>
-  <div class="hero-name"><span class="shine">Dr. Shabnam S Salam</span></div>
+  <div class="hero-name"><span class="shine" id="hero-bride-name">Suhaila Begum</span></div>
   <div class="hero-stars">✺ ✾ ✺</div>
 
-  <div class="hero-date">THURSDAY · 04 JUNE 2026 · NIKKAH · 11:00 – 11:30 AM</div>
+  <div class="hero-date" id="hero-date-text">FRIDAY · 15 MAY 2026 · NIKKAH · 11:00 AM</div>
   
-  <div class="hero-place">Al Saj Convention Center, Trivandrum</div>
+  <div class="hero-place" id="hero-place-text">Grand Ballroom, Kannur, Kerala</div>
 
   <div class="scroll-hint"><div class="line"></div>SCROLL</div>
 </section>
@@ -283,11 +327,11 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
     <div class="event-inner">
       <div class="event-num"><div class="n">01</div><div class="lbl">NIKKAH</div></div>
       <div class="event-title">Nikkah Ceremony</div>
-      <div class="event-row"><div class="k">Date</div><div class="v"><strong>Thursday, 04 June 2026</strong></div></div>
-      <div class="event-row"><div class="k">Time</div><div class="v">11:00 AM &mdash; 11:30 AM</div></div>
-      <div class="event-row"><div class="k">Venue</div><div class="v"><strong>Al Saj Convention Center</strong><br/><span style="opacity:.6">Kazhakoottam, Trivandrum, Kerala</span></div></div>
+      <div class="event-row"><div class="k">Date</div><div class="v"><strong id="nikah-date-text">Thursday, 04 June 2026</strong></div></div>
+      <div class="event-row"><div class="k">Time</div><div class="v" id="nikah-time-text">11:00 AM &mdash; 11:30 AM</div></div>
+      <div class="event-row"><div class="k">Venue</div><div class="v"><strong id="nikah-venue-name">Al Saj Convention Center</strong><br/><span style="opacity:.6" id="nikah-venue-city">Kazhakoottam, Trivandrum, Kerala</span></div></div>
       <div class="event-btns">
-        <a class="btn" href="https://maps.google.com/?q=Al+Saj+Convention+Center,+Kazhakoottam,+Trivandrum,+Kerala" target="_blank">LOCATION</a>
+        <a class="btn" id="nikah-location-link" href="https://maps.google.com/?q=Al+Saj+Convention+Center,+Kazhakoottam,+Trivandrum,+Kerala" target="_blank">LOCATION</a>
         <a class="btn" id="nikahGcal" href="#" target="_blank">GOOGLE CAL</a>
         <a class="btn" id="nikahIcal" href="#" download="nikah.ics">APPLE CAL</a>
       <div style="margin-top:1rem;padding:.7rem 1rem;border-left:2px solid var(--gold);
@@ -306,9 +350,9 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
   <h2 class="section-title rv">Nikkah <em>Venue</em></h2>
   <div class="venue rv rv-d1">
     <div class="icn">◆</div>
-    <h4>Al Saj Convention Center</h4>
-    <p>Kazhakoottam, Trivandrum<br/>Kerala</p>
-    <a class="btn primary" href="https://maps.google.com/?q=Al+Saj+Convention+Center,+Kazhakoottam,+Trivandrum,+Kerala" target="_blank">OPEN IN MAPS</a>
+    <h4 id="venue-section-name">Al Saj Convention Center</h4>
+    <p id="venue-section-details">Kazhakoottam, Trivandrum<br/>Kerala</p>
+    <a class="btn primary" id="venue-section-link" href="https://maps.google.com/?q=Al+Saj+Convention+Center,+Kazhakoottam,+Trivandrum,+Kerala" target="_blank">OPEN IN MAPS</a>
   </div>
 </section>
 
@@ -319,12 +363,12 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
 
   <div class="fam rv rv-d1">
     <div class="fam-side">GROOM</div>
-    <div class="fam-name">Sanoos S J</div>
+    <div class="fam-name" id="fam-groom-name">Sanoos S J</div>
     <div class="fam-rel">Son of</div>
-    <div class="fam-parent">Mr. Shajahan M<br/>&amp; Mrs. Jumaila Beevi</div>
+    <div class="fam-parent" id="fam-groom-parents">Mr. Shajahan M<br/>&amp; Mrs. Jumaila Beevi</div>
     <div class="fam-gp">
       <div class="fam-gp-title">ADDRESS</div>
-      <div class="fam-gp-name">Sanoos Nivas, Singapore Jn<br/>Pallipuram P.O, Trivandrum</div>
+      <div class="fam-gp-name" id="fam-groom-address">Sanoos Nivas, Singapore Jn<br/>Pallipuram P.O, Trivandrum</div>
     </div>
   </div>
 
@@ -332,12 +376,12 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
 
   <div class="fam rv rv-d2">
     <div class="fam-side">BRIDE</div>
-    <div class="fam-name">Dr. Shabnam S Salam</div>
+    <div class="fam-name" id="fam-bride-name">Dr. Shabnam S Salam</div>
     <div class="fam-rel">Daughter of</div>
-    <div class="fam-parent">Mr. M Abdul Salam<br/>&amp; Mrs. Sareena Salam</div>
+    <div class="fam-parent" id="fam-bride-parents">Mr. M Abdul Salam<br/>&amp; Mrs. Sareena Salam</div>
     <div class="fam-gp">
       <div class="fam-gp-title">ADDRESS</div>
-      <div class="fam-gp-name">Heera Highlife 9E, Keston Road<br/>Kowdiar, Trivandrum</div>
+      <div class="fam-gp-name" id="fam-bride-address">Heera Highlife 9E, Keston Road<br/>Kowdiar, Trivandrum</div>
     </div>
   </div>
 </section>
@@ -365,28 +409,10 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
 </section>
 
 <!-- CONTACT -->
-<section id="contact">
+<section id="contact" style="display: none;">
   <div class="eyebrow rv">GET IN TOUCH</div>
-
-  <div class="contact rv rv-d1">
-    <div class="contact-left">
-      <div class="lbl">GROOM'S FATHER</div>
-      <div class="nm">Shajahan M</div>
-    </div>
-    <div class="contact-right">
-      <a class="c-ic" href="tel:+91XXXXXXXXXX" aria-label="call">✆</a>
-      <a class="c-ic" href="https://wa.me/91XXXXXXXXXX" target="_blank" aria-label="whatsapp">◉</a>
-    </div>
-  </div>
-  <div class="contact rv rv-d2">
-    <div class="contact-left">
-      <div class="lbl">BRIDE'S FATHER</div>
-      <div class="nm">M Abdul Salam</div>
-    </div>
-    <div class="contact-right">
-      <a class="c-ic" href="tel:+91XXXXXXXXXX" aria-label="call">✆</a>
-      <a class="c-ic" href="https://wa.me/91XXXXXXXXXX" target="_blank" aria-label="whatsapp">◉</a>
-    </div>
+  <div id="contact-list">
+    <!-- Contacts will be injected here -->
   </div>
 </section>
 
@@ -409,10 +435,13 @@ footer{padding:5rem 1.5rem 3rem;text-align:center;position:relative;z-index:3;}
 <footer>
   <div class="foot-rule"></div>
   <div class="foot-dua">بَارَكَ اللَّهُ لَكُمَا</div>
-  <div class="foot-families">With Regards,<br/>Sanooja S J &amp; Shajeerudheen<br/>Sajna S Salam &amp; Rafeeq &nbsp;·&nbsp; Safna S Salam</div>
+  <div class="foot-families">With best compliments from the families of<br/><span id="foot-families-names">Groom &amp; Bride</span></div>
   <div class="foot-rule"></div>
-  <div class="foot-names">Sanoos S J &amp; Dr. Shabnam S Salam</div>
-  <div class="foot-date">04 · JUNE · 2026 · NIKKAH · TRIVANDRUM</div>
+  <div id="foot-names" class="foot-names">Groom &amp; Bride</div>
+  <div id="foot-date" class="foot-date">
+      <span id="foot-nikah-date">Nikah Date</span> • <span id="foot-reception-date">Reception Date</span><br/>
+      at <span id="foot-venue-location">Venue Location</span>
+  </div>
   <div class="foot-credit">Crafted with ♡ by <a href="#">Digi Wed</a></div>
 </footer>
 
@@ -496,7 +525,8 @@ async function submitRSVP() {
   btn.innerText = 'SENDING...'; btn.disabled = true;
 
   try {
-    const { error } = await supabase.from('rsvp').insert([{
+    if (!_supabase) await initSupabase();
+    const { error } = await _supabase.from('rsvp').insert([{
       invitation_id: 'islamic-premium',
       guest_name: name,
       guest_count: parseInt(count) || 1,
@@ -561,44 +591,317 @@ function ics(title,s,e,loc){
   const v=`BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${fmt(s)}\nDTEND:${fmt(e)}\nSUMMARY:${title}\nLOCATION:${loc}\nEND:VEVENT\nEND:VCALENDAR`;
   return'data:text/calendar;charset=utf8,'+encodeURIComponent(v);
 }
-const nikS=new Date('2026-06-04T11:00:00+05:30'),nikE=new Date('2026-06-04T11:30:00+05:30');
 
-document.getElementById('nikahGcal').href=gcal('Sanoos S J & Dr. Shabnam S Salam — Nikkah',nikS,nikE,'Al Saj Convention Center, Kazhakoottam, Trivandrum, Kerala');
-document.getElementById('nikahIcal').href=ics('Sanoos S J & Dr. Shabnam S Salam — Nikkah',nikS,nikE,'Al Saj Convention Center, Kazhakoottam, Trivandrum, Kerala');
+let _supabase;
+async function initSupabase() {
+  try {
+    const response = await fetch('/api/config');
+    if (response.ok) {
+      const config = await response.json();
+      _supabase = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+    } else {
+      _supabase = supabase.createClient('https://vifofwrypntkpsxndpys.supabase.co', 'FALLBACK_KEY');
+    }
+  } catch (e) {
+    _supabase = supabase.createClient('https://vifofwrypntkpsxndpys.supabase.co', 'FALLBACK_KEY');
+  }
+}
 
+function getInvitationId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('id') || urlParams.get('invitation_id');
+}
 
+async function fetchInvitationData() {
+    if (!_supabase) await initSupabase();
+    const invitationId = getInvitationId();
+    if (!invitationId) {
+        console.warn('ID not found, using generic content');
+        return;
+    }
+
+    try {
+        // Fetch invitation details from correct table
+        const { data: invitation, error } = await _supabase
+            .from('customer_invitations')
+            .select('*')
+            .eq('id', invitationId)
+            .single();
+
+        if (error) throw error;
+        if (invitation) {
+            const details = invitation.wedding_details || invitation;
+            updateUI(details);
+        }
+    } catch (error) {
+        console.error('Error fetching invitation:', error);
+    }
+}
+
+function updateUI(details) {
+  console.log('Updating UI with:', details);
+  const groomName = details.groom_name || 'Arshad Ahmed';
+  const brideName = details.bride_name || 'Suhaila Begum';
+  const shortGroom = groomName.split(' ')[0];
+  const shortBride = brideName.split(' ')[0];
+
+  const arabicInitialMap = {
+      'A': 'أ', 'B': 'ب', 'C': 'ث', 'D': 'د', 'E': 'إ', 'F': 'ف', 'G': 'ج', 
+      'H': 'ح', 'I': 'ي', 'J': 'ج', 'K': 'ك', 'L': 'ل', 'M': 'م', 'N': 'ن', 
+      'O': 'و', 'P': 'ب', 'Q': 'ق', 'R': 'ر', 'S': 'س', 'T': 'ت', 'U': 'ع', 
+      'V': 'ف', 'W': 'و', 'X': 'خ', 'Y': 'ي', 'Z': 'ز'
+  };
+
+  function getArabicInitial(name) {
+      if (!name) return '';
+      const firstChar = name.trim().charAt(0).toUpperCase();
+      return arabicInitialMap[firstChar] || firstChar;
+  }
+
+  const sealArabic = document.getElementById('seal-arabic');
+  if (sealArabic) {
+      const aBride = getArabicInitial(brideName);
+      const aGroom = getArabicInitial(groomName);
+      const nikahDateObj = details.nikah_date ? new Date(details.nikah_date) : null;
+      const monthYear = nikahDateObj ? nikahDateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'MAY 2026';
+      const city = (details.nikah_venue_city || 'CITY').toUpperCase();
+      
+      sealArabic.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1.1; width:100%; transform:translateY(-1px);">
+              <div style="font-family:'Amiri', serif; font-size:1.1rem; margin-bottom:1px; font-weight:700;">${aGroom} & ${aBride}</div>
+              <div style="font-family:'Cinzel', serif; font-size:0.4rem; letter-spacing:0.05em; opacity:0.8;">${monthYear}</div>
+              <div style="font-family:'Cinzel', serif; font-size:0.4rem; letter-spacing:0.05em; opacity:0.8;">${city}</div>
+          </div>
+      `;
+      sealArabic.style.direction = 'ltr';
+      sealArabic.style.display = 'flex';
+      sealArabic.style.alignItems = 'center';
+      sealArabic.style.justifyContent = 'center';
+  }
+
+  const setInner = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = text;
+  };
+
+  // Hero section
+  setInner('hero-groom-name', groomName);
+  setInner('hero-bride-name', brideName);
+  
+  const nikahDateObj = details.nikah_date ? new Date(details.nikah_date) : new Date('2026-05-15');
+  const receptionDateObj = details.reception_date ? new Date(details.reception_date) : null;
+  
+  const dayName = nikahDateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+  const dateStr = nikahDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'LONG', year: 'numeric' });
+  const timeStr = details.nikah_time ? details.nikah_time.toUpperCase() : '11:00 AM';
+  
+  setInner('hero-date-text', `${dayName} · ${dateStr} · NIKKAH · ${timeStr}`);
+  
+  const venueStr = details.nikah_venue || 'Grand Ballroom';
+  const cityStr = details.nikah_venue_city || 'Kannur, Kerala';
+  setInner('hero-place-text', `${venueStr}, ${cityStr}`);
+
+  // Event section
+  setInner('nikah-date-text', nikahDateObj.toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }));
+  setInner('nikah-time-text', details.nikah_time || '11:00 AM — 11:30 AM');
+  setInner('nikah-venue-name', venueStr);
+  setInner('nikah-venue-city', cityStr);
+  
+  const locationUrl = details.map_url || `https://maps.google.com/?q=${encodeURIComponent(venueStr + ', ' + cityStr)}`;
+  const locBtn = document.getElementById('nikah-location-link');
+  if (locBtn) locBtn.href = locationUrl;
+
+  // Venue section
+  setInner('venue-section-name', venueStr);
+  setInner('venue-section-details', cityStr);
+  const venueSectionLink = document.getElementById('venue-section-link');
+  if (venueSectionLink) venueSectionLink.href = locationUrl;
+
+  // Families
+  setInner('fam-groom-name', groomName);
+  setInner('fam-groom-parents', `${details.groom_father || 'Mr. Shajahan M'} & ${details.groom_mother || 'Mrs. Jumaila Beevi'}`);
+  setInner('fam-groom-address', details.groom_address || 'Trivandrum, Kerala');
+
+  setInner('fam-bride-name', brideName);
+  setInner('fam-bride-parents', `${details.bride_father || 'Mr. M Abdul Salam'} & ${details.bride_mother || 'Mrs. Sareena Salam'}`);
+  setInner('fam-bride-address', details.bride_address || 'Trivandrum, Kerala');
+
+  // Contacts
+  if (details.contacts && details.contacts.length > 0) {
+    const contactSec = document.getElementById('contact');
+    const contactList = document.getElementById('contact-list');
+    if (contactSec && contactList) {
+      contactSec.style.display = 'block';
+      contactList.innerHTML = details.contacts.map((c, i) => `
+        <div class="contact rv rv-d${(i % 3) + 1}">
+          <div class="contact-left">
+            <div class="lbl">${c.side ? c.side.toUpperCase() + "'S " : ""}CONTACT</div>
+            <div class="nm">${c.name}</div>
+          </div>
+          <div class="contact-right">
+            <a class="c-ic" href="tel:${c.phone}" aria-label="call">✆</a>
+            <a class="c-ic" href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" aria-label="whatsapp">◉</a>
+          </div>
+        </div>
+      `).join('');
+      // Re-observe injected elements
+      contactList.querySelectorAll('.rv').forEach(el => io.observe(el));
+    }
+  }
+
+  // Footer
+  setInner('foot-families-names', `${shortGroom} & ${shortBride}`);
+  setInner('foot-names', `${groomName} & ${brideName}`);
+  
+  if (nikahDateObj) {
+    setInner('foot-nikah-date', nikahDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }));
+  }
+  if (receptionDateObj) {
+    setInner('foot-reception-date', receptionDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }));
+  } else {
+     const footRec = document.getElementById('foot-reception-date');
+     if (footRec) footRec.previousSibling.textContent = ''; // remove bullet
+     setInner('foot-reception-date', '');
+  }
+  
+  const footVenueStr = details.nikah_venue || details.reception_venue || 'Venue Location';
+  const footCityStr = details.nikah_venue_city || details.reception_venue_city || '';
+  setInner('foot-venue-location', footCityStr ? `${footVenueStr}, ${footCityStr}` : footVenueStr);
+
+  // Calendar
+  const calDate = nikahDateObj;
+  const nikS = new Date(calDate);
+  nikS.setHours(11, 0, 0);
+  const nikE = new Date(calDate);
+  nikE.setHours(13, 0, 0);
+  const locStr = cityStr ? `${venueStr}, ${cityStr}` : venueStr;
+  const calTitle = `${groomName} & ${brideName} — Nikah`;
+  
+  const gcalBtn = document.getElementById('nikahGcal');
+  const icalBtn = document.getElementById('nikahIcal');
+  if (gcalBtn) gcalBtn.href = gcal(calTitle, nikS, nikE, locStr);
+  if (icalBtn) icalBtn.href = ics(calTitle, nikS, nikE, locStr);
+
+  // Load Wishes
+  loadWishes();
+}
+
+fetchInvitationData();
 
 // rsvp
 let attending=null;
 function pickAttend(btn){
   document.querySelectorAll('.yn-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  attending=btn.dataset.val;
+  attending = btn.dataset.val === 'true';
 }
-function submitRSVP(){
-  const name=document.getElementById('guestName').value.trim();
+
+async function submitRSVP(){
+  const name=document.getElementById('guestName')?.value.trim() || document.getElementById('rsvp-name')?.value.trim();
+  const count=document.getElementById('guestCount')?.value || document.getElementById('rsvp-count')?.value || 1;
+  
   if(!name){alert('Please enter your name');return;}
-  if(!attending){alert('Please let us know if you can attend');return;}
-  document.getElementById('rsvpForm').style.display='none';
-  document.getElementById('rsvpOk').style.display='block';
+  if(attending === null){alert('Please let us know if you can attend');return;}
+
+  const btn = document.querySelector('.rsvp-submit');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'SENDING...';
+  }
+
+  try {
+    const { error } = await _supabase.from('rsvp').insert([{
+      invitation_id: getInvitationId(),
+      guest_name: name,
+      guest_count: parseInt(count),
+      status: attending ? 'attending' : 'decline',
+      created_at: new Date().toISOString()
+    }]);
+
+    if (error) throw error;
+
+    const form = document.getElementById('rsvpForm') || document.getElementById('rsvp-form-container');
+    const ok = document.getElementById('rsvpOk') || document.getElementById('rsvp-thank-you');
+    if (form) form.style.display='none';
+    if (ok) ok.style.display='block';
+  } catch (err) {
+    console.error(err);
+    alert('Error submitting RSVP. Please try again.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = 'SUBMIT RSVP';
+    }
+  }
 }
 
 // wishes
-let wishes=[];
-function submitWish(){
+async function loadWishes() {
+  const invitationId = getInvitationId();
+  if (!invitationId) return;
+
+  try {
+    const { data, error } = await _supabase
+      .from('wishes')
+      .select('*')
+      .eq('invitation_id', invitationId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    if (data) {
+      const wishes = data;
+      const countEl = document.getElementById('wishCount');
+      if (countEl) countEl.innerText = `${wishes.length} ${wishes.length === 1 ? 'Dua & Wish' : 'Duas & Wishes'}`;
+      
+      const grid = document.getElementById('wgrid');
+      if (grid) {
+        grid.innerHTML = wishes.map(w => `
+          <div class="wish">
+            <div class="wn">${esc(w.name)}</div>
+            <div class="wm">"${esc(w.message)}"</div>
+            <div class="wd">${new Date(w.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+          </div>
+        `).join('');
+      }
+    }
+  } catch (err) {
+    console.error('Error loading wishes:', err);
+  }
+}
+
+async function submitWish(){
   const n=document.getElementById('wisherName').value.trim();
   const m=document.getElementById('wisherMsg').value.trim();
   if(!n||!m){alert('Please fill in both fields');return;}
-  wishes.unshift({name:n,msg:m,time:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})});
-  document.getElementById('wisherName').value='';
-  document.getElementById('wisherMsg').value='';
-  renderWishes();
-}
-function renderWishes(){
-  document.getElementById('wishCount').textContent=`${wishes.length} ${wishes.length===1?'Dua &amp; Wish':'Duas &amp; Wishes'}`;
-  document.getElementById('wgrid').innerHTML=wishes.map(w=>`
-    <div class="wish"><div class="wn">${esc(w.name)}</div><div class="wm">"${esc(w.msg)}"</div><div class="wd">${esc(w.time)}</div></div>
-  `).join('');
+
+  const btn = document.querySelector('#wishes .rsvp-submit');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'SENDING...';
+  }
+
+  try {
+    const { error } = await _supabase.from('wishes').insert([{
+      invitation_id: getInvitationId(),
+      name: n,
+      message: m,
+      created_at: new Date().toISOString()
+    }]);
+
+    if (error) throw error;
+
+    document.getElementById('wisherName').value='';
+    document.getElementById('wisherMsg').value='';
+    loadWishes();
+  } catch (err) {
+    console.error(err);
+    alert('Could not send wish');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = 'SEND WISHES';
+    }
+  }
 }
 function esc(s){return String(s||'').replace(/[<>"'&]/g,c=>({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','&':'&amp;'}[c]));}
 
@@ -633,6 +936,7 @@ const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('preview') === 'true') {
   document.getElementById('envelope').style.display = 'none';
   document.documentElement.style.scrollBehavior = 'auto';
+  document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   // Hide UI elements in preview
   const style = document.createElement('style');
