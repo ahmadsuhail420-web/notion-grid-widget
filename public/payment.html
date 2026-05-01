@@ -223,7 +223,7 @@
                 const orderData = await response.json();
 
                 const options = {
-                    "key": "YOUR_RAZORPAY_KEY_ID", // Note: The actual key config usually gets passed via backend or config endpoint, but keeping the stub as in original HTML
+                    "key": orderData.key, // Note: The actual key config usually gets passed via backend or config endpoint, but keeping the stub as in original HTML
                     "amount": orderData.amount,
                     "currency": orderData.currency,
                     "name": "Sync & Style",
