@@ -3,115 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment - Sync & Style</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #FBFBFB; }
-        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
-        .loader {
-            border: 4px solid #f3f3f3; 
-            border-top: 4px solid #9c404d; 
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+    <title>Payment</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white p-10 rounded-[28px] border border-gray-100 shadow-xl max-w-lg w-full text-center relative overflow-hidden">
-        <h1 class="text-3xl font-serif font-bold mb-2">Secure Checkout</h1>
-        <p class="text-gray-500 mb-8" id="template-title">Purchasing Template...</p>
-        
-        <div class="bg-[#fcf9f4] p-6 rounded-2xl mb-8 border border-[#9c404d]/20 text-left">
-            <div class="flex justify-between items-center font-bold text-lg mb-2">
-                <span>Total Amount:</span>
-                <span>₹499</span>
-            </div>
-            <p class="text-xs text-gray-500 italic">One-time payment. Lifetime access & unlimited edits.</p>
-        </div>
+<body>
+    <h1>Select a Template</h1>
+    <select id="templateSelect">
+        <option value="template1">Template 1</option>
+        <option value="template2">Template 2</option>
+        <option value="template3">Template 3</option>
+    </select>
 
-        <form id="payment-form" class="space-y-4">
-            <input type="text" placeholder="Cardholder Name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d]">
-            <input type="text" placeholder="Card Number" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d]">
-            <div class="flex gap-4">
-                <input type="text" placeholder="MM/YY" required class="w-1/2 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d]">
-                <input type="text" placeholder="CVC" required class="w-1/2 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d]">
-            </div>
-            
-            <button type="submit" id="pay-btn" class="w-full bg-[#9c404d] text-white py-4 rounded-xl font-bold hover:bg-[#7d333e] transition-all shadow-lg shadow-[#9c404d]/20 mt-6 flex justify-center items-center">
-                Confirm Payment
-            </button>
-        </form>
-    </div>
+    <h2>Amount: ₹<span id="amountDisplay">499</span></h2>
+    <button id="payButton">Pay with Razorpay</button>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const templateId = urlParams.get('template');
-        let sb;
-        let sessionData;
-
-        async function init() {
-            if (!templateId) {
-                window.location.href = '/templates';
-                return;
+        var options = {
+            "key": "YOUR_RAZORPAY_KEY_HERE", // Enter the Key ID generated from the Razorpay Dashboard
+            "amount": 49900, // Amount is in currency subunits. Hence 49900
+            "currency": "INR",
+            "name": "Your Company Name",
+            "description": "Payment for selected template",
+            "image": "https://example.com/your_logo",
+            "handler": function (response){
+                alert(response.razorpay_payment_id);
+                // Call your backend to verify the payment here
+            },
+            "prefill": {
+                "name": "",
+                "email": "",
+                "contact": ""
+            },
+            "theme": {
+                "color": "#F37254"
             }
+        };
 
-            const response = await fetch('/api/config');
-            const config = await response.json();
-            sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-
-            const { data: { session } } = await sb.auth.getSession();
-            if (!session) {
-                window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId);
-                return;
-            }
-            sessionData = session;
-            
-            let displayName = "Premium Style";
-            if (templateId === 'template01' || templateId === 'tp1') displayName = "Royal Heritage";
-            if (templateId === 'template02' || templateId === 'tp2') displayName = "Minimalist Gold";
-            if (templateId === 'template03') displayName = "Vedic Garden";
-
-            document.getElementById('template-title').innerText = `Purchasing: ${displayName}`;
-        }
-
-        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+        document.getElementById('payButton').onclick = function(e){
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
             e.preventDefault();
-            const btn = document.getElementById('pay-btn');
-            btn.innerHTML = '<div class="loader"></div>';
-            btn.disabled = true;
-
-            try {
-                // Simulate payment validation
-                await new Promise(r => setTimeout(r, 1500));
-
-                const { error } = await sb
-                    .from('customer_invitations')
-                    .insert([{ 
-                        user_id: sessionData.user.id, 
-                        title: 'My Wedding Invitation', 
-                        status: 'draft',
-                        template_type: templateId,
-                        wedding_details: {} 
-                    }]);
-
-                if (error) throw error;
-                
-                alert("Payment successful! Redirecting to Dashboard.");
-                window.location.href = '/customer-dashboard';
-            } catch (error) {
-                console.error("Payment failed", error);
-                alert("Error during checkout: " + error.message);
-                btn.innerHTML = 'Confirm Payment';
-                btn.disabled = false;
-            }
-        });
-
-        init();
+        }
     </script>
+
 </body>
 </html>
