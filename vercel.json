@@ -1,59 +1,46 @@
-
-{
-  "rewrites": [
+{"rewrites":
+  [
     {
-      "source": "/login",
-      "destination": "/login.html"
+      "source":"/api/(.*)","destination":"/api/$1"
     },
     {
-      "source": "/admin",
-      "destination": "/admin/index.html"
+      "source":"/login","destination":"/login.html"
     },
     {
-      "source": "/templates",
-      "destination": "/templates.html"
+      "source":"/admin","destination":"/admin/index.html"
     },
     {
-      "source": "/templates/:path*",
-      "destination": "/templates/:path*"
+      "source":"/templates","destination":"/templates.html"
     },
     {
-      "source": "/wedding/islamic-invitation", "destination": "/wedding/islamic-invitation.html"
+      "source":"/templates/:path*","destination":"/templates/:path*"
     },
     {
-      "source": "/edit/islamic-invitation", "destination": "/edit/islamic-invitation.html"
+      "source":"/wedding/islamic-invitation","destination":"/wedding/islamic-invitation.html"
     },
     {
-      "source": "/wedding/islamic-invitation-premium", "destination": "/wedding/islamic-invitation-premium.html"
+      "source":"/edit/islamic-invitation","destination":"/edit/islamic-invitation.html"
     },
     {
-      "source": "/edit/islamic-invitation-premium", "destination": "/edit/islamic-invitation-premium.html"
+      "source":"/wedding/islamic-invitation-premium","destination":"/wedding/islamic-invitation-premium.html"
     },
     {
-      "source": "/customer-dashboard", "destination": "/customer-dashboard.html"
+      "source":"/edit/islamic-invitation-premium","destination":"/edit/islamic-invitation-premium.html"
     },
     {
-      "source": "/:path*",
-      "destination": "/:path*"
-    }
-  ],
-  "headers": [
+      "source":"/customer-dashboard","destination":"/customer-dashboard.html"
+    },
     {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type"
-        }
-      ]
-    }
+      "source":"/(.*)","destination":"/$1.html"}],
+  "headers":[{"source":"/api/(.*)",
+    "headers":[{"key":"Access-Control-Allow-Origin","value":"*"},
+      {
+        "key":"Access-Control-Allow-Methods","value":"GET, POST, PUT, DELETE, OPTIONS"
+      },
+      {
+        "key":"Access-Control-Allow-Headers","value":"Content-Type"
+      }
+    ]
+  }
   ]
 }
