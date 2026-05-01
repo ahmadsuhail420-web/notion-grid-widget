@@ -186,6 +186,12 @@
       }
       @keyframes shimmer-gold { to { background-position: 200% center; } }
 
+      /* Missing shimmer keyframe used by .premium-shimmer */
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
       /* Template Cards Mobile Support */
       .template-card.mobile-active .hover-overlay {
         opacity: 1 !important;
@@ -596,5 +602,6 @@
 
       document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
     </script>
+    <script src="/app.js"></script>
   </body>
 </html>

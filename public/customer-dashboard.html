@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import "tailwindcss";
         :root {
             --primary: #9c404d;
             --bg-cream: #FBFBFB;
@@ -434,11 +433,13 @@
             emptyState.classList.add('hidden');
             
             body.innerHTML = guests.map(guest => {
+                // ── FIX: pick most recently created (published) invitation, or just most recent ──
                 let inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation`;
                 let idParam = '';
-                
+
                 if (globalInvitations && globalInvitations.length > 0) {
-                    const inv = globalInvitations[0]; // Use most recent by default
+                    // Prefer published invitation; fall back to most recent draft
+                    const inv = globalInvitations.find(i => i.status === 'published') || globalInvitations[0];
                     if (inv.template_type === 'tp2' || inv.template_type === 'template02') {
                         inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation-premium`;
                     }
@@ -552,6 +553,6 @@
 
         initSupabase();
     </script>
-
+    <script src="/app.js"></script>
 </body>
 </html>

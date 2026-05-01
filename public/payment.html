@@ -9,6 +9,8 @@
     <!-- jQuery and Razorpay -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -178,15 +180,56 @@
         // Parse URL parameters for template
         const urlParams = new URLSearchParams(window.location.search);
         const templateParam = urlParams.get('template') || 'template01';
-        
+
         const templateDetails = {
             'template01': { name: 'Royal Heritage', desc: "Timeless patterns meet royal deep-plum elegance.", color: "text-[#9c404d]" },
             'template02': { name: 'Minimalist Gold', desc: "Sophisticated minimalism with a focus on gold accents.", color: "text-[#b08d5b]" }
         };
 
         const currentTemplate = templateDetails[templateParam] || templateDetails['template01'];
-        document.getElementById('templateName').innerHTML = `${currentTemplate.name} <br><span class="${currentTemplate.color.replace('text-', 'text-')} italic font-normal text-2xl">Template Package</span>`;
+        document.getElementById('templateName').innerHTML = `${currentTemplate.name} <br><span class="${currentTemplate.color} italic font-normal text-2xl">Template Package</span>`;
         document.getElementById('templateDesc').innerText = currentTemplate.desc;
+
+        // Supabase client + auth state
+        let sb = null;
+        let currentUser = null;
+        // Actual price loaded from template_configs (fallback 499)
+        let resolvedAmount = 499;
+
+        async function initPage() {
+            try {
+                const res = await fetch('/api/config');
+                if (!res.ok) throw new Error('Config fetch failed');
+                const config = await res.json();
+                if (!config.supabaseUrl || !config.supabaseAnonKey) return;
+
+                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+
+                // Auth guard — must be logged in to pay
+                const { data: { session } } = await sb.auth.getSession();
+                if (!session) {
+                    window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateParam);
+                    return;
+                }
+                currentUser = session.user;
+
+                // ── FIX: Fetch real price from template_configs ──────────
+                const { data: tpl } = await sb
+                    .from('template_configs')
+                    .select('price, name')
+                    .eq('id', templateParam)
+                    .single();
+
+                if (tpl && !isNaN(tpl.price)) {
+                    resolvedAmount = Number(tpl.price);
+                    document.getElementById('amountDisplay').textContent = resolvedAmount;
+                }
+            } catch (err) {
+                console.error('Page init error:', err);
+            }
+        }
+
+        initPage();
 
         // Checkbox logic to enable/disable pay button
         const termsCheckbox = document.getElementById('termsCheckbox');
@@ -194,83 +237,125 @@
 
         termsCheckbox.addEventListener('change', function() {
             payButton.disabled = !this.checked;
-            if(this.checked) {
+            if (this.checked) {
                 payButton.classList.remove('opacity-50', 'cursor-not-allowed');
             } else {
                 payButton.classList.add('opacity-50', 'cursor-not-allowed');
             }
         });
 
-        // Razorpay logic
-        document.getElementById('payButton').onclick = async function(e){
+        // Coupon Apply — placeholder logic (extend as needed)
+        document.querySelector('button[type="button"]').addEventListener('click', function() {
+            const code = document.getElementById('couponCode').value.trim().toUpperCase();
+            if (!code) { alert('Please enter a coupon code.'); return; }
+            // TODO: validate against a coupons table in Supabase
+            alert(`Coupon "${code}" is not valid or has expired.`);
+        });
+
+        const PAY_BTN_DEFAULT = `<span class="relative z-10 flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6
+                   a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>Proceed to Payment</span>`;
+
+        // Razorpay flow
+        document.getElementById('payButton').onclick = async function(e) {
             e.preventDefault();
             if (!termsCheckbox.checked) return;
-
-            const amount = 499;
+            if (!currentUser) {
+                alert('Please log in before paying.');
+                window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateParam);
+                return;
+            }
 
             try {
                 payButton.disabled = true;
                 payButton.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2">Processing...</span>';
 
-                // Call the backend to create an order
+                // Create Razorpay order — amount comes from server-resolved price
                 const response = await fetch('/api/create-razorpay-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: amount * 100 }) // Amount in paisa
+                    body: JSON.stringify({ amount: resolvedAmount * 100, templateId: templateParam })
                 });
 
                 if (!response.ok) throw new Error('Failed to create order');
                 const orderData = await response.json();
 
                 const options = {
-                    "key": orderData.key, // Note: The actual key config usually gets passed via backend or config endpoint, but keeping the stub as in original HTML
+                    "key": orderData.key,
                     "amount": orderData.amount,
                     "currency": orderData.currency,
                     "name": "Sync & Style",
-                    "description": "Payment for Selected Template",
+                    "description": `Payment for ${currentTemplate.name} Template`,
                     "order_id": orderData.id,
-                    "handler": async function (response){
+                    "prefill": {
+                        "email": currentUser.email
+                    },
+                    "handler": async function(rzpResponse) {
                         try {
+                            // 1. Verify payment signature
                             const verifyRes = await fetch('/api/verify-razorpay-payment', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_signature: response.razorpay_signature
+                                    razorpay_order_id: rzpResponse.razorpay_order_id,
+                                    razorpay_payment_id: rzpResponse.razorpay_payment_id,
+                                    razorpay_signature: rzpResponse.razorpay_signature
                                 })
                             });
 
-                            if (verifyRes.ok) {
-                                alert("Payment successful! Redirecting to setup...");
-                                window.location.href = '/customer-dashboard';
-                            } else {
+                            if (!verifyRes.ok) {
                                 alert("Payment verification failed. Please contact support.");
+                                return;
                             }
+
+                            // ── FIX: Create invitation record in Supabase ────────
+                            const { error: insertError } = await sb
+                                .from('customer_invitations')
+                                .insert([{
+                                    user_id: currentUser.id,
+                                    user_email: currentUser.email,
+                                    template_type: templateParam,
+                                    title: currentTemplate.name + "'s Invitation",
+                                    status: 'draft',
+                                    payment_id: rzpResponse.razorpay_payment_id,
+                                    order_id: rzpResponse.razorpay_order_id,
+                                    rsvps: []
+                                }]);
+
+                            if (insertError) {
+                                console.error('Failed to save invitation record:', insertError);
+                                alert('Payment received but failed to save your invitation. Please contact support with Payment ID: ' + rzpResponse.razorpay_payment_id);
+                                return;
+                            }
+
+                            // Redirect to dashboard
+                            window.location.href = '/customer-dashboard?payment=success';
                         } catch (error) {
-                            console.error("Verification Error:", error);
-                            alert("Payment verification error.");
+                            console.error("Post-payment error:", error);
+                            alert("An error occurred after payment. Contact support with Payment ID: " + rzpResponse.razorpay_payment_id);
                         }
                     },
-                    "theme": {
-                        "color": "#9c404d"
-                    }
+                    "theme": { "color": "#9c404d" }
                 };
 
-                var rzp1 = new Razorpay(options);
-                rzp1.on('payment.failed', function (response){
-                    alert(response.error.description);
+                const rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function(response) {
+                    alert('Payment failed: ' + response.error.description);
+                    payButton.disabled = false;
+                    payButton.innerHTML = PAY_BTN_DEFAULT;
                 });
                 rzp1.open();
-                
+
             } catch (error) {
                 console.error("Error starting Razorpay:", error);
-                alert("Failed to initiate payment");
-            } finally {
+                alert("Failed to initiate payment. Please try again.");
                 payButton.disabled = false;
-                payButton.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2"><svg class="w-5 h-5 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>Proceed to Payment</span>';
+                payButton.innerHTML = PAY_BTN_DEFAULT;
             }
-        }
+        };
     </script>
 
 </body>

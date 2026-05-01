@@ -34,6 +34,14 @@
         <h3 class="text-sm font-medium text-gray-500 mb-1">Total Orders</h3>
         <p class="text-3xl font-bold text-gray-900" id="stat-total-orders">0</p>
       </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Active Templates</h3>
+        <p class="text-3xl font-bold text-gray-900" id="stat-active-templates">0</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Total RSVP Responses</h3>
+        <p class="text-3xl font-bold text-gray-900" id="stat-total-rsvps">0</p>
+      </div>
     </div>
 
     <!-- Tab Navigation -->
@@ -157,14 +165,44 @@
         const res = await fetch('/api/config');
         if (!res.ok) throw new Error("Failed config fetch");
         const config = await res.json();
-        if (config.supabaseUrl && config.supabaseAnonKey) {
-          sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-          await ensureTemplateTable();
-          await loadTemplates();
-          await loadSales();
-        } else {
+        if (!config.supabaseUrl || !config.supabaseAnonKey) {
           alert('Missing Supabase Config. Check Admin setup.');
+          return;
         }
+
+        sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+
+        // ── AUTH GUARD ──────────────────────────────────────────────
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+          window.location.href = '/login?redirect=' + encodeURIComponent('/admin');
+          return;
+        }
+
+        // ── ADMIN ROLE CHECK ────────────────────────────────────────
+        // Reads the `role` field from user_metadata (set in Supabase Auth).
+        // To make a user admin: in Supabase dashboard → Auth → Users →
+        // click the user → edit raw metadata → set {"role": "admin"}
+        const userRole = session.user.user_metadata?.role;
+        if (userRole !== 'admin') {
+          document.body.innerHTML = `
+            <div class="min-h-screen flex items-center justify-center bg-gray-50">
+              <div class="text-center p-10 bg-white rounded-2xl shadow-lg border border-gray-100 max-w-sm">
+                <div class="text-5xl mb-4">🚫</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
+                <p class="text-gray-500 mb-6">You don't have admin privileges to view this page.</p>
+                <a href="/" class="inline-block bg-[#9c404d] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#7d333e] transition-all">Go Home</a>
+              </div>
+            </div>`;
+          return;
+        }
+
+        // Show logged-in admin email in navbar
+        document.getElementById('admin-user-info').textContent = session.user.email;
+
+        await ensureTemplateTable();
+        await loadTemplates();
+        await loadSales();
       } catch (e) {
         console.error("Admin init failed", e);
       }
@@ -244,13 +282,20 @@
         
         // Calculate total sales using template_configs price
         let totalSales = 0;
+        let totalRsvps = 0;
         stats.forEach(s => {
             const template = templatesData.find(t => t.id === s.template_type);
             const price = template && !isNaN(template.price) ? Number(template.price) : 499;
             totalSales += price;
+            totalRsvps += Array.isArray(s.rsvps) ? s.rsvps.length : 0;
         });
         
-        document.getElementById('stat-total-sales').textContent = `₹${totalSales}`; 
+        document.getElementById('stat-total-sales').textContent = `₹${totalSales}`;
+        document.getElementById('stat-total-rsvps').textContent = totalRsvps;
+
+        // Active templates count
+        const activeCount = templatesData.filter(t => t.is_active).length;
+        document.getElementById('stat-active-templates').textContent = activeCount;
         
         if (stats.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No sales yet.</td></tr>';
@@ -353,5 +398,6 @@
 
     initAdmin();
   </script>
+  <script src="/app.js"></script>
 </body>
 </html>
