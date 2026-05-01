@@ -67,7 +67,7 @@
       .btn-primary {
         @apply bg-[#9c404d] text-white px-10 py-4 font-bold transition-all duration-300 border-2 border-white shadow-[0_10px_20px_rgba(156,64,77,0.3)] hover:bg-[#7d333e] hover:shadow-[0_15px_30px_rgba(156,64,77,0.5)] active:scale-95;
         font-family: 'Times New Roman', Times, serif;
-        border-radius: 0;
+        border-radius: 12px;
       }
 
       .btn-primary:active {
@@ -76,6 +76,7 @@
 
       .shiny-border {
         @apply border-2 border-[#9c404d]/30 shadow-[0_0_15px_rgba(156,64,77,0.1)] transition-all duration-300;
+        border-radius: 12px;
       }
 
       .shiny-border:hover {
@@ -85,7 +86,7 @@
       .btn-outline {
         @apply border-2 border-[#9c404d] bg-white/50 backdrop-blur-sm text-[#9c404d] px-8 py-4 font-bold transition-all duration-300 hover:bg-[#9c404d]/5 hover:shadow-md active:scale-95;
         font-family: 'Times New Roman', Times, serif;
-        border-radius: 0;
+        border-radius: 12px;
       }
 
       .scroll-reveal {
@@ -352,7 +353,10 @@
             Create My Invitation
             <svg class="w-5 h-5 ml-3 transition-transform group-hover:translate-x-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </a>
-          <button class="btn-outline uppercase tracking-widest text-sm">View Live Demo</button>
+          <a href="#templates" class="btn-outline flex items-center group uppercase tracking-widest text-sm">
+            View Live Demo
+            <svg class="w-5 h-5 ml-3 transition-transform group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </a>
         </div>
         
         <p class="mt-8 text-sm text-gray-400 font-medium scroll-reveal" style="transition-delay: 500ms;">
