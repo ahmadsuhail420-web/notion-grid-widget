@@ -1265,6 +1265,8 @@
             const cityStr = details.nikah_venue_city || details.reception_venue_city || '';
             setInner('footer-venue-location', cityStr ? `${venueStr}, ${cityStr}` : venueStr);
 
+            const isPreviewIframe = new URLSearchParams(window.location.search).get('preview') === 'true';
+            
             // Music
             if (details.bg_music && details.bg_music !== 'none') {
                 const music = document.getElementById('bg-music');
@@ -1276,15 +1278,19 @@
                     music.src = details.bg_music;
                     music.load();
                     
+                    if (isPreviewIframe) {
+                        music.muted = true;
+                    }
+                    
                     // If invitation is already open, try to play the new source
-                    if (envelope && envelope.classList.contains('open')) {
+                    if (envelope && envelope.classList.contains('open') && !isPreviewIframe) {
                         music.play().then(() => {
                             if (musicIcon) musicIcon.className = 'ri-volume-up-line text-xl';
                             if (musicToggle) musicToggle.style.opacity = '1';
                         }).catch(e => console.log('Music play from updateUI failed:', e));
                     }
                 }
-            } else if (details.bg_music === 'none') {
+            } else if (details.bg_music === 'none' || isPreviewIframe) {
                 document.getElementById('music-toggle')?.classList.add('hidden');
             }
         }
@@ -1317,8 +1323,11 @@
             const musicIcon = document.getElementById('music-icon');
             const musicToggle = document.getElementById('music-toggle');
             
+            const urlParams = new URLSearchParams(window.location.search);
+            const isPreviewIframe = urlParams.get('preview') === 'true';
+            
             // Try to play music immediately as part of user gesture
-            if (music) {
+            if (music && !isPreviewIframe) {
                 music.play().then(() => {
                     if (musicIcon) musicIcon.className = 'ri-volume-up-line text-xl';
                     if (musicToggle) musicToggle.style.opacity = '1';
@@ -1328,6 +1337,9 @@
                     if (musicIcon) musicIcon.className = 'ri-volume-mute-line text-xl';
                     if (musicToggle) musicToggle.style.opacity = '1'; // Still show toggle so they can manual play
                 });
+            } else if (music && isPreviewIframe) {
+                music.muted = true;
+                if (musicToggle) musicToggle.style.display = 'none';
             }
 
             envelope.classList.add('open');
@@ -1639,11 +1651,20 @@
             if (isPreview) {
                 const overlay = document.getElementById('envelope-overlay');
                 const mainContent = document.getElementById('main-content');
+                const musicToggle = document.getElementById('music-toggle');
+                const music = document.getElementById('bg-music');
+                
                 if (overlay) overlay.style.display = 'none';
                 if (mainContent) {
                     mainContent.classList.remove('hidden');
                     mainContent.style.opacity = '1';
                 }
+                if (musicToggle) musicToggle.style.display = 'none';
+                if (music) {
+                    music.muted = true;
+                    music.pause();
+                }
+                
                 document.body.classList.remove('no-scroll');
                 document.documentElement.style.overflow = 'hidden';
                 document.body.style.overflow = 'hidden';
