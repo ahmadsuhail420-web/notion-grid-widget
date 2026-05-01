@@ -4,359 +4,780 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | Sync & Style</title>
-    <!-- Tailwind CSS -->
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <!-- jQuery and Razorpay -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
         @import "tailwindcss";
 
         :root {
-            --primary: #9c404d;
-            --bg-cream: #FFF9F9;
-            --text-dark: #2d0a0e;
+            --crimson: #9c404d;
+            --crimson-deep: #7d333e;
+            --crimson-light: #fdf2f3;
+            --gold: #c9a96e;
+            --gold-light: #f5edd9;
+            --cream: #FFF9F7;
+            --ink: #1a0608;
+            --muted: #6b4a4e;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-cream);
-            background-image: radial-gradient(rgba(156, 64, 77, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            color: var(--text-dark);
-            min-height: 100vh;
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--cream);
+            color: var(--ink);
+            min-height: 100dvh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-display { font-family: 'Cormorant Garamond', serif; }
+
+        /* ── Animated noise texture overlay ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Flowing background blobs ── */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .blob-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(156,64,77,0.08) 0%, transparent 70%);
+            top: -200px; right: -200px;
+            animation: blobFloat 12s ease-in-out infinite;
+        }
+        .blob-2 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%);
+            bottom: -100px; left: -100px;
+            animation: blobFloat 16s ease-in-out infinite reverse;
+        }
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.05); }
+            66% { transform: translate(-20px, 15px) scale(0.95); }
+        }
+
+        .checkout-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100dvh;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* ── Left Panel ── */
+        .left-panel {
+            background: linear-gradient(160deg, #2d0a0e 0%, #1a0608 60%, #0d0304 100%);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 30% 20%, rgba(156,64,77,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(201,169,110,0.1) 0%, transparent 50%);
+        }
+
+        /* decorative ring */
+        .deco-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(201,169,110,0.12);
+        }
+
+        /* ── Feature check rows ── */
+        .feature-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+        }
+        .feature-row:last-child { border-bottom: none; }
+        .feature-row:hover { padding-left: 4px; }
+
+        .check-icon {
+            width: 20px; height: 20px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--crimson), var(--gold));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 2px;
+        }
+
+        /* ── Right Panel ── */
+        .right-panel {
+            background: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ── Price display ── */
+        .price-badge {
+            background: linear-gradient(135deg, var(--crimson-light), var(--gold-light));
+            border: 1px solid rgba(156,64,77,0.15);
+            border-radius: 16px;
+            padding: 16px 24px;
+        }
+
+        /* ── Input field ── */
+        .field {
+            width: 100%;
+            border: 1.5px solid #e8d5d7;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--ink);
+            background: #fafafa;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+        .field:focus {
+            border-color: var(--crimson);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(156,64,77,0.08);
+        }
+        .field::placeholder { color: #bba8aa; }
+
+        /* ── Coupon button ── */
+        .coupon-btn {
+            background: #f5f0f0;
+            border: 1.5px solid #e8d5d7;
+            border-radius: 10px;
+            padding: 13px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: 0.05em;
+        }
+        .coupon-btn:hover {
+            background: var(--crimson-light);
+            border-color: var(--crimson);
+            color: var(--crimson);
+        }
+
+        /* ── Terms checkbox ── */
+        .terms-wrap {
+            background: linear-gradient(135deg, #fdf9f9, #fdf7f0);
+            border: 1px solid rgba(156,64,77,0.12);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        /* ── Pay button ── */
+        .pay-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--crimson) 0%, #b34d5a 50%, var(--crimson-deep) 100%);
+            background-size: 200% 100%;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 18px 28px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 30px rgba(156,64,77,0.35), 0 2px 8px rgba(156,64,77,0.2);
+        }
+        .pay-btn:hover:not(:disabled) {
+            background-position: right center;
+            box-shadow: 0 12px 40px rgba(156,64,77,0.45), 0 4px 12px rgba(156,64,77,0.25);
+            transform: translateY(-1px);
+        }
+        .pay-btn:active:not(:disabled) { transform: translateY(1px); }
+        .pay-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* shimmer sweep on hover */
+        .pay-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        .pay-btn:hover:not(:disabled)::before { transform: translateX(100%); }
+
+        /* ── Trust bar ── */
+        .trust-bar {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
+            gap: 20px;
+            padding: 14px;
+            background: #fafafa;
+            border-radius: 10px;
+            border: 1px solid #f0e8e8;
         }
-        
-        @media (min-width: 768px) {
-            body {
-                padding: 1.5rem;
-            }
+        .trust-img { height: 18px; opacity: 0.5; filter: grayscale(1); transition: all 0.2s; }
+        .trust-img:hover { opacity: 0.8; filter: grayscale(0); }
+
+        /* ── Divider ── */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #c9b5b7;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .or-divider::before, .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #f0e8e8;
         }
 
-        h1, h2, h3, .font-serif {
-            font-family: 'Playfair Display', serif;
+        /* ── Secure badge ── */
+        .secure-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #8a7070;
+            letter-spacing: 0.05em;
         }
 
-        .btn-primary {
-            @apply bg-[#9c404d] text-white px-8 py-4 font-bold border-2 border-transparent transition-all duration-300 hover:bg-[#7d333e] disabled:opacity-50 disabled:cursor-not-allowed;
-            font-family: 'Times New Roman', Times, serif;
+        /* ── Premium label ── */
+        .premium-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, rgba(201,169,110,0.15), rgba(201,169,110,0.05));
+            border: 1px solid rgba(201,169,110,0.3);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: #8a6a3a;
+            font-weight: 600;
             letter-spacing: 0.1em;
             text-transform: uppercase;
         }
 
-        .checkout-card {
-            box-shadow: 0 20px 40px rgba(156, 64, 77, 0.1);
+        /* ── Page-in animation ── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+        .fade-up-1 { animation-delay: 0.05s; }
+        .fade-up-2 { animation-delay: 0.12s; }
+        .fade-up-3 { animation-delay: 0.2s; }
+        .fade-up-4 { animation-delay: 0.28s; }
+        .fade-up-5 { animation-delay: 0.36s; }
+
+        /* ── Responsive ── */
+        @media (max-width: 767px) {
+            .left-panel { display: none; }
+            .right-panel { padding: 28px 20px 40px; }
+        }
+
+        @media (min-width: 768px) {
+            .left-panel { width: 46%; padding: 56px 48px; }
+            .right-panel { padding: 56px 52px; }
+        }
+
+        /* ── Success overlay ── */
+        .success-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(26,6,8,0.85);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .success-overlay.show { opacity: 1; pointer-events: all; }
+        .success-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 40px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            animation: fadeUp 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .success-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 24px rgba(34,197,94,0.3);
+        }
+
+        /* coupon success state */
+        .field.coupon-ok {
+            border-color: #22c55e;
+            background: #f0fdf4;
+            color: #166534;
+        }
+        .discount-badge {
+            display: none;
+            font-size: 13px;
+            color: #166534;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-    <div class="max-w-4xl w-full min-h-[100dvh] md:min-h-0 bg-white md:rounded-3xl overflow-hidden md:checkout-card border-none md:border md:border-[#9c404d]/20 flex flex-col md:flex-row relative">
-        <a href="/" class="absolute top-6 left-6 text-gray-400 hover:text-[#9c404d] transition-colors z-10 md:hidden">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-        </a>
+<!-- Background blobs -->
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
 
-        <!-- Left Side: Template Info -->
-        <div class="md:w-1/2 p-10 bg-[#fdf2f3]/50 border-b md:border-b-0 md:border-r border-[#9c404d]/10 relative">
-            <a href="/" class="text-gray-400 hover:text-[#9c404d] transition-colors absolute top-8 left-8 hidden md:block">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-card">
+        <div class="success-icon">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <h2 class="font-display text-3xl font-bold text-[#1a0608] mb-2">Payment Successful!</h2>
+        <p class="text-sm text-gray-500 mb-6">Your invitation has been created. Redirecting to your dashboard…</p>
+        <div class="flex justify-center">
+            <div class="w-6 h-6 border-2 border-[#9c404d] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    </div>
+</div>
+
+<div class="checkout-wrapper">
+
+    <!-- ══════════ LEFT PANEL ══════════ -->
+    <div class="left-panel">
+        <!-- Decorative rings -->
+        <div class="deco-ring" style="width:500px;height:500px;top:-150px;right:-200px;"></div>
+        <div class="deco-ring" style="width:300px;height:300px;bottom:-100px;left:-100px;"></div>
+        <div class="deco-ring" style="width:180px;height:180px;top:45%;left:30%;"></div>
+
+        <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;justify-content:space-between;">
+            <!-- Logo -->
+            <a href="/" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;font-weight:700;color:rgba(255,255,255,0.9);text-decoration:none;letter-spacing:0.02em;">
+                Sync &amp; Style
             </a>
 
-            <div class="mt-8 md:mt-12">
-                <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-sm inline-block mb-4">Premium</span>
-                <h2 id="templateName" class="text-3xl font-serif font-black text-[#2d0a0e] mb-2 leading-tight">Royal Heritage <br><span class="text-[#9c404d] italic font-normal text-2xl">Template Package</span></h2>
-                <p id="templateDesc" class="text-gray-500 text-sm mb-8 italic">You've made an excellent choice for your big day.</p>
+            <!-- Template name + badge -->
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 0;">
+                <div style="margin-bottom:20px;">
+                    <span class="premium-label">✦ Premium Package</span>
+                </div>
+                <h1 class="font-display" id="templateName" style="font-size:clamp(2rem,4vw,3rem);font-weight:600;color:#fff;line-height:1.15;margin-bottom:10px;">
+                    Royal Heritage<br><em style="color:var(--gold);font-weight:300;">Template</em>
+                </h1>
+                <p id="templateDesc" style="font-size:14px;color:rgba(255,255,255,0.45);margin-bottom:40px;line-height:1.6;">
+                    You've made an excellent choice for your big day.
+                </p>
 
-                <div class="space-y-4">
-                    <h3 class="font-bold text-sm text-[#2d0a0e] tracking-widest uppercase mb-4 opacity-80 border-b border-[#9c404d]/20 pb-2">What's Included</h3>
-                    
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <!-- Features -->
+                <div>
+                    <p style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px;font-weight:600;">What's included</p>
+
+                    <div class="feature-row">
+                        <div class="check-icon">
+                            <svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </div>
                         <div>
-                            <p class="font-bold text-sm text-[#2d0a0e]">Stunning Animations</p>
-                            <p class="text-xs text-gray-500">Smooth cinematic reveals and transitions.</p>
+                            <p style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.85);margin:0 0 2px;">Cinematic Animations</p>
+                            <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;">Smooth reveals &amp; transitions</p>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <div class="feature-row">
+                        <div class="check-icon">
+                            <svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </div>
                         <div>
-                            <p class="font-bold text-sm text-[#2d0a0e]">Guest RSVP Tracking</p>
-                            <p class="text-xs text-gray-500">Real-time attendance in your dashboard.</p>
+                            <p style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.85);margin:0 0 2px;">Live RSVP Tracking</p>
+                            <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;">Real-time dashboard updates</p>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <div class="feature-row">
+                        <div class="check-icon">
+                            <svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </div>
                         <div>
-                            <p class="font-bold text-sm text-[#2d0a0e]">Unlimited Edits</p>
-                            <p class="text-xs text-gray-500">Make updates anytime until the wedding.</p>
+                            <p style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.85);margin:0 0 2px;">Unlimited Edits</p>
+                            <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;">Change anytime before wedding</p>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <div class="feature-row">
+                        <div class="check-icon">
+                            <svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </div>
                         <div>
-                            <p class="font-bold text-sm text-[#2d0a0e]">Interactive Features</p>
-                            <p class="text-xs text-gray-500">Background music, countdown, and maps.</p>
+                            <p style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.85);margin:0 0 2px;">Music, Maps &amp; Countdown</p>
+                            <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;">Full interactive experience</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-row">
+                        <div class="check-icon">
+                            <svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <p style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.85);margin:0 0 2px;">Unlimited Guest Views</p>
+                            <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;">No traffic limits ever</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Right Side: Checkout Form -->
-        <div class="md:w-1/2 p-10 flex flex-col justify-between">
-            <div>
-                <div class="flex justify-between items-end mb-8 border-b border-gray-100 pb-6">
-                    <div>
-                        <h1 class="text-2xl font-serif text-[#2d0a0e]">Checkout</h1>
-                        <p class="text-gray-400 text-sm mt-1">One-time payment. No subscriptions.</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-gray-400 text-xs uppercase tracking-widest mb-1">Total</p>
-                        <h2 class="text-3xl font-serif font-bold text-[#9c404d]">₹<span id="amountDisplay">499</span></h2>
-                    </div>
-                </div>
-
-                <div class="mb-8">
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2" for="couponCode">Coupon Code</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="couponCode" placeholder="Enter code here..." class="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9c404d] focus:ring-1 focus:ring-[#9c404d] transition-all">
-                        <button type="button" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-3 rounded-lg text-sm transition-colors uppercase tracking-widest">Apply</button>
-                    </div>
-                </div>
-
-                <div class="mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    <label class="flex items-start cursor-pointer group">
-                        <div class="relative flex items-center justify-center mt-0.5 mr-3">
-                            <input type="checkbox" id="termsCheckbox" class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#9c404d] focus:ring-offset-1 checked:bg-[#9c404d] checked:border-[#9c404d] transition-all cursor-pointer">
-                            <svg class="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                        <span class="text-sm text-gray-600 leading-snug group-hover:text-gray-800 transition-colors">
-                            By proceeding, I agree to the <a href="#" class="text-[#9c404d] font-semibold hover:underline">Terms and Conditions</a>, and acknowledge the <a href="#" class="text-[#9c404d] font-semibold hover:underline">Refund Policy</a>.
-                        </span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="mt-4">
-                <div class="flex flex-col gap-3">
-                    <div class="text-center text-xs space-x-2">
-                        <a href="#" class="font-medium text-gray-500 hover:text-[#9c404d] transition-colors uppercase tracking-widest">Privacy Policy</a>
-                        <span class="text-gray-300">•</span>
-                        <a href="#" class="font-medium text-gray-500 hover:text-[#9c404d] transition-colors uppercase tracking-widest">Refund Policy</a>
-                    </div>
-                </div>
-
-                <button id="payButton" class="btn-primary w-full text-center py-5 text-lg rounded-xl shadow-lg shadow-[#9c404d]/20 relative overflow-hidden group mt-4" disabled>
-                    <span class="relative z-10 flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        Proceed to Payment
-                    </span>
-                    <div class="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 skew-x-12"></div>
-                </button>
-                
-                <div class="flex items-center justify-center gap-4 mt-6 opacity-40 grayscale pb-6 md:pb-0">
-                    <img src="https://img.icons8.com/color/48/000000/visa.png" class="h-5" alt="Visa">
-                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" class="h-5" alt="Mastercard">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" class="h-4" alt="UPI">
+            <!-- Bottom guarantee -->
+            <div style="border-top:1px solid rgba(255,255,255,0.07);padding-top:24px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <svg class="w-4 h-4" style="color:var(--gold);flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <p style="font-size:12px;color:rgba(255,255,255,0.35);margin:0;line-height:1.5;">One-time payment · No subscription · Lifetime access to your invitation</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Parse URL parameters for template
-        const urlParams = new URLSearchParams(window.location.search);
-        const templateParam = urlParams.get('template') || 'template01';
+    <!-- ══════════ RIGHT PANEL ══════════ -->
+    <div class="right-panel">
 
-        const templateDetails = {
-            'template01': { name: 'Royal Heritage', desc: "Timeless patterns meet royal deep-plum elegance.", color: "text-[#9c404d]" },
-            'template02': { name: 'Minimalist Gold', desc: "Sophisticated minimalism with a focus on gold accents.", color: "text-[#b08d5b]" }
-        };
+        <!-- Mobile back + logo -->
+        <div style="display:none;" class="mobile-top-bar">
+            <a href="/" style="color:#9c404d;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;font-weight:700;">← Sync &amp; Style</a>
+        </div>
 
-        const currentTemplate = templateDetails[templateParam] || templateDetails['template01'];
-        document.getElementById('templateName').innerHTML = `${currentTemplate.name} <br><span class="${currentTemplate.color} italic font-normal text-2xl">Template Package</span>`;
-        document.getElementById('templateDesc').innerText = currentTemplate.desc;
+        <div style="max-width:440px;width:100%;">
 
-        // Supabase client + auth state
-        let sb = null;
-        let currentUser = null;
-        // Actual price loaded from template_configs (fallback 499)
-        let resolvedAmount = 499;
+            <!-- Header -->
+            <div class="fade-up fade-up-1" style="margin-bottom:32px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                    <div>
+                        <h2 class="font-display" style="font-size:clamp(1.6rem,3vw,2.2rem);font-weight:600;color:var(--ink);margin:0 0 4px;">
+                            Complete your order
+                        </h2>
+                        <p style="font-size:13px;color:#9a7070;margin:0;">Secure checkout — one-time payment</p>
+                    </div>
+                    <div class="price-badge">
+                        <p style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9a7070;margin:0 0 2px;font-weight:600;">Total due</p>
+                        <p class="font-display" style="font-size:2rem;font-weight:700;color:var(--crimson);margin:0;line-height:1;">
+                            ₹<span id="amountDisplay">499</span>
+                        </p>
+                    </div>
+                </div>
+                <div style="height:1px;background:linear-gradient(90deg,#f0e8e8,transparent);margin-top:24px;"></div>
+            </div>
 
-        async function initPage() {
-            try {
-                const res = await fetch('/api/config');
-                if (!res.ok) throw new Error('Config fetch failed');
-                const config = await res.json();
-                if (!config.supabaseUrl || !config.supabaseAnonKey) return;
+            <!-- Coupon -->
+            <div class="fade-up fade-up-2" style="margin-bottom:24px;">
+                <label style="display:block;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#9a7070;margin-bottom:8px;">
+                    Coupon Code
+                </label>
+                <div style="display:flex;gap:8px;">
+                    <input type="text" id="couponCode" placeholder="Enter promo code…" class="field" style="flex:1;">
+                    <button type="button" class="coupon-btn" onclick="applyCoupon()">Apply</button>
+                </div>
+                <p class="discount-badge" id="discountBadge" style="margin-top:6px;">✓ Discount applied!</p>
+            </div>
 
-                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+            <!-- Terms -->
+            <div class="fade-up fade-up-3 terms-wrap" style="margin-bottom:24px;">
+                <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+                    <div style="position:relative;flex-shrink:0;margin-top:1px;">
+                        <input type="checkbox" id="termsCheckbox" style="
+                            appearance:none;-webkit-appearance:none;
+                            width:20px;height:20px;
+                            border:2px solid #d4b8ba;
+                            border-radius:6px;
+                            cursor:pointer;
+                            transition:all 0.2s ease;
+                            background:white;
+                        ">
+                        <svg id="checkMark" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:11px;height:11px;color:white;opacity:0;transition:opacity 0.15s;pointer-events:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span style="font-size:13px;color:#6b4a4e;line-height:1.6;">
+                        I agree to the <a href="/terms-and-conditions.html" style="color:var(--crimson);font-weight:600;text-decoration:none;" target="_blank">Terms &amp; Conditions</a> and acknowledge the <a href="/cancellation-and-refund.html" style="color:var(--crimson);font-weight:600;text-decoration:none;" target="_blank">Refund Policy</a>.
+                    </span>
+                </label>
+            </div>
 
-                // Auth guard — must be logged in to pay
-                const { data: { session } } = await sb.auth.getSession();
-                if (!session) {
-                    window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateParam);
-                    return;
-                }
-                currentUser = session.user;
+            <!-- Pay Button -->
+            <div class="fade-up fade-up-4" style="margin-bottom:20px;">
+                <button id="payButton" class="pay-btn" disabled>
+                    <span id="payBtnContent" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Pay ₹<span id="payBtnAmount">499</span> Securely
+                    </span>
+                </button>
 
-                // ── FIX: Fetch real price from template_configs ──────────
-                const { data: tpl } = await sb
-                    .from('template_configs')
-                    .select('price, name')
-                    .eq('id', templateParam)
-                    .single();
+                <!-- Secure line -->
+                <div style="text-align:center;margin-top:12px;">
+                    <span class="secure-badge">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        256-bit SSL · Powered by Razorpay
+                    </span>
+                </div>
+            </div>
 
-                if (tpl && !isNaN(tpl.price)) {
-                    resolvedAmount = Number(tpl.price);
-                    document.getElementById('amountDisplay').textContent = resolvedAmount;
-                }
-            } catch (err) {
-                console.error('Page init error:', err);
-            }
+            <!-- Divider + Trust bar -->
+            <div class="fade-up fade-up-5">
+                <div class="or-divider" style="margin-bottom:14px;">We accept</div>
+                <div class="trust-bar">
+                    <img src="https://img.icons8.com/color/48/000000/visa.png" class="trust-img" alt="Visa">
+                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" class="trust-img" alt="Mastercard">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" class="trust-img" alt="UPI">
+                    <img src="https://img.icons8.com/color/48/000000/amex.png" class="trust-img" alt="Amex">
+                </div>
+
+                <!-- Footer link -->
+                <div style="text-align:center;margin-top:28px;">
+                    <a href="/" style="font-size:12px;color:#bba8aa;text-decoration:none;transition:color 0.2s;"
+                       onmouseover="this.style.color='var(--crimson)'" onmouseout="this.style.color='#bba8aa'">
+                        ← Back to Sync &amp; Style
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+// ── URL param ──────────────────────────────────────────────
+const urlParams = new URLSearchParams(window.location.search);
+const templateParam = urlParams.get('template') || 'template01';
+
+const templateDetails = {
+    'template01': { name: 'Royal Heritage', desc: "Timeless patterns meet royal deep-plum elegance." },
+    'template02': { name: 'Minimalist Gold', desc: "Sophisticated minimalism with gold accents." }
+};
+const currentTemplate = templateDetails[templateParam] || templateDetails['template01'];
+
+// Update left panel text
+document.getElementById('templateName').innerHTML =
+    `${currentTemplate.name}<br><em style="color:var(--gold);font-weight:300;">Template</em>`;
+document.getElementById('templateDesc').textContent = currentTemplate.desc;
+
+// ── State ──────────────────────────────────────────────────
+let sb = null;
+let currentUser = null;
+let resolvedAmount = 499;
+let discountPercent = 0;
+
+// ── Supabase init + auth guard ─────────────────────────────
+async function initPage() {
+    try {
+        const res = await fetch('/api/config');
+        if (!res.ok) throw new Error('Config fetch failed');
+        const config = await res.json();
+        if (!config.supabaseUrl || !config.supabaseAnonKey) return;
+
+        sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+            window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateParam);
+            return;
         }
+        currentUser = session.user;
 
-        initPage();
+        // Fetch real price from template_configs
+        try {
+            const { data: tpl } = await sb
+                .from('template_configs')
+                .select('price, name')
+                .eq('id', templateParam)
+                .single();
 
-        // Checkbox logic to enable/disable pay button
-        const termsCheckbox = document.getElementById('termsCheckbox');
-        const payButton = document.getElementById('payButton');
-
-        termsCheckbox.addEventListener('change', function() {
-            payButton.disabled = !this.checked;
-            if (this.checked) {
-                payButton.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                payButton.classList.add('opacity-50', 'cursor-not-allowed');
+            if (tpl && !isNaN(tpl.price)) {
+                resolvedAmount = Number(tpl.price);
+                updateAmountDisplay(resolvedAmount);
             }
+        } catch { /* use fallback 499 */ }
+
+    } catch (err) {
+        console.error('Page init error:', err);
+    }
+}
+initPage();
+
+function updateAmountDisplay(amt) {
+    document.getElementById('amountDisplay').textContent = amt;
+    document.getElementById('payBtnAmount').textContent = amt;
+}
+
+// ── Checkbox custom styling ────────────────────────────────
+const termsCheckbox = document.getElementById('termsCheckbox');
+const checkMark = document.getElementById('checkMark');
+const payButton = document.getElementById('payButton');
+
+termsCheckbox.addEventListener('change', function() {
+    if (this.checked) {
+        this.style.background = 'var(--crimson)';
+        this.style.borderColor = 'var(--crimson)';
+        checkMark.style.opacity = '1';
+        payButton.disabled = false;
+    } else {
+        this.style.background = 'white';
+        this.style.borderColor = '#d4b8ba';
+        checkMark.style.opacity = '0';
+        payButton.disabled = true;
+    }
+});
+
+// ── Coupon ─────────────────────────────────────────────────
+function applyCoupon() {
+    const code = document.getElementById('couponCode').value.trim().toUpperCase();
+    if (!code) { alert('Please enter a coupon code.'); return; }
+    // TODO: validate against coupons table in Supabase
+    alert(`Coupon "${code}" is not valid or has expired.`);
+}
+
+// ── Razorpay flow ──────────────────────────────────────────
+const PAY_BTN_DEFAULT = `<span id="payBtnContent" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+    </svg>
+    Pay ₹<span id="payBtnAmount">${resolvedAmount}</span> Securely
+</span>`;
+
+payButton.addEventListener('click', async function() {
+    if (!termsCheckbox.checked) return;
+    if (!currentUser) {
+        window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateParam);
+        return;
+    }
+
+    payButton.disabled = true;
+    payButton.innerHTML = `<span style="display:flex;align-items:center;justify-content:center;gap:10px;">
+        <svg class="animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" opacity="0.3"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8" stroke="white"/>
+        </svg>
+        Creating your order…
+    </span>`;
+
+    try {
+        const response = await fetch('/api/create-razorpay-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ templateId: templateParam })
         });
 
-        // Coupon Apply — placeholder logic (extend as needed)
-        document.querySelector('button[type="button"]').addEventListener('click', function() {
-            const code = document.getElementById('couponCode').value.trim().toUpperCase();
-            if (!code) { alert('Please enter a coupon code.'); return; }
-            // TODO: validate against a coupons table in Supabase
-            alert(`Coupon "${code}" is not valid or has expired.`);
-        });
+        if (!response.ok) throw new Error('Failed to create order');
+        const orderData = await response.json();
 
-        const PAY_BTN_DEFAULT = `<span class="relative z-10 flex items-center justify-center gap-2">
-            <svg class="w-5 h-5 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6
-                   a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-            </svg>Proceed to Payment</span>`;
+        const options = {
+            key: orderData.key,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: "Sync & Style",
+            description: `${currentTemplate.name} Template`,
+            order_id: orderData.id,
+            prefill: { email: currentUser.email },
+            handler: async function(rzpResponse) {
+                try {
+                    const verifyRes = await fetch('/api/verify-razorpay-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            razorpay_order_id: rzpResponse.razorpay_order_id,
+                            razorpay_payment_id: rzpResponse.razorpay_payment_id,
+                            razorpay_signature: rzpResponse.razorpay_signature
+                        })
+                    });
+                    if (!verifyRes.ok) { alert("Payment verification failed. Contact support."); return; }
 
-        // Razorpay flow
-        document.getElementById('payButton').onclick = async function(e) {
-            e.preventDefault();
-            if (!termsCheckbox.checked) return;
-            if (!currentUser) {
-                alert('Please log in before paying.');
-                window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateParam);
-                return;
-            }
+                    const { error: insertError } = await sb
+                        .from('customer_invitations')
+                        .insert([{
+                            user_id: currentUser.id,
+                            user_email: currentUser.email,
+                            template_type: templateParam,
+                            title: currentTemplate.name + "'s Invitation",
+                            status: 'draft',
+                            payment_id: rzpResponse.razorpay_payment_id,
+                            order_id: rzpResponse.razorpay_order_id,
+                            rsvps: []
+                        }]);
 
-            try {
-                payButton.disabled = true;
-                payButton.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2">Processing...</span>';
+                    if (insertError) {
+                        alert('Payment received but failed to save. Contact support. Payment ID: ' + rzpResponse.razorpay_payment_id);
+                        return;
+                    }
 
-                // Create Razorpay order — amount comes from server-resolved price
-                const response = await fetch('/api/create-razorpay-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: resolvedAmount * 100, templateId: templateParam })
-                });
+                    // Show success overlay then redirect
+                    document.getElementById('successOverlay').classList.add('show');
+                    setTimeout(() => { window.location.href = '/customer-dashboard?payment=success'; }, 2500);
 
-                if (!response.ok) throw new Error('Failed to create order');
-                const orderData = await response.json();
-
-                const options = {
-                    "key": orderData.key,
-                    "amount": orderData.amount,
-                    "currency": orderData.currency,
-                    "name": "Sync & Style",
-                    "description": `Payment for ${currentTemplate.name} Template`,
-                    "order_id": orderData.id,
-                    "prefill": {
-                        "email": currentUser.email
-                    },
-                    "handler": async function(rzpResponse) {
-                        try {
-                            // 1. Verify payment signature
-                            const verifyRes = await fetch('/api/verify-razorpay-payment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    razorpay_order_id: rzpResponse.razorpay_order_id,
-                                    razorpay_payment_id: rzpResponse.razorpay_payment_id,
-                                    razorpay_signature: rzpResponse.razorpay_signature
-                                })
-                            });
-
-                            if (!verifyRes.ok) {
-                                alert("Payment verification failed. Please contact support.");
-                                return;
-                            }
-
-                            // ── FIX: Create invitation record in Supabase ────────
-                            const { error: insertError } = await sb
-                                .from('customer_invitations')
-                                .insert([{
-                                    user_id: currentUser.id,
-                                    user_email: currentUser.email,
-                                    template_type: templateParam,
-                                    title: currentTemplate.name + "'s Invitation",
-                                    status: 'draft',
-                                    payment_id: rzpResponse.razorpay_payment_id,
-                                    order_id: rzpResponse.razorpay_order_id,
-                                    rsvps: []
-                                }]);
-
-                            if (insertError) {
-                                console.error('Failed to save invitation record:', insertError);
-                                alert('Payment received but failed to save your invitation. Please contact support with Payment ID: ' + rzpResponse.razorpay_payment_id);
-                                return;
-                            }
-
-                            // Redirect to dashboard
-                            window.location.href = '/customer-dashboard?payment=success';
-                        } catch (error) {
-                            console.error("Post-payment error:", error);
-                            alert("An error occurred after payment. Contact support with Payment ID: " + rzpResponse.razorpay_payment_id);
-                        }
-                    },
-                    "theme": { "color": "#9c404d" }
-                };
-
-                const rzp1 = new Razorpay(options);
-                rzp1.on('payment.failed', function(response) {
-                    alert('Payment failed: ' + response.error.description);
+                } catch (error) {
+                    console.error("Post-payment error:", error);
+                    alert("Error after payment. Contact support. Payment ID: " + rzpResponse.razorpay_payment_id);
+                }
+            },
+            theme: { color: "#9c404d" },
+            modal: {
+                ondismiss: function() {
                     payButton.disabled = false;
                     payButton.innerHTML = PAY_BTN_DEFAULT;
-                });
-                rzp1.open();
-
-            } catch (error) {
-                console.error("Error starting Razorpay:", error);
-                alert("Failed to initiate payment. Please try again.");
-                payButton.disabled = false;
-                payButton.innerHTML = PAY_BTN_DEFAULT;
+                }
             }
         };
-    </script>
 
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function(response) {
+            alert('Payment failed: ' + response.error.description);
+            payButton.disabled = false;
+            payButton.innerHTML = PAY_BTN_DEFAULT;
+        });
+        rzp.open();
+
+    } catch (error) {
+        console.error("Razorpay init error:", error);
+        alert("Failed to initiate payment. Please try again.");
+        payButton.disabled = false;
+        payButton.innerHTML = PAY_BTN_DEFAULT;
+    }
+});
+</script>
 </body>
 </html>
