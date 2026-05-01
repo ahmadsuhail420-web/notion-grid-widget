@@ -1,4 +1,5 @@
 const Razorpay = require('razorpay');
+const { createClient } = require('@supabase/supabase-js');
 
 const instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -10,9 +11,45 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  const { templateId } = req.body;
+
+  // ── FIX: Resolve price server-side — never trust client-sent amount ──
+  let amount;
+  try {
+    const sb = createClient(
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
+    );
+
+    if (templateId) {
+      const { data: tpl, error } = await sb
+        .from('template_configs')
+        .select('price, is_active')
+        .eq('id', templateId)
+        .single();
+
+      if (error || !tpl) {
+        return res.status(400).json({ error: 'Invalid template ID' });
+      }
+      if (!tpl.is_active) {
+        return res.status(400).json({ error: 'This template is not currently available' });
+      }
+      amount = Math.round(Number(tpl.price) * 100); // convert ₹ → paisa
+    } else {
+      // Fallback: validate client-sent amount is a reasonable positive integer
+      const clientAmount = Number(req.body.amount);
+      if (!Number.isInteger(clientAmount) || clientAmount < 100 || clientAmount > 1000000) {
+        return res.status(400).json({ error: 'Invalid payment amount' });
+      }
+      amount = clientAmount;
+    }
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to resolve template price: ' + err.message });
+  }
+
   try {
     const options = {
-      amount: req.body.amount,
+      amount,
       currency: 'INR',
       receipt: `receipt_${Date.now()}`
     };

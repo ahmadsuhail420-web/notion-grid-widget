@@ -11,6 +11,12 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // ── FIX: Validate guest_count is a sane positive integer ──
+    const parsedCount = parseInt(guest_count) || 1;
+    if (parsedCount < 1 || parsedCount > 50) {
+        return res.status(400).json({ error: 'guest_count must be between 1 and 50' });
+    }
+
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
@@ -33,7 +39,7 @@ module.exports = async (req, res) => {
         const rsvps = data.rsvps || [];
         rsvps.push({
             guest_name,
-            guest_count: parseInt(guest_count) || 0,
+            guest_count: parsedCount,
             status,
             submitted_at: new Date().toISOString()
         });
