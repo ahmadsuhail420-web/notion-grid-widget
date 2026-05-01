@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Sync & Style</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  
+  <nav class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="/index.html" class="font-serif text-2xl font-bold text-[#9c404d]">Sync & Style Admin</a>
+      <div id="admin-user-info" class="text-sm font-medium text-gray-600"></div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Total Sales</h3>
+        <p class="text-3xl font-bold text-[#9c404d]" id="stat-total-sales">₹0</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Total Orders</h3>
+        <p class="text-3xl font-bold text-gray-900" id="stat-total-orders">0</p>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex border-b border-gray-200 mb-6">
+      <button onclick="switchTab('templates')" id="tab-templates" class="py-3 px-6 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all">Templates</button>
+      <button onclick="switchTab('sales')" id="tab-sales" class="py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all">Sales</button>
+    </div>
+
+    <!-- Templates Management -->
+    <div id="section-templates">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-serif">Template Configs</h2>
+        <button onclick="loadTemplates()" class="text-sm text-[#9c404d] hover:underline flex items-center gap-1">
+          Refresh
+        </button>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-12">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y border-b divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Preview</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID / Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rate (₹)</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="templates-tbody" class="bg-white divide-y divide-gray-200">
+              <!-- Dynamic rows -->
+              <tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sales History -->
+    <div id="section-sales" class="hidden">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-serif">Recent Sales</h2>
+        <button onclick="loadSales()" class="text-sm text-[#9c404d] hover:underline flex items-center gap-1">
+          Refresh
+        </button>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y border-b divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              </tr>
+            </thead>
+            <tbody id="sales-tbody" class="bg-white divide-y divide-gray-200">
+              <!-- Dynamic rows -->
+              <tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Edit Template Modal -->
+  <div id="edit-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+      <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="text-xl font-bold text-gray-900 font-serif">Edit Template</h3>
+        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <input type="hidden" id="edit-id">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <input type="text" id="edit-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9c404d] focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+          <input type="number" id="edit-price" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9c404d] focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Placeholder Image (Upload)</label>
+          <input type="file" id="edit-image-file" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9c404d] focus:border-transparent">
+          <p class="text-xs text-gray-400 mt-1 mb-2">Upload a new placeholder image. It will be uploaded to Supabase Storage ('placeholders' bucket).</p>
+          <input type="url" id="edit-image" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500" placeholder="Current image URL..." readonly>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="edit-active" class="rounded text-[#9c404d] focus:ring-[#9c404d]">
+          <label class="text-sm font-medium text-gray-700">Is Active</label>
+        </div>
+      </div>
+      <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+        <button onclick="closeEditModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+        <button onclick="saveTemplate()" id="save-btn" class="px-4 py-2 text-sm font-medium text-white bg-[#9c404d] rounded-lg hover:bg-[#833641]">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sb = null;
+    let templatesData = [];
+    
+    function switchTab(tab) {
+        document.getElementById('section-templates').classList.add('hidden');
+        document.getElementById('section-sales').classList.add('hidden');
+        
+        document.getElementById('tab-templates').className = 'py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all';
+        document.getElementById('tab-sales').className = 'py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all';
+
+        document.getElementById(`section-${tab}`).classList.remove('hidden');
+        document.getElementById(`tab-${tab}`).className = 'py-3 px-6 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all';
+    }
+
+    async function initAdmin() {
+      try {
+        const res = await fetch('/api/config');
+        if (!res.ok) throw new Error("Failed config fetch");
+        const config = await res.json();
+        if (config.supabaseUrl && config.supabaseAnonKey) {
+          sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+          await ensureTemplateTable();
+          await loadTemplates();
+          await loadSales();
+        } else {
+          alert('Missing Supabase Config. Check Admin setup.');
+        }
+      } catch (e) {
+        console.error("Admin init failed", e);
+      }
+    }
+
+    async function ensureTemplateTable() {
+      if(!sb) return;
+      // Auto-insert default templates if they don't exist
+      const check = await sb.from('template_configs').select('id').limit(1);
+      if (check.error && check.error.code === '42P01') {
+        alert("Table 'template_configs' does not exist! Please run this in your Supabase SQL Editor:\n\nCREATE TABLE IF NOT EXISTS public.template_configs (\n  id TEXT PRIMARY KEY,\n  name TEXT NOT NULL,\n  price NUMERIC NOT NULL,\n  placeholder_url TEXT,\n  is_active BOOLEAN DEFAULT TRUE,\n  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);");
+      } else if (check.data && check.data.length === 0) {
+        // Insert defaults
+        await sb.from('template_configs').insert([
+          { id: 'template01', name: 'Royal Heritage', price: 499, is_active: true, placeholder_url: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?q=80&w=800&auto=format&fit=crop' },
+          { id: 'template02', name: 'Minimalist Gold', price: 499, is_active: true, placeholder_url: 'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' },
+          { id: 'template03', name: 'Floral Garden', price: 499, is_active: false, placeholder_url: 'https://images.unsplash.com/photo-1582236307399-52e896472d8e?q=80&w=800&auto=format&fit=crop' },
+          { id: 'template04', name: 'Majestic Gold', price: 499, is_active: false, placeholder_url: 'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' }
+        ]);
+      }
+    }
+
+    async function loadTemplates() {
+        if (!sb) return;
+        const tbody = document.getElementById('templates-tbody');
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>';
+        
+        const { data, error } = await sb.from('template_configs').select('*').order('id', { ascending: true });
+        if (error) {
+            console.error("Error loading templates", error);
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-red-500">Failed to load</td></tr>';
+            return;
+        }
+
+        templatesData = data || [];
+        if (templatesData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No templates found.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = templatesData.map(t => `
+            <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <img src="${t.placeholder_url || ''}" class="h-12 w-8 object-cover rounded shadow-sm border border-gray-200" alt="${t.name}">
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">${t.name}</div>
+                <div class="text-xs text-gray-500">${t.id}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${t.price}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${t.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                ${t.is_active ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button onclick="openEditModal('${t.id}')" class="text-[#9c404d] hover:text-[#833641]">Edit</button>
+            </td>
+            </tr>
+        `).join('');
+    }
+
+    async function loadSales() {
+        if (!sb) return;
+        const tbody = document.getElementById('sales-tbody');
+        tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>';
+
+        const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
+        if (error) {
+            console.error("Error loading sales", error);
+            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-red-500">Failed to load</td></tr>';
+            return;
+        }
+
+        const stats = data || [];
+        document.getElementById('stat-total-orders').textContent = stats.length;
+        
+        // Calculate total sales using template_configs price
+        let totalSales = 0;
+        stats.forEach(s => {
+            const template = templatesData.find(t => t.id === s.template_type);
+            const price = template && !isNaN(template.price) ? Number(template.price) : 499;
+            totalSales += price;
+        });
+        
+        document.getElementById('stat-total-sales').textContent = `₹${totalSales}`; 
+        
+        if (stats.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No sales yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = stats.slice(0,10).map(s => {
+            const templateName = templatesData.find(t => t.id === s.template_type)?.name || s.template_type;
+            const price = templatesData.find(t => t.id === s.template_type)?.price || 499;
+            return `
+            <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(s.created_at).toLocaleDateString()}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${s.user_email || 'Anonymous'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${templateName} (₹${price})</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Paid / Published</span>
+            </td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    function openEditModal(id) {
+        const item = templatesData.find(t => t.id === id);
+        if(!item) return;
+
+        document.getElementById('edit-id').value = item.id;
+        document.getElementById('edit-name').value = item.name;
+        document.getElementById('edit-price').value = item.price;
+        document.getElementById('edit-image').value = item.placeholder_url || '';
+        document.getElementById('edit-image-file').value = '';
+        document.getElementById('edit-active').checked = item.is_active;
+
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-modal').classList.add('hidden');
+    }
+
+    async function saveTemplate() {
+        if(!sb) return;
+        const id = document.getElementById('edit-id').value;
+        const name = document.getElementById('edit-name').value;
+        const price = document.getElementById('edit-price').value;
+        let placeholder_url = document.getElementById('edit-image').value;
+        const is_active = document.getElementById('edit-active').checked;
+
+        const btn = document.getElementById('save-btn');
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+
+        const fileInput = document.getElementById('edit-image-file');
+        if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${id}-${Math.random()}.${fileExt}`;
+            
+            try {
+                const { data: uploadData, error: uploadError } = await sb.storage.from('placeholders').upload(fileName, file);
+                
+                if (uploadError) {
+                    // Check if bucket doesn't exist
+                    if (uploadError.statusCode === "404" || uploadError.message.includes("Bucket not found")) {
+                        alert("Storage bucket 'placeholders' does not exist! Please go to your Supabase Storage, create a public bucket named 'placeholders'.");
+                        btn.textContent = 'Save Changes';
+                        btn.disabled = false;
+                        return;
+                    }
+                    throw uploadError;
+                }
+                
+                const { data: urlData } = sb.storage.from('placeholders').getPublicUrl(fileName);
+                placeholder_url = urlData.publicUrl;
+            } catch (err) {
+                console.error("Upload error", err);
+                alert("Upload failed: " + err.message);
+                btn.textContent = 'Save Changes';
+                btn.disabled = false;
+                return;
+            }
+        }
+
+        const { error } = await sb.from('template_configs').update({
+            name, price, placeholder_url, is_active, updated_at: new Date().toISOString()
+        }).eq('id', id);
+
+        btn.textContent = 'Save Changes';
+        btn.disabled = false;
+
+        if (error) {
+            console.error("Save error", error);
+            alert("Save failed");
+        } else {
+            closeEditModal();
+            loadTemplates();
+            loadSales();
+        }
+    }
+
+    initAdmin();
+  </script>
+</body>
+</html>
