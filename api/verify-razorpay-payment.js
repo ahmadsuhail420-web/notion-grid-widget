@@ -4,7 +4,6 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
-
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
   if (!process.env.RAZORPAY_KEY_SECRET) {
