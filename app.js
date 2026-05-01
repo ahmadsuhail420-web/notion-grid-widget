@@ -15,4 +15,6 @@ document.addEventListener("click", (e) => {
   smoothScrollTo(target);
 });
 
-document.getElementById("year").textContent = new Date().getFullYear();
+// Guard: only set year if the element exists on this page
+const yearEl = document.getElementById("year");
+if (yearEl) yearEl.textContent = new Date().getFullYear();
