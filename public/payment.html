@@ -32,7 +32,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 0;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding: 1.5rem;
+            }
         }
 
         h1, h2, h3, .font-serif {
@@ -53,7 +59,7 @@
 </head>
 <body>
 
-    <div class="max-w-4xl w-full bg-white rounded-3xl overflow-hidden checkout-card border border-[#9c404d]/20 flex flex-col md:flex-row relative">
+    <div class="max-w-4xl w-full min-h-[100dvh] md:min-h-0 bg-white md:rounded-3xl overflow-hidden md:checkout-card border-none md:border md:border-[#9c404d]/20 flex flex-col md:flex-row relative">
         <a href="/" class="absolute top-6 left-6 text-gray-400 hover:text-[#9c404d] transition-colors z-10 md:hidden">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </a>
@@ -153,13 +159,13 @@
 
                 <button id="payButton" class="btn-primary w-full text-center py-5 text-lg rounded-xl shadow-lg shadow-[#9c404d]/20 relative overflow-hidden group mt-4" disabled>
                     <span class="relative z-10 flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        Pay with Razorpay
+                        <svg class="w-5 h-5 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Proceed to Payment
                     </span>
                     <div class="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 skew-x-12"></div>
                 </button>
                 
-                <div class="flex items-center justify-center gap-4 mt-6 opacity-40 grayscale">
+                <div class="flex items-center justify-center gap-4 mt-6 opacity-40 grayscale pb-6 md:pb-0">
                     <img src="https://img.icons8.com/color/48/000000/visa.png" class="h-5" alt="Visa">
                     <img src="https://img.icons8.com/color/48/000000/mastercard.png" class="h-5" alt="Mastercard">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" class="h-4" alt="UPI">
@@ -262,7 +268,7 @@
                 alert("Failed to initiate payment");
             } finally {
                 payButton.disabled = false;
-                payButton.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>Pay with Razorpay</span>';
+                payButton.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2"><svg class="w-5 h-5 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>Proceed to Payment</span>';
             }
         }
     </script>
