@@ -3,47 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment</title>
+    <title>Checkout | Sync & Style</title>
+    <!-- Tailwind CSS -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <!-- jQuery and Razorpay -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+    <style>
+        @import "tailwindcss";
+
+        :root {
+            --primary: #9c404d;
+            --bg-cream: #FFF9F9;
+            --text-dark: #2d0a0e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-cream);
+            background-image: radial-gradient(rgba(156, 64, 77, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .btn-primary {
+            @apply bg-[#9c404d] text-white px-8 py-4 font-bold border-2 border-transparent transition-all duration-300 hover:bg-[#7d333e] disabled:opacity-50 disabled:cursor-not-allowed;
+            font-family: 'Times New Roman', Times, serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .checkout-card {
+            box-shadow: 0 20px 40px rgba(156, 64, 77, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>Select a Template</h1>
-    <select id="templateSelect">
-        <option value="template1">Template 1</option>
-        <option value="template2">Template 2</option>
-        <option value="template3">Template 3</option>
-    </select>
 
-    <h2>Amount: ₹<span id="amountDisplay">499</span></h2>
-    <button id="payButton">Pay with Razorpay</button>
+    <div class="max-w-4xl w-full bg-white rounded-3xl overflow-hidden checkout-card border border-[#9c404d]/20 flex flex-col md:flex-row relative">
+        <a href="/" class="absolute top-6 left-6 text-gray-400 hover:text-[#9c404d] transition-colors z-10 md:hidden">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </a>
+
+        <!-- Left Side: Template Info -->
+        <div class="md:w-1/2 p-10 bg-[#fdf2f3]/50 border-b md:border-b-0 md:border-r border-[#9c404d]/10 relative">
+            <a href="/" class="text-gray-400 hover:text-[#9c404d] transition-colors absolute top-8 left-8 hidden md:block">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
+
+            <div class="mt-8 md:mt-12">
+                <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-sm inline-block mb-4">Premium</span>
+                <h2 id="templateName" class="text-3xl font-serif font-black text-[#2d0a0e] mb-2 leading-tight">Royal Heritage <br><span class="text-[#9c404d] italic font-normal text-2xl">Template Package</span></h2>
+                <p id="templateDesc" class="text-gray-500 text-sm mb-8 italic">You've made an excellent choice for your big day.</p>
+
+                <div class="space-y-4">
+                    <h3 class="font-bold text-sm text-[#2d0a0e] tracking-widest uppercase mb-4 opacity-80 border-b border-[#9c404d]/20 pb-2">What's Included</h3>
+                    
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <div>
+                            <p class="font-bold text-sm text-[#2d0a0e]">Stunning Animations</p>
+                            <p class="text-xs text-gray-500">Smooth cinematic reveals and transitions.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <div>
+                            <p class="font-bold text-sm text-[#2d0a0e]">Guest RSVP Tracking</p>
+                            <p class="text-xs text-gray-500">Real-time attendance in your dashboard.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <div>
+                            <p class="font-bold text-sm text-[#2d0a0e]">Unlimited Edits</p>
+                            <p class="text-xs text-gray-500">Make updates anytime until the wedding.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-[#9c404d] mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <div>
+                            <p class="font-bold text-sm text-[#2d0a0e]">Interactive Features</p>
+                            <p class="text-xs text-gray-500">Background music, countdown, and maps.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Checkout Form -->
+        <div class="md:w-1/2 p-10 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-end mb-8 border-b border-gray-100 pb-6">
+                    <div>
+                        <h1 class="text-2xl font-serif text-[#2d0a0e]">Checkout</h1>
+                        <p class="text-gray-400 text-sm mt-1">One-time payment. No subscriptions.</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-gray-400 text-xs uppercase tracking-widest mb-1">Total</p>
+                        <h2 class="text-3xl font-serif font-bold text-[#9c404d]">₹<span id="amountDisplay">499</span></h2>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2" for="couponCode">Coupon Code</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="couponCode" placeholder="Enter code here..." class="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-[#9c404d] focus:ring-1 focus:ring-[#9c404d] transition-all">
+                        <button type="button" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-3 rounded-lg text-sm transition-colors uppercase tracking-widest">Apply</button>
+                    </div>
+                </div>
+
+                <div class="mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <label class="flex items-start cursor-pointer group">
+                        <div class="relative flex items-center justify-center mt-0.5 mr-3">
+                            <input type="checkbox" id="termsCheckbox" class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#9c404d] focus:ring-offset-1 checked:bg-[#9c404d] checked:border-[#9c404d] transition-all cursor-pointer">
+                            <svg class="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm text-gray-600 leading-snug group-hover:text-gray-800 transition-colors">
+                            By proceeding, I agree to the <a href="#" class="text-[#9c404d] font-semibold hover:underline">Terms and Conditions</a>, and acknowledge the <a href="#" class="text-[#9c404d] font-semibold hover:underline">Refund Policy</a>.
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="flex flex-col gap-3">
+                    <div class="text-center text-xs space-x-2">
+                        <a href="#" class="font-medium text-gray-500 hover:text-[#9c404d] transition-colors uppercase tracking-widest">Privacy Policy</a>
+                        <span class="text-gray-300">•</span>
+                        <a href="#" class="font-medium text-gray-500 hover:text-[#9c404d] transition-colors uppercase tracking-widest">Refund Policy</a>
+                    </div>
+                </div>
+
+                <button id="payButton" class="btn-primary w-full text-center py-5 text-lg rounded-xl shadow-lg shadow-[#9c404d]/20 relative overflow-hidden group mt-4" disabled>
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        Pay with Razorpay
+                    </span>
+                    <div class="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 skew-x-12"></div>
+                </button>
+                
+                <div class="flex items-center justify-center gap-4 mt-6 opacity-40 grayscale">
+                    <img src="https://img.icons8.com/color/48/000000/visa.png" class="h-5" alt="Visa">
+                    <img src="https://img.icons8.com/color/48/000000/mastercard.png" class="h-5" alt="Mastercard">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo.png" class="h-4" alt="UPI">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        var options = {
-            "key": "YOUR_RAZORPAY_KEY_HERE", // Enter the Key ID generated from the Razorpay Dashboard
-            "amount": 49900, // Amount is in currency subunits. Hence 49900
-            "currency": "INR",
-            "name": "Your Company Name",
-            "description": "Payment for selected template",
-            "image": "https://example.com/your_logo",
-            "handler": function (response){
-                alert(response.razorpay_payment_id);
-                // Call your backend to verify the payment here
-            },
-            "prefill": {
-                "name": "",
-                "email": "",
-                "contact": ""
-            },
-            "theme": {
-                "color": "#F37254"
-            }
+        // Parse URL parameters for template
+        const urlParams = new URLSearchParams(window.location.search);
+        const templateParam = urlParams.get('template') || 'template01';
+        
+        const templateDetails = {
+            'template01': { name: 'Royal Heritage', desc: "Timeless patterns meet royal deep-plum elegance.", color: "text-[#9c404d]" },
+            'template02': { name: 'Minimalist Gold', desc: "Sophisticated minimalism with a focus on gold accents.", color: "text-[#b08d5b]" }
         };
 
-        document.getElementById('payButton').onclick = function(e){
-            var rzp1 = new Razorpay(options);
-            rzp1.open();
+        const currentTemplate = templateDetails[templateParam] || templateDetails['template01'];
+        document.getElementById('templateName').innerHTML = `${currentTemplate.name} <br><span class="${currentTemplate.color.replace('text-', 'text-')} italic font-normal text-2xl">Template Package</span>`;
+        document.getElementById('templateDesc').innerText = currentTemplate.desc;
+
+        // Checkbox logic to enable/disable pay button
+        const termsCheckbox = document.getElementById('termsCheckbox');
+        const payButton = document.getElementById('payButton');
+
+        termsCheckbox.addEventListener('change', function() {
+            payButton.disabled = !this.checked;
+            if(this.checked) {
+                payButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                payButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        // Razorpay logic
+        document.getElementById('payButton').onclick = async function(e){
             e.preventDefault();
+            if (!termsCheckbox.checked) return;
+
+            const amount = 499;
+
+            try {
+                payButton.disabled = true;
+                payButton.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2">Processing...</span>';
+
+                // Call the backend to create an order
+                const response = await fetch('/api/create-razorpay-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: amount * 100 }) // Amount in paisa
+                });
+
+                if (!response.ok) throw new Error('Failed to create order');
+                const orderData = await response.json();
+
+                const options = {
+                    "key": "YOUR_RAZORPAY_KEY_ID", // Note: The actual key config usually gets passed via backend or config endpoint, but keeping the stub as in original HTML
+                    "amount": orderData.amount,
+                    "currency": orderData.currency,
+                    "name": "Sync & Style",
+                    "description": "Payment for Selected Template",
+                    "order_id": orderData.id,
+                    "handler": async function (response){
+                        try {
+                            const verifyRes = await fetch('/api/verify-razorpay-payment', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature
+                                })
+                            });
+
+                            if (verifyRes.ok) {
+                                alert("Payment successful! Redirecting to setup...");
+                                window.location.href = '/customer-dashboard';
+                            } else {
+                                alert("Payment verification failed. Please contact support.");
+                            }
+                        } catch (error) {
+                            console.error("Verification Error:", error);
+                            alert("Payment verification error.");
+                        }
+                    },
+                    "theme": {
+                        "color": "#9c404d"
+                    }
+                };
+
+                var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response){
+                    alert(response.error.description);
+                });
+                rzp1.open();
+                
+            } catch (error) {
+                console.error("Error starting Razorpay:", error);
+                alert("Failed to initiate payment");
+            } finally {
+                payButton.disabled = false;
+                payButton.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>Pay with Razorpay</span>';
+            }
         }
     </script>
 
