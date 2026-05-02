@@ -256,12 +256,77 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
             <input type="number" id="edit-price" class="ifield" placeholder="499">
           </div>
         </div>
+        <!-- Image Section -->
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5">Placeholder Image URL</label>
-          <input type="url" id="edit-image" class="ifield" placeholder="https://images.unsplash.com/…" oninput="prevImg(this.value)">
-          <p class="text-[11px] text-gray-400 mt-1.5">Paste a direct image URL. Updates card previews on index & templates pages instantly.</p>
-          <img id="url-prev" class="url-prev" alt="Preview" onerror="this.style.display='none'">
+          <label class="block text-xs font-semibold text-gray-600 mb-2">Placeholder Image</label>
+
+          <!-- Tab Toggle -->
+          <div class="flex gap-1 mb-3 bg-gray-100 p-1 rounded-lg w-fit">
+            <button type="button" id="img-tab-upload" onclick="switchImgTab('upload')"
+              class="img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md bg-white text-gray-800 shadow-sm transition-all">
+              📁 Upload File
+            </button>
+            <button type="button" id="img-tab-url" onclick="switchImgTab('url')"
+              class="img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 transition-all">
+              🔗 Paste URL
+            </button>
+          </div>
+
+          <!-- Upload Panel -->
+          <div id="img-panel-upload">
+            <div id="img-drop-zone"
+              onclick="document.getElementById('img-file-input').click()"
+              ondragover="event.preventDefault(); this.classList.add('border-[#9c404d]','bg-[#fef2f2]')"
+              ondragleave="this.classList.remove('border-[#9c404d]','bg-[#fef2f2]')"
+              ondrop="handleImgDrop(event)"
+              class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-[#9c404d] hover:bg-[#fef2f2] transition-all">
+              <div id="img-drop-content">
+                <div class="text-2xl mb-1">🖼️</div>
+                <p class="text-xs font-semibold text-gray-600">Click or drag & drop image</p>
+                <p class="text-[11px] text-gray-400 mt-0.5">JPG, PNG, WEBP up to 10MB</p>
+              </div>
+              <div id="img-uploading" class="hidden">
+                <div class="flex items-center justify-center gap-2">
+                  <svg class="w-4 h-4 animate-spin text-[#9c404d]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                  <span class="text-xs font-semibold text-[#9c404d]">Uploading to ImgBB…</span>
+                </div>
+              </div>
+            </div>
+            <input type="file" id="img-file-input" accept="image/*" class="hidden" onchange="handleImgFile(this)">
+            <p class="text-[11px] text-gray-400 mt-1.5">Images uploaded to <strong>ImgBB</strong> (free). <span id="imgbb-key-status"></span></p>
+            <div id="imgbb-key-setup" class="mt-2 hidden">
+              <div class="flex gap-2 items-center">
+                <input id="imgbb-key-input" type="text" class="ifield text-[11px] py-1.5" placeholder="Paste your ImgBB API key…">
+                <button type="button" onclick="saveImgbbKey()" class="text-xs font-bold text-white bg-[#9c404d] px-3 py-1.5 rounded-lg whitespace-nowrap">Save Key</button>
+              </div>
+              <a href="https://api.imgbb.com" target="_blank" class="text-[11px] text-blue-500 hover:underline mt-1 block">Get free key at api.imgbb.com →</a>
+            </div>
+          </div>
+
+          <!-- URL Panel -->
+          <div id="img-panel-url" class="hidden">
+            <input type="url" id="edit-image-url-input" class="ifield" placeholder="https://i.imgur.com/…  or  https://i.ibb.co/…" oninput="onUrlInput(this.value)">
+            <p class="text-[11px] text-gray-400 mt-1.5">Use direct image links only (ending in .jpg/.png/.webp). Pinterest/Instagram links <span class="text-red-500 font-semibold">won't work</span>.</p>
+          </div>
+
+          <!-- Hidden actual field that gets saved -->
+          <input type="hidden" id="edit-image">
+
+          <!-- Preview -->
+          <div id="img-preview-wrap" class="hidden mt-3">
+            <div class="relative">
+              <img id="url-prev" class="w-full h-32 object-cover rounded-xl border border-gray-200" alt="Preview" onerror="imgPreviewError()">
+              <button type="button" onclick="clearImgPreview()" class="absolute top-2 right-2 w-6 h-6 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <p id="img-preview-url" class="text-[10px] text-gray-400 mt-1 truncate font-mono"></p>
+          </div>
+
+          <!-- Error -->
+          <p id="img-error" class="hidden text-[11px] text-red-500 font-semibold mt-1.5"></p>
         </div>
+
         <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3.5">
           <div>
             <p class="text-sm font-semibold text-gray-700">Active</p>
@@ -271,9 +336,6 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
             <input type="checkbox" id="edit-active" class="sr-only peer">
             <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9c404d]"></div>
           </label>
-        </div>
-        <div class="info-box text-[11px]">
-          <strong>ℹ️ File upload</strong> requires Supabase Storage bucket <code class="font-mono">placeholders</code> with INSERT policy. Until set up, use URL above.
         </div>
       </div>
       <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-2.5">
@@ -314,10 +376,132 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
     let sb = null, templatesData = [], allSalesData = [], filteredRows = [];
 
     // ── HELPERS ───────────────────────────────────────────────────
-    function prevImg(url) {
+    // ── IMAGE UPLOAD (ImgBB) ──────────────────────────────────────
+    // Get free API key at https://api.imgbb.com (takes 30 seconds)
+    // Replace the value below with your own key
+    const IMGBB_KEY = localStorage.getItem('imgbb_key') || '';
+
+    function switchImgTab(tab) {
+      document.getElementById('img-panel-upload').classList.toggle('hidden', tab !== 'upload');
+      document.getElementById('img-panel-url').classList.toggle('hidden', tab !== 'url');
+      document.getElementById('img-tab-upload').className = 'img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md transition-all ' +
+        (tab === 'upload' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500');
+      document.getElementById('img-tab-url').className = 'img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md transition-all ' +
+        (tab === 'url' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500');
+    }
+
+    function handleImgDrop(e) {
+      e.preventDefault();
+      document.getElementById('img-drop-zone').classList.remove('border-[#9c404d]','bg-[#fef2f2]');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) uploadToImgBB(file);
+      else showImgError('Please drop an image file.');
+    }
+
+    function handleImgFile(input) {
+      const file = input.files[0];
+      if (file) uploadToImgBB(file);
+    }
+
+    async function uploadToImgBB(file) {
+      const key = localStorage.getItem('imgbb_key') || IMGBB_KEY;
+      if (!key) {
+        showImgError('No ImgBB API key set. Click "Set up API key" above.');
+        document.getElementById('imgbb-key-setup').classList.remove('hidden');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) { showImgError('File too large. Max 10MB.'); return; }
+      document.getElementById('img-drop-content').classList.add('hidden');
+      document.getElementById('img-uploading').classList.remove('hidden');
+      document.getElementById('img-error').classList.add('hidden');
+      try {
+        const form = new FormData();
+        form.append('image', file);
+        const res = await fetch('https://api.imgbb.com/1/upload?key=' + key, { method:'POST', body:form });
+        const json = await res.json();
+        if (json.success) {
+          setImgResult(json.data.url);
+        } else {
+          throw new Error(json.error && json.error.message ? json.error.message : 'Upload failed');
+        }
+      } catch(e) {
+        showImgError('Upload failed: ' + e.message + '. Try pasting a URL instead.');
+      } finally {
+        document.getElementById('img-drop-content').classList.remove('hidden');
+        document.getElementById('img-uploading').classList.add('hidden');
+        document.getElementById('img-file-input').value = '';
+      }
+    }
+
+    function onUrlInput(val) {
+      document.getElementById('img-error').classList.add('hidden');
+      if (val && val.startsWith('http')) {
+        setImgResult(val);
+      } else {
+        document.getElementById('edit-image').value = '';
+        document.getElementById('img-preview-wrap').classList.add('hidden');
+      }
+    }
+
+    function setImgResult(url) {
+      document.getElementById('edit-image').value = url;
       const img = document.getElementById('url-prev');
-      if (url && url.startsWith('http')) { img.src = url; img.style.display = 'block'; }
-      else img.style.display = 'none';
+      img.src = url;
+      document.getElementById('img-preview-url').textContent = url;
+      document.getElementById('img-preview-wrap').classList.remove('hidden');
+      document.getElementById('img-error').classList.add('hidden');
+    }
+
+    function imgPreviewError() {
+      showImgError("Image failed to load. Use a direct image URL (.jpg/.png/.webp), not a webpage link like Pinterest.");
+      document.getElementById('img-preview-wrap').classList.add('hidden');
+      document.getElementById('edit-image').value = '';
+    }
+
+    function clearImgPreview() {
+      document.getElementById('edit-image').value = '';
+      document.getElementById('url-prev').src = '';
+      document.getElementById('img-preview-wrap').classList.add('hidden');
+      document.getElementById('img-preview-url').textContent = '';
+      const urlInput = document.getElementById('edit-image-url-input');
+      if (urlInput) urlInput.value = '';
+    }
+
+    function showImgError(msg) {
+      const el = document.getElementById('img-error');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function saveImgbbKey() {
+      const val = document.getElementById('imgbb-key-input').value.trim();
+      if (!val) return;
+      localStorage.setItem('imgbb_key', val);
+      document.getElementById('imgbb-key-setup').classList.add('hidden');
+      document.getElementById('imgbb-key-status').innerHTML = '<span class="text-green-600 font-semibold">✓ Key saved</span>';
+    }
+
+    function checkImgbbKey() {
+      const key = localStorage.getItem('imgbb_key');
+      const status = document.getElementById('imgbb-key-status');
+      const setup = document.getElementById('imgbb-key-setup');
+      if (!status || !setup) return;
+      if (key) {
+        status.innerHTML = '<span class="text-green-600 font-semibold">✓ Ready</span>';
+        setup.classList.add('hidden');
+      } else {
+        status.innerHTML = '<button type="button" onclick="document.getElementById('imgbb-key-setup').classList.remove('hidden')" class="text-[#9c404d] font-semibold underline">Set up API key</button>';
+      }
+    }
+
+    function prevImg(url) {
+      if (url && url.startsWith('http')) {
+        setImgResult(url);
+        const urlInput = document.getElementById('edit-image-url-input');
+        if (urlInput) urlInput.value = url;
+      } else {
+        clearImgPreview();
+      }
     }
 
     function switchTab(tab) {
@@ -565,6 +749,7 @@ document.getElementById('payment-body').innerHTML =
       document.getElementById('edit-subtitle').textContent = 'ID: '+item.id;
       prevImg(item.placeholder_url||'');
       document.getElementById('edit-modal').classList.remove('hidden');
+      checkImgbbKey();
     }
 
     function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
