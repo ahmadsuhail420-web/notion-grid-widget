@@ -330,7 +330,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           
           <!-- Template 1: Royal Heritage -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#4B334F] shadow-2xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" onclick="handleCardClick(this)">
+          <div class="template-card group relative aspect-square overflow-hidden rounded-3xl bg-[#4B334F] shadow-2xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template01" onclick="handleCardClick(this)">
              <!-- Real Hero Preview -->
              <div class="iframe-preview-container">
                 <iframe src="/wedding/islamic-invitation.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
@@ -365,7 +365,7 @@
           </div>
 
           <!-- Template 2: Minimalist Gold -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#1a050a] shadow-2xl border-2 border-gray-100 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 100ms;" onclick="handleCardClick(this)">
+          <div class="template-card group relative aspect-square overflow-hidden rounded-3xl bg-[#1a050a] shadow-2xl border-2 border-gray-100 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template02" style="transition-delay: 100ms;" onclick="handleCardClick(this)">
              <!-- Real Hero Preview -->
              <div class="iframe-preview-container">
                 <iframe src="/wedding/islamic-invitation-premium.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
@@ -400,7 +400,7 @@
           </div>
 
           <!-- Template 3: Floral Garden -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#fdf5f7] shadow-2xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 200ms;" onclick="handleCardClick(this)">
+          <div class="template-card group relative aspect-square overflow-hidden rounded-3xl bg-[#fdf5f7] shadow-2xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template03" style="transition-delay: 200ms;" onclick="handleCardClick(this)">
              <!-- Colored Placeholder for Unavailable Template -->
              <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#fdf5f7]">
                <!-- Available Soon Overlay -->
@@ -433,7 +433,7 @@
           </div>
 
           <!-- Template 4: Majestic Gold -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#111] shadow-2xl border-2 border-[#d4af37]/20 hover:border-[#d4af37]/60 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 300ms;" onclick="handleCardClick(this)">
+          <div class="template-card group relative aspect-square overflow-hidden rounded-3xl bg-[#111] shadow-2xl border-2 border-[#d4af37]/20 hover:border-[#d4af37]/60 transition-all duration-500 scroll-reveal card-glare" data-template-id="template04" style="transition-delay: 300ms;" onclick="handleCardClick(this)">
              <!-- Colored Placeholder for Unavailable Template -->
              <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
                <!-- Available Soon Overlay -->
@@ -613,6 +613,8 @@
           const config = await res.json();
           if (config.supabaseUrl && config.supabaseAnonKey) {
             sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+            // Load placeholder images from admin-managed template_configs
+            loadTemplatePlaceholders(sb);
             const { data: { session } } = await sb.auth.getSession();
             if (session) {
               document.getElementById('nav-login-link').classList.add('hidden');
@@ -621,6 +623,23 @@
           }
         } catch(e) { console.error('Supabase init failed', e); }
       }
+
+      async function loadTemplatePlaceholders(client) {
+        try {
+          const { data, error } = await client.from('template_configs').select('id, placeholder_url, is_active');
+          if (error || !data) return;
+          data.forEach(t => {
+            const card = document.querySelector(`[data-template-id="${t.id}"]`);
+            if (!card || !t.placeholder_url) return;
+            const existing = card.querySelector('.admin-ph-bg');
+            const bg = existing || document.createElement('div');
+            bg.className = 'admin-ph-bg absolute inset-0 z-0 bg-cover bg-center';
+            bg.style.backgroundImage = `url(${t.placeholder_url})`;
+            if (!existing) card.prepend(bg);
+          });
+        } catch(e) { console.error('loadTemplatePlaceholders failed', e); }
+      }
+
       initSupabase();
 
       async function handleSelectTemplate(templateId) {
