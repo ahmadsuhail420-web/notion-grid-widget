@@ -147,7 +147,7 @@
                     }
                     const urlParams = new URLSearchParams(window.location.search);
                     const redirectUrl = urlParams.get('redirect');
-                    window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/customer-dashboard';
+                    window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
                 }
             } catch (err) {
                 console.error('Error initializing Supabase:', err);
@@ -202,7 +202,7 @@
                     if (redirectUrl) {
                         window.location.href = decodeURIComponent(redirectUrl);
                     } else {
-                        window.location.href = '/customer-dashboard';
+                        window.location.href = '/dashboard';
                     }
                 }
             } catch (err) {

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sync & Style</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #9c404d;
+            --bg-cream: #FBFBFB;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); }
+        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+        .toast {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(1rem);
+            opacity: 0;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .btn-effect {
+            position: relative;
+            z-index: 1;
+        }
+        .btn-effect::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+            transform: translateX(-100%) skewX(-15deg);
+            z-index: -1;
+            transition: all 0.7s ease;
+        }
+        .btn-effect:hover::before {
+            transform: translateX(100%) skewX(-15deg);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col gap-3"></div>
+    <nav class="bg-white border-b border-gray-100 p-4 md:p-6">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <a href="/" class="text-xl md:text-2xl font-serif font-bold text-[#9c404d] italic text-center sm:text-left">Sync & Style</a>
+            <div class="flex items-center justify-center space-x-4 md:space-x-6 text-sm">
+                <span id="user-welcome" class="text-gray-500 truncate max-w-[150px] sm:max-w-none">Loading...</span>
+                <button onclick="handleLogout()" class="text-[#9c404d] font-bold whitespace-nowrap">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 md:p-12">
+        <div class="mb-8 md:mb-12">
+            <h1 class="text-2xl md:text-4xl font-serif font-bold mb-2">My Dashboard</h1>
+            <p class="text-sm md:text-base text-gray-500">Manage your templates and guest invitations.</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="flex overflow-x-auto whitespace-nowrap border-b border-gray-200 mb-8 space-x-4 md:space-x-8 pb-1 scrollbar-hide">
+            <button onclick="switchTab('templates')" id="tab-templates" class="pb-3 px-2 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all shrink-0">My Templates</button>
+            <button onclick="switchTab('invites')" id="tab-invites" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">All Invites</button>
+            <button onclick="switchTab('rsvp')" id="tab-rsvp" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">RSVP Responses</button>
+            <button onclick="switchTab('add-guests')" id="tab-add-guests" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">Add Special Guests</button>
+        </div>
+
+        <!-- Tab Content: Templates -->
+        <div id="content-templates" class="tab-content transition-opacity duration-300">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
+                <h2 class="text-lg md:text-2xl font-serif font-bold">Purchased Templates</h2>
+                <button onclick="createInvitation()" id="create-btn" class="bg-[#9c404d] text-white px-6 py-3 sm:py-2 rounded-lg font-bold hover:bg-[#7d333e] transition-all text-sm w-full sm:w-auto">
+                    + New Template
+                </button>
+            </div>
+            <div id="invitation-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
+                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
+                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: RSVP List -->
+        <div id="content-rsvp" class="tab-content hidden opacity-0 transition-opacity duration-300">
+            <div class="flex justify-between items-center mb-6 md:mb-8">
+                <h2 class="text-lg md:text-2xl font-serif font-bold">RSVP Responses <span id="rsvp-total-pill" class="ml-2 bg-[#9c404d] text-white px-3 py-1 rounded-full text-[10px] md:text-xs">0</span></h2>
+            </div>
+            <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead class="bg-gray-50 text-xs uppercase tracking-wider text-[#9c404d] font-bold">
+                            <tr>
+                                <th class="px-6 py-5 md:px-8">Invitation</th>
+                                <th class="px-6 py-5 md:px-8">Guest Name</th>
+                                <th class="px-6 py-5 md:px-8">Status</th>
+                                <th class="px-6 py-5 md:px-8 text-center">People</th>
+                                <th class="px-6 py-5 md:px-8 text-right">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rsvp-list-body" class="divide-y divide-gray-50">
+                            <!-- RSVP data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="rsvp-empty-state" class="p-20 text-center text-gray-400">
+                    No RSVP responses received yet.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: All Invites -->
+        <div id="content-invites" class="tab-content hidden opacity-0 transition-opacity duration-300">
+            <h2 class="text-lg md:text-2xl font-serif font-bold mb-6 md:mb-8">Guest Invitations</h2>
+            <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                            <tr>
+                                <th class="px-6 py-4 md:px-8">Guest Name</th>
+                                <th class="px-6 py-4 md:px-8">Phone Number</th>
+                                <th class="px-6 py-4 md:px-8">Status</th>
+                                <th class="px-6 py-4 md:px-8 text-right">Share Invitation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="guest-list-body" class="divide-y divide-gray-50">
+                            <!-- Guests will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="guest-empty-state" class="p-12 text-center text-gray-400 hidden">
+                    No guests added yet. Go to "Add Special Guests" to start.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Add Guests -->
+        <div id="content-add-guests" class="tab-content hidden opacity-0 transition-opacity duration-300">
+            <div class="max-w-xl mx-auto md:mx-0">
+                <h2 class="text-lg md:text-2xl font-serif font-bold mb-2">Send Personal Invitations</h2>
+                <p class="text-gray-500 text-xs md:text-base mb-6 md:mb-8">Add individual guests to send them a customized link with their name.</p>
+                
+                <form onsubmit="handleAddGuest(event)" class="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Guest Full Name</label>
+                        <input type="text" name="guest_name" required placeholder="e.g. John Doe" 
+                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number (with country code)</label>
+                        <input type="tel" name="guest_phone" required placeholder="e.g. +91 9876543210" 
+                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all">
+                    </div>
+                    <button type="submit" id="add-guest-btn" 
+                            class="w-full bg-[#9c404d] text-white py-4 rounded-xl font-bold hover:bg-[#7d333e] transition-all shadow-lg shadow-[#9c404d]/20">
+                        Add to List & Generate Link
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Activity Feed (Optional, moved to bottom) -->
+        <div class="mt-24 pt-12 border-t border-gray-100">
+            <h2 class="text-xl font-serif font-bold mb-6">Recent Activity</h2>
+            <div id="activity-feed" class="bg-white rounded-3xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
+                <div class="p-10 text-center text-gray-400 italic text-sm">
+                    No recent activity to show.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let sb;
+        let currentUser;
+        let currentTab = 'templates';
+
+        async function initSupabase() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                
+                if (!config.supabaseUrl || !config.supabaseAnonKey) {
+                    console.error('Supabase config missing.');
+                    return;
+                }
+
+                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+                
+                // Check session
+                const { data: { session } } = await sb.auth.getSession();
+                if (!session) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                // 12h session timeout
+                const loginTime = localStorage.getItem('ss_login_time');
+                if (loginTime && (Date.now() - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
+                    await sb.auth.signOut();
+                    localStorage.removeItem('ss_login_time');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                currentUser = session.user;
+                
+                // Update welcome message
+                const firstName = currentUser.user_metadata.first_name || 'Customer';
+                document.getElementById('user-welcome').innerText = `Welcome, ${firstName}`;
+
+                // Initial fetch
+                fetchInvitations();
+                fetchGuests();
+                fetchRsvpData();
+            } catch (err) {
+                console.error('Error initializing Supabase:', err);
+            }
+        }
+
+        async function fetchRsvpData() {
+            if (!sb) return;
+            const { data, error } = await sb
+                .from('customer_invitations')
+                .select('id, title, rsvps')
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Error fetching RSVP data:', error);
+                return;
+            }
+
+            const body = document.getElementById('rsvp-list-body');
+            const emptyState = document.getElementById('rsvp-empty-state');
+            const totalPill = document.getElementById('rsvp-total-pill');
+
+            let allRsvps = [];
+            data.forEach(inv => {
+                if (inv.rsvps && Array.isArray(inv.rsvps)) {
+                    inv.rsvps.forEach(r => {
+                        allRsvps.push({ ...r, invitation_title: inv.title });
+                    });
+                }
+            });
+
+            // Sort by date desc
+            allRsvps.sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+
+            if (allRsvps.length === 0) {
+                body.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                totalPill.innerText = '0';
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            totalPill.innerText = allRsvps.length;
+
+            body.innerHTML = allRsvps.map(rsvp => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-5 md:px-8">
+                        <div class="text-sm font-medium text-gray-800">${rsvp.invitation_title}</div>
+                    </td>
+                    <td class="px-6 py-5 md:px-8">
+                        <div class="text-sm text-gray-600">${rsvp.guest_name}</div>
+                    </td>
+                    <td class="px-6 py-5 md:px-8">
+                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${rsvp.status === 'attending' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}">
+                            ${rsvp.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-5 md:px-8 text-center text-sm text-gray-600">
+                        ${rsvp.guest_count || 1}
+                    </td>
+                    <td class="px-6 py-5 md:px-8 text-right text-xs text-gray-400">
+                        ${rsvp.submitted_at ? new Date(rsvp.submitted_at).toLocaleDateString() : 'N/A'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('opacity-100');
+                content.classList.add('opacity-0');
+            });
+
+            // Reset all tab buttons
+            document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('border-[#9c404d]', 'text-[#9c404d]', 'font-bold');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            // Show active tab content
+            const activeContent = document.getElementById(`content-${tabId}`);
+            activeContent.classList.remove('hidden');
+            setTimeout(() => {
+                activeContent.classList.remove('opacity-0');
+                activeContent.classList.add('opacity-100');
+            }, 50);
+
+            // Set active tab button
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.add('border-[#9c404d]', 'text-[#9c404d]', 'font-bold');
+            activeBtn.classList.remove('border-transparent', 'text-gray-500');
+
+            currentTab = tabId;
+        }
+
+        let globalInvitations = [];
+        async function fetchInvitations() {
+            if (!sb) return;
+
+            const { data, error } = await sb
+                .from('customer_invitations')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching invitations:', error);
+                return;
+            }
+
+            globalInvitations = data;
+            renderInvitations(data);
+            
+            // Re-render guests if they were already loaded so they get correct IDs
+            if (window.lastGuests) renderGuests(window.lastGuests);
+        }
+
+        async function fetchGuests() {
+            if (!sb) return;
+
+            const { data, error } = await sb
+                .from('guest_list')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching guests:', error);
+                // The table might not exist yet, we'll gracefully handle it
+                document.getElementById('guest-empty-state').classList.remove('hidden');
+                document.getElementById('guest-empty-state').innerText = "Please ensure the 'guest_list' table is created in Supabase.";
+                return;
+            }
+
+            window.lastGuests = data;
+            renderGuests(data);
+        }
+
+        function renderInvitations(invitations) {
+            const grid = document.getElementById('invitation-grid');
+            
+            if (invitations.length === 0) {
+                grid.innerHTML = `
+                    <div onclick="createInvitation()" class="col-span-1 md:col-span-3 bg-white/50 border-2 border-dashed border-[#9c404d]/20 rounded-3xl p-8 md:p-12 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-[#fdf2f3] transition-colors">
+                        <div class="w-16 h-16 bg-[#fdf2f3] rounded-full flex items-center justify-center mb-4 text-[#9c404d] group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                        <h3 class="text-lg md:text-xl font-serif font-bold mb-2">No Purchased Templates</h3>
+                        <p class="text-gray-400 mb-6 text-sm md:text-base">Start by creating your first wedding invitation template.</p>
+                        <span class="bg-[#9c404d] text-white px-6 md:px-8 py-3 rounded-lg font-bold w-full sm:w-auto text-sm md:text-base">Create Now</span>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = invitations.map(invitation => `
+                <div class="bg-white rounded-3xl p-6 md:p-8 border border-[#9c404d]/10 shadow-sm hover:shadow-lg hover:border-[#9c404d]/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#9c404d]/5 to-transparent rounded-bl-full -z-10"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3 py-1 ${invitation.status === 'published' ? 'bg-[#9c404d] text-white' : 'bg-gray-100 text-gray-500'} text-[10px] uppercase tracking-widest font-bold rounded-full shadow-sm">
+                            ${invitation.status}
+                        </span>
+                        <span class="text-gray-400 font-mono text-[10px] bg-gray-50 px-2 py-1 rounded">#${invitation.id.slice(0, 6)}</span>
+                        <button onclick="deleteInvitation('${invitation.id}')" class="text-red-400 hover:text-red-600 transition-colors ml-auto flex items-center justify-center p-1 rounded-full hover:bg-red-50" title="Delete Template">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-serif font-black text-[#2d0a0e] mb-1 group-hover:text-[#9c404d] transition-colors">${invitation.title}</h3>
+                    <p class="text-gray-400 text-xs mb-6 font-medium italic flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        ${new Date(invitation.created_at).toLocaleDateString()}
+                    </p>
+                    <div class="flex flex-col gap-3 text-sm mt-4">
+                        <button onclick="viewTemplate('${invitation.id}', '${invitation.template_type}')" class="w-full py-3 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-all font-bold rounded-xl text-center flex justify-center items-center gap-2 uppercase tracking-widest text-[11px] shadow-md shadow-[#9c404d]/20 relative overflow-hidden btn-effect">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            View & Edit Template
+                        </button>
+                     </div>
+                </div>
+            `).join('');
+
+            grid.innerHTML = html;
+        }
+
+        function viewTemplate(id, templateType) {
+            let editorPath = '/edit/islamic-invitation';
+            if (templateType === 'template02' || templateType === 'tp2') {
+                editorPath = '/edit/islamic-invitation-premium';
+            }
+            window.location.href = `${editorPath}?id=${id}`;
+        }
+
+        async function deleteInvitation(id) {
+            if (!confirm('Are you sure you want to delete this specific template? This action cannot be undone.')) return;
+            
+            if (!sb) return;
+            const { error } = await sb
+                .from('customer_invitations')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                showToast('Failed to delete template.', 'error');
+                console.error(error);
+            } else {
+                showToast('Template deleted successfully.', 'success');
+                fetchInvitations();
+            }
+        }
+
+        function renderGuests(guests) {
+            const body = document.getElementById('guest-list-body');
+            const emptyState = document.getElementById('guest-empty-state');
+
+            if (guests.length === 0) {
+                body.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            body.innerHTML = guests.map(guest => {
+                // ── FIX: pick most recently created (published) invitation, or just most recent ──
+                let inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation`;
+                let idParam = '';
+
+                if (globalInvitations && globalInvitations.length > 0) {
+                    // Prefer published invitation; fall back to most recent draft
+                    const inv = globalInvitations.find(i => i.status === 'published') || globalInvitations[0];
+                    if (inv.template_type === 'tp2' || inv.template_type === 'template02') {
+                        inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation-premium`;
+                    }
+                    idParam = `id=${inv.id}&`;
+                }
+
+                const inviteLink = `${inviteLinkUrl}?${idParam}guest=${encodeURIComponent(guest.name)}`;
+                const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
+                
+                return `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-5 md:px-8 font-medium text-gray-800 break-words max-w-[150px] md:max-w-none">${guest.name}</td>
+                        <td class="px-6 py-5 md:px-8 text-gray-500 font-mono text-xs md:text-sm whitespace-nowrap">${guest.phone}</td>
+                        <td class="px-6 py-5 md:px-8">
+                            <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-wider">${guest.status || 'Added'}</span>
+                        </td>
+                        <td class="px-6 py-5 md:px-8 text-right">
+                            <div class="flex justify-end space-x-2 md:space-x-3">
+                                <a href="https://wa.me/${guest.phone.replace(/\D/g, '')}?text=${message}" target="_blank" title="WhatsApp" class="p-2 hover:bg-green-50 text-green-600 rounded-full transition-colors">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.765-5.764-5.765zm3.394 8.163c-.147.416-.855.762-1.156.789-.3.027-.601.121-1.74-.355-1.457-.607-2.393-2.094-2.466-2.191-.073-.097-.593-.791-.593-1.503 0-.712.373-1.063.506-1.205.133-.142.29-.178.387-.178.097 0 .193.001.277.005.088.004.208-.033.325.249.117.282.401.977.436 1.048.035.071.058.154.011.248-.047.094-.07.153-.141.236-.071.083-.148.185-.212.248-.069.068-.142.143-.061.282.081.139.362.597.776.967.534.477.986.626 1.125.696.14.07.221.058.303-.038.082-.096.347-.406.44-.544.093-.138.186-.117.311-.071.125.046.793.374.93.443s.228.104.262.161c.034.057.034.331-.113.747z"/></svg>
+                                </a>
+                                <a href="mailto:?subject=You are Invited!&body=${message}" title="Email" class="p-2 hover:bg-blue-50 text-blue-600 rounded-full transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </a>
+                                <a href="https://www.instagram.com/direct/inbox/" target="_blank" title="Instagram" class="p-2 hover:bg-pink-50 text-pink-600 rounded-full transition-colors">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function handleAddGuest(e) {
+            e.preventDefault();
+            if (!sb || !currentUser) return;
+
+            const form = e.target;
+            const name = form.guest_name.value;
+            const phone = form.guest_phone.value;
+            const btn = document.getElementById('add-guest-btn');
+
+            btn.disabled = true;
+            btn.innerText = "Adding...";
+
+            const { data, error } = await sb
+                .from('guest_list')
+                .insert([
+                    {
+                        user_id: currentUser.id,
+                        name: name,
+                        phone: phone,
+                        status: 'Added'
+                    }
+                ])
+                .select();
+
+            if (error) {
+                showToast('Error: Failed to save guest', 'error');
+                console.error(error);
+            } else {
+                showToast('Saved Successfully!', 'success');
+                form.reset();
+                fetchGuests();
+                setTimeout(() => switchTab('invites'), 1000);
+            }
+
+            btn.disabled = false;
+            btn.innerText = "Add to List & Generate Link";
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === 'success' ? 'bg-[#9c404d]' : 'bg-red-600';
+            
+            toast.className = `toast px-6 py-4 rounded-xl text-white font-bold shadow-2xl ${bgColor} flex items-center space-x-3`;
+            toast.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'success' ? 
+                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>' : 
+                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>'}
+                </svg>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        async function createInvitation() {
+            window.location.href = '/templates';
+        }
+
+        async function handleLogout() {
+            if (sb) {
+                await sb.auth.signOut();
+                window.location.href = '/login';
+            }
+        }
+
+        initSupabase();
+    </script>
+    <script src="/app.js"></script>
+</body>
+</html>
+
