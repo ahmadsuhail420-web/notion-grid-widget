@@ -96,6 +96,8 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">RSVPs</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               </tr>
             </thead>
@@ -268,12 +270,12 @@
     async function loadSales() {
         if (!sb) return;
         const tbody = document.getElementById('sales-tbody');
-        tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>';
 
         const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
         if (error) {
             console.error("Error loading sales", error);
-            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-red-500">Failed to load</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-red-500">Failed to load. Check Supabase RLS or table existence.</td></tr>';
             return;
         }
 
@@ -285,12 +287,12 @@
         let totalRsvps = 0;
         stats.forEach(s => {
             const template = templatesData.find(t => t.id === s.template_type);
-            const price = template && !isNaN(template.price) ? Number(template.price) : 499;
+            const price = (template && !isNaN(template.price)) ? Number(template.price) : 499;
             totalSales += price;
             totalRsvps += Array.isArray(s.rsvps) ? s.rsvps.length : 0;
         });
         
-        document.getElementById('stat-total-sales').textContent = `₹${totalSales}`;
+        document.getElementById('stat-total-sales').textContent = `₹${totalSales.toLocaleString('en-IN')}`;
         document.getElementById('stat-total-rsvps').textContent = totalRsvps;
 
         // Active templates count
@@ -298,20 +300,24 @@
         document.getElementById('stat-active-templates').textContent = activeCount;
         
         if (stats.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No sales yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No sales yet.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = stats.slice(0,10).map(s => {
-            const templateName = templatesData.find(t => t.id === s.template_type)?.name || s.template_type;
-            const price = templatesData.find(t => t.id === s.template_type)?.price || 499;
+        tbody.innerHTML = stats.map(s => {
+            const template = templatesData.find(t => t.id === s.template_type);
+            const templateName = template?.name || s.template_type || 'Unknown';
+            const price = (template && !isNaN(template.price)) ? Number(template.price) : 499;
+            const rsvpCount = Array.isArray(s.rsvps) ? s.rsvps.length : 0;
             return `
             <tr>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(s.created_at).toLocaleDateString()}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(s.created_at).toLocaleDateString('en-IN')}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${s.user_email || 'Anonymous'}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${templateName} (₹${price})</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${templateName}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#9c404d]">₹${price}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">${rsvpCount}</td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Paid / Published</span>
+                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${s.payment_id ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${s.payment_id ? 'Paid' : 'Pending'}</span>
             </td>
             </tr>
             `;

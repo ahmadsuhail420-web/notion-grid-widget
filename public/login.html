@@ -126,12 +126,28 @@
                     return;
                 }
 
-                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: false,
+                        detectSessionInUrl: true
+                    }
+                });
                 
                 // Check if already logged in
                 const { data: { session } } = await sb.auth.getSession();
                 if (session) {
-                    window.location.href = '/customer-dashboard';
+                    // Check 12h timeout
+                    const loginTime = localStorage.getItem('ss_login_time');
+                    const now = Date.now();
+                    if (loginTime && (now - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
+                        await sb.auth.signOut();
+                        localStorage.removeItem('ss_login_time');
+                        return; // stay on login page
+                    }
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect');
+                    window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/customer-dashboard';
                 }
             } catch (err) {
                 console.error('Error initializing Supabase:', err);
@@ -179,6 +195,7 @@
                     button.innerText = originalText;
                     button.disabled = false;
                 } else {
+                    localStorage.setItem('ss_login_time', Date.now().toString());
                     const urlParams = new URLSearchParams(window.location.search);
                     const redirectUrl = urlParams.get('redirect');
                     

@@ -305,7 +305,8 @@
         <div class="hidden md:flex items-center space-x-12 text-[14px] font-medium text-gray-700">
           <a href="/" class="hover:text-[#9c404d] transition-colors">Home</a>
           <a href="/templates" class="text-[#9c404d] font-bold">Templates</a>
-          <a href="/login" class="bg-[#9c404d] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg transition-all">Get Started</a>
+          <a href="/login" id="nav-login-link" class="hover:text-[#9c404d] transition-colors">Login</a>
+          <a href="/customer-dashboard" id="nav-dashboard-link" class="hidden hover:text-[#9c404d] transition-colors font-bold">Dashboard</a>
         </div>
       </div>
     </nav>
@@ -358,7 +359,7 @@
                 <h3 class="text-2xl font-serif font-bold text-gold mb-6 transform -translate-y-4 transition-transform">Royal Heritage</h3>
                 <div class="flex flex-col gap-3 w-full max-w-[160px]">
                   <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                  <a onclick="window.location.href='/payment.html?template=template01'" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl cursor-pointer">Select Studio</a>
+                  <a onclick="handleSelectTemplate('template01')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl cursor-pointer">Select Studio</a>
                 </div>
             </div>
           </div>
@@ -393,7 +394,7 @@
                 <h3 class="text-2xl font-serif font-bold text-gold mb-6 transform -translate-y-4 transition-transform">Minimalist Gold</h3>
                 <div class="flex flex-col gap-3 w-full max-w-[160px]">
                   <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                  <a onclick="window.location.href='/payment.html?template=template02'" class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl cursor-pointer">Select Studio</a>
+                  <a onclick="handleSelectTemplate('template02')" class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl cursor-pointer">Select Studio</a>
                 </div>
             </div>
           </div>
@@ -601,6 +602,39 @@
       }, { threshold: 0.1 });
 
       document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      let sb = null;
+      async function initSupabase() {
+        try {
+          const res = await fetch('/api/config');
+          if (!res.ok) return;
+          const config = await res.json();
+          if (config.supabaseUrl && config.supabaseAnonKey) {
+            sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+            const { data: { session } } = await sb.auth.getSession();
+            if (session) {
+              document.getElementById('nav-login-link').classList.add('hidden');
+              document.getElementById('nav-dashboard-link').classList.remove('hidden');
+            }
+          }
+        } catch(e) { console.error('Supabase init failed', e); }
+      }
+      initSupabase();
+
+      async function handleSelectTemplate(templateId) {
+        if (!sb) {
+          window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId);
+          return;
+        }
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+          window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId);
+        } else {
+          window.location.href = '/payment?template=' + templateId;
+        }
+      }
     </script>
     <script src="/app.js"></script>
   </body>
