@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Sync & Style</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+    .stat-card { background:white; border-radius:16px; padding:20px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.03); transition:box-shadow 0.2s; }
+    .stat-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+    .tab-btn { padding:9px 18px; border-radius:10px; font-weight:600; font-size:13px; transition:all 0.15s; cursor:pointer; border:none; background:transparent; color:#6b7280; }
+    .tab-btn.active { background:#9c404d; color:white; box-shadow:0 2px 8px rgba(156,64,77,0.3); }
+    .tab-btn:not(.active):hover { background:#f9fafb; color:#9c404d; }
+    .table-wrap { background:white; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); overflow:hidden; }
+    .modal-bg { background:rgba(17,24,39,0.55); backdrop-filter:blur(6px); }
+    .modal-box { background:white; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+    .ifield { width:100%; padding:10px 14px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:14px; outline:none; transition:border-color 0.15s,box-shadow 0.15s; font-family:'Inter',sans-serif; }
+    .ifield:focus { border-color:#9c404d; box-shadow:0 0 0 3px rgba(156,64,77,0.1); }
+    .thumb { width:44px; height:44px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#f9fafb; }
+    .b-paid     { background:#dcfce7; color:#166534; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
+    .b-pending  { background:#fef9c3; color:#854d0e; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
+    .b-failed   { background:#fee2e2; color:#991b1b; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
+    .b-declined { background:#fce7f3; color:#9d174d; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
+    .b-refunded { background:#e0e7ff; color:#3730a3; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
+    .b-active   { background:#dcfce7; color:#166534; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
+    .b-inactive { background:#f3f4f6; color:#6b7280; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
+    tr:hover td { background:#fafafa; }
+    .clickable-row { cursor:pointer; }
+    .info-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 14px; font-size:12px; color:#1e40af; line-height:1.6; }
+    .warn-box { background:#fef9c3; border:1px solid #fde68a; border-radius:10px; padding:10px 14px; font-size:12px; color:#78350f; line-height:1.6; }
+    .url-prev { width:100%; height:110px; object-fit:cover; border-radius:10px; border:1.5px solid #e5e7eb; display:none; margin-top:8px; }
+    .detail-row { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0; border-bottom:1px solid #f3f4f6; gap:16px; }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-label { font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; min-width:130px; padding-top:1px; flex-shrink:0; }
+    .detail-value { font-size:13px; color:#111827; font-weight:500; text-align:right; word-break:break-all; }
+    .txn-id { font-family:'Courier New',monospace; font-size:11px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:3px 8px; color:#374151; }
+    .filter-select { padding:7px 12px; border:1.5px solid #e5e7eb; border-radius:9px; font-size:12px; font-weight:600; color:#374151; outline:none; background:white; cursor:pointer; }
+    .filter-select:focus { border-color:#9c404d; }
+    .search-wrap { position:relative; }
+    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); pointer-events:none; }
+    .search-input { padding:7px 12px 7px 32px; border:1.5px solid #e5e7eb; border-radius:9px; font-size:12px; outline:none; background:white; width:200px; font-family:'Inter',sans-serif; }
+    .search-input:focus { border-color:#9c404d; box-shadow:0 0 0 2px rgba(156,64,77,0.08); }
+  </style>
+</head>
+<body class="bg-[#f8f9fb] min-h-screen">
+
+  <!-- Nav -->
+  <nav class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-[#9c404d] rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <span class="font-serif text-lg font-bold text-[#9c404d]">Sync & Style Admin</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="admin-user-info" class="text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full"></span>
+        <a href="/index.html" class="text-xs font-medium text-gray-500 hover:text-[#9c404d] transition-colors">← Site</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto py-8 px-6">
+
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-gray-900 font-serif">Dashboard</h1>
+      <p class="text-sm text-gray-400 mt-1">Templates, payments, and sales activity</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-3 md:grid-cols-6 gap-3 mb-8">
+      <div class="stat-card">
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Revenue</p>
+        <p class="text-xl font-bold text-[#9c404d]" id="stat-total-sales">₹0</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Orders</p>
+        <p class="text-xl font-bold text-gray-900" id="stat-total-orders">0</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Paid</p>
+        <p class="text-xl font-bold text-green-600" id="stat-paid">0</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Pending</p>
+        <p class="text-xl font-bold text-yellow-600" id="stat-pending">0</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Templates</p>
+        <p class="text-xl font-bold text-gray-900" id="stat-active-templates">0</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">RSVPs</p>
+        <p class="text-xl font-bold text-purple-600" id="stat-total-rsvps">0</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-1.5 mb-6 bg-white p-1.5 rounded-xl border border-gray-100 shadow-sm w-fit">
+      <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn active">Templates</button>
+      <button onclick="switchTab('sales')" id="tab-sales" class="tab-btn">Sales & Payments</button>
+    </div>
+
+    <!-- TEMPLATES -->
+    <div id="section-templates">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-base font-bold text-gray-900">Template Configs</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Changes sync to index & templates pages</p>
+        </div>
+        <button onclick="loadTemplates()" class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#9c404d] bg-white border border-gray-200 px-3 py-2 rounded-lg transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="table-wrap mb-8">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b border-gray-100 bg-gray-50/60">
+              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Preview</th>
+              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Template</th>
+              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Price</th>
+              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Image URL</th>
+              <th class="px-5 py-3.5 text-right text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="templates-tbody" class="divide-y divide-gray-50">
+            <tr><td colspan="6" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SALES -->
+    <div id="section-sales" class="hidden">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <div>
+          <h2 class="text-base font-bold text-gray-900">Sales & Payments</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Click any row for full payment details + actions</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="search-wrap">
+            <svg class="search-icon w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input id="sales-search" type="text" placeholder="Email, txn ID…" class="search-input" oninput="filterSales()">
+          </div>
+          <select id="sales-filter" class="filter-select" onchange="filterSales()">
+            <option value="">All Status</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+            <option value="declined">Declined</option>
+            <option value="refunded">Refunded</option>
+          </select>
+          <button onclick="loadSales()" class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#9c404d] bg-white border border-gray-200 px-3 py-2 rounded-lg transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- RLS error -->
+      <div id="rls-help" class="hidden mb-4 warn-box">
+        <strong>🔒 Permission denied — run in Supabase SQL Editor:</strong>
+        <code class="block mt-2 bg-yellow-50 rounded-lg p-2.5 text-[11px] font-mono whitespace-pre">ALTER TABLE public.customer_invitations ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admin read all sales"
+ON public.customer_invitations
+FOR SELECT TO authenticated
+USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admin update sales"
+ON public.customer_invitations
+FOR UPDATE TO authenticated
+USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
+WITH CHECK ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin');</code>
+      </div>
+
+      <!-- SQL Schema box -->
+      <div id="sql-schema-box" class="mb-4 info-box">
+        <div class="flex justify-between items-start gap-2">
+          <strong>📋 Add payment columns — run once in Supabase SQL Editor (safe to re-run):</strong>
+          <button onclick="this.closest('#sql-schema-box').style.display='none'" class="text-blue-400 hover:text-blue-700 text-lg leading-none flex-shrink-0">×</button>
+        </div>
+        <code class="block mt-2 bg-blue-50 rounded-lg p-2.5 text-[11px] font-mono whitespace-pre">ALTER TABLE public.customer_invitations
+  ADD COLUMN IF NOT EXISTS payment_status    TEXT    DEFAULT 'pending',
+  ADD COLUMN IF NOT EXISTS payment_amount    NUMERIC,
+  ADD COLUMN IF NOT EXISTS payment_method    TEXT,
+  ADD COLUMN IF NOT EXISTS payment_gateway   TEXT    DEFAULT 'razorpay',
+  ADD COLUMN IF NOT EXISTS razorpay_order_id   TEXT,
+  ADD COLUMN IF NOT EXISTS razorpay_payment_id TEXT,
+  ADD COLUMN IF NOT EXISTS razorpay_signature  TEXT,
+  ADD COLUMN IF NOT EXISTS payment_at        TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS failure_reason    TEXT,
+  ADD COLUMN IF NOT EXISTS refund_id         TEXT,
+  ADD COLUMN IF NOT EXISTS refund_at         TIMESTAMPTZ;
+
+-- Useful indexes
+CREATE INDEX IF NOT EXISTS idx_ci_payment_status ON public.customer_invitations(payment_status);
+CREATE INDEX IF NOT EXISTS idx_ci_razorpay_payment_id ON public.customer_invitations(razorpay_payment_id);
+CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(created_at DESC);</code>
+      </div>
+
+      <div class="table-wrap">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b border-gray-100 bg-gray-50/60">
+              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Date</th>
+              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Customer</th>
+              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Template</th>
+              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Amount</th>
+              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Payment Status</th>
+              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Transaction ID</th>
+              <th class="px-4 py-3.5 text-center text-[10px] font-semibold text-gray-400 uppercase tracking-wider">RSVPs</th>
+              <th class="px-4 py-3.5 text-right text-[10px] font-semibold text-gray-400 uppercase tracking-wider"></th>
+            </tr>
+          </thead>
+          <tbody id="sales-tbody" class="divide-y divide-gray-50">
+            <tr><td colspan="8" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-gray-400 mt-2 text-right" id="sales-count"></p>
+    </div>
+  </main>
+
+  <!-- EDIT TEMPLATE MODAL -->
+  <div id="edit-modal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
+    <div class="modal-box w-full max-w-lg">
+      <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 font-serif">Edit Template</h3>
+          <p class="text-xs text-gray-400 mt-0.5" id="edit-subtitle"></p>
+        </div>
+        <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto">
+        <input type="hidden" id="edit-id">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Template Name</label>
+            <input type="text" id="edit-name" class="ifield" placeholder="Royal Heritage">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Price (₹)</label>
+            <input type="number" id="edit-price" class="ifield" placeholder="499">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1.5">Placeholder Image URL</label>
+          <input type="url" id="edit-image" class="ifield" placeholder="https://images.unsplash.com/…" oninput="prevImg(this.value)">
+          <p class="text-[11px] text-gray-400 mt-1.5">Paste a direct image URL. Updates card previews on index & templates pages instantly.</p>
+          <img id="url-prev" class="url-prev" alt="Preview" onerror="this.style.display='none'">
+        </div>
+        <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3.5">
+          <div>
+            <p class="text-sm font-semibold text-gray-700">Active</p>
+            <p class="text-xs text-gray-400">Inactive shows "Coming Soon" on site</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit-active" class="sr-only peer">
+            <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9c404d]"></div>
+          </label>
+        </div>
+        <div class="info-box text-[11px]">
+          <strong>ℹ️ File upload</strong> requires Supabase Storage bucket <code class="font-mono">placeholders</code> with INSERT policy. Until set up, use URL above.
+        </div>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2.5">
+        <button onclick="closeEditModal()" class="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">Cancel</button>
+        <button onclick="saveTemplate()" id="save-btn" class="px-5 py-2 text-sm font-semibold text-white bg-[#9c404d] rounded-xl hover:bg-[#833641]">
+          <span id="save-btn-text">Save Changes</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT DETAIL MODAL -->
+  <div id="payment-modal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
+    <div class="modal-box w-full max-w-xl">
+      <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-[#fef2f2] rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-[#9c404d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 font-serif">Payment Details</h3>
+            <p class="text-xs text-gray-400 font-mono mt-0.5" id="pm-header-sub"></p>
+          </div>
+        </div>
+        <button onclick="closePaymentModal()" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-6 py-4 max-h-[70vh] overflow-y-auto" id="payment-body"></div>
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center gap-2 flex-wrap">
+        <div id="pm-actions" class="flex gap-2 flex-wrap"></div>
+        <button onclick="closePaymentModal()" class="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sb = null, templatesData = [], allSalesData = [], filteredRows = [];
+
+    // ── HELPERS ───────────────────────────────────────────────────
+    function prevImg(url) {
+      const img = document.getElementById('url-prev');
+      if (url && url.startsWith('http')) { img.src = url; img.style.display = 'block'; }
+      else img.style.display = 'none';
+    }
+
+    function switchTab(tab) {
+      ['templates','sales'].forEach(t => {
+        document.getElementById('section-'+t).classList.add('hidden');
+        document.getElementById('tab-'+t).classList.remove('active');
+      });
+      document.getElementById('section-'+tab).classList.remove('hidden');
+      document.getElementById('tab-'+tab).classList.add('active');
+    }
+
+    function getPaymentStatus(s) {
+      const ps = (s.payment_status || '').toLowerCase();
+      if (['paid','captured','success'].includes(ps)) return 'paid';
+      if (ps === 'failed') return 'failed';
+      if (ps === 'declined') return 'declined';
+      if (ps === 'refunded') return 'refunded';
+      if (s.payment_id || s.razorpay_payment_id) return 'paid'; // legacy fallback
+      return 'pending';
+    }
+
+    function badge(status) {
+      const map = { paid:'b-paid', pending:'b-pending', failed:'b-failed', declined:'b-declined', refunded:'b-refunded' };
+      const lbl = { paid:'✓ Paid', pending:'⏳ Pending', failed:'✗ Failed', declined:'✗ Declined', refunded:'↩ Refunded' };
+      return `<span class="${map[status]||'b-pending'}">${lbl[status]||status}</span>`;
+    }
+
+    function fmtDate(d) { return d ? new Date(d).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}) : '—'; }
+    function txnSpan(id) { return id ? `<span class="txn-id">${id}</span>` : '<span class="text-gray-300">—</span>'; }
+
+    // ── INIT ──────────────────────────────────────────────────────
+    async function initAdmin() {
+      try {
+        const res = await fetch('/api/config');
+        if (!res.ok) throw new Error('Config fetch failed');
+        const config = await res.json();
+        if (!config.supabaseUrl || !config.supabaseAnonKey) { alert('Missing Supabase Config.'); return; }
+        sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) { window.location.href = '/login?redirect=' + encodeURIComponent('/admin'); return; }
+        if (session.user.user_metadata?.role !== 'admin') {
+          document.body.innerHTML = '<div class="min-h-screen flex items-center justify-center"><div class="text-center p-10 bg-white rounded-2xl shadow-lg max-w-sm"><div class="text-5xl mb-4">🚫</div><h2 class="text-2xl font-bold mb-2">Access Denied</h2><a href="/" class="inline-block bg-[#9c404d] text-white px-6 py-3 rounded-lg font-bold mt-4">Go Home</a></div></div>';
+          return;
+        }
+        document.getElementById('admin-user-info').textContent = session.user.email;
+        await ensureTemplateTable();
+        await loadTemplates();
+        await loadSales();
+      } catch (e) { console.error('Admin init failed', e); }
+    }
+
+    async function ensureTemplateTable() {
+      if (!sb) return;
+      const check = await sb.from('template_configs').select('id').limit(1);
+      if (check.error?.code === '42P01') {
+        alert("Table 'template_configs' missing. Run:\nCREATE TABLE IF NOT EXISTS public.template_configs (\n  id TEXT PRIMARY KEY,\n  name TEXT NOT NULL,\n  price NUMERIC NOT NULL,\n  placeholder_url TEXT,\n  is_active BOOLEAN DEFAULT TRUE,\n  updated_at TIMESTAMPTZ DEFAULT NOW()\n);");
+      } else if (check.data?.length === 0) {
+        await sb.from('template_configs').insert([
+          { id:'template01', name:'Royal Heritage', price:499, is_active:true, placeholder_url:'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?q=80&w=800&auto=format&fit=crop' },
+          { id:'template02', name:'Minimalist Gold', price:499, is_active:true, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' },
+          { id:'template03', name:'Floral Garden', price:499, is_active:false, placeholder_url:'https://images.unsplash.com/photo-1582236307399-52e896472d8e?q=80&w=800&auto=format&fit=crop' },
+          { id:'template04', name:'Majestic Gold', price:499, is_active:false, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' }
+        ]);
+      }
+    }
+
+    // ── TEMPLATES ─────────────────────────────────────────────────
+    async function loadTemplates() {
+      if (!sb) return;
+      const tbody = document.getElementById('templates-tbody');
+      tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>';
+      const { data, error } = await sb.from('template_configs').select('*').order('id');
+      if (error) { tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-red-500">Failed to load templates.</td></tr>'; return; }
+      templatesData = data || [];
+      if (!templatesData.length) { tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-gray-400">No templates.</td></tr>'; return; }
+      const fb = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23f3f4f6'/%3E%3Ctext x='22' y='26' text-anchor='middle' fill='%239ca3af' font-size='8'%3ENo img%3C/text%3E%3C/svg%3E";
+      tbody.innerHTML = templatesData.map(t => `
+        <tr>
+          <td class="px-5 py-4"><img src="${t.placeholder_url||''}" class="thumb" alt="${t.name}" onerror="this.src='${fb}'"></td>
+          <td class="px-5 py-4"><div class="text-sm font-semibold text-gray-900">${t.name}</div><div class="text-xs text-gray-400 font-mono mt-0.5">${t.id}</div></td>
+          <td class="px-5 py-4 text-sm font-bold text-gray-900">₹${t.price}</td>
+          <td class="px-5 py-4"><span class="${t.is_active?'b-active':'b-inactive'}">${t.is_active?'Active':'Inactive'}</span></td>
+          <td class="px-5 py-4 max-w-[150px]"><span class="text-xs text-gray-400 truncate block" title="${t.placeholder_url||''}">${t.placeholder_url?(t.placeholder_url.length>38?t.placeholder_url.substring(0,38)+'…':t.placeholder_url):'—'}</span></td>
+          <td class="px-5 py-4 text-right"><button onclick="openEditModal('${t.id}')" class="text-xs font-semibold text-[#9c404d] bg-[#fef2f2] hover:bg-[#fde8e8] px-3 py-1.5 rounded-lg transition-colors">Edit</button></td>
+        </tr>`).join('');
+    }
+
+    // ── SALES ──────────────────────────────────────────────────────
+    async function loadSales() {
+      if (!sb) return;
+      const tbody = document.getElementById('sales-tbody');
+      tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>';
+      const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
+      if (error) {
+        document.getElementById('rls-help').classList.remove('hidden');
+        tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-sm text-red-500">Permission denied — see RLS fix above.</td></tr>';
+        return;
+      }
+      document.getElementById('rls-help').classList.add('hidden');
+      allSalesData = data || [];
+      renderSales(allSalesData);
+    }
+
+    function renderSales(rows) {
+      filteredRows = rows;
+      const tbody = document.getElementById('sales-tbody');
+
+      // Recompute stats from ALL data (not filtered)
+      let rev=0, paid=0, pending=0, rsvps=0;
+      allSalesData.forEach(s => {
+        const t = templatesData.find(t=>t.id===s.template_type);
+        const price = s.payment_amount || ((t&&!isNaN(t.price))?Number(t.price):499);
+        const st = getPaymentStatus(s);
+        if (st==='paid') { rev+=price; paid++; }
+        else if (st==='pending') pending++;
+        rsvps += Array.isArray(s.rsvps)?s.rsvps.length:0;
+      });
+      document.getElementById('stat-total-orders').textContent = allSalesData.length;
+      document.getElementById('stat-total-sales').textContent = '₹'+rev.toLocaleString('en-IN');
+      document.getElementById('stat-paid').textContent = paid;
+      document.getElementById('stat-pending').textContent = pending;
+      document.getElementById('stat-total-rsvps').textContent = rsvps;
+      document.getElementById('stat-active-templates').textContent = templatesData.filter(t=>t.is_active).length;
+      document.getElementById('sales-count').textContent = `Showing ${rows.length} of ${allSalesData.length} orders`;
+
+      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-sm text-gray-400">No matching orders.</td></tr>'; return; }
+
+      tbody.innerHTML = rows.map((s, i) => {
+        const t = templatesData.find(t=>t.id===s.template_type);
+        const price = s.payment_amount || ((t&&!isNaN(t.price))?Number(t.price):499);
+        const st = getPaymentStatus(s);
+        const txnId = s.razorpay_payment_id || s.payment_id || '';
+        return `<tr class="clickable-row hover:bg-slate-50 transition-colors" onclick="openPaymentModal(${i})">
+          <td class="px-4 py-3.5 text-xs text-gray-500 whitespace-nowrap">${new Date(s.created_at).toLocaleDateString('en-IN')}<br><span class="text-[10px] text-gray-300">${new Date(s.created_at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</span></td>
+          <td class="px-4 py-3.5 max-w-[160px]"><div class="text-xs font-medium text-gray-900 truncate">${s.user_email||'Anonymous'}</div></td>
+          <td class="px-4 py-3.5 text-xs text-gray-600">${t?.name||s.template_type||'—'}</td>
+          <td class="px-4 py-3.5 text-sm font-bold text-[#9c404d]">₹${price}</td>
+          <td class="px-4 py-3.5">${badge(st)}</td>
+          <td class="px-4 py-3.5">${txnId?`<span class="txn-id">${txnId.length>18?txnId.substring(0,18)+'…':txnId}</span>`:'<span class="text-gray-300 text-xs">—</span>'}</td>
+          <td class="px-4 py-3.5 text-center text-sm text-gray-600">${Array.isArray(s.rsvps)?s.rsvps.length:0}</td>
+          <td class="px-4 py-3.5 text-right"><span class="text-xs text-blue-500 font-semibold">View →</span></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filterSales() {
+      const q = document.getElementById('sales-search').value.toLowerCase();
+      const f = document.getElementById('sales-filter').value;
+      renderSales(allSalesData.filter(s => {
+        const matchF = !f || getPaymentStatus(s) === f;
+        const matchQ = !q || [s.user_email,s.payment_id,s.razorpay_payment_id,s.razorpay_order_id].some(v=>(v||'').toLowerCase().includes(q));
+        return matchF && matchQ;
+      }));
+    }
+
+    // ── PAYMENT MODAL ──────────────────────────────────────────────
+    function openPaymentModal(rowIdx) {
+      const s = filteredRows[rowIdx];
+      if (!s) return;
+      const t = templatesData.find(t=>t.id===s.template_type);
+      const st = getPaymentStatus(s);
+      const price = s.payment_amount || ((t&&!isNaN(t.price))?Number(t.price):499);
+
+      document.getElementById('pm-header-sub').textContent = s.razorpay_order_id || s.id || '';
+
+      const fields = [
+        ['Customer Email',      s.user_email || '—'],
+        ['Order Date',          fmtDate(s.created_at)],
+        ['Template',            t?.name || s.template_type || '—'],
+        ['Amount',              `<span class="font-bold text-[#9c404d]">₹${Number(price).toLocaleString('en-IN')}</span>`],
+        ['Payment Status',      badge(st)],
+        ['Payment Method',      s.payment_method || '—'],
+        ['Gateway',             s.payment_gateway || 'Razorpay'],
+        ['Razorpay Order ID',   txnSpan(s.razorpay_order_id)],
+        ['Razorpay Payment ID', txnSpan(s.razorpay_payment_id)],
+        ['Payment ID (legacy)', txnSpan(s.payment_id)],
+        ['Razorpay Signature',  s.razorpay_signature ? `<span class="txn-id text-[10px]">${s.razorpay_signature.substring(0,24)}…</span>` : '—'],
+        ['Payment Time',        fmtDate(s.payment_at)],
+        ['Failure Reason',      s.failure_reason ? `<span class="text-red-600 font-semibold">${s.failure_reason}</span>` : '—'],
+        ['Refund ID',           txnSpan(s.refund_id)],
+        ['Refund Time',         fmtDate(s.refund_at)],
+        ['RSVP Count',          Array.isArray(s.rsvps) ? s.rsvps.length : 0],
+        ['Invitation ID',       txnSpan(s.id)],
+      ];
+
+      document.getElementById('payment-body').innerHTML = `
+        <div>
+          ${fields.map(([lbl, val]) => `
+            <div class="detail-row">
+              <span class="detail-label">${lbl}</span>
+              <span class="detail-value">${val}</span>
+            </div>`).join('')}
+        </div>`;
+
+      // Action buttons based on status
+      const actions = document.getElementById('pm-actions');
+      actions.innerHTML = '';
+      if (st === 'pending') {
+        actions.innerHTML = `
+          <button onclick="markStatus('${s.id}','paid')" class="text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 px-3 py-2 rounded-lg transition-colors">✓ Mark Paid</button>
+          <button onclick="markStatus('${s.id}','failed')" class="text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors">✗ Mark Failed</button>
+          <button onclick="markStatus('${s.id}','declined')" class="text-xs font-semibold text-pink-700 bg-pink-50 hover:bg-pink-100 px-3 py-2 rounded-lg transition-colors">✗ Mark Declined</button>`;
+      } else if (st === 'paid') {
+        actions.innerHTML = `<button onclick="markStatus('${s.id}','refunded')" class="text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-lg transition-colors">↩ Mark Refunded</button>`;
+      } else if (st === 'failed' || st === 'declined') {
+        actions.innerHTML = `<button onclick="markStatus('${s.id}','paid')" class="text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 px-3 py-2 rounded-lg transition-colors">✓ Mark Paid (override)</button>`;
+      }
+
+      document.getElementById('payment-modal').classList.remove('hidden');
+    }
+
+    function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); }
+
+    async function markStatus(id, status) {
+      const labels = { paid:'Paid', failed:'Failed', declined:'Declined', refunded:'Refunded' };
+      if (!confirm(`Mark this order as ${labels[status]}?`)) return;
+      const updates = { payment_status: status };
+      if (status === 'paid') updates.payment_at = new Date().toISOString();
+      if (status === 'refunded') updates.refund_at = new Date().toISOString();
+      if (status === 'failed') {
+        const reason = prompt('Failure reason (optional):');
+        if (reason) updates.failure_reason = reason;
+      }
+      const { error } = await sb.from('customer_invitations').update(updates).eq('id', id);
+      if (error) { alert('Update failed: ' + error.message); return; }
+      closePaymentModal();
+      await loadSales();
+    }
+
+    // ── TEMPLATE EDIT ─────────────────────────────────────────────
+    function openEditModal(id) {
+      const item = templatesData.find(t=>t.id===id);
+      if (!item) return;
+      document.getElementById('edit-id').value = item.id;
+      document.getElementById('edit-name').value = item.name;
+      document.getElementById('edit-price').value = item.price;
+      document.getElementById('edit-image').value = item.placeholder_url||'';
+      document.getElementById('edit-active').checked = item.is_active;
+      document.getElementById('edit-subtitle').textContent = 'ID: '+item.id;
+      prevImg(item.placeholder_url||'');
+      document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+
+    async function saveTemplate() {
+      if (!sb) return;
+      const id = document.getElementById('edit-id').value;
+      const name = document.getElementById('edit-name').value.trim();
+      const price = document.getElementById('edit-price').value;
+      const placeholder_url = document.getElementById('edit-image').value.trim();
+      const is_active = document.getElementById('edit-active').checked;
+      if (!name) { alert('Name required.'); return; }
+      const txt = document.getElementById('save-btn-text');
+      const btn = document.getElementById('save-btn');
+      txt.textContent = 'Saving…'; btn.disabled = true;
+      const { error } = await sb.from('template_configs').update({ name, price, placeholder_url, is_active, updated_at: new Date().toISOString() }).eq('id', id);
+      txt.textContent = 'Save Changes'; btn.disabled = false;
+      if (error) { alert('Save failed: '+error.message); }
+      else { closeEditModal(); loadTemplates(); }
+    }
+
+    ['edit-modal','payment-modal'].forEach(id => {
+      document.getElementById(id).addEventListener('click', function(e) { if(e.target===this) this.classList.add('hidden'); });
+    });
+
+    initAdmin();
+  </script>
+  <script src="/app.js"></script>
+</body>
+</html>
