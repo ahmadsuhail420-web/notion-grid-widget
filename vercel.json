@@ -8,7 +8,7 @@
     { "source": "/edit/islamic-invitation", "destination": "/edit/islamic-invitation.html" },
     { "source": "/wedding/islamic-invitation-premium", "destination": "/wedding/islamic-invitation-premium.html" },
     { "source": "/edit/islamic-invitation-premium", "destination": "/edit/islamic-invitation-premium.html" },
-    { "source": "/customer-dashboard", "destination": "/customer-dashboard.html" },
+    { "source": "/dashboard", "destination": "/customer-dashboard.html" },
     { "source": "/payment", "destination": "/payment.html" },
     { "source": "/admin", "destination": "/admin-dashboard.html" },
     { "source": "/(.*)", "destination": "/$1.html" }
