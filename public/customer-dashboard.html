@@ -310,6 +310,7 @@
             const { data, error } = await sb
                 .from('customer_invitations')
                 .select('*')
+                .eq('user_id', currentUser.id)
                 .order('created_at', { ascending: false });
 
             if (error) {
