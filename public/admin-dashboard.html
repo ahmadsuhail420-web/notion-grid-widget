@@ -445,26 +445,30 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
 
       if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-sm text-gray-400">No matching orders.</td></tr>'; return; }
 
-      tbody.innerHTML = rows.map((s, i) => {
-        const t = templatesData.find(t=>t.id===s.template_type);
+      tbody.innerHTML = rows.map(function(s, i) {
+        const t = templatesData.find(function(t){ return t.id===s.template_type; });
         const price = s.payment_amount || ((t&&!isNaN(t.price))?Number(t.price):499);
         const st = getPaymentStatus(s);
         const txnId = s.razorpay_payment_id || s.payment_id || '';
-        return \`<tr class="clickable-row hover:bg-slate-50 transition-colors" onclick="openPaymentModal(\${i})">
-          <td class="px-4 py-3.5 text-xs text-gray-500 whitespace-nowrap">\${new Date(s.created_at).toLocaleDateString('en-IN')}<br><span class="text-[10px] text-gray-300">\${new Date(s.created_at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</span></td>
-          <td class="px-4 py-3.5 max-w-[160px]"><div class="text-xs font-medium text-gray-900 truncate">\${s.user_email||'Anonymous'}</div></td>
-          <td class="px-4 py-3.5 text-xs text-gray-600">\${t?.name||s.template_type||'—'}</td>
-          <td class="px-4 py-3.5 text-sm font-bold text-[#9c404d]">₹\${price}</td>
-          <td class="px-4 py-3.5">\${badge(st)}</td>
-          <td class="px-4 py-3.5">\${txnId?LazyLoadTxn(txnId):'<span class="text-gray-300 text-xs">—</span>'}</td>
-          <td class="px-4 py-3.5 text-center text-sm text-gray-600">\${Array.isArray(s.rsvps)?s.rsvps.length:0}</td>
-          <td class="px-4 py-3.5 text-right"><span class="text-xs text-blue-500 font-semibold">View →</span></td>
-        </tr>\`;
+        const dateStr = new Date(s.created_at).toLocaleDateString('en-IN');
+        const timeStr = new Date(s.created_at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+        const txnHtml = txnId ? LazyLoadTxn(txnId) : '<span class="text-gray-300 text-xs">—</span>';
+        const rsvpCount = Array.isArray(s.rsvps) ? s.rsvps.length : 0;
+        return '<tr class="clickable-row hover:bg-slate-50 transition-colors" onclick="openPaymentModal('+i+')">' +
+          '<td class="px-4 py-3.5 text-xs text-gray-500 whitespace-nowrap">'+dateStr+'<br><span class="text-[10px] text-gray-300">'+timeStr+'</span></td>' +
+          '<td class="px-4 py-3.5 max-w-[160px]"><div class="text-xs font-medium text-gray-900 truncate">'+(s.user_email||'Anonymous')+'</div></td>' +
+          '<td class="px-4 py-3.5 text-xs text-gray-600">'+(t?t.name:(s.template_type||'—'))+'</td>' +
+          '<td class="px-4 py-3.5 text-sm font-bold text-[#9c404d]">₹'+price+'</td>' +
+          '<td class="px-4 py-3.5">'+badge(st)+'</td>' +
+          '<td class="px-4 py-3.5">'+txnHtml+'</td>' +
+          '<td class="px-4 py-3.5 text-center text-sm text-gray-600">'+rsvpCount+'</td>' +
+          '<td class="px-4 py-3.5 text-right"><span class="text-xs text-blue-500 font-semibold">View →</span></td>' +
+          '</tr>';
       }).join('');
     }
 
     function LazyLoadTxn(id) {
-       return \`<span class="txn-id">\${id.length>18?id.substring(0,18)+'…':id}</span>\`;
+      return '<span class="txn-id">' + (id.length>18 ? id.substring(0,18)+'…' : id) + '</span>';
     }
 
     function filterSales() {
@@ -535,7 +539,7 @@ document.getElementById('payment-body').innerHTML =
 
     async function markStatus(id, status) {
       const labels = { paid:'Paid', failed:'Failed', declined:'Declined', refunded:'Refunded' };
-      if (!confirm(\`Mark this order as \${labels[status]}?\`)) return;
+      if (!confirm('Mark this order as ' + labels[status] + '?')) return;
       const updates = { payment_status: status };
       if (status === 'paid') updates.payment_at = new Date().toISOString();
       if (status === 'refunded') updates.refund_at = new Date().toISOString();
