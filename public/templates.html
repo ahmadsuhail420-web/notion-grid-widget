@@ -630,12 +630,20 @@
           if (error || !data) return;
           data.forEach(t => {
             const card = document.querySelector(`[data-template-id="${t.id}"]`);
-            if (!card || !t.placeholder_url) return;
-            const existing = card.querySelector('.admin-ph-bg');
-            const bg = existing || document.createElement('div');
-            bg.className = 'admin-ph-bg absolute inset-0 z-0 bg-cover bg-center';
-            bg.style.backgroundImage = `url(${t.placeholder_url})`;
-            if (!existing) card.prepend(bg);
+            if (!card) return;
+            const iframeContainer = card.querySelector('.iframe-preview-container');
+            const placeholderContainer = card.querySelector('.admin-ph-bg');
+            if (t.placeholder_url) {
+              if (iframeContainer) iframeContainer.style.display = 'none';
+              const bg = placeholderContainer || document.createElement('div');
+              bg.className = 'admin-ph-bg absolute inset-0 z-[1] bg-cover bg-center';
+              bg.style.backgroundImage = `url(${t.placeholder_url})`;
+              bg.style.display = 'block';
+              if (!placeholderContainer) card.appendChild(bg);
+            } else {
+              if (iframeContainer) iframeContainer.style.display = 'block';
+              if (placeholderContainer) placeholderContainer.style.display = 'none';
+            }
           });
         } catch(e) { console.error('loadTemplatePlaceholders failed', e); }
       }
@@ -658,3 +666,4 @@
     <script src="/app.js"></script>
   </body>
 </html>
+
