@@ -1,55 +1,26 @@
 {
-  "version": 2,
-  "cleanUrls": true,
-  "trailingSlash": false,
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/templates", "destination": "/templates.html" },
+    { "source": "/templates/:path*", "destination": "/templates/:path*" },
+    { "source": "/wedding/islamic-invitation", "destination": "/wedding/islamic-invitation.html" },
+    { "source": "/edit/islamic-invitation", "destination": "/edit/islamic-invitation.html" },
+    { "source": "/wedding/islamic-invitation-premium", "destination": "/wedding/islamic-invitation-premium.html" },
+    { "source": "/edit/islamic-invitation-premium", "destination": "/edit/islamic-invitation-premium.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/payment", "destination": "/payment.html" },
+    { "source": "/admin", "destination": "/admin-dashboard.html" },
+    { "source": "/(.*)", "destination": "/$1.html" }
+  ],
+  "headers": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/public/$1"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/contact-us.html",
-      "status": 301,
-      "headers": { "Location": "/contact-us" }
-    },
-    {
-      "src": "/terms-and-conditions.html",
-      "status": 301,
-      "headers": { "Location": "/terms-and-conditions" }
-    },
-    {
-      "src": "/privacy-policy.html",
-      "status": 301,
-      "headers": { "Location": "/privacy-policy" }
-    },
-    {
-      "src": "/cancellation-and-refund.html",
-      "status": 301,
-      "headers": { "Location": "/cancellation-and-refund" }
-    },
-    {
-      "src": "/shipping-and-exchange.html",
-      "status": 301,
-      "headers": { "Location": "/shipping-and-exchange" }
-    },
-    {
-      "src": "/templates.html",
-      "status": 301,
-      "headers": { "Location": "/templates" }
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "status": 404,
-      "dest": "/public/index.html"
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
     }
   ]
 }
