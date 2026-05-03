@@ -10,836 +10,415 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
-    .stat-card { background:white; border-radius:16px; padding:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03); transition:box-shadow 0.2s; }
-    @media (min-width: 768px) { .stat-card { padding: 20px; } }
-    .stat-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.08); }
-    .tab-btn { padding:8px 14px; border-radius:10px; font-weight:600; font-size:12px; transition:all 0.15s; cursor:pointer; border:none; background:transparent; color:#6b7280; white-space: nowrap; }
-    @media (min-width: 768px) { .tab-btn { padding:9px 18px; font-size:13px; } }
-    .tab-btn.active { background:#9c404d; color:white; box-shadow:0 2px 8px rgba(156,64,77,0.3); }
-    .tab-btn:not(.active):hover { background:#f9fafb; color:#9c404d; }
-    .table-wrap { background:white; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 1px 3px rgba(0,0,0,0.04); overflow-x:auto; -webkit-overflow-scrolling: touch; }
-    table { min-width: 800px; }
-    @media (min-width: 1024px) { table { min-width: 100%; } }
-    .modal-bg { background:rgba(17,24,39,0.55); backdrop-filter:blur(6px); }
-    .modal-box { background:white; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.25); max-height: calc(100vh - 40px); overflow-y: auto; }
-    .ifield { width:100%; padding:10px 14px; border:1.5px solid #e5e7eb; border-radius:10px; font-size:14px; outline:none; transition:border-color 0.15s,box-shadow 0.15s; font-family:'Inter',sans-serif; }
-    .ifield:focus { border-color:#9c404d; box-shadow:0 0 0 3px rgba(156,64,77,0.1); }
-    .thumb { width:44px; height:44px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#f9fafb; }
-    .b-paid     { background:#dcfce7; color:#166534; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
-    .b-pending  { background:#fef9c3; color:#854d0e; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
-    .b-failed   { background:#fee2e2; color:#991b1b; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
-    .b-declined { background:#fce7f3; color:#9d174d; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
-    .b-refunded { background:#e0e7ff; color:#3730a3; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
-    .b-active   { background:#dcfce7; color:#166534; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
-    .b-inactive { background:#f3f4f6; color:#6b7280; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
-    .b-premium  { background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
-    tr:hover td { background:#fafafa; }
-    .clickable-row { cursor:pointer; }
-    .info-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 14px; font-size:12px; color:#1e40af; line-height:1.6; }
-    .warn-box { background:#fef9c3; border:1px solid #fde68a; border-radius:10px; padding:10px 14px; font-size:12px; color:#78350f; line-height:1.6; }
-    .url-prev { width:100%; height:110px; object-fit:cover; border-radius:10px; border:1.5px solid #e5e7eb; display:none; margin-top:8px; }
-    .detail-row { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0; border-bottom:1px solid #f3f4f6; gap:16px; }
-    .detail-row:last-child { border-bottom:none; }
-    .detail-label { font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.05em; min-width:130px; padding-top:1px; flex-shrink:0; }
-    .detail-value { font-size:13px; color:#111827; font-weight:500; text-align:right; word-break:break-all; }
-    .txn-id { font-family:'Courier New',monospace; font-size:11px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:3px 8px; color:#374151; }
-    .filter-select { padding:7px 12px; border:1.5px solid #e5e7eb; border-radius:9px; font-size:12px; font-weight:600; color:#374151; outline:none; background:white; cursor:pointer; }
-    .filter-select:focus { border-color:#9c404d; }
-    .search-wrap { position:relative; }
-    .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); pointer-events:none; }
-    .search-input { padding:7px 12px 7px 32px; border:1.5px solid #e5e7eb; border-radius:9px; font-size:12px; outline:none; background:white; width:200px; font-family:'Inter',sans-serif; }
-    .search-input:focus { border-color:#9c404d; box-shadow:0 0 0 2px rgba(156,64,77,0.08); }
   </style>
 </head>
-<body class="bg-[#f8f9fb] min-h-screen">
-
-  <!-- Nav -->
-  <nav class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-[#9c404d] rounded-lg flex items-center justify-center">
-          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-        </div>
-        <span class="font-serif text-lg font-bold text-[#9c404d]">Sync & Style Admin</span>
-      </div>
-      <div class="flex items-center gap-2 sm:gap-3">
-        <span id="admin-user-info" class="text-[10px] sm:text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full truncate max-w-[80px] xs:max-w-[120px] sm:max-w-none"></span>
-        <a href="/" class="text-[10px] sm:text-xs font-medium text-gray-500 hover:text-[#9c404d] transition-colors whitespace-nowrap">← Site</a>
-      </div>
+<body class="bg-gray-50 text-gray-800">
+  
+  <nav class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="/index.html" class="font-serif text-2xl font-bold text-[#9c404d]">Sync & Style Admin</a>
+      <div id="admin-user-info" class="text-sm font-medium text-gray-600"></div>
     </div>
   </nav>
 
-  <main class="max-w-7xl mx-auto py-8 px-6">
+  <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
 
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-gray-900 font-serif">Dashboard</h1>
-      <p class="text-sm text-gray-400 mt-1">Templates, payments, and sales activity</p>
-    </div>
-
-    <!-- Stats -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-8">
-      <div class="stat-card">
-        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Revenue</p>
-        <p class="text-xl font-bold text-[#9c404d]" id="stat-total-sales">₹0</p>
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Total Sales</h3>
+        <p class="text-3xl font-bold text-[#9c404d]" id="stat-total-sales">₹0</p>
       </div>
-      <div class="stat-card">
-        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Orders</p>
-        <p class="text-xl font-bold text-gray-900" id="stat-total-orders">0</p>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Total Orders</h3>
+        <p class="text-3xl font-bold text-gray-900" id="stat-total-orders">0</p>
       </div>
-      <div class="stat-card">
-        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Paid</p>
-        <p class="text-xl font-bold text-green-600" id="stat-paid">0</p>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Active Templates</h3>
+        <p class="text-3xl font-bold text-gray-900" id="stat-active-templates">0</p>
       </div>
-      <div class="stat-card">
-        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Pending</p>
-        <p class="text-xl font-bold text-yellow-600" id="stat-pending">0</p>
-      </div>
-      <div class="stat-card">
-        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Templates</p>
-        <p class="text-xl font-bold text-gray-900" id="stat-active-templates">0</p>
-      </div>
-      <div class="stat-card">
-        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">RSVPs</p>
-        <p class="text-xl font-bold text-purple-600" id="stat-total-rsvps">0</p>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h3 class="text-sm font-medium text-gray-500 mb-1">Total RSVP Responses</h3>
+        <p class="text-3xl font-bold text-gray-900" id="stat-total-rsvps">0</p>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="flex gap-1.5 mb-6 bg-white p-1.5 rounded-xl border border-gray-100 shadow-sm w-fit">
-      <button onclick="switchTab('templates')" id="tab-templates" class="tab-btn active">Templates</button>
-      <button onclick="switchTab('sales')" id="tab-sales" class="tab-btn">Sales & Payments</button>
+    <!-- Tab Navigation -->
+    <div class="flex border-b border-gray-200 mb-6">
+      <button onclick="switchTab('templates')" id="tab-templates" class="py-3 px-6 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all">Templates</button>
+      <button onclick="switchTab('sales')" id="tab-sales" class="py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all">Sales</button>
     </div>
 
-    <!-- TEMPLATES -->
+    <!-- Templates Management -->
     <div id="section-templates">
-      <div class="flex justify-between items-center mb-4">
-        <div>
-          <h2 class="text-base font-bold text-gray-900">Template Configs</h2>
-          <p class="text-xs text-gray-400 mt-0.5">Changes sync to index & templates pages</p>
-        </div>
-        <button onclick="loadTemplates()" class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#9c404d] bg-white border border-gray-200 px-3 py-2 rounded-lg transition-colors">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-serif">Template Configs</h2>
+        <button onclick="loadTemplates()" class="text-sm text-[#9c404d] hover:underline flex items-center gap-1">
           Refresh
         </button>
       </div>
-      <div class="table-wrap mb-8">
-        <table class="min-w-full">
-          <thead>
-            <tr class="border-b border-gray-100 bg-gray-50/60">
-              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Preview</th>
-              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Template</th>
-              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Price</th>
-              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-              <th class="px-5 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Image URL</th>
-              <th class="px-5 py-3.5 text-right text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="templates-tbody" class="divide-y divide-gray-50">
-            <tr><td colspan="6" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>
-          </tbody>
-        </table>
+      
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-12">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y border-b divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Preview</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID / Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rate (₹)</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="templates-tbody" class="bg-white divide-y divide-gray-200">
+              <!-- Dynamic rows -->
+              <tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-
-    <!-- SALES -->
+    
+    <!-- Sales History -->
     <div id="section-sales" class="hidden">
-      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-        <div>
-          <h2 class="text-base font-bold text-gray-900">Sales & Payments</h2>
-          <p class="text-xs text-gray-400 mt-0.5">Click any row for full payment details + actions</p>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold font-serif">Recent Sales</h2>
+        <button onclick="loadSales()" class="text-sm text-[#9c404d] hover:underline flex items-center gap-1">
+          Refresh
+        </button>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y border-b divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">RSVPs</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              </tr>
+            </thead>
+            <tbody id="sales-tbody" class="bg-white divide-y divide-gray-200">
+              <!-- Dynamic rows -->
+              <tr><td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <div class="search-wrap">
-            <svg class="search-icon w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input id="sales-search" type="text" placeholder="Email, txn ID…" class="search-input" oninput="filterSales()">
-          </div>
-          <select id="sales-filter" class="filter-select" onchange="filterSales()">
-            <option value="">All Status</option>
-            <option value="paid">Paid</option>
-            <option value="pending">Pending</option>
-            <option value="failed">Failed</option>
-            <option value="declined">Declined</option>
-            <option value="refunded">Refunded</option>
-          </select>
-          <button onclick="loadSales()" class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#9c404d] bg-white border border-gray-200 px-3 py-2 rounded-lg transition-colors">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            Refresh
-          </button>
-        </div>
       </div>
-
-      <!-- RLS error -->
-      <div id="rls-help" class="hidden mb-4 warn-box">
-        <strong>🔒 Permission denied — run in Supabase SQL Editor:</strong>
-        <code class="block mt-2 bg-yellow-50 rounded-lg p-2.5 text-[11px] font-mono whitespace-pre">ALTER TABLE public.customer_invitations ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Admin read all sales"
-ON public.customer_invitations
-FOR SELECT TO authenticated
-USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin');
-
-CREATE POLICY "Admin update sales"
-ON public.customer_invitations
-FOR UPDATE TO authenticated
-USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
-WITH CHECK ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin');</code>
-      </div>
-
-      <!-- SQL Schema box -->
-      <div id="sql-schema-box" class="mb-4 info-box">
-        <div class="flex justify-between items-start gap-2">
-          <strong>📋 Add payment columns — run once in Supabase SQL Editor (safe to re-run):</strong>
-          <button onclick="document.getElementById('sql-schema-box').style.display='none'" class="text-blue-400 hover:text-blue-700 text-lg leading-none flex-shrink-0">×</button>
-        </div>
-        <code class="block mt-2 bg-blue-50 rounded-lg p-2.5 text-[11px] font-mono whitespace-pre">ALTER TABLE public.customer_invitations
-  ADD COLUMN IF NOT EXISTS payment_status    TEXT    DEFAULT 'pending',
-  ADD COLUMN IF NOT EXISTS payment_amount    NUMERIC,
-  ADD COLUMN IF NOT EXISTS payment_method    TEXT,
-  ADD COLUMN IF NOT EXISTS payment_gateway   TEXT    DEFAULT 'razorpay',
-  ADD COLUMN IF NOT EXISTS razorpay_order_id   TEXT,
-  ADD COLUMN IF NOT EXISTS razorpay_payment_id TEXT,
-  ADD COLUMN IF NOT EXISTS razorpay_signature  TEXT,
-  ADD COLUMN IF NOT EXISTS payment_at        TIMESTAMPTZ,
-  ADD COLUMN IF NOT EXISTS failure_reason    TEXT,
-  ADD COLUMN IF NOT EXISTS refund_id         TEXT,
-  ADD COLUMN IF NOT EXISTS refund_at         TIMESTAMPTZ;
-
--- Also add actual_price to template_configs for offer pricing:
-ALTER TABLE public.template_configs
-  ADD COLUMN IF NOT EXISTS actual_price NUMERIC;
-
--- Useful indexes
-CREATE INDEX IF NOT EXISTS idx_ci_payment_status ON public.customer_invitations(payment_status);
-CREATE INDEX IF NOT EXISTS idx_ci_razorpay_payment_id ON public.customer_invitations(razorpay_payment_id);
-CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(created_at DESC);</code>
-      </div>
-
-      <div class="table-wrap">
-        <table class="min-w-full">
-          <thead>
-            <tr class="border-b border-gray-100 bg-gray-50/60">
-              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Date</th>
-              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Customer</th>
-              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Template</th>
-              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Amount</th>
-              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Payment Status</th>
-              <th class="px-4 py-3.5 text-left text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Transaction ID</th>
-              <th class="px-4 py-3.5 text-center text-[10px] font-semibold text-gray-400 uppercase tracking-wider">RSVPs</th>
-              <th class="px-4 py-3.5 text-right text-[10px] font-semibold text-gray-400 uppercase tracking-wider"></th>
-            </tr>
-          </thead>
-          <tbody id="sales-tbody" class="divide-y divide-gray-50">
-            <tr><td colspan="8" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="text-xs text-gray-400 mt-2 text-right" id="sales-count"></p>
     </div>
+
   </main>
 
-  <!-- EDIT TEMPLATE MODAL -->
-  <div id="edit-modal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
-    <div class="modal-box w-full max-w-lg">
-      <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+  <!-- Edit Template Modal -->
+  <div id="edit-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+      <div class="p-6 border-b border-gray-100 flex justify-between items-center">
         <div>
-          <h3 class="text-lg font-bold text-gray-900 font-serif">Edit Template</h3>
-          <p class="text-xs text-gray-400 mt-0.5" id="edit-subtitle"></p>
+          <h3 class="text-xl font-bold text-gray-900 font-serif">Edit Template</h3>
+          <p class="text-xs text-gray-400 mt-0.5">ID: <span id="edit-id-display" class="font-mono"></span></p>
         </div>
-        <button onclick="closeEditModal()" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
+        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">&times;</button>
       </div>
-      <div class="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto">
+      <div class="p-6 space-y-4">
         <input type="hidden" id="edit-id">
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1.5">Template Name</label>
-          <input type="text" id="edit-name" class="ifield" placeholder="Royal Heritage">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+          <input type="text" id="edit-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9c404d] focus:border-transparent">
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Actual Price (₹) <span class="text-gray-400 font-normal">original</span></label>
-            <input type="number" id="edit-actual-price" class="ifield" placeholder="999" oninput="updateOfferPreview()">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Offer Price (₹) <span class="text-green-600 font-normal">shown to customers</span></label>
-            <input type="number" id="edit-price" class="ifield" placeholder="499" oninput="updateOfferPreview()">
-          </div>
-        </div>
-        <div id="offer-percent-preview" class="hidden text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2"></div>
-        <!-- Image Section -->
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-2">Placeholder Image</label>
-
-          <!-- Tab Toggle -->
-          <div class="flex gap-1 mb-3 bg-gray-100 p-1 rounded-lg w-fit">
-            <button type="button" id="img-tab-upload" onclick="switchImgTab('upload')"
-              class="img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md bg-white text-gray-800 shadow-sm transition-all">
-              📁 Upload File
-            </button>
-            <button type="button" id="img-tab-url" onclick="switchImgTab('url')"
-              class="img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 transition-all">
-              🔗 Paste URL
-            </button>
-          </div>
-
-          <!-- Upload Panel -->
-          <div id="img-panel-upload">
-            <div id="img-drop-zone"
-              onclick="document.getElementById('img-file-input').click()"
-              ondragover="event.preventDefault(); this.classList.add('border-[#9c404d]','bg-[#fef2f2]')"
-              ondragleave="this.classList.remove('border-[#9c404d]','bg-[#fef2f2]')"
-              ondrop="handleImgDrop(event)"
-              class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:border-[#9c404d] hover:bg-[#fef2f2] transition-all">
-              <div id="img-drop-content">
-                <div class="text-2xl mb-1">🖼️</div>
-                <p class="text-xs font-semibold text-gray-600">Click or drag & drop image</p>
-                <p class="text-[11px] text-gray-400 mt-0.5">JPG, PNG, WEBP up to 10MB</p>
-              </div>
-              <div id="img-uploading" class="hidden">
-                <div class="flex items-center justify-center gap-2">
-                  <svg class="w-4 h-4 animate-spin text-[#9c404d]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                  <span class="text-xs font-semibold text-[#9c404d]">Uploading to Supabase…</span>
-                </div>
-              </div>
-            </div>
-            <input type="file" id="img-file-input" accept="image/*" class="hidden" onchange="handleImgFile(this)">
-            <p class="text-[11px] text-gray-400 mt-1.5">Stored as <strong>.jpg</strong> in your Supabase <code class="font-mono">placeholders</code> bucket.</p>
-          </div>
-
-          <!-- URL Panel -->
-          <div id="img-panel-url" class="hidden">
-            <input type="url" id="edit-image-url-input" class="ifield" placeholder="https://i.imgur.com/…  or  https://i.ibb.co/…" oninput="onUrlInput(this.value)">
-            <p class="text-[11px] text-gray-400 mt-1.5">Use direct image links only (ending in .jpg/.png/.webp). Pinterest/Instagram links <span class="text-red-500 font-semibold">won't work</span>.</p>
-          </div>
-
-          <!-- Hidden actual field that gets saved -->
-          <input type="hidden" id="edit-image">
-
-          <!-- Preview -->
-          <div id="img-preview-wrap" class="hidden mt-3">
-            <div class="relative">
-              <img id="url-prev" class="w-full h-32 object-cover rounded-xl border border-gray-200" alt="Preview" onerror="imgPreviewError()">
-              <button type="button" onclick="clearImgPreview()" class="absolute top-2 right-2 w-6 h-6 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors">
-                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-              </button>
-            </div>
-            <p id="img-preview-url" class="text-[10px] text-gray-400 mt-1 truncate font-mono"></p>
-          </div>
-
-          <!-- Error -->
-          <p id="img-error" class="hidden text-[11px] text-red-500 font-semibold mt-1.5"></p>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+          <input type="number" id="edit-price" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9c404d] focus:border-transparent">
         </div>
-
-        <!-- Active Toggle -->
-        <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3.5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Placeholder Image (Upload)</label>
+          <input type="file" id="edit-image-file" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#9c404d] focus:border-transparent">
+          <p class="text-xs text-gray-400 mt-1 mb-2">Upload a new placeholder image. It will be uploaded to Supabase Storage ('placeholders' bucket).</p>
+          <input type="url" id="edit-image" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500" placeholder="Current image URL..." readonly>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="edit-active" class="rounded text-[#9c404d] focus:ring-[#9c404d]">
+          <label class="text-sm font-medium text-gray-700">Is Active</label>
+        </div>
+        <div class="flex items-center gap-2 p-3 rounded-xl border border-amber-200 bg-amber-50">
+          <input type="checkbox" id="edit-premium" class="rounded text-amber-500 focus:ring-amber-400">
           <div>
-            <p class="text-sm font-semibold text-gray-700">Active</p>
-            <p class="text-xs text-gray-400">Inactive shows "Coming Soon" on site</p>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="edit-active" class="sr-only peer">
-            <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9c404d]"></div>
-          </label>
-        </div>
-
-        <!-- Premium Toggle -->
-        <div class="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-xl p-3.5">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#d4af37,#f5e07a,#b8860b);box-shadow:0 2px 8px rgba(212,175,55,0.4)">
-              <span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">crown</span>
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-gray-700">Premium</p>
-              <p class="text-xs text-gray-400">Shows golden crown badge on template card</p>
-            </div>
-          </div>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="edit-premium" class="sr-only peer">
-            <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9c404d]"></div>
-          </label>
-        </div>
-      </div>
-      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-2.5">
-        <button onclick="closeEditModal()" class="w-full sm:w-auto px-6 py-3 sm:py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all active:scale-95">Cancel</button>
-        <button onclick="saveTemplate()" id="save-btn" class="w-full sm:w-auto px-8 py-3 sm:py-2 text-sm font-semibold text-white bg-[#9c404d] rounded-xl hover:bg-[#833641] shadow-lg shadow-[#9c404d]/20 transition-all active:scale-95">
-          <span id="save-btn-text">Save Changes</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PAYMENT DETAIL MODAL -->
-  <div id="payment-modal" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
-    <div class="modal-box w-full max-w-xl">
-      <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-[#fef2f2] rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-5 h-5 text-[#9c404d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-          </div>
-          <div>
-            <h3 class="text-lg font-bold text-gray-900 font-serif">Payment Details</h3>
-            <p class="text-xs text-gray-400 font-mono mt-0.5" id="pm-header-sub"></p>
+            <label class="text-sm font-medium text-gray-700 flex items-center gap-1">
+              <span>👑</span> Premium
+            </label>
+            <p class="text-xs text-gray-400">Shows golden crown badge on template card</p>
           </div>
         </div>
-        <button onclick="closePaymentModal()" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors flex-shrink-0">
-          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
       </div>
-      <div class="px-6 py-4 max-h-[70vh] overflow-y-auto" id="payment-body"></div>
-      <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <div id="pm-actions" class="flex flex-wrap gap-2 w-full sm:w-auto"></div>
-        <button onclick="closePaymentModal()" class="w-full sm:w-auto px-8 py-3 sm:py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all active:scale-95">Close</button>
+      <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+        <button onclick="closeEditModal()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+        <button onclick="saveTemplate()" id="save-btn" class="px-4 py-2 text-sm font-medium text-white bg-[#9c404d] rounded-lg hover:bg-[#833641]">Save Changes</button>
       </div>
     </div>
   </div>
 
   <script>
-    let sb = null, templatesData = [], allSalesData = [], filteredRows = [];
-
-    // ── HELPERS ───────────────────────────────────────────────────
-    // ── IMAGE UPLOAD (Supabase Storage) ──────────────────────────
-    function switchImgTab(tab) {
-      document.getElementById('img-panel-upload').classList.toggle('hidden', tab !== 'upload');
-      document.getElementById('img-panel-url').classList.toggle('hidden', tab !== 'url');
-      document.getElementById('img-tab-upload').className = 'img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md transition-all ' +
-        (tab === 'upload' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500');
-      document.getElementById('img-tab-url').className = 'img-tab-btn px-3 py-1.5 text-xs font-semibold rounded-md transition-all ' +
-        (tab === 'url' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500');
-    }
-
-    function handleImgDrop(e) {
-      e.preventDefault();
-      document.getElementById('img-drop-zone').classList.remove('border-[#9c404d]','bg-[#fef2f2]');
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) uploadToSupabase(file);
-      else showImgError('Please drop an image file.');
-    }
-
-    function handleImgFile(input) {
-      const file = input.files[0];
-      if (file) uploadToSupabase(file);
-    }
-
-    async function uploadToSupabase(file) {
-      if (!sb) { showImgError('Not connected to Supabase.'); return; }
-      if (file.size > 10 * 1024 * 1024) { showImgError('File too large. Max 10MB.'); return; }
-
-      document.getElementById('img-drop-content').classList.add('hidden');
-      document.getElementById('img-uploading').classList.remove('hidden');
-      document.getElementById('img-error').classList.add('hidden');
-
-      try {
-        // Get template ID for filename
-        const templateId = document.getElementById('edit-id').value || 'template';
-        // Always save as jpg regardless of original format
-        const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
-        const fileName = templateId + '-' + Date.now() + '.' + ext;
-
-        const { data, error } = await sb.storage
-          .from('placeholders')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: true,
-            contentType: file.type
-          });
-
-        if (error) throw new Error(error.message);
-
-        // Get public URL
-        const { data: urlData } = sb.storage
-          .from('placeholders')
-          .getPublicUrl(fileName);
-
-        setImgResult(urlData.publicUrl);
-      } catch(e) {
-        let msg = e.message || 'Upload failed';
-        if (msg.includes('row-level security') || msg.includes('Unauthorized') || msg.includes('403')) {
-          msg = 'Storage permission denied. Run the SQL fix in Supabase → SQL Editor (see instructions below).';
-          showStorageSqlHelp();
-        }
-        showImgError(msg);
-      } finally {
-        document.getElementById('img-drop-content').classList.remove('hidden');
-        document.getElementById('img-uploading').classList.add('hidden');
-        document.getElementById('img-file-input').value = '';
-      }
-    }
-
-    function showStorageSqlHelp() {
-      const existing = document.getElementById('storage-sql-help');
-      if (existing) { existing.classList.remove('hidden'); return; }
-      const box = document.createElement('div');
-      box.id = 'storage-sql-help';
-      box.className = 'warn-box mt-3';
-      const sql = [
-        "INSERT INTO storage.buckets (id, name, public)",
-        "VALUES ('placeholders', 'placeholders', true)",
-        "ON CONFLICT (id) DO UPDATE SET public = true;",
-        "",
-        "CREATE POLICY \"Auth upload placeholders\"",
-        "ON storage.objects FOR INSERT TO authenticated",
-        "WITH CHECK (bucket_id = 'placeholders');",
-        "",
-        "CREATE POLICY \"Public read placeholders\"",
-        "ON storage.objects FOR SELECT TO public",
-        "USING (bucket_id = 'placeholders');"
-      ].join("\n");
-      box.innerHTML = '<strong style="font-size:11px">🔒 Run once in Supabase SQL Editor to fix storage permissions:</strong>' +
-        '<pre style="font-size:10px;background:#fefce8;border-radius:8px;padding:10px;margin-top:8px;white-space:pre-wrap;word-break:break-all;font-family:monospace">' +
-        sql.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
-      const errEl = document.getElementById('img-error');
-      if (errEl && errEl.parentNode) errEl.parentNode.insertBefore(box, errEl.nextSibling);
-    }
-
-    function onUrlInput(val) {
-      document.getElementById('img-error').classList.add('hidden');
-      if (val && val.startsWith('http')) {
-        setImgResult(val);
-      } else {
-        document.getElementById('edit-image').value = '';
-        document.getElementById('img-preview-wrap').classList.add('hidden');
-      }
-    }
-
-    function setImgResult(url) {
-      document.getElementById('edit-image').value = url;
-      const img = document.getElementById('url-prev');
-      img.src = url;
-      document.getElementById('img-preview-url').textContent = url;
-      document.getElementById('img-preview-wrap').classList.remove('hidden');
-      document.getElementById('img-error').classList.add('hidden');
-    }
-
-    function imgPreviewError() {
-      showImgError("Image failed to load. Use a direct image URL (.jpg/.png/.webp), not a webpage link like Pinterest.");
-      document.getElementById('img-preview-wrap').classList.add('hidden');
-      document.getElementById('edit-image').value = '';
-    }
-
-    function clearImgPreview() {
-      document.getElementById('edit-image').value = '';
-      document.getElementById('url-prev').src = '';
-      document.getElementById('img-preview-wrap').classList.add('hidden');
-      document.getElementById('img-preview-url').textContent = '';
-      const urlInput = document.getElementById('edit-image-url-input');
-      if (urlInput) urlInput.value = '';
-    }
-
-    function showImgError(msg) {
-      const el = document.getElementById('img-error');
-      el.textContent = msg;
-      el.classList.remove('hidden');
-    }
-
-
-
-    function prevImg(url) {
-      if (url && url.startsWith('http')) {
-        setImgResult(url);
-        const urlInput = document.getElementById('edit-image-url-input');
-        if (urlInput) urlInput.value = url;
-      } else {
-        clearImgPreview();
-      }
-    }
-
+    let sb = null;
+    let templatesData = [];
+    
     function switchTab(tab) {
-      ['templates','sales'].forEach(t => {
-        document.getElementById('section-'+t).classList.add('hidden');
-        document.getElementById('tab-'+t).classList.remove('active');
-      });
-      document.getElementById('section-'+tab).classList.remove('hidden');
-      document.getElementById('tab-'+tab).classList.add('active');
+        document.getElementById('section-templates').classList.add('hidden');
+        document.getElementById('section-sales').classList.add('hidden');
+        
+        document.getElementById('tab-templates').className = 'py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all';
+        document.getElementById('tab-sales').className = 'py-3 px-6 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all';
+
+        document.getElementById(`section-${tab}`).classList.remove('hidden');
+        document.getElementById(`tab-${tab}`).className = 'py-3 px-6 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all';
     }
 
-    function getPaymentStatus(s) {
-      const ps = (s.payment_status || '').toLowerCase();
-      if (['paid','captured','success'].includes(ps)) return 'paid';
-      if (ps === 'failed') return 'failed';
-      if (ps === 'declined') return 'declined';
-      if (ps === 'refunded') return 'refunded';
-      if (s.payment_id || s.razorpay_payment_id) return 'paid'; // legacy fallback
-      return 'pending';
-    }
-
-    function badge(status) {
-      const map = { paid:'b-paid', pending:'b-pending', failed:'b-failed', declined:'b-declined', refunded:'b-refunded' };
-      const lbl = { paid:'✓ Paid', pending:'⏳ Pending', failed:'✗ Failed', declined:'✗ Declined', refunded:'↩ Refunded' };
-      return `<span class="${map[status]||'b-pending'}">${lbl[status]||status}</span>`;
-    }
-
-    function fmtDate(d) { return d ? new Date(d).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}) : '—'; }
-    function txnSpan(id) { return id ? `<span class="txn-id">${id}</span>` : '<span class="text-gray-300">—</span>'; }
-
-    // ── INIT ──────────────────────────────────────────────────────
     async function initAdmin() {
       try {
         const res = await fetch('/api/config');
-        if (!res.ok) throw new Error('Config fetch failed');
+        if (!res.ok) throw new Error("Failed config fetch");
         const config = await res.json();
-        if (!config.supabaseUrl || !config.supabaseAnonKey) { alert('Missing Supabase Config.'); return; }
-        sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-        const { data: { session } } = await sb.auth.getSession();
-        if (!session) { window.location.href = '/login?redirect=' + encodeURIComponent('/admin'); return; }
-        if (session.user.user_metadata?.role !== 'admin') {
-          document.body.innerHTML = '<div class="min-h-screen flex items-center justify-center"><div class="text-center p-10 bg-white rounded-2xl shadow-lg max-w-sm"><div class="text-5xl mb-4">🚫</div><h2 class="text-2xl font-bold mb-2">Access Denied</h2><a href="/" class="inline-block bg-[#9c404d] text-white px-6 py-3 rounded-lg font-bold mt-4">Go Home</a></div></div>';
+        if (!config.supabaseUrl || !config.supabaseAnonKey) {
+          alert('Missing Supabase Config. Check Admin setup.');
           return;
         }
+
+        sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+
+        // ── AUTH GUARD ──────────────────────────────────────────────
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+          window.location.href = '/login?redirect=' + encodeURIComponent('/admin');
+          return;
+        }
+
+        // ── ADMIN ROLE CHECK ────────────────────────────────────────
+        // Reads the `role` field from user_metadata (set in Supabase Auth).
+        // To make a user admin: in Supabase dashboard → Auth → Users →
+        // click the user → edit raw metadata → set {"role": "admin"}
+        const userRole = session.user.user_metadata?.role;
+        if (userRole !== 'admin') {
+          document.body.innerHTML = `
+            <div class="min-h-screen flex items-center justify-center bg-gray-50">
+              <div class="text-center p-10 bg-white rounded-2xl shadow-lg border border-gray-100 max-w-sm">
+                <div class="text-5xl mb-4">🚫</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
+                <p class="text-gray-500 mb-6">You don't have admin privileges to view this page.</p>
+                <a href="/" class="inline-block bg-[#9c404d] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#7d333e] transition-all">Go Home</a>
+              </div>
+            </div>`;
+          return;
+        }
+
+        // Show logged-in admin email in navbar
         document.getElementById('admin-user-info').textContent = session.user.email;
+
         await ensureTemplateTable();
         await loadTemplates();
         await loadSales();
-      } catch (e) { console.error('Admin init failed', e); }
+      } catch (e) {
+        console.error("Admin init failed", e);
+      }
     }
 
     async function ensureTemplateTable() {
-      if (!sb) return;
+      if(!sb) return;
+      // Auto-insert default templates if they don't exist
       const check = await sb.from('template_configs').select('id').limit(1);
-      if (check.error?.code === '42P01') {
-        alert("Table 'template_configs' missing. Run:\nCREATE TABLE IF NOT EXISTS public.template_configs (\n  id TEXT PRIMARY KEY,\n  name TEXT NOT NULL,\n  price NUMERIC NOT NULL,\n  placeholder_url TEXT,\n  is_active BOOLEAN DEFAULT TRUE,\n  is_premium BOOLEAN DEFAULT FALSE,\n  updated_at TIMESTAMPTZ DEFAULT NOW()\n);");
-      } else if (check.data?.length === 0) {
+      if (check.error && check.error.code === '42P01') {
+        alert("Table 'template_configs' does not exist! Please run this in your Supabase SQL Editor:\n\nCREATE TABLE IF NOT EXISTS public.template_configs (\n  id TEXT PRIMARY KEY,\n  name TEXT NOT NULL,\n  price NUMERIC NOT NULL,\n  placeholder_url TEXT,\n  is_active BOOLEAN DEFAULT TRUE,\n  is_premium BOOLEAN DEFAULT FALSE,\n  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n\nIf the table exists but is missing columns, run:\nALTER TABLE template_configs ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT FALSE;");
+      } else if (check.data && check.data.length === 0) {
+        // Insert defaults
         await sb.from('template_configs').insert([
-          { id:'template01', name:'Royal Heritage', price:499, is_active:true, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?q=80&w=800&auto=format&fit=crop' },
-          { id:'template02', name:'Minimalist Gold', price:499, is_active:true, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' },
-          { id:'template03', name:'Floral Garden', price:499, is_active:false, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1582236307399-52e896472d8e?q=80&w=800&auto=format&fit=crop' },
-          { id:'template04', name:'Majestic Gold', price:499, is_active:false, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' }
+          { id: 'template01', name: 'Royal Heritage', price: 499, is_active: true, is_premium: true, placeholder_url: 'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?q=80&w=800&auto=format&fit=crop' },
+          { id: 'template02', name: 'Minimalist Gold', price: 499, is_active: true, is_premium: true, placeholder_url: 'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' },
+          { id: 'template03', name: 'Floral Garden', price: 499, is_active: false, is_premium: false, placeholder_url: 'https://images.unsplash.com/photo-1582236307399-52e896472d8e?q=80&w=800&auto=format&fit=crop' },
+          { id: 'template04', name: 'Majestic Gold', price: 499, is_active: false, is_premium: false, placeholder_url: 'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' }
         ]);
       }
     }
 
-    // ── TEMPLATES ─────────────────────────────────────────────────
     async function loadTemplates() {
-      if (!sb) return;
-      const tbody = document.getElementById('templates-tbody');
-      tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>';
-      const { data, error } = await sb.from('template_configs').select('*').order('id');
-      if (error) { tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-red-500">Failed to load templates.</td></tr>'; return; }
-      templatesData = data || [];
-      if (!templatesData.length) { tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-gray-400">No templates.</td></tr>'; return; }
-      const fb = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect width='44' height='44' fill='%23f3f4f6'/%3E%3Ctext x='22' y='26' text-anchor='middle' fill='%239ca3af' font-size='8'%3ENo img%3C/text%3E%3C/svg%3E";
-      tbody.innerHTML = templatesData.map(t => `
-        <tr>
-          <td class="px-5 py-4"><img src="${t.placeholder_url||''}" class="thumb" alt="${t.name}" onerror="this.src='${fb}'"></td>
-          <td class="px-5 py-4"><div class="text-sm font-semibold text-gray-900">${t.name}</div><div class="text-xs text-gray-400 font-mono mt-0.5">${t.id}</div></td>
-      <td class="px-5 py-4 text-sm font-bold text-gray-900">
-            ${t.actual_price ? `<span class="line-through text-gray-400 text-xs font-normal">₹${t.actual_price}</span> ` : ''}₹${t.price}
-            ${t.actual_price && t.actual_price > t.price ? `<span class="ml-1 text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full">${Math.round((1-t.price/t.actual_price)*100)}% off</span>` : ''}
-          </td>
-          <td class="px-5 py-4"><span class="${t.is_active?'b-active':'b-inactive'}">${t.is_active?'Active':'Inactive'}</span>${t.is_premium?' <span class="b-premium">👑 Premium</span>':''}</td>
-          <td class="px-5 py-4 max-w-[150px]"><span class="text-xs text-gray-400 truncate block" title="${t.placeholder_url||''}">${t.placeholder_url?(t.placeholder_url.length>38?t.placeholder_url.substring(0,38)+'…':t.placeholder_url):'—'}</span></td>
-          <td class="px-5 py-4 text-right"><button onclick="openEditModal('${t.id}')" class="text-xs font-semibold text-[#9c404d] bg-[#fef2f2] hover:bg-[#fde8e8] px-3 py-1.5 rounded-lg transition-colors">Edit</button></td>
-        </tr>`).join('');
+        if (!sb) return;
+        const tbody = document.getElementById('templates-tbody');
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>';
+        
+        const { data, error } = await sb.from('template_configs').select('*').order('id', { ascending: true });
+        if (error) {
+            console.error("Error loading templates", error);
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-red-500">Failed to load</td></tr>';
+            return;
+        }
+
+        templatesData = data || [];
+        if (templatesData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No templates found.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = templatesData.map(t => `
+            <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <img src="${t.placeholder_url || ''}" class="h-12 w-8 object-cover rounded shadow-sm border border-gray-200" alt="${t.name}">
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 flex items-center gap-1">${t.is_premium ? '👑' : ''} ${t.name}</div>
+                <div class="text-xs text-gray-500">${t.id}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₹${t.price}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${t.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                ${t.is_active ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button onclick="openEditModal('${t.id}')" class="text-[#9c404d] hover:text-[#833641]">Edit</button>
+            </td>
+            </tr>
+        `).join('');
     }
 
-    // ── SALES ──────────────────────────────────────────────────────
     async function loadSales() {
-      if (!sb) return;
-      const tbody = document.getElementById('sales-tbody');
-      tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-sm text-gray-400">Loading…</td></tr>';
-      const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
-      if (error) {
-        document.getElementById('rls-help').classList.remove('hidden');
-        tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-sm text-red-500">Permission denied — see RLS fix above.</td></tr>';
-        return;
-      }
-      document.getElementById('rls-help').classList.add('hidden');
-      allSalesData = data || [];
-      renderSales(allSalesData);
+        if (!sb) return;
+        const tbody = document.getElementById('sales-tbody');
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading...</td></tr>';
+
+        const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
+        if (error) {
+            console.error("Error loading sales", error);
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-red-500">Failed to load. Check Supabase RLS or table existence.</td></tr>';
+            return;
+        }
+
+        const stats = data || [];
+        document.getElementById('stat-total-orders').textContent = stats.length;
+        
+        // Calculate total sales using template_configs price
+        let totalSales = 0;
+        let totalRsvps = 0;
+        stats.forEach(s => {
+            const template = templatesData.find(t => t.id === s.template_type);
+            const price = (template && !isNaN(template.price)) ? Number(template.price) : 499;
+            totalSales += price;
+            totalRsvps += Array.isArray(s.rsvps) ? s.rsvps.length : 0;
+        });
+        
+        document.getElementById('stat-total-sales').textContent = `₹${totalSales.toLocaleString('en-IN')}`;
+        document.getElementById('stat-total-rsvps').textContent = totalRsvps;
+
+        // Active templates count
+        const activeCount = templatesData.filter(t => t.is_active).length;
+        document.getElementById('stat-active-templates').textContent = activeCount;
+        
+        if (stats.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No sales yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = stats.map(s => {
+            const template = templatesData.find(t => t.id === s.template_type);
+            const templateName = template?.name || s.template_type || 'Unknown';
+            const price = (template && !isNaN(template.price)) ? Number(template.price) : 499;
+            const rsvpCount = Array.isArray(s.rsvps) ? s.rsvps.length : 0;
+            return `
+            <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(s.created_at).toLocaleDateString('en-IN')}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${s.user_email || 'Anonymous'}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${templateName}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#9c404d]">₹${price}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">${rsvpCount}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${s.payment_id ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${s.payment_id ? 'Paid' : 'Pending'}</span>
+            </td>
+            </tr>
+            `;
+        }).join('');
     }
 
-    function renderSales(rows) {
-      filteredRows = rows;
-      const tbody = document.getElementById('sales-tbody');
-
-      // Recompute stats from ALL data (not filtered)
-      let rev=0, paid=0, pending=0, rsvps=0;
-      allSalesData.forEach(s => {
-        const t = templatesData.find(t=>t.id===s.template_type);
-        const price = s.payment_amount || ((t&&!isNaN(t.price))?Number(t.price):499);
-        const st = getPaymentStatus(s);
-        if (st==='paid') { rev+=price; paid++; }
-        else if (st==='pending') pending++;
-        rsvps += Array.isArray(s.rsvps)?s.rsvps.length:0;
-      });
-      document.getElementById('stat-total-orders').textContent = allSalesData.length;
-      document.getElementById('stat-total-sales').textContent = '₹'+rev.toLocaleString('en-IN');
-      document.getElementById('stat-paid').textContent = paid;
-      document.getElementById('stat-pending').textContent = pending;
-      document.getElementById('stat-total-rsvps').textContent = rsvps;
-      document.getElementById('stat-active-templates').textContent = templatesData.filter(t=>t.is_active).length;
-      document.getElementById('sales-count').textContent = `Showing ${rows.length} of ${allSalesData.length} orders`;
-
-      if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-sm text-gray-400">No matching orders.</td></tr>'; return; }
-
-      tbody.innerHTML = rows.map(function(s, i) {
-        const t = templatesData.find(function(t){ return t.id===s.template_type; });
-        const price = s.payment_amount || ((t&&!isNaN(t.price))?Number(t.price):499);
-        const st = getPaymentStatus(s);
-        const txnId = s.razorpay_payment_id || s.payment_id || '';
-        const dateStr = new Date(s.created_at).toLocaleDateString('en-IN');
-        const timeStr = new Date(s.created_at).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-        const txnHtml = txnId ? LazyLoadTxn(txnId) : '<span class="text-gray-300 text-xs">—</span>';
-        const rsvpCount = Array.isArray(s.rsvps) ? s.rsvps.length : 0;
-        return '<tr class="clickable-row hover:bg-slate-50 transition-colors" onclick="openPaymentModal('+i+')">' +
-          '<td class="px-4 py-3.5 text-xs text-gray-500 whitespace-nowrap">'+dateStr+'<br><span class="text-[10px] text-gray-300">'+timeStr+'</span></td>' +
-          '<td class="px-4 py-3.5 max-w-[160px]"><div class="text-xs font-medium text-gray-900 truncate">'+(s.user_email||'Anonymous')+'</div></td>' +
-          '<td class="px-4 py-3.5 text-xs text-gray-600">'+(t?t.name:(s.template_type||'—'))+'</td>' +
-          '<td class="px-4 py-3.5 text-sm font-bold text-[#9c404d]">₹'+price+'</td>' +
-          '<td class="px-4 py-3.5">'+badge(st)+'</td>' +
-          '<td class="px-4 py-3.5">'+txnHtml+'</td>' +
-          '<td class="px-4 py-3.5 text-center text-sm text-gray-600">'+rsvpCount+'</td>' +
-          '<td class="px-4 py-3.5 text-right"><span class="text-xs text-blue-500 font-semibold">View →</span></td>' +
-          '</tr>';
-      }).join('');
-    }
-
-    function LazyLoadTxn(id) {
-      return '<span class="txn-id">' + (id.length>18 ? id.substring(0,18)+'…' : id) + '</span>';
-    }
-
-    function filterSales() {
-      const q = document.getElementById('sales-search').value.toLowerCase();
-      const f = document.getElementById('sales-filter').value;
-      renderSales(allSalesData.filter(s => {
-        const matchF = !f || getPaymentStatus(s) === f;
-        const matchQ = !q || [s.user_email,s.payment_id,s.razorpay_payment_id,s.razorpay_order_id].some(v=>(v||'').toLowerCase().includes(q));
-        return matchF && matchQ;
-      }));
-    }
-
-    // ── PAYMENT MODAL ──────────────────────────────────────────────
-    function openPaymentModal(rowIdx) {
-      const s = filteredRows[rowIdx];
-      if (!s) return;
-      const t = templatesData.find(t=>t.id===s.template_type);
-      const st = getPaymentStatus(s);
-      const price = s.payment_amount || ((t&&!isNaN(t.price))?Number(t.price):499);
-
-      document.getElementById('pm-header-sub').textContent = s.razorpay_order_id || s.id || '';
-
-      const fields = [
-  ['Customer Email',      s.user_email || '—'],
-  ['Order Date',          fmtDate(s.created_at)],
-  ['Template',            t?.name || s.template_type || '—'],
-  ['Amount',              '<span class="font-bold text-[#9c404d]">₹' + Number(price).toLocaleString('en-IN') + '</span>'],
-  ['Payment Status',      badge(st)],
-  ['Payment Method',      s.payment_method || '—'],
-  ['Gateway',             s.payment_gateway || 'Razorpay'],
-  ['Razorpay Order ID',   txnSpan(s.razorpay_order_id)],
-  ['Razorpay Payment ID', txnSpan(s.razorpay_payment_id)],
-  ['Payment ID (legacy)', txnSpan(s.payment_id)],
-  ['Razorpay Signature',  s.razorpay_signature ? '<span class="txn-id text-[10px]">' + s.razorpay_signature.substring(0,24) + '…</span>' : '—'],
-  ['Payment Time',        fmtDate(s.payment_at)],
-  ['Failure Reason',      s.failure_reason ? '<span class="text-red-600 font-semibold">' + s.failure_reason + '</span>' : '—'],
-  ['Refund ID',           txnSpan(s.refund_id)],
-  ['Refund Time',         fmtDate(s.refund_at)],
-  ['RSVP Count',          Array.isArray(s.rsvps) ? s.rsvps.length : 0],
-  ['Invitation ID',       txnSpan(s.id)],
-];
-
-document.getElementById('payment-body').innerHTML =
-  '<div>' +
-  fields.map(([lbl, val]) =>
-    '<div class="detail-row"><span class="detail-label">' + lbl + '</span><span class="detail-value">' + val + '</span></div>'
-  ).join('') +
-  '</div>';
-
-      // Action buttons based on status
-      const actions = document.getElementById('pm-actions');
-      actions.innerHTML = '';
-      if (st === 'pending') {
-  actions.innerHTML =
-    '<button onclick="markStatus(\'' + s.id + '\',\'paid\')" class="text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 px-3 py-2 rounded-lg transition-colors">✓ Mark Paid</button>' +
-    '<button onclick="markStatus(\'' + s.id + '\',\'failed\')" class="text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-lg transition-colors">✗ Mark Failed</button>' +
-    '<button onclick="markStatus(\'' + s.id + '\',\'declined\')" class="text-xs font-semibold text-pink-700 bg-pink-50 hover:bg-pink-100 px-3 py-2 rounded-lg transition-colors">✗ Mark Declined</button>';
-} else if (st === 'paid') {
-  actions.innerHTML = '<button onclick="markStatus(\'' + s.id + '\',\'refunded\')" class="text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-lg transition-colors">↩ Mark Refunded</button>';
-} else if (st === 'failed' || st === 'declined') {
-  actions.innerHTML = '<button onclick="markStatus(\'' + s.id + '\',\'paid\')" class="text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 px-3 py-2 rounded-lg transition-colors">✓ Mark Paid (override)</button>';
-}
-
-      document.getElementById('payment-modal').classList.remove('hidden');
-    }
-
-    function closePaymentModal() { document.getElementById('payment-modal').classList.add('hidden'); }
-
-    async function markStatus(id, status) {
-      const labels = { paid:'Paid', failed:'Failed', declined:'Declined', refunded:'Refunded' };
-      if (!confirm('Mark this order as ' + labels[status] + '?')) return;
-      const updates = { payment_status: status };
-      if (status === 'paid') updates.payment_at = new Date().toISOString();
-      if (status === 'refunded') updates.refund_at = new Date().toISOString();
-      if (status === 'failed') {
-        const reason = prompt('Failure reason (optional):');
-        if (reason) updates.failure_reason = reason;
-      }
-      const { error } = await sb.from('customer_invitations').update(updates).eq('id', id);
-      if (error) { alert('Update failed: ' + error.message); return; }
-      closePaymentModal();
-      await loadSales();
-    }
-
-    // ── TEMPLATE EDIT ─────────────────────────────────────────────
     function openEditModal(id) {
-      const item = templatesData.find(t=>t.id===id);
-      if (!item) return;
-      document.getElementById('edit-id').value = item.id;
-      document.getElementById('edit-name').value = item.name;
-      document.getElementById('edit-price').value = item.price;
-      document.getElementById('edit-actual-price').value = item.actual_price || '';
-      document.getElementById('edit-image').value = item.placeholder_url||'';
-      document.getElementById('edit-active').checked = item.is_active;
-      document.getElementById('edit-premium').checked = item.is_premium || false;
-      document.getElementById('edit-subtitle').textContent = 'ID: '+item.id;
-      prevImg(item.placeholder_url||'');
-      updateOfferPreview();
-      document.getElementById('edit-modal').classList.remove('hidden');
+        const item = templatesData.find(t => t.id === id);
+        if(!item) return;
+
+        document.getElementById('edit-id').value = item.id;
+        document.getElementById('edit-id-display').textContent = item.id;
+        document.getElementById('edit-name').value = item.name;
+        document.getElementById('edit-price').value = item.price;
+        document.getElementById('edit-image').value = item.placeholder_url || '';
+        document.getElementById('edit-image-file').value = '';
+        document.getElementById('edit-active').checked = item.is_active;
+        document.getElementById('edit-premium').checked = item.is_premium || false;
+
+        document.getElementById('edit-modal').classList.remove('hidden');
     }
 
-    function updateOfferPreview() {
-      const actual = parseFloat(document.getElementById('edit-actual-price').value);
-      const offer = parseFloat(document.getElementById('edit-price').value);
-      const el = document.getElementById('offer-percent-preview');
-      if (actual > 0 && offer > 0 && actual > offer) {
-        const pct = Math.round((1 - offer/actual) * 100);
-        el.textContent = `🏷️ ${pct}% off — Customer sees ₹${offer} instead of ₹${actual}`;
-        el.classList.remove('hidden');
-      } else {
-        el.classList.add('hidden');
-      }
+    function closeEditModal() {
+        document.getElementById('edit-modal').classList.add('hidden');
     }
-
-    function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
 
     async function saveTemplate() {
-      if (!sb) return;
-      const id = document.getElementById('edit-id').value;
-      const name = document.getElementById('edit-name').value.trim();
-      const price = document.getElementById('edit-price').value;
-      const actual_price = document.getElementById('edit-actual-price').value || null;
-      const placeholder_url = document.getElementById('edit-image').value.trim();
-      const is_active = document.getElementById('edit-active').checked;
-      const is_premium = document.getElementById('edit-premium').checked;
-      if (!name) { alert('Name required.'); return; }
-      const txt = document.getElementById('save-btn-text');
-      const btn = document.getElementById('save-btn');
-      txt.textContent = 'Saving…'; btn.disabled = true;
-      const { error } = await sb.from('template_configs').update({ name, price, actual_price, placeholder_url, is_active, is_premium, updated_at: new Date().toISOString() }).eq('id', id);
-      txt.textContent = 'Save Changes'; btn.disabled = false;
-      if (error) { alert('Save failed: '+error.message); }
-      else { closeEditModal(); loadTemplates(); }
-    }
+        if(!sb) return;
+        const id = document.getElementById('edit-id').value;
+        const name = document.getElementById('edit-name').value;
+        const price = parseFloat(document.getElementById('edit-price').value);
+        let placeholder_url = document.getElementById('edit-image').value;
+        const is_active = document.getElementById('edit-active').checked;
+        const is_premium = document.getElementById('edit-premium').checked;
 
-    ['edit-modal','payment-modal'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('click', function(e) { if(e.target===this) this.classList.add('hidden'); });
-      }
-    });
+        const btn = document.getElementById('save-btn');
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+
+        const fileInput = document.getElementById('edit-image-file');
+        if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${id}-${Math.random()}.${fileExt}`;
+            
+            try {
+                const { data: uploadData, error: uploadError } = await sb.storage.from('placeholders').upload(fileName, file);
+                
+                if (uploadError) {
+                    // Check if bucket doesn't exist
+                    if (uploadError.statusCode === "404" || uploadError.message.includes("Bucket not found")) {
+                        alert("Storage bucket 'placeholders' does not exist! Please go to your Supabase Storage, create a public bucket named 'placeholders'.");
+                        btn.textContent = 'Save Changes';
+                        btn.disabled = false;
+                        return;
+                    }
+                    throw uploadError;
+                }
+                
+                const { data: urlData } = sb.storage.from('placeholders').getPublicUrl(fileName);
+                placeholder_url = urlData.publicUrl;
+            } catch (err) {
+                console.error("Upload error", err);
+                alert("Upload failed: " + err.message);
+                btn.textContent = 'Save Changes';
+                btn.disabled = false;
+                return;
+            }
+        }
+
+        const { error } = await sb.from('template_configs').update({
+            name, price, placeholder_url, is_active, is_premium, updated_at: new Date().toISOString()
+        }).eq('id', id);
+
+        btn.textContent = 'Save Changes';
+        btn.disabled = false;
+
+        if (error) {
+            console.error("Save error", error);
+            alert("Save failed");
+        } else {
+            closeEditModal();
+            loadTemplates();
+            loadSales();
+        }
+    }
 
     initAdmin();
   </script>
   <script src="/app.js"></script>
 </body>
 </html>
-

@@ -4,15 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sync & Style - Create Wedding Invitation Webpage Online</title>
-  <meta name="description" content="Create beautiful wedding invitation webpages online. Choose from premium templates and share with a link.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.syncandstyle.com/">
-  <meta property="og:title" content="Sync &amp; Style — Beautiful Wedding Invitation Webpages">
-  <meta property="og:description" content="Create stunning digital wedding invitations. Choose a template, customize your details, share a link.">
-  <meta property="og:image" content="https://www.syncandstyle.com/og-image.jpg">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="apple-touch-icon" href="/favicon.png">
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -279,8 +270,7 @@
         opacity: 1;
       }
     </style>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-</head>
+  </head>
   <body class="bg-pattern min-h-screen">
     <!-- 
     ==========================================================================
@@ -298,7 +288,7 @@
           <a href="#how-it-works" class="hover:text-[#9c404d] transition-colors">How It Works</a>
           <a href="#pricing" class="hover:text-[#9c404d] transition-colors">Pricing</a>
           <a href="/login" id="nav-login-link" class="hover:text-[#9c404d] transition-colors">Login</a>
-          <a href="/dashboard" id="nav-dashboard-link" class="hover:text-[#9c404d] transition-colors hidden font-bold">Dashboard</a>
+          <a href="/customer-dashboard" id="nav-dashboard-link" class="hover:text-[#9c404d] transition-colors hidden font-bold">Dashboard</a>
           <a href="#templates" class="bg-[#9c404d] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Get Started</a>
         </div>
         
@@ -328,7 +318,7 @@
           <a href="#how-it-works" class="mobile-nav-link hover:text-[#9c404d] transition-colors">How It Works</a>
           <a href="#pricing" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Pricing</a>
           <a href="/login" id="mob-nav-login-link" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Login</a>
-          <a href="/dashboard" id="mob-nav-dashboard-link" class="mobile-nav-link hover:text-[#9c404d] transition-colors font-bold hidden">Dashboard</a>
+          <a href="/customer-dashboard" id="mob-nav-dashboard-link" class="mobile-nav-link hover:text-[#9c404d] transition-colors font-bold hidden">Dashboard</a>
           <div class="pt-8 mt-auto">
             <a href="#templates" class="mobile-nav-link block bg-[#9c404d] text-white px-7 py-4 rounded-lg font-bold text-center hover:bg-[#7d333e] transition-all">Get Started</a>
           </div>
@@ -347,16 +337,16 @@
           <span class="text-sm md:text-base font-light text-gray-400 tracking-[0.1em] uppercase">Skip the Paper. Go Stunning</span>
         </div>
         
-        <h1 class="text-4xl md:text-8xl font-serif text-[#2d0a0e] font-bold leading-[1.1] mb-8 scroll-reveal" style="transition-delay: 100ms;">
-          Wedding Invitations<br>
-          That <span class="italic wow-shimmer wow-animate">Wow</span><span class="text-[#2d0a0e] italic">—Instantly</span>
+        <h1 class="text-5xl md:text-8xl font-serif text-[#2d0a0e] font-bold leading-[1.1] mb-8 scroll-reveal" style="transition-delay: 100ms;">
+          Wedding Invitations That <br>
+          <span class="italic wow-shimmer wow-animate">Wow</span><span class="text-[#2d0a0e] italic">—Instantly</span>
         </h1>
         
         <div class="mb-8 scroll-reveal" style="transition-delay: 200ms;">
-          <h2 class="text-xl md:text-2xl font-medium text-gray-500 italic">Your Dream Invite, One Click Away</h2>
+          <h2 class="text-base md:text-2xl font-medium text-gray-500 italic">Your Dream Invite, One Click Away</h2>
         </div>
 
-        <p class="text-gray-500 text-[15px] md:text-[16px] max-w-3xl mx-auto mb-12 scroll-reveal leading-relaxed opacity-80" style="transition-delay: 300ms;">
+        <p class="text-gray-500 text-[13px] md:text-[16px] max-w-3xl mx-auto mb-12 scroll-reveal leading-relaxed opacity-80" style="transition-delay: 300ms;">
           Fill a simple form, get a stunning animated invitation webpage — share it with your guests instantly via WhatsApp, email, or social media.
         </p>
         
@@ -415,74 +405,81 @@
            <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-6"></div>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           <!-- Template 1: Royal Heritage -->
-          <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#4B334F] shadow-2xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template01" onclick="handleCardClick(this)">
-            <div class="tpl-crown absolute top-4 left-4 z-40 w-9 h-9 rounded-full items-center justify-center shadow-lg" style="display:none;background:linear-gradient(135deg,#d4af37,#f5e07a,#b8860b);box-shadow:0 2px 12px rgba(212,175,55,0.6)"><span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">crown</span></div>
+          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#4B334F] shadow-2xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" onclick="handleCardClick(this)" data-template-id="template01">
             <!-- Real Hero Preview -->
-            <div class="iframe-preview-container" style="display: none;">
-               <iframe src="/wedding/islamic-invitation?preview=true" class="preview-iframe" scrolling="no"></iframe>
+            <div class="iframe-preview-container" id="preview-template01">
+               <iframe src="/wedding/islamic-invitation.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
             </div>
             
             <!-- Readability Overlay -->
             <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#130a05]/80 to-transparent z-[5]"></div>
             
-            <!-- Premium Badge (Top Right) -->
-            <div class="absolute top-4 right-4 z-40"><span class="tpl-price-badge text-[11px] font-bold bg-white/90 text-[#9c404d] px-3 py-1.5 rounded-full shadow-lg">₹499</span></div>
+            <!-- Crown/Premium Badge (Top Right) — populated by JS -->
+            <div class="absolute top-4 right-4 z-40" id="badge-template01">
+              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
+            </div>
 
             <!-- Bottom Info Layer (Always Visible) -->
-            <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[#130a05] via-[#130a05]/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <h3 class="text-xl font-serif font-bold text-white leading-tight mb-1 tpl-name">Royal Heritage</h3>
-              <p class="tpl-price-display text-sm font-bold text-[#d4af37]">₹499</p>
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#130a05] via-[#130a05]/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-px bg-[#d4af37]/40"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-bold">Heritage Series</span>
+              </div>
+              <h3 class="text-2xl font-serif font-bold text-white gold-shimmer-text leading-tight mb-1">Royal Heritage</h3>
+              <p class="text-white/60 text-xs font-medium italic">Timeless islamic patterns meet royal deep-plum elegance.</p>
             </div>
 
             <!-- Hover Interaction Layer (Buttons) -->
             <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/70 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <h3 class="text-2xl font-serif font-bold text-gold mb-6 transform -translate-y-4 transition-transform tpl-name">Royal Heritage</h3>
+               <h3 class="text-2xl font-serif font-bold text-gold mb-1 transform -translate-y-4 transition-transform">Royal Heritage</h3>
+               <p class="text-[#d4af37] text-sm font-bold mb-5" id="price-template01">₹499</p>
                <div class="flex flex-col gap-3 w-full max-w-[160px]">
-                  <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview</a>
-                  <button onclick="handleSelectTemplate('template01')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Buy Now</button>
+                  <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
+                  <button onclick="handleSelectTemplate('template01')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
                </div>
             </div>
           </div>
 
           <!-- Template 2: Minimalist Gold -->
-          <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#1a050a] shadow-2xl border-2 border-gray-100 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template02" style="transition-delay: 100ms;" onclick="handleCardClick(this)">
-            <div class="tpl-crown absolute top-4 left-4 z-40 w-9 h-9 rounded-full items-center justify-center shadow-lg" style="display:none;background:linear-gradient(135deg,#d4af37,#f5e07a,#b8860b);box-shadow:0 2px 12px rgba(212,175,55,0.6)"><span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">crown</span></div>
+          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#1a050a] shadow-2xl border-2 border-gray-100 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 100ms;" onclick="handleCardClick(this)" data-template-id="template02">
              <!-- Real Hero Preview -->
-             <div class="iframe-preview-container" style="display: none;">
-                <iframe src="/wedding/islamic-invitation-premium?preview=true" class="preview-iframe" scrolling="no"></iframe>
+             <div class="iframe-preview-container" id="preview-template02">
+                <iframe src="/wedding/islamic-invitation-premium.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
              </div>
  
              <!-- Readability Overlay -->
              <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#1a050a]/90 to-transparent z-[5]"></div>
             
-             <!-- Premium Badge -->
-             <div class="absolute top-4 right-4 z-40"><span class="tpl-price-badge text-[11px] font-bold bg-white/90 text-[#9c404d] px-3 py-1.5 rounded-full shadow-lg">₹499</span></div>
+             <!-- Crown/Premium Badge — populated by JS -->
+             <div class="absolute top-4 right-4 z-40" id="badge-template02">
+               <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
+             </div>
 
-             <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[#1a050a] via-[#1a050a]/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-               <h3 class="text-xl font-serif font-bold text-white leading-tight mb-1 tpl-name">Minimalist Gold</h3>
-               <p class="tpl-price-display text-sm font-bold text-[#b08d5b]">₹499</p>
+             <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#1a050a] via-[#1a050a]/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+               <div class="flex items-center gap-2 mb-2">
+                 <div class="w-8 h-px bg-[#b08d5b]/40"></div>
+                 <span class="text-[10px] uppercase tracking-[0.2em] text-[#b08d5b] font-bold">Modern Series</span>
+               </div>
+              <h3 class="text-2xl font-serif font-bold text-white gold-shimmer-text leading-tight mb-1">Minimalist Gold</h3>
+              <p class="text-white/60 text-xs font-medium italic">Sophisticated minimalism with a focus on gold accents.</p>
              </div>
  
              <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/70 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                <h3 class="text-2xl font-serif font-bold text-gold mb-6 transform -translate-y-4 transition-transform tpl-name">Minimalist Gold</h3>
+                <h3 class="text-2xl font-serif font-bold text-gold mb-1 transform -translate-y-4 transition-transform">Minimalist Gold</h3>
+                <p class="text-[#d4af37] text-sm font-bold mb-5" id="price-template02">₹499</p>
                 <div class="flex flex-col gap-3 w-full max-w-[160px]">
-                   <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview</a>
-                   <button onclick="handleSelectTemplate('template02')" class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Buy Now</button>
+                   <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
+                   <button onclick="handleSelectTemplate('template02')" class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
                </div>
             </div>
           </div>
 
           <!-- Template 3: Floral Garden -->
-          <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#fdf5f7] shadow-2xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template03" style="transition-delay: 200ms;" onclick="handleCardClick(this)">
-            <div class="tpl-crown absolute top-4 left-4 z-40 w-9 h-9 rounded-full items-center justify-center shadow-lg" style="display:none;background:linear-gradient(135deg,#d4af37,#f5e07a,#b8860b);box-shadow:0 2px 12px rgba(212,175,55,0.6)"><span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">crown</span></div>
-             <!-- Real Hero Preview -->
-             <div class="iframe-preview-container" style="display: none;">
-                <iframe src="/wedding/floral-garden?preview=true" class="preview-iframe" scrolling="no"></iframe>
-             </div>
+          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#fdf5f7] shadow-2xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 200ms;" onclick="handleCardClick(this)">
              <!-- Colored Placeholder for Unavailable Template -->
-             <div class="template-placeholder absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#fdf5f7]">
+             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#fdf5f7]">
                <!-- Available Soon Overlay -->
                <div class="absolute inset-0 bg-[#9c404d]/5 flex items-center justify-center transition-opacity">
                   <span class="bg-white/90 text-[#9c404d] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#9c404d]/10">Available Soon</span>
@@ -490,30 +487,31 @@
              </div>
             
             <!-- Premium Badge -->
-            <div class="absolute top-4 right-4 z-40"><span class="tpl-price-badge text-[11px] font-bold bg-white/90 text-[#9c404d] px-3 py-1.5 rounded-full shadow-lg">₹499</span></div>
+            <div class="absolute top-4 right-4 z-40">
+              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
+            </div>
 
             <!-- Bottom Info Layer -->
-            <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[#fdf5f7] via-[#fdf5f7]/90 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <h3 class="text-xl font-serif font-bold text-[#2d0a0e] leading-tight mb-1 tpl-name">Floral Garden</h3>
-              <p class="tpl-price-display text-sm font-bold text-[#9c404d]">₹499</p>
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#fdf5f7] via-[#fdf5f7]/90 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-px bg-[#9c404d]/40"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Nature Series</span>
+              </div>
+              <h3 class="text-2xl font-serif font-bold text-[#2d0a0e] leading-tight mb-1 italic">Floral Garden</h3>
+              <p class="text-[#9c404d]/80 text-xs font-medium">A delicate blend of garden aesthetics and soft floral romance.</p>
             </div>
  
              <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                <h3 class="text-2xl font-serif font-bold text-[#fdf5f7] mb-2 transform -translate-y-4 transition-transform tpl-name">Floral Garden</h3>
+                <h3 class="text-2xl font-serif font-bold text-[#fdf5f7] mb-2 transform -translate-y-4 transition-transform">Floral Garden</h3>
                 <p class="text-white/40 text-[10px] uppercase tracking-widest mb-6 font-bold">Nature Collection</p>
                 <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Coming Soon</span>
              </div>
           </div>
  
           <!-- Template 4: Golden Glow -->
-          <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#111] shadow-2xl border-2 border-[#d4af37]/20 hover:border-[#d4af37]/60 transition-all duration-500 scroll-reveal card-glare" data-template-id="template04" style="transition-delay: 300ms;" onclick="handleCardClick(this)">
-            <div class="tpl-crown absolute top-4 left-4 z-40 w-9 h-9 rounded-full items-center justify-center shadow-lg" style="display:none;background:linear-gradient(135deg,#d4af37,#f5e07a,#b8860b);box-shadow:0 2px 12px rgba(212,175,55,0.6)"><span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">crown</span></div>
-             <!-- Real Hero Preview -->
-             <div class="iframe-preview-container" style="display: none;">
-                <iframe src="/wedding/majestic-gold?preview=true" class="preview-iframe" scrolling="no"></iframe>
-             </div>
+          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#111] shadow-2xl border-2 border-[#d4af37]/20 hover:border-[#d4af37]/60 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 300ms;" onclick="handleCardClick(this)">
              <!-- Colored Placeholder for Unavailable Template -->
-             <div class="template-placeholder absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
+             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
                <!-- Available Soon Overlay -->
                <div class="absolute inset-0 bg-[#d4af37]/5 flex items-center justify-center transition-opacity">
                   <span class="bg-white/90 text-[#d4af37] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#d4af37]/10">Available Soon</span>
@@ -521,16 +519,22 @@
              </div>
             
             <!-- Premium Badge -->
-            <div class="absolute top-4 right-4 z-40"><span class="tpl-price-badge text-[11px] font-bold bg-white/90 text-[#9c404d] px-3 py-1.5 rounded-full shadow-lg">₹499</span></div>
+            <div class="absolute top-4 right-4 z-40">
+              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
+            </div>
 
             <!-- Bottom Info Layer -->
-            <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <h3 class="text-xl font-serif font-bold text-white leading-tight mb-1 tpl-name">Majestic Gold</h3>
-              <p class="tpl-price-display text-sm font-bold text-[#d4af37]">₹499</p>
+            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-px bg-[#d4af37]/40"></div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-bold">Prestige Series</span>
+              </div>
+              <h3 class="text-2xl font-serif font-bold text-white gold-shimmer-text leading-tight mb-1">Majestic Gold</h3>
+              <p class="text-white/60 text-xs font-medium italic">Bold, full-screen gold brilliance for a truly majestic announcement.</p>
             </div>
  
              <div class="hover-overlay absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                <h3 class="text-2xl font-serif font-bold text-[#d4af37] mb-2 transform -translate-y-4 transition-transform tpl-name">Majestic Gold</h3>
+                <h3 class="text-2xl font-serif font-bold text-[#d4af37] mb-2 transform -translate-y-4 transition-transform">Majestic Gold</h3>
                 <p class="text-white/40 text-[10px] uppercase tracking-widest mb-6 font-bold">Standard Luxury</p>
                 <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-[#d4af37]/40">Coming Soon</span>
              </div>
@@ -945,11 +949,11 @@
         </div>
         
         <div class="flex flex-wrap justify-center gap-x-10 gap-y-4 text-sm font-medium text-gray-500 mb-10">
-          <a href="/contact-us" class="hover:text-[#9c404d] transition-colors">Contact</a>
-          <a href="/terms-and-conditions" class="hover:text-[#9c404d] transition-colors">Terms & Conditions</a>
-          <a href="/privacy-policy" class="hover:text-[#9c404d] transition-colors">Privacy Policy</a>
-          <a href="/cancellation-and-refund" class="hover:text-[#9c404d] transition-colors">Refund Policy</a>
-          <a href="/shipping-and-exchange" class="hover:text-[#9c404d] transition-colors">Shipping & Exchange</a>
+          <a href="/contact-us.html" class="hover:text-[#9c404d] transition-colors">Contact</a>
+          <a href="/terms-and-conditions.html" class="hover:text-[#9c404d] transition-colors">Terms & Conditions</a>
+          <a href="/privacy-policy.html" class="hover:text-[#9c404d] transition-colors">Privacy Policy</a>
+          <a href="/cancellation-and-refund.html" class="hover:text-[#9c404d] transition-colors">Refund Policy</a>
+          <a href="/shipping-and-exchange.html" class="hover:text-[#9c404d] transition-colors">Shipping & Exchange</a>
         </div>
         
         <div class="flex justify-center space-x-6 mb-10 text-gray-400">
@@ -981,8 +985,6 @@
           const config = await res.json();
           if (config.supabaseUrl && config.supabaseAnonKey) {
             sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-            // Load template placeholder images from DB
-            loadTemplatePlaceholders(sb);
             // Update nav based on session
             const { data: { session } } = await sb.auth.getSession();
             if (session) {
@@ -990,23 +992,9 @@
               document.getElementById('nav-dashboard-link').classList.remove('hidden');
               document.getElementById('mob-nav-login-link').classList.add('hidden');
               document.getElementById('mob-nav-dashboard-link').classList.remove('hidden');
-
-              // Admin UI Fixes
-              if (session.user.email === 'ahmadsuhail420@gmail.com') {
-                document.querySelectorAll('button[onclick^="handleSelectTemplate"]').forEach(btn => {
-                  btn.textContent = 'Admin: Claim Free';
-                  btn.style.backgroundColor = '#16a34a'; // Green
-                });
-                
-                // Update pricing section
-                const priceHeader = document.querySelector('#pricing h3');
-                if (priceHeader) {
-                  priceHeader.innerHTML = '<span class="text-3xl mr-1 font-bold">₹</span>0';
-                  const subText = priceHeader.parentElement.querySelector('p');
-                  if (subText) subText.textContent = 'Admin Free Access';
-                }
-              }
             }
+            // Load template data (price + crown badge) from Supabase
+            loadTemplateCardData();
           } else {
             console.error("Supabase config missing fields:", config);
           }
@@ -1016,72 +1004,37 @@
       }
       initSupabase();
 
-      async function loadTemplatePlaceholders(client) {
+      async function loadTemplateCardData() {
+        if (!sb) return;
         try {
-          const { data, error } = await client.from('template_configs').select('id, placeholder_url, is_active, name, price, actual_price, is_premium');
+          const { data, error } = await sb.from('template_configs').select('id, price, is_premium, placeholder_url, is_active');
           if (error || !data) return;
-
           data.forEach(t => {
-            const card = document.querySelector('[data-template-id="' + t.id + '"]');
-            if (!card) return;
+            // Update price display
+            const priceEl = document.getElementById('price-' + t.id);
+            if (priceEl) priceEl.textContent = '₹' + t.price;
 
-            const iframeContainer = card.querySelector('.iframe-preview-container');
-            let placeholderContainer = card.querySelector('.admin-ph-bg');
-            const placeholderOverlay = card.querySelector('.template-placeholder');
-
-            if (t.placeholder_url) {
-              if (iframeContainer) iframeContainer.style.display = 'none';
-              if (placeholderOverlay) placeholderOverlay.style.display = 'none';
-              if (!placeholderContainer) {
-                placeholderContainer = document.createElement('div');
-                placeholderContainer.className = 'admin-ph-bg absolute inset-0 z-[1] bg-cover bg-center transition-opacity duration-500';
-                card.appendChild(placeholderContainer);
-              }
-              placeholderContainer.style.backgroundImage = 'url(' + t.placeholder_url + ')';
-              placeholderContainer.style.display = 'block';
-            } else if (t.is_active) {
-              if (iframeContainer) iframeContainer.style.display = 'block';
-              if (placeholderOverlay) placeholderOverlay.style.display = 'none';
-              if (placeholderContainer) placeholderContainer.style.display = 'none';
-            }
-
-            if (t.name) {
-              card.querySelectorAll('.tpl-name').forEach(function(el) { el.textContent = t.name; });
-            }
-
-            // Update price badge with offer price and strikethrough
-            const priceBadge = card.querySelector('.tpl-price-badge');
-            if (priceBadge) {
-              const offerPrice = t.price || 499;
-              const actualPrice = t.actual_price;
-              if (actualPrice && actualPrice > offerPrice) {
-                const pct = Math.round((1 - offerPrice / actualPrice) * 100);
-                priceBadge.innerHTML = '<span style="text-decoration:line-through;opacity:0.6;font-weight:normal">₹' + actualPrice + '</span> ₹' + offerPrice + ' <span style="background:#16a34a;color:white;border-radius:9999px;padding:1px 5px;font-size:9px;font-weight:800;margin-left:2px">' + pct + '% off</span>';
+            // Update badge: crown icon if is_premium, else hide badge
+            const badgeEl = document.getElementById('badge-' + t.id);
+            if (badgeEl) {
+              if (t.is_premium) {
+                badgeEl.innerHTML = `<span class="flex items-center gap-1 bg-gradient-to-r from-[#d4af37] to-[#b8962e] text-white text-[10px] px-2.5 py-1 rounded-full font-bold shadow-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>
+                  Premium
+                </span>`;
               } else {
-                priceBadge.textContent = '₹' + offerPrice;
+                badgeEl.innerHTML = '';
               }
             }
 
-            // Update bottom info layer price display
-            const priceDisplay = card.querySelector('.tpl-price-display');
-            if (priceDisplay) {
-              const offerPrice = t.price || 499;
-              const actualPrice = t.actual_price;
-              if (actualPrice && actualPrice > offerPrice) {
-                const pct = Math.round((1 - offerPrice / actualPrice) * 100);
-                priceDisplay.innerHTML = '<span style="text-decoration:line-through;opacity:0.55;font-size:11px;font-weight:normal">₹' + actualPrice + '</span> ₹' + offerPrice + ' <span style="background:#16a34a;color:white;border-radius:9999px;padding:1px 5px;font-size:9px;font-weight:800">' + pct + '% off</span>';
-              } else {
-                priceDisplay.textContent = '₹' + offerPrice;
-              }
+            // Update placeholder image if no live iframe (for cards without iframe)
+            const previewEl = document.getElementById('preview-' + t.id);
+            if (previewEl && !previewEl.querySelector('iframe') && t.placeholder_url) {
+              previewEl.innerHTML = `<img src="${t.placeholder_url}" class="w-full h-full object-cover" alt="${t.id}">`;
             }
-
-            // Show/hide crown based on is_premium (not is_active)
-            const crown = card.querySelector('.tpl-crown');
-            if (crown) crown.style.display = t.is_premium ? 'flex' : 'none';
           });
-        } catch(e) { console.error('loadTemplatePlaceholders failed', e); }
+        } catch(e) { console.error('loadTemplateCardData error', e); }
       }
-
 
       async function handleSelectTemplate(templateId) {
         if (!sb) {
@@ -1091,22 +1044,9 @@
         const { data: { session } } = await sb.auth.getSession();
         if (!session) {
           window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId);
-          return;
+        } else {
+          window.location.href = '/payment?template=' + templateId;
         }
-        // Check if user already purchased this template
-        const { data: existing } = await sb.from('customer_invitations')
-          .select('id, payment_status')
-          .eq('user_id', session.user.id)
-          .eq('template_type', templateId)
-          .in('payment_status', ['paid'])
-          .limit(1);
-        if (existing && existing.length > 0) {
-          if (confirm('You already own this template! Go to your dashboard to access it.')) {
-            window.location.href = '/dashboard';
-          }
-          return;
-        }
-        window.location.href = '/payment?template=' + templateId;
       }
 
       function handleCardClick(card) {
@@ -1192,4 +1132,3 @@
     </script>
   </body>
 </html>
-
