@@ -442,30 +442,23 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
       if (existing) { existing.classList.remove('hidden'); return; }
       const box = document.createElement('div');
       box.id = 'storage-sql-help';
-      box.className = 'warn-box mt-3 text-[11px]';
-      box.innerHTML = '<strong>🔒 Run this once in Supabase SQL Editor:</strong>' +
-        '<code class="block mt-2 bg-yellow-50 rounded-lg p-2 font-mono whitespace-pre" style="font-size:10px">' +
-        'INSERT INTO storage.buckets (id, name, public)
-' +
-        'VALUES ('placeholders', 'placeholders', true)
-' +
-        'ON CONFLICT (id) DO UPDATE SET public = true;
-
-' +
-        'CREATE POLICY "Auth upload placeholders"
-' +
-        'ON storage.objects FOR INSERT TO authenticated
-' +
-        'WITH CHECK (bucket_id = 'placeholders');
-
-' +
-        'CREATE POLICY "Public read placeholders"
-' +
-        'ON storage.objects FOR SELECT TO public
-' +
-        'USING (bucket_id = 'placeholders');' +
-        '</code>';
-      // Insert after img-error
+      box.className = 'warn-box mt-3';
+      const sql = [
+        "INSERT INTO storage.buckets (id, name, public)",
+        "VALUES ('placeholders', 'placeholders', true)",
+        "ON CONFLICT (id) DO UPDATE SET public = true;",
+        "",
+        "CREATE POLICY \"Auth upload placeholders\"",
+        "ON storage.objects FOR INSERT TO authenticated",
+        "WITH CHECK (bucket_id = 'placeholders');",
+        "",
+        "CREATE POLICY \"Public read placeholders\"",
+        "ON storage.objects FOR SELECT TO public",
+        "USING (bucket_id = 'placeholders');"
+      ].join("\n");
+      box.innerHTML = '<strong style="font-size:11px">🔒 Run once in Supabase SQL Editor to fix storage permissions:</strong>' +
+        '<pre style="font-size:10px;background:#fefce8;border-radius:8px;padding:10px;margin-top:8px;white-space:pre-wrap;word-break:break-all;font-family:monospace">' +
+        sql.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
       const errEl = document.getElementById('img-error');
       if (errEl && errEl.parentNode) errEl.parentNode.insertBefore(box, errEl.nextSibling);
     }
