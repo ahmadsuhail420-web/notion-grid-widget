@@ -718,27 +718,30 @@ payButton.addEventListener('click', async function() {
     // ADMIN BYPASS
     if (currentUser.email === 'ahmadsuhail420@gmail.com') {
         try {
-            const { error: insertError } = await sb
+            console.log('Attempting Admin Bypass for:', currentUser.email);
+            const { data, error: insertError } = await sb
                 .from('customer_invitations')
                 .insert([{
                     user_id: currentUser.id,
-                    user_email: currentUser.email,
                     template_type: templateParam,
                     title: currentTemplate.name + "'s Invitation (Admin Free Access)",
                     status: 'draft',
-                    payment_id: 'ADMIN_FREE_BYPASS_' + Date.now(),
-                    order_id: 'ORDER_FREE_BYPASS_' + Date.now(),
                     rsvps: []
-                }]);
+                }])
+                .select();
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('Supabase Insert Error:', insertError);
+                throw new Error(insertError.message || 'Database insertion failed');
+            }
 
+            console.log('Admin Bypass Successful:', data);
             document.getElementById('successOverlay').classList.add('show');
             setTimeout(() => { window.location.href = '/dashboard?payment=success'; }, 2000);
             return;
         } catch (err) {
-            console.error('Admin bypass failed:', err);
-            alert('Admin bypass failed. Please try again.');
+            console.error('Admin bypass catch block:', err);
+            alert('Admin bypass failed: ' + err.message);
             payButton.disabled = false;
             payButton.innerHTML = PAY_BTN_DEFAULT;
             return;
