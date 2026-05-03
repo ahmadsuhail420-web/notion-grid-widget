@@ -204,6 +204,10 @@ WITH CHECK ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin');</code>
   ADD COLUMN IF NOT EXISTS refund_id         TEXT,
   ADD COLUMN IF NOT EXISTS refund_at         TIMESTAMPTZ;
 
+-- Also add actual_price to template_configs for offer pricing:
+ALTER TABLE public.template_configs
+  ADD COLUMN IF NOT EXISTS actual_price NUMERIC;
+
 -- Useful indexes
 CREATE INDEX IF NOT EXISTS idx_ci_payment_status ON public.customer_invitations(payment_status);
 CREATE INDEX IF NOT EXISTS idx_ci_razorpay_payment_id ON public.customer_invitations(razorpay_payment_id);
@@ -247,16 +251,21 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
       </div>
       <div class="px-6 py-5 space-y-4 max-h-[65vh] overflow-y-auto">
         <input type="hidden" id="edit-id">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1.5">Template Name</label>
+          <input type="text" id="edit-name" class="ifield" placeholder="Royal Heritage">
+        </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Template Name</label>
-            <input type="text" id="edit-name" class="ifield" placeholder="Royal Heritage">
+            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Actual Price (₹) <span class="text-gray-400 font-normal">original</span></label>
+            <input type="number" id="edit-actual-price" class="ifield" placeholder="999" oninput="updateOfferPreview()">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Price (₹)</label>
-            <input type="number" id="edit-price" class="ifield" placeholder="499">
+            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Offer Price (₹) <span class="text-green-600 font-normal">shown to customers</span></label>
+            <input type="number" id="edit-price" class="ifield" placeholder="499" oninput="updateOfferPreview()">
           </div>
         </div>
+        <div id="offer-percent-preview" class="hidden text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2"></div>
         <!-- Image Section -->
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-2">Placeholder Image</label>
@@ -336,12 +345,12 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
         <!-- Premium Toggle -->
         <div class="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-xl p-3.5">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 bg-[#9c404d] rounded-lg flex items-center justify-center flex-shrink-0">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#d4af37,#f5e07a,#b8860b);box-shadow:0 2px 8px rgba(212,175,55,0.4)">
               <span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">crown</span>
             </div>
             <div>
               <p class="text-sm font-semibold text-gray-700">Premium</p>
-              <p class="text-xs text-gray-400">Shows crown icon on template card</p>
+              <p class="text-xs text-gray-400">Shows golden crown badge on template card</p>
             </div>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -612,7 +621,10 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
         <tr>
           <td class="px-5 py-4"><img src="${t.placeholder_url||''}" class="thumb" alt="${t.name}" onerror="this.src='${fb}'"></td>
           <td class="px-5 py-4"><div class="text-sm font-semibold text-gray-900">${t.name}</div><div class="text-xs text-gray-400 font-mono mt-0.5">${t.id}</div></td>
-          <td class="px-5 py-4 text-sm font-bold text-gray-900">₹${t.price}</td>
+      <td class="px-5 py-4 text-sm font-bold text-gray-900">
+            ${t.actual_price ? `<span class="line-through text-gray-400 text-xs font-normal">₹${t.actual_price}</span> ` : ''}₹${t.price}
+            ${t.actual_price && t.actual_price > t.price ? `<span class="ml-1 text-[10px] font-bold text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full">${Math.round((1-t.price/t.actual_price)*100)}% off</span>` : ''}
+          </td>
           <td class="px-5 py-4"><span class="${t.is_active?'b-active':'b-inactive'}">${t.is_active?'Active':'Inactive'}</span>${t.is_premium?' <span class="b-premium">👑 Premium</span>':''}</td>
           <td class="px-5 py-4 max-w-[150px]"><span class="text-xs text-gray-400 truncate block" title="${t.placeholder_url||''}">${t.placeholder_url?(t.placeholder_url.length>38?t.placeholder_url.substring(0,38)+'…':t.placeholder_url):'—'}</span></td>
           <td class="px-5 py-4 text-right"><button onclick="openEditModal('${t.id}')" class="text-xs font-semibold text-[#9c404d] bg-[#fef2f2] hover:bg-[#fde8e8] px-3 py-1.5 rounded-lg transition-colors">Edit</button></td>
@@ -774,12 +786,27 @@ document.getElementById('payment-body').innerHTML =
       document.getElementById('edit-id').value = item.id;
       document.getElementById('edit-name').value = item.name;
       document.getElementById('edit-price').value = item.price;
+      document.getElementById('edit-actual-price').value = item.actual_price || '';
       document.getElementById('edit-image').value = item.placeholder_url||'';
       document.getElementById('edit-active').checked = item.is_active;
       document.getElementById('edit-premium').checked = item.is_premium || false;
       document.getElementById('edit-subtitle').textContent = 'ID: '+item.id;
       prevImg(item.placeholder_url||'');
+      updateOfferPreview();
       document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function updateOfferPreview() {
+      const actual = parseFloat(document.getElementById('edit-actual-price').value);
+      const offer = parseFloat(document.getElementById('edit-price').value);
+      const el = document.getElementById('offer-percent-preview');
+      if (actual > 0 && offer > 0 && actual > offer) {
+        const pct = Math.round((1 - offer/actual) * 100);
+        el.textContent = `🏷️ ${pct}% off — Customer sees ₹${offer} instead of ₹${actual}`;
+        el.classList.remove('hidden');
+      } else {
+        el.classList.add('hidden');
+      }
     }
 
     function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
@@ -789,6 +816,7 @@ document.getElementById('payment-body').innerHTML =
       const id = document.getElementById('edit-id').value;
       const name = document.getElementById('edit-name').value.trim();
       const price = document.getElementById('edit-price').value;
+      const actual_price = document.getElementById('edit-actual-price').value || null;
       const placeholder_url = document.getElementById('edit-image').value.trim();
       const is_active = document.getElementById('edit-active').checked;
       const is_premium = document.getElementById('edit-premium').checked;
@@ -796,7 +824,7 @@ document.getElementById('payment-body').innerHTML =
       const txt = document.getElementById('save-btn-text');
       const btn = document.getElementById('save-btn');
       txt.textContent = 'Saving…'; btn.disabled = true;
-      const { error } = await sb.from('template_configs').update({ name, price, placeholder_url, is_active, is_premium, updated_at: new Date().toISOString() }).eq('id', id);
+      const { error } = await sb.from('template_configs').update({ name, price, actual_price, placeholder_url, is_active, is_premium, updated_at: new Date().toISOString() }).eq('id', id);
       txt.textContent = 'Save Changes'; btn.disabled = false;
       if (error) { alert('Save failed: '+error.message); }
       else { closeEditModal(); loadTemplates(); }
