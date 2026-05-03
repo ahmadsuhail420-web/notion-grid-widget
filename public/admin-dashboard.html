@@ -288,19 +288,12 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
               <div id="img-uploading" class="hidden">
                 <div class="flex items-center justify-center gap-2">
                   <svg class="w-4 h-4 animate-spin text-[#9c404d]" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                  <span class="text-xs font-semibold text-[#9c404d]">Uploading to ImgBB…</span>
+                  <span class="text-xs font-semibold text-[#9c404d]">Uploading to Supabase…</span>
                 </div>
               </div>
             </div>
             <input type="file" id="img-file-input" accept="image/*" class="hidden" onchange="handleImgFile(this)">
-            <p class="text-[11px] text-gray-400 mt-1.5">Images uploaded to <strong>ImgBB</strong> (free). <span id="imgbb-key-status"></span></p>
-            <div id="imgbb-key-setup" class="mt-2 hidden">
-              <div class="flex gap-2 items-center">
-                <input id="imgbb-key-input" type="text" class="ifield text-[11px] py-1.5" placeholder="Paste your ImgBB API key…">
-                <button type="button" onclick="saveImgbbKey()" class="text-xs font-bold text-white bg-[#9c404d] px-3 py-1.5 rounded-lg whitespace-nowrap">Save Key</button>
-              </div>
-              <a href="https://api.imgbb.com" target="_blank" class="text-[11px] text-blue-500 hover:underline mt-1 block">Get free key at api.imgbb.com →</a>
-            </div>
+            <p class="text-[11px] text-gray-400 mt-1.5">Stored as <strong>.jpg</strong> in your Supabase <code class="font-mono">placeholders</code> bucket.</p>
           </div>
 
           <!-- URL Panel -->
@@ -376,11 +369,7 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
     let sb = null, templatesData = [], allSalesData = [], filteredRows = [];
 
     // ── HELPERS ───────────────────────────────────────────────────
-    // ── IMAGE UPLOAD (ImgBB) ──────────────────────────────────────
-    // Get free API key at https://api.imgbb.com (takes 30 seconds)
-    // Replace the value below with your own key
-    const IMGBB_KEY = localStorage.getItem('imgbb_key') || '';
-
+    // ── IMAGE UPLOAD (Supabase Storage) ──────────────────────────
     function switchImgTab(tab) {
       document.getElementById('img-panel-upload').classList.toggle('hidden', tab !== 'upload');
       document.getElementById('img-panel-url').classList.toggle('hidden', tab !== 'url');
@@ -394,43 +383,91 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
       e.preventDefault();
       document.getElementById('img-drop-zone').classList.remove('border-[#9c404d]','bg-[#fef2f2]');
       const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) uploadToImgBB(file);
+      if (file && file.type.startsWith('image/')) uploadToSupabase(file);
       else showImgError('Please drop an image file.');
     }
 
     function handleImgFile(input) {
       const file = input.files[0];
-      if (file) uploadToImgBB(file);
+      if (file) uploadToSupabase(file);
     }
 
-    async function uploadToImgBB(file) {
-      const key = localStorage.getItem('imgbb_key') || IMGBB_KEY;
-      if (!key) {
-        showImgError('No ImgBB API key set. Click "Set up API key" above.');
-        document.getElementById('imgbb-key-setup').classList.remove('hidden');
-        return;
-      }
+    async function uploadToSupabase(file) {
+      if (!sb) { showImgError('Not connected to Supabase.'); return; }
       if (file.size > 10 * 1024 * 1024) { showImgError('File too large. Max 10MB.'); return; }
+
       document.getElementById('img-drop-content').classList.add('hidden');
       document.getElementById('img-uploading').classList.remove('hidden');
       document.getElementById('img-error').classList.add('hidden');
+
       try {
-        const form = new FormData();
-        form.append('image', file);
-        const res = await fetch('https://api.imgbb.com/1/upload?key=' + key, { method:'POST', body:form });
-        const json = await res.json();
-        if (json.success) {
-          setImgResult(json.data.url);
-        } else {
-          throw new Error(json.error && json.error.message ? json.error.message : 'Upload failed');
-        }
+        // Get template ID for filename
+        const templateId = document.getElementById('edit-id').value || 'template';
+        // Always save as jpg regardless of original format
+        const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
+        const fileName = templateId + '-' + Date.now() + '.' + ext;
+
+        const { data, error } = await sb.storage
+          .from('placeholders')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type
+          });
+
+        if (error) throw new Error(error.message);
+
+        // Get public URL
+        const { data: urlData } = sb.storage
+          .from('placeholders')
+          .getPublicUrl(fileName);
+
+        setImgResult(urlData.publicUrl);
       } catch(e) {
-        showImgError('Upload failed: ' + e.message + '. Try pasting a URL instead.');
+        let msg = e.message || 'Upload failed';
+        if (msg.includes('row-level security') || msg.includes('Unauthorized') || msg.includes('403')) {
+          msg = 'Storage permission denied. Run the SQL fix in Supabase → SQL Editor (see instructions below).';
+          showStorageSqlHelp();
+        }
+        showImgError(msg);
       } finally {
         document.getElementById('img-drop-content').classList.remove('hidden');
         document.getElementById('img-uploading').classList.add('hidden');
         document.getElementById('img-file-input').value = '';
       }
+    }
+
+    function showStorageSqlHelp() {
+      const existing = document.getElementById('storage-sql-help');
+      if (existing) { existing.classList.remove('hidden'); return; }
+      const box = document.createElement('div');
+      box.id = 'storage-sql-help';
+      box.className = 'warn-box mt-3 text-[11px]';
+      box.innerHTML = '<strong>🔒 Run this once in Supabase SQL Editor:</strong>' +
+        '<code class="block mt-2 bg-yellow-50 rounded-lg p-2 font-mono whitespace-pre" style="font-size:10px">' +
+        'INSERT INTO storage.buckets (id, name, public)
+' +
+        'VALUES ('placeholders', 'placeholders', true)
+' +
+        'ON CONFLICT (id) DO UPDATE SET public = true;
+
+' +
+        'CREATE POLICY "Auth upload placeholders"
+' +
+        'ON storage.objects FOR INSERT TO authenticated
+' +
+        'WITH CHECK (bucket_id = 'placeholders');
+
+' +
+        'CREATE POLICY "Public read placeholders"
+' +
+        'ON storage.objects FOR SELECT TO public
+' +
+        'USING (bucket_id = 'placeholders');' +
+        '</code>';
+      // Insert after img-error
+      const errEl = document.getElementById('img-error');
+      if (errEl && errEl.parentNode) errEl.parentNode.insertBefore(box, errEl.nextSibling);
     }
 
     function onUrlInput(val) {
@@ -473,26 +510,7 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
       el.classList.remove('hidden');
     }
 
-    function saveImgbbKey() {
-      const val = document.getElementById('imgbb-key-input').value.trim();
-      if (!val) return;
-      localStorage.setItem('imgbb_key', val);
-      document.getElementById('imgbb-key-setup').classList.add('hidden');
-      document.getElementById('imgbb-key-status').innerHTML = '<span class="text-green-600 font-semibold">✓ Key saved</span>';
-    }
 
-    function checkImgbbKey() {
-      const key = localStorage.getItem('imgbb_key');
-      const status = document.getElementById('imgbb-key-status');
-      const setup = document.getElementById('imgbb-key-setup');
-      if (!status || !setup) return;
-      if (key) {
-        status.innerHTML = '<span class="text-green-600 font-semibold">✓ Ready</span>';
-        setup.classList.add('hidden');
-      } else {
-        status.innerHTML = '<button type="button" onclick="document.getElementById(&quot;imgbb-key-setup&quot;).classList.remove(&quot;hidden&quot;)" class="text-[#9c404d] font-semibold underline">Set up API key</button>';
-      }
-    }
 
     function prevImg(url) {
       if (url && url.startsWith('http')) {
@@ -749,7 +767,6 @@ document.getElementById('payment-body').innerHTML =
       document.getElementById('edit-subtitle').textContent = 'ID: '+item.id;
       prevImg(item.placeholder_url||'');
       document.getElementById('edit-modal').classList.remove('hidden');
-      checkImgbbKey();
     }
 
     function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
