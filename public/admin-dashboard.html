@@ -32,6 +32,7 @@
     .b-refunded { background:#e0e7ff; color:#3730a3; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; display:inline-block; }
     .b-active   { background:#dcfce7; color:#166534; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
     .b-inactive { background:#f3f4f6; color:#6b7280; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
+    .b-premium  { background:#fef3c7; color:#92400e; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
     tr:hover td { background:#fafafa; }
     .clickable-row { cursor:pointer; }
     .info-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:10px 14px; font-size:12px; color:#1e40af; line-height:1.6; }
@@ -320,6 +321,7 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
           <p id="img-error" class="hidden text-[11px] text-red-500 font-semibold mt-1.5"></p>
         </div>
 
+        <!-- Active Toggle -->
         <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3.5">
           <div>
             <p class="text-sm font-semibold text-gray-700">Active</p>
@@ -327,6 +329,23 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" id="edit-active" class="sr-only peer">
+            <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9c404d]"></div>
+          </label>
+        </div>
+
+        <!-- Premium Toggle -->
+        <div class="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-xl p-3.5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 bg-[#9c404d] rounded-lg flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-white" style="font-size:16px;font-variation-settings:'FILL' 1">crown</span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-700">Premium</p>
+              <p class="text-xs text-gray-400">Shows crown icon on template card</p>
+            </div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="edit-premium" class="sr-only peer">
             <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9c404d]"></div>
           </label>
         </div>
@@ -568,13 +587,13 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
       if (!sb) return;
       const check = await sb.from('template_configs').select('id').limit(1);
       if (check.error?.code === '42P01') {
-        alert("Table 'template_configs' missing. Run:\nCREATE TABLE IF NOT EXISTS public.template_configs (\n  id TEXT PRIMARY KEY,\n  name TEXT NOT NULL,\n  price NUMERIC NOT NULL,\n  placeholder_url TEXT,\n  is_active BOOLEAN DEFAULT TRUE,\n  updated_at TIMESTAMPTZ DEFAULT NOW()\n);");
+        alert("Table 'template_configs' missing. Run:\nCREATE TABLE IF NOT EXISTS public.template_configs (\n  id TEXT PRIMARY KEY,\n  name TEXT NOT NULL,\n  price NUMERIC NOT NULL,\n  placeholder_url TEXT,\n  is_active BOOLEAN DEFAULT TRUE,\n  is_premium BOOLEAN DEFAULT FALSE,\n  updated_at TIMESTAMPTZ DEFAULT NOW()\n);");
       } else if (check.data?.length === 0) {
         await sb.from('template_configs').insert([
-          { id:'template01', name:'Royal Heritage', price:499, is_active:true, placeholder_url:'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?q=80&w=800&auto=format&fit=crop' },
-          { id:'template02', name:'Minimalist Gold', price:499, is_active:true, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' },
-          { id:'template03', name:'Floral Garden', price:499, is_active:false, placeholder_url:'https://images.unsplash.com/photo-1582236307399-52e896472d8e?q=80&w=800&auto=format&fit=crop' },
-          { id:'template04', name:'Majestic Gold', price:499, is_active:false, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' }
+          { id:'template01', name:'Royal Heritage', price:499, is_active:true, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1544928147-79a2dbc1f389?q=80&w=800&auto=format&fit=crop' },
+          { id:'template02', name:'Minimalist Gold', price:499, is_active:true, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' },
+          { id:'template03', name:'Floral Garden', price:499, is_active:false, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1582236307399-52e896472d8e?q=80&w=800&auto=format&fit=crop' },
+          { id:'template04', name:'Majestic Gold', price:499, is_active:false, is_premium:false, placeholder_url:'https://images.unsplash.com/photo-1620603772186-b4d6a8f117bc?q=80&w=800&auto=format&fit=crop' }
         ]);
       }
     }
@@ -594,7 +613,7 @@ CREATE INDEX IF NOT EXISTS idx_ci_created_at ON public.customer_invitations(crea
           <td class="px-5 py-4"><img src="${t.placeholder_url||''}" class="thumb" alt="${t.name}" onerror="this.src='${fb}'"></td>
           <td class="px-5 py-4"><div class="text-sm font-semibold text-gray-900">${t.name}</div><div class="text-xs text-gray-400 font-mono mt-0.5">${t.id}</div></td>
           <td class="px-5 py-4 text-sm font-bold text-gray-900">₹${t.price}</td>
-          <td class="px-5 py-4"><span class="${t.is_active?'b-active':'b-inactive'}">${t.is_active?'Active':'Inactive'}</span></td>
+          <td class="px-5 py-4"><span class="${t.is_active?'b-active':'b-inactive'}">${t.is_active?'Active':'Inactive'}</span>${t.is_premium?' <span class="b-premium">👑 Premium</span>':''}</td>
           <td class="px-5 py-4 max-w-[150px]"><span class="text-xs text-gray-400 truncate block" title="${t.placeholder_url||''}">${t.placeholder_url?(t.placeholder_url.length>38?t.placeholder_url.substring(0,38)+'…':t.placeholder_url):'—'}</span></td>
           <td class="px-5 py-4 text-right"><button onclick="openEditModal('${t.id}')" class="text-xs font-semibold text-[#9c404d] bg-[#fef2f2] hover:bg-[#fde8e8] px-3 py-1.5 rounded-lg transition-colors">Edit</button></td>
         </tr>`).join('');
@@ -757,6 +776,7 @@ document.getElementById('payment-body').innerHTML =
       document.getElementById('edit-price').value = item.price;
       document.getElementById('edit-image').value = item.placeholder_url||'';
       document.getElementById('edit-active').checked = item.is_active;
+      document.getElementById('edit-premium').checked = item.is_premium || false;
       document.getElementById('edit-subtitle').textContent = 'ID: '+item.id;
       prevImg(item.placeholder_url||'');
       document.getElementById('edit-modal').classList.remove('hidden');
@@ -771,11 +791,12 @@ document.getElementById('payment-body').innerHTML =
       const price = document.getElementById('edit-price').value;
       const placeholder_url = document.getElementById('edit-image').value.trim();
       const is_active = document.getElementById('edit-active').checked;
+      const is_premium = document.getElementById('edit-premium').checked;
       if (!name) { alert('Name required.'); return; }
       const txt = document.getElementById('save-btn-text');
       const btn = document.getElementById('save-btn');
       txt.textContent = 'Saving…'; btn.disabled = true;
-      const { error } = await sb.from('template_configs').update({ name, price, placeholder_url, is_active, updated_at: new Date().toISOString() }).eq('id', id);
+      const { error } = await sb.from('template_configs').update({ name, price, placeholder_url, is_active, is_premium, updated_at: new Date().toISOString() }).eq('id', id);
       txt.textContent = 'Save Changes'; btn.disabled = false;
       if (error) { alert('Save failed: '+error.message); }
       else { closeEditModal(); loadTemplates(); }
