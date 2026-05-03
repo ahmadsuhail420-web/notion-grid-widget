@@ -588,7 +588,9 @@ const templateParam = urlParams.get('template') || 'template01';
 
 const templateDetails = {
     'template01': { name: 'Royal Heritage', desc: "Timeless patterns meet royal deep-plum elegance." },
-    'template02': { name: 'Minimalist Gold', desc: "Sophisticated minimalism with gold accents." }
+    'template02': { name: 'Minimalist Gold', desc: "Sophisticated minimalism with gold accents." },
+    'template03': { name: 'Floral Garden', desc: "A delicate blend of garden aesthetics and soft floral romance." },
+    'template04': { name: 'Majestic Gold', desc: "Bold, full-screen gold brilliance for a truly majestic announcement." }
 };
 const currentTemplate = templateDetails[templateParam] || templateDetails['template01'];
 
@@ -620,6 +622,23 @@ async function initPage() {
         }
         currentUser = session.user;
 
+        // ADMIN BYPASS CHECK
+        const isAdmin = currentUser.email === 'ahmadsuhail420@gmail.com';
+        if (isAdmin) {
+            resolvedAmount = 0;
+            updateAmountDisplay(0);
+            document.getElementById('couponCode').value = 'ADMINFREE';
+            document.getElementById('couponCode').disabled = true;
+            document.getElementById('discountBadge').textContent = '✓ Admin Access: 100% Discount Applied';
+            document.getElementById('discountBadge').style.display = 'block';
+            document.getElementById('payBtnContent').innerHTML = `
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
+                </svg>
+                Claim Free Admin Access
+            `;
+        }
+
         // Fetch real price from template_configs
         try {
             const { data: tpl } = await sb
@@ -628,7 +647,7 @@ async function initPage() {
                 .eq('id', templateParam)
                 .single();
 
-            if (tpl && !isNaN(tpl.price)) {
+            if (tpl && !isNaN(tpl.price) && !isAdmin) {
                 resolvedAmount = Number(tpl.price);
                 updateAmountDisplay(resolvedAmount);
             }
@@ -693,8 +712,38 @@ payButton.addEventListener('click', async function() {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" opacity="0.3"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8" stroke="white"/>
         </svg>
-        Creating your order…
+        ${currentUser.email === 'ahmadsuhail420@gmail.com' ? 'Processing Admin Access…' : 'Creating your order…'}
     </span>`;
+
+    // ADMIN BYPASS
+    if (currentUser.email === 'ahmadsuhail420@gmail.com') {
+        try {
+            const { error: insertError } = await sb
+                .from('customer_invitations')
+                .insert([{
+                    user_id: currentUser.id,
+                    user_email: currentUser.email,
+                    template_type: templateParam,
+                    title: currentTemplate.name + "'s Invitation (Admin Free Access)",
+                    status: 'draft',
+                    payment_id: 'ADMIN_FREE_BYPASS_' + Date.now(),
+                    order_id: 'ORDER_FREE_BYPASS_' + Date.now(),
+                    rsvps: []
+                }]);
+
+            if (insertError) throw insertError;
+
+            document.getElementById('successOverlay').classList.add('show');
+            setTimeout(() => { window.location.href = '/dashboard?payment=success'; }, 2000);
+            return;
+        } catch (err) {
+            console.error('Admin bypass failed:', err);
+            alert('Admin bypass failed. Please try again.');
+            payButton.disabled = false;
+            payButton.innerHTML = PAY_BTN_DEFAULT;
+            return;
+        }
+    }
 
     try {
         const response = await fetch('/api/create-razorpay-order', {

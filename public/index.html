@@ -410,7 +410,7 @@
           <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#4B334F] shadow-2xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template01" onclick="handleCardClick(this)">
             <!-- Real Hero Preview -->
             <div class="iframe-preview-container" style="display: none;">
-               <iframe src="/wedding/islamic-invitation.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
+               <iframe src="/wedding/islamic-invitation?preview=true" class="preview-iframe" scrolling="no"></iframe>
             </div>
             
             <!-- Readability Overlay -->
@@ -436,7 +436,7 @@
                <h3 class="text-2xl font-serif font-bold text-gold mb-6 transform -translate-y-4 transition-transform">Royal Heritage</h3>
                <div class="flex flex-col gap-3 w-full max-w-[160px]">
                   <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                  <button onclick="handleSelectTemplate('tp1')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
+                  <button onclick="handleSelectTemplate('template01')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
                </div>
             </div>
           </div>
@@ -445,7 +445,7 @@
           <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#1a050a] shadow-2xl border-2 border-gray-100 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template02" style="transition-delay: 100ms;" onclick="handleCardClick(this)">
              <!-- Real Hero Preview -->
              <div class="iframe-preview-container" style="display: none;">
-                <iframe src="/wedding/islamic-invitation-premium.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
+                <iframe src="/wedding/islamic-invitation-premium?preview=true" class="preview-iframe" scrolling="no"></iframe>
              </div>
  
              <!-- Readability Overlay -->
@@ -469,15 +469,19 @@
                 <h3 class="text-2xl font-serif font-bold text-gold mb-6 transform -translate-y-4 transition-transform">Minimalist Gold</h3>
                 <div class="flex flex-col gap-3 w-full max-w-[160px]">
                    <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                   <button onclick="handleSelectTemplate('tp2')" class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
+                   <button onclick="handleSelectTemplate('template02')" class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
                </div>
             </div>
           </div>
 
           <!-- Template 3: Floral Garden -->
           <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#fdf5f7] shadow-2xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" data-template-id="template03" style="transition-delay: 200ms;" onclick="handleCardClick(this)">
+             <!-- Real Hero Preview -->
+             <div class="iframe-preview-container" style="display: none;">
+                <iframe src="/wedding/floral-garden?preview=true" class="preview-iframe" scrolling="no"></iframe>
+             </div>
              <!-- Colored Placeholder for Unavailable Template -->
-             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#fdf5f7]">
+             <div class="template-placeholder absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#fdf5f7]">
                <!-- Available Soon Overlay -->
                <div class="absolute inset-0 bg-[#9c404d]/5 flex items-center justify-center transition-opacity">
                   <span class="bg-white/90 text-[#9c404d] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#9c404d]/10">Available Soon</span>
@@ -508,8 +512,12 @@
  
           <!-- Template 4: Golden Glow -->
           <div class="template-card group relative aspect-[4/5] overflow-hidden rounded-3xl bg-[#111] shadow-2xl border-2 border-[#d4af37]/20 hover:border-[#d4af37]/60 transition-all duration-500 scroll-reveal card-glare" data-template-id="template04" style="transition-delay: 300ms;" onclick="handleCardClick(this)">
+             <!-- Real Hero Preview -->
+             <div class="iframe-preview-container" style="display: none;">
+                <iframe src="/wedding/majestic-gold?preview=true" class="preview-iframe" scrolling="no"></iframe>
+             </div>
              <!-- Colored Placeholder for Unavailable Template -->
-             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
+             <div class="template-placeholder absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
                <!-- Available Soon Overlay -->
                <div class="absolute inset-0 bg-[#d4af37]/5 flex items-center justify-center transition-opacity">
                   <span class="bg-white/90 text-[#d4af37] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#d4af37]/10">Available Soon</span>
@@ -992,6 +1000,22 @@
               document.getElementById('nav-dashboard-link').classList.remove('hidden');
               document.getElementById('mob-nav-login-link').classList.add('hidden');
               document.getElementById('mob-nav-dashboard-link').classList.remove('hidden');
+
+              // Admin UI Fixes
+              if (session.user.email === 'ahmadsuhail420@gmail.com') {
+                document.querySelectorAll('button[onclick^="handleSelectTemplate"]').forEach(btn => {
+                  btn.textContent = 'Admin: Claim Free';
+                  btn.style.backgroundColor = '#16a34a'; // Green
+                });
+                
+                // Update pricing section
+                const priceHeader = document.querySelector('#pricing h3');
+                if (priceHeader) {
+                  priceHeader.innerHTML = '<span class="text-3xl mr-1 font-bold">₹</span>0';
+                  const subText = priceHeader.parentElement.querySelector('p');
+                  if (subText) subText.textContent = 'Admin Free Access';
+                }
+              }
             }
           } else {
             console.error("Supabase config missing fields:", config);
@@ -1006,21 +1030,38 @@
         try {
           const { data, error } = await client.from('template_configs').select('id, placeholder_url, is_active');
           if (error || !data) return;
+          
           data.forEach(t => {
             const card = document.querySelector(`[data-template-id="${t.id}"]`);
             if (!card) return;
+            
             const iframeContainer = card.querySelector('.iframe-preview-container');
-            const placeholderContainer = card.querySelector('.admin-ph-bg');
+            let placeholderContainer = card.querySelector('.admin-ph-bg');
+            const placeholderOverlay = card.querySelector('.template-placeholder'); 
+            
             if (t.placeholder_url) {
+              // PRIORITY 1: Uploaded Image
               if (iframeContainer) iframeContainer.style.display = 'none';
-              const bg = placeholderContainer || document.createElement('div');
-              bg.className = 'admin-ph-bg absolute inset-0 z-[1] bg-cover bg-center';
-              bg.style.backgroundImage = `url(${t.placeholder_url})`;
-              bg.style.display = 'block';
-              if (!placeholderContainer) card.appendChild(bg);
-            } else {
+              if (placeholderOverlay) placeholderOverlay.style.display = 'none';
+              
+              if (!placeholderContainer) {
+                placeholderContainer = document.createElement('div');
+                placeholderContainer.className = 'admin-ph-bg absolute inset-0 z-[1] bg-cover bg-center transition-opacity duration-500';
+                card.appendChild(placeholderContainer);
+              }
+              
+              placeholderContainer.style.backgroundImage = `url(${t.placeholder_url})`;
+              placeholderContainer.style.display = 'block';
+            } else if (t.is_active) {
+              // PRIORITY 2: Live Preview (only if active)
               if (iframeContainer) iframeContainer.style.display = 'block';
+              if (placeholderOverlay) placeholderOverlay.style.display = 'none';
               if (placeholderContainer) placeholderContainer.style.display = 'none';
+            } else {
+              // PRIORITY 3: "Coming Soon" Overlay
+              if (iframeContainer) iframeContainer.style.display = 'none';
+              // Note: the original code for coming soon overlay might be different across templates
+              // but we try to hide/show what we found
             }
           });
         } catch(e) { console.error('loadTemplatePlaceholders failed', e); }
