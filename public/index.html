@@ -91,13 +91,50 @@
 
       .scroll-reveal {
         opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateY(40px);
+        transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .scroll-reveal.active {
         opacity: 1;
         transform: translateY(0);
+      }
+
+      .scroll-pop {
+        opacity: 0;
+        transform: scale(0.85) translateY(60px);
+        transition: all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .scroll-pop.active {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+
+      .scroll-slide-left {
+        opacity: 0;
+        transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @media (min-width: 768px) {
+        .scroll-slide-left {
+          transform: scale(0.85) translateY(60px);
+          transition: all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .scroll-slide-left.active {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      @media (max-width: 767px) {
+        .scroll-slide-left {
+          transform: translateX(-80px);
+        }
+        .scroll-slide-left.active {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
       .card-hover {
@@ -404,140 +441,65 @@
            <h2 class="text-4xl md:text-5xl font-serif font-bold text-[#2d0a0e] mb-4">Choose Your <span class="italic text-[#9c404d]">Style</span></h2>
            <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-6"></div>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          <!-- Template 1: Royal Heritage -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#4B334F] shadow-2xl border-2 border-[#9c404d]/20 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" onclick="handleCardClick(this)" data-template-id="template01">
-            <!-- Real Hero Preview -->
-            <div class="iframe-preview-container" id="preview-template01">
-               <iframe src="/wedding/islamic-invitation.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
-            </div>
-            
-            <!-- Readability Overlay -->
-            <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#130a05]/80 to-transparent z-[5]"></div>
-            
-            <!-- Crown/Premium Badge (Top Right) — populated by JS -->
-            <div class="absolute top-4 right-4 z-40" id="badge-template01">
-              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
-            </div>
-
-            <!-- Bottom Info Layer (Always Visible) -->
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#130a05] via-[#130a05]/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <div class="flex items-center gap-2 mb-2">
-                <div class="w-8 h-px bg-[#d4af37]/40"></div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-bold">Heritage Series</span>
+        <div class="grid grid-cols-1 max-w-[320px] mx-auto md:max-w-none md:grid-cols-2 lg:grid-cols-2 lg:max-w-4xl lg:mx-auto gap-12 gap-y-16 mb-16">
+          <!-- Template 1: Heritage -->
+          <div class="flex flex-col relative template-card group scroll-pop cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#fcfaf8] rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-[#f0ebe1] overflow-hidden aspect-[4/5]" onclick="handleCardClick(this)" data-template-id="template01">
+            <div class="relative flex-1 bg-[#4B334F] w-full card-glare border-b border-[#f0ebe1] overflow-hidden rounded-t-[2rem]">
+              <!-- Real Hero Preview -->
+              <div class="iframe-preview-container" id="preview-template01">
+                 <iframe src="/wedding/islamic-invitation.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
               </div>
-              <h3 class="text-2xl font-serif font-bold text-white gold-shimmer-text leading-tight mb-1">Royal Heritage</h3>
-              <p class="text-white/60 text-xs font-medium italic">Timeless islamic patterns meet royal deep-plum elegance.</p>
-            </div>
+              
+              <!-- Crown/Premium Badge (Top Right) — populated by JS -->
+              <div class="absolute top-4 right-4 z-40" id="badge-template01"></div>
 
-            <!-- Hover Interaction Layer (Buttons) -->
-            <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/70 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-               <h3 class="text-2xl font-serif font-bold text-gold mb-1 transform -translate-y-4 transition-transform">Royal Heritage</h3>
-               <p class="text-[#d4af37] text-sm font-bold mb-5" id="price-template01">₹499</p>
-               <div class="flex flex-col gap-3 w-full max-w-[160px]">
-                  <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                  <button onclick="handleSelectTemplate('template01')" class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
-               </div>
+              <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
+                 <div class="flex flex-col gap-3 w-full max-w-[160px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                    <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation()">Preview Demo</a>
+                    <button class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
+                 </div>
+              </div>
+            </div>
+            
+            <!-- Neat UI Below the Card -->
+            <div class="py-3 px-4 text-center flex-shrink-0 w-full flex flex-col justify-center items-center z-40">
+              <h3 class="text-lg font-serif font-bold text-[#2d0a0e] leading-tight px-2 truncate w-full" id="name-template01">Heritage</h3>
+              <div class="flex items-center justify-center gap-1.5 mt-0.5 w-full">
+                 <span class="text-gray-400 line-through text-[10px] font-semibold" id="original-price-template01">₹1499</span>
+                 <span class="text-[#d4af37] text-base font-bold leading-none" id="price-template01">₹499</span>
+                 <span class="text-green-700 bg-green-50/80 font-bold text-[8px] px-1.5 py-[1px] rounded border border-green-100 uppercase tracking-wider" id="offer-template01">66% OFF</span>
+              </div>
             </div>
           </div>
 
-          <!-- Template 2: Minimalist Gold -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#1a050a] shadow-2xl border-2 border-gray-100 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 100ms;" onclick="handleCardClick(this)" data-template-id="template02">
-             <!-- Real Hero Preview -->
-             <div class="iframe-preview-container" id="preview-template02">
-                <iframe src="/wedding/islamic-invitation-premium.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
-             </div>
- 
-             <!-- Readability Overlay -->
-             <div class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#1a050a]/90 to-transparent z-[5]"></div>
-            
-             <!-- Crown/Premium Badge — populated by JS -->
-             <div class="absolute top-4 right-4 z-40" id="badge-template02">
-               <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
-             </div>
-
-             <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#1a050a] via-[#1a050a]/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-               <div class="flex items-center gap-2 mb-2">
-                 <div class="w-8 h-px bg-[#b08d5b]/40"></div>
-                 <span class="text-[10px] uppercase tracking-[0.2em] text-[#b08d5b] font-bold">Modern Series</span>
+          <!-- Template 2: Minimalist -->
+          <div class="flex flex-col relative template-card group scroll-pop cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#fcfaf8] rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-[#f0ebe1] overflow-hidden aspect-[4/5]" style="transition-delay: 100ms;" onclick="handleCardClick(this)" data-template-id="template02">
+            <div class="relative flex-1 bg-[#1a050a] w-full card-glare border-b border-[#f0ebe1] overflow-hidden rounded-t-[2rem]">
+               <!-- Real Hero Preview -->
+               <div class="iframe-preview-container" id="preview-template02">
+                  <iframe src="/wedding/islamic-invitation-premium.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
                </div>
-              <h3 class="text-2xl font-serif font-bold text-white gold-shimmer-text leading-tight mb-1">Minimalist Gold</h3>
-              <p class="text-white/60 text-xs font-medium italic">Sophisticated minimalism with a focus on gold accents.</p>
-             </div>
- 
-             <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/70 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                <h3 class="text-2xl font-serif font-bold text-gold mb-1 transform -translate-y-4 transition-transform">Minimalist Gold</h3>
-                <p class="text-[#d4af37] text-sm font-bold mb-5" id="price-template02">₹499</p>
-                <div class="flex flex-col gap-3 w-full max-w-[160px]">
-                   <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Preview Demo</a>
-                   <button onclick="handleSelectTemplate('template02')" class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
-               </div>
-            </div>
-          </div>
-
-          <!-- Template 3: Floral Garden -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#fdf5f7] shadow-2xl border-2 border-[#9c404d]/10 hover:border-[#9c404d]/40 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 200ms;" onclick="handleCardClick(this)">
-             <!-- Colored Placeholder for Unavailable Template -->
-             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#fdf5f7]">
-               <!-- Available Soon Overlay -->
-               <div class="absolute inset-0 bg-[#9c404d]/5 flex items-center justify-center transition-opacity">
-                  <span class="bg-white/90 text-[#9c404d] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#9c404d]/10">Available Soon</span>
-               </div>
-             </div>
-            
-            <!-- Premium Badge -->
-            <div class="absolute top-4 right-4 z-40">
-              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
-            </div>
-
-            <!-- Bottom Info Layer -->
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-[#fdf5f7] via-[#fdf5f7]/90 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <div class="flex items-center gap-2 mb-2">
-                <div class="w-8 h-px bg-[#9c404d]/40"></div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#9c404d] font-bold">Nature Series</span>
+               
+               <!-- Crown/Premium Badge — populated by JS -->
+               <div class="absolute top-4 right-4 z-40" id="badge-template02"></div>
+   
+               <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
+                  <div class="flex flex-col gap-3 w-full max-w-[160px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                     <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation()">Preview Demo</a>
+                     <button class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
+                 </div>
               </div>
-              <h3 class="text-2xl font-serif font-bold text-[#2d0a0e] leading-tight mb-1 italic">Floral Garden</h3>
-              <p class="text-[#9c404d]/80 text-xs font-medium">A delicate blend of garden aesthetics and soft floral romance.</p>
-            </div>
- 
-             <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/80 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                <h3 class="text-2xl font-serif font-bold text-[#fdf5f7] mb-2 transform -translate-y-4 transition-transform">Floral Garden</h3>
-                <p class="text-white/40 text-[10px] uppercase tracking-widest mb-6 font-bold">Nature Collection</p>
-                <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-white/20">Coming Soon</span>
-             </div>
-          </div>
- 
-          <!-- Template 4: Golden Glow -->
-          <div class="template-card group relative aspect-[4/6] overflow-hidden rounded-3xl bg-[#111] shadow-2xl border-2 border-[#d4af37]/20 hover:border-[#d4af37]/60 transition-all duration-500 scroll-reveal card-glare" style="transition-delay: 300ms;" onclick="handleCardClick(this)">
-             <!-- Colored Placeholder for Unavailable Template -->
-             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[#0a0a0a]">
-               <!-- Available Soon Overlay -->
-               <div class="absolute inset-0 bg-[#d4af37]/5 flex items-center justify-center transition-opacity">
-                  <span class="bg-white/90 text-[#d4af37] px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl border border-[#d4af37]/10">Available Soon</span>
-               </div>
-             </div>
-            
-            <!-- Premium Badge -->
-            <div class="absolute top-4 right-4 z-40">
-              <span class="text-[10px] uppercase tracking-widest bg-[#9c404d] text-white px-3 py-1 rounded-full font-bold shadow-lg">Premium</span>
             </div>
 
-            <!-- Bottom Info Layer -->
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black/80 to-transparent z-10 transition-all duration-500 group-hover:translate-y-4 group-hover:opacity-0">
-              <div class="flex items-center gap-2 mb-2">
-                <div class="w-8 h-px bg-[#d4af37]/40"></div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#d4af37] font-bold">Prestige Series</span>
+            <!-- Neat UI Below the Card -->
+            <div class="py-3 px-4 text-center flex-shrink-0 w-full flex flex-col justify-center items-center z-40">
+              <h3 class="text-lg font-serif font-bold text-[#2d0a0e] leading-tight px-2 truncate w-full" id="name-template02">Minimalist</h3>
+              <div class="flex items-center justify-center gap-1.5 mt-0.5 w-full">
+                 <span class="text-gray-400 line-through text-[10px] font-semibold" id="original-price-template02">₹1499</span>
+                 <span class="text-[#d4af37] text-base font-bold leading-none" id="price-template02">₹499</span>
+                 <span class="text-green-700 bg-green-50/80 font-bold text-[8px] px-1.5 py-[1px] rounded border border-green-100 uppercase tracking-wider" id="offer-template02">66% OFF</span>
               </div>
-              <h3 class="text-2xl font-serif font-bold text-white gold-shimmer-text leading-tight mb-1">Majestic Gold</h3>
-              <p class="text-white/60 text-xs font-medium italic">Bold, full-screen gold brilliance for a truly majestic announcement.</p>
             </div>
- 
-             <div class="hover-overlay absolute inset-0 bg-[#0a0a0a]/90 backdrop-blur-md opacity-0 transition-all duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                <h3 class="text-2xl font-serif font-bold text-[#d4af37] mb-2 transform -translate-y-4 transition-transform">Majestic Gold</h3>
-                <p class="text-white/40 text-[10px] uppercase tracking-widest mb-6 font-bold">Standard Luxury</p>
-                <span class="inline-block bg-white/10 text-white px-6 py-2 rounded-xl font-bold text-xs backdrop-blur-sm border border-[#d4af37]/40">Coming Soon</span>
-             </div>
           </div>
         </div>
 
@@ -624,7 +586,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <!-- Feature Card 1 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border">
+          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
             </div>
@@ -633,7 +595,7 @@
           </div>
           
           <!-- Feature Card 2 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border" style="transition-delay: 100ms;">
+          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 100ms;">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
@@ -642,7 +604,7 @@
           </div>
           
           <!-- Feature Card 3 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border" style="transition-delay: 200ms;">
+          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 200ms;">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
             </div>
@@ -651,7 +613,7 @@
           </div>
           
           <!-- Feature Card 4 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border" style="transition-delay: 300ms;">
+          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 300ms;">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
             </div>
@@ -661,8 +623,8 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-           <!-- Row 2 -->
-           <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border">
+          <!-- Row 2 -->
+           <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
@@ -670,7 +632,7 @@
             <p class="text-gray-400 text-[13px] leading-relaxed">Integrated Google Maps for seamless navigation to your wedding and reception venues.</p>
           </div>
           
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border" style="transition-delay: 100ms;">
+          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 100ms;">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
             </div>
@@ -678,7 +640,7 @@
             <p class="text-gray-400 text-[13px] leading-relaxed">3D door reveals, curtains, and sparkles for a truly magical introduction.</p>
           </div>
           
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border" style="transition-delay: 200ms;">
+          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 200ms;">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </div>
@@ -686,7 +648,7 @@
             <p class="text-gray-400 text-[13px] leading-relaxed">High-quality slideshow galleries and hero images to showcase your journey.</p>
           </div>
           
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-reveal shadow-sm shiny-border" style="transition-delay: 300ms;">
+          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 300ms;">
             <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
             </div>
@@ -1007,12 +969,43 @@
       async function loadTemplateCardData() {
         if (!sb) return;
         try {
-          const { data, error } = await sb.from('template_configs').select('id, price, is_premium, placeholder_url, is_active');
+          const { data, error } = await sb.from('template_configs').select('id, name, price, original_price, is_premium, placeholder_url, is_active');
           if (error || !data) return;
           data.forEach(t => {
+            // Update name display
+            const nameEl = document.getElementById('name-' + t.id);
+            if (nameEl && t.name) nameEl.textContent = t.name;
+
+            // Handle preview or image
+            const previewContainer = document.getElementById('preview-' + t.id);
+            if (previewContainer && t.placeholder_url) {
+              previewContainer.innerHTML = `<img src="${t.placeholder_url}" class="w-full h-full object-cover">`;
+            }
+
             // Update price display
             const priceEl = document.getElementById('price-' + t.id);
             if (priceEl) priceEl.textContent = '₹' + t.price;
+            
+            // Calculate and display offer %
+            const offerEl = document.getElementById('offer-' + t.id);
+            const origPriceEl = document.getElementById('original-price-' + t.id);
+            
+            if (offerEl && t.price) {
+              const originalPrice = t.original_price || 1499;
+              if (origPriceEl) {
+                origPriceEl.textContent = '₹' + originalPrice;
+                origPriceEl.style.display = 'inline-block';
+              }
+              
+              if (t.price < originalPrice) {
+                const percent = Math.round(((originalPrice - t.price) / originalPrice) * 100);
+                offerEl.textContent = percent + '% OFF';
+                offerEl.style.display = 'inline-block';
+              } else {
+                offerEl.style.display = 'none';
+                if (origPriceEl) origPriceEl.style.display = 'none';
+              }
+            }
 
             // Update badge: crown icon if is_premium, else hide badge
             const badgeEl = document.getElementById('badge-' + t.id);
@@ -1083,11 +1076,13 @@
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('active');
+          } else {
+            entry.target.classList.remove('active');
           }
         });
       }, observerOptions);
 
-      document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+      document.querySelectorAll('.scroll-reveal, .scroll-pop, .scroll-slide-left').forEach(el => observer.observe(el));
 
       // Smooth scroll for nav links
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
