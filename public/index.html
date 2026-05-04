@@ -44,7 +44,7 @@
       @import "tailwindcss";
 
       :root {
-        --primary: #9c404d;
+        --primary: #5f0f1a;
         --bg-cream: #FFF9F9;
         --text-dark: #2d0a0e;
         --text-muted: #6b4a4e;
@@ -92,7 +92,7 @@
       }
 
       .btn-primary {
-        @apply bg-[#9c404d] text-white px-10 py-4 font-bold transition-all duration-300 border-2 border-white shadow-[0_10px_20px_rgba(156,64,77,0.3)] hover:bg-[#7d333e] hover:shadow-[0_15px_30px_rgba(156,64,77,0.5)] active:scale-95;
+        @apply bg-[#5f0f1a] text-white px-10 py-4 font-bold transition-all duration-300 border-2 border-white shadow-[0_10px_20px_rgba(156,64,77,0.3)] hover:bg-[#7d333e] hover:shadow-[0_15px_30px_rgba(156,64,77,0.5)] active:scale-95;
         font-family: 'Times New Roman', Times, serif;
         border-radius: 12px;
       }
@@ -102,16 +102,16 @@
       }
 
       .shiny-border {
-        @apply border-2 border-[#9c404d]/30 shadow-[0_0_15px_rgba(156,64,77,0.1)] transition-all duration-300;
+        @apply border-2 border-[#5f0f1a]/30 shadow-[0_0_15px_rgba(156,64,77,0.1)] transition-all duration-300;
         border-radius: 12px;
       }
 
       .shiny-border:hover {
-        @apply border-[#9c404d]/50 shadow-[0_0_20px_rgba(156,64,77,0.2)];
+        @apply border-[#5f0f1a]/50 shadow-[0_0_20px_rgba(156,64,77,0.2)];
       }
 
       .btn-outline {
-        @apply border-2 border-[#9c404d] bg-white/50 backdrop-blur-sm text-[#9c404d] px-8 py-4 font-bold transition-all duration-300 hover:bg-[#9c404d]/5 hover:shadow-md active:scale-95;
+        @apply border-2 border-[#5f0f1a] bg-white/50 backdrop-blur-sm text-[#5f0f1a] px-8 py-4 font-bold transition-all duration-300 hover:bg-[#5f0f1a]/5 hover:shadow-md active:scale-95;
         font-family: 'Times New Roman', Times, serif;
         border-radius: 12px;
       }
@@ -192,6 +192,11 @@
         100% { background-position: -100% 0; }
       }
 
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
       @keyframes shimmerPhrase {
         0% { background-position: -200% 0; }
         100% { background-position: 200% 0; }
@@ -200,9 +205,9 @@
       .wow-shimmer {
         background: linear-gradient(
           90deg, 
-          #9c404d 10%, 
+          #5f0f1a 10%, 
           rgba(212, 175, 55, 0.3) 50%, 
-          #9c404d 90%
+          #5f0f1a 90%
         );
         background-size: 200% 100%;
         -webkit-background-clip: text;
@@ -217,12 +222,12 @@
       .phrase-shimmer {
         background: linear-gradient(
           90deg, 
-          #9c404d 10%, 
+          #5f0f1a 10%, 
           rgba(212, 175, 55, 0.25) 25%, 
-          #9c404d 40%, 
-          #9c404d 60%, 
+          #5f0f1a 40%, 
+          #5f0f1a 60%, 
           rgba(212, 175, 55, 0.25) 75%, 
-          #9c404d 90%
+          #5f0f1a 90%
         );
         background-size: 200% 100%;
         -webkit-background-clip: text;
@@ -236,11 +241,11 @@
       .premium-shimmer {
         background: linear-gradient(
           110deg, 
-          #9c404d 10%, 
-          #9c404d 35%, 
+          #5f0f1a 10%, 
+          #5f0f1a 35%, 
           rgba(212, 175, 55, 0.4) 50%, 
-          #9c404d 65%, 
-          #9c404d 90%
+          #5f0f1a 65%, 
+          #5f0f1a 90%
         );
         background-size: 200% 100%;
         -webkit-background-clip: text;
@@ -344,20 +349,20 @@
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-100">
       <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
+        <a href="/" class="text-2xl font-serif font-bold text-[#5f0f1a] italic">Sync & Style</a>
         
         <div class="hidden md:flex items-center space-x-12 text-[14px] font-medium text-gray-700">
-          <a href="/templates" class="hover:text-[#9c404d] transition-colors">Templates</a>
-          <a href="#features" class="hover:text-[#9c404d] transition-colors">Features</a>
-          <a href="#how-it-works" class="hover:text-[#9c404d] transition-colors">How It Works</a>
-          <a href="#pricing" class="hover:text-[#9c404d] transition-colors">Pricing</a>
-          <a href="/login" id="nav-login-link" class="hover:text-[#9c404d] transition-colors">Login</a>
-          <a href="/customer-dashboard" id="nav-dashboard-link" class="hover:text-[#9c404d] transition-colors hidden font-bold">Dashboard</a>
-          <a href="#templates" class="bg-[#9c404d] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Get Started</a>
+          <a href="/templates" class="hover:text-[#5f0f1a] transition-colors">Templates</a>
+          <a href="#features" class="hover:text-[#5f0f1a] transition-colors">Features</a>
+          <a href="#how-it-works" class="hover:text-[#5f0f1a] transition-colors">How It Works</a>
+          <a href="#pricing" class="hover:text-[#5f0f1a] transition-colors">Pricing</a>
+          <a href="/login" id="nav-login-link" class="hover:text-[#5f0f1a] transition-colors">Login</a>
+          <a href="/customer-dashboard" id="nav-dashboard-link" class="hover:text-[#5f0f1a] transition-colors hidden font-bold">Dashboard</a>
+          <a href="#templates" class="bg-[#5f0f1a] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Get Started</a>
         </div>
         
-        <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-[#9c404d]/8 text-[#9c404d] hover:bg-[#9c404d]/15 transition-colors focus:outline-none">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m7 6H4"></path></svg>
+        <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-[#5f0f1a]/8 text-[#5f0f1a] hover:bg-[#5f0f1a]/15 transition-colors focus:outline-none">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
       </div>
     </nav>
@@ -371,38 +376,38 @@
       <div class="absolute right-0 top-0 bottom-0 w-[80vw] max-w-sm bg-white shadow-2xl flex flex-col" style="border-left: 1px solid rgba(156,64,77,0.12);">
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-5" style="border-bottom: 1px solid rgba(156,64,77,0.1); background: linear-gradient(135deg, #fff9f9, #fff);">
-          <span class="text-xl font-serif font-bold text-[#9c404d] italic">Sync & Style</span>
-          <button id="mobile-menu-close" class="w-9 h-9 flex items-center justify-center rounded-full bg-[#9c404d]/8 text-[#9c404d] hover:bg-[#9c404d]/15 transition-colors focus:outline-none">
+          <span class="text-xl font-serif font-bold text-[#5f0f1a] italic">Sync & Style</span>
+          <button id="mobile-menu-close" class="w-9 h-9 flex items-center justify-center rounded-full bg-[#5f0f1a]/8 text-[#5f0f1a] hover:bg-[#5f0f1a]/15 transition-colors focus:outline-none">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
         
         <!-- Nav Links -->
         <div class="flex flex-col px-4 py-6 gap-1 flex-1 overflow-y-auto">
-          <a href="/templates" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+          <a href="/templates" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#5f0f1a] hover:bg-[#5f0f1a]/6 transition-all">
             <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
             Templates
           </a>
-          <a href="#features" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+          <a href="#features" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#5f0f1a] hover:bg-[#5f0f1a]/6 transition-all">
             <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             Features
           </a>
-          <a href="#how-it-works" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+          <a href="#how-it-works" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#5f0f1a] hover:bg-[#5f0f1a]/6 transition-all">
             <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
             How It Works
           </a>
-          <a href="#pricing" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+          <a href="#pricing" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#5f0f1a] hover:bg-[#5f0f1a]/6 transition-all">
             <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
             Pricing
           </a>
           
           <div style="height: 1px; background: rgba(156,64,77,0.08); margin: 8px 4px;"></div>
           
-          <a href="/login" id="mob-nav-login-link" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+          <a href="/login" id="mob-nav-login-link" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#5f0f1a] hover:bg-[#5f0f1a]/6 transition-all">
             <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
             Login
           </a>
-          <a href="/customer-dashboard" id="mob-nav-dashboard-link" class="mobile-nav-link hidden flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-semibold text-[#9c404d] bg-[#9c404d]/6 transition-all">
+          <a href="/customer-dashboard" id="mob-nav-dashboard-link" class="mobile-nav-link hidden items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-semibold text-[#5f0f1a] bg-[#5f0f1a]/6 transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             Dashboard
           </a>
@@ -410,7 +415,7 @@
 
         <!-- CTA Bottom -->
         <div class="px-5 pb-6 pt-2" style="border-top: 1px solid rgba(156,64,77,0.08);">
-          <a href="#templates" class="mobile-nav-link flex items-center justify-center gap-2 bg-[#9c404d] text-white px-6 py-4 rounded-xl font-bold text-[15px] hover:bg-[#7d333e] transition-all shadow-lg shadow-[#9c404d]/20 active:scale-95">
+          <a href="#templates" class="mobile-nav-link flex items-center justify-center gap-2 bg-[#5f0f1a] text-white px-6 py-4 rounded-xl font-bold text-[15px] hover:bg-[#7d333e] transition-all shadow-lg shadow-[#5f0f1a]/20 active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
             Get Started Free
           </a>
@@ -456,7 +461,7 @@
 
         <!-- Scroll arrow -->
         <div class="mt-8 flex justify-center scroll-reveal" style="transition-delay: 600ms;">
-          <a href="#templates" class="text-[#9c404d] float-animation">
+          <a href="#templates" class="text-[#5f0f1a] float-animation">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
           </a>
         </div>
@@ -464,17 +469,17 @@
       
       <!-- Decorative Elements -->
       <div class="absolute top-1/2 left-0 -translate-y-1/2 -z-0 opacity-10">
-          <svg width="400" height="400" viewBox="0 0 400 400" fill="none"><circle cx="200" cy="200" r="199.5" stroke="#9c404d"/></svg>
+          <svg width="400" height="400" viewBox="0 0 400 400" fill="none"><circle cx="200" cy="200" r="199.5" stroke="#5f0f1a"/></svg>
       </div>
     </section>
 
     <!-- Separation -->
-    <div class="max-w-20 mx-auto h-px bg-[#9c404d]/30 scroll-reveal"></div>
+    <div class="max-w-20 mx-auto h-px bg-[#5f0f1a]/30 scroll-reveal"></div>
 
     <!-- Templates Intro Section -->
     <section id="templates-intro" class="py-16 px-6">
       <div class="max-w-7xl mx-auto">
-        <div class="max-w-4xl mx-auto bg-white/60 border border-[#9c404d]/20 rounded-[28px] p-8 md:p-12 text-center scroll-reveal shiny-border">
+        <div class="max-w-4xl mx-auto bg-white/60 border border-[#5f0f1a]/20 rounded-[28px] p-8 md:p-12 text-center scroll-reveal shiny-border">
           <h2 class="text-2xl md:text-3xl font-serif mb-8 leading-tight">
             Access to <span class="phrase-shimmer font-bold">Premium Wedding Invitation Templates</span> in just One Time Payment
           </h2>
@@ -489,9 +494,9 @@
     <section id="templates" class="py-24 px-6 bg-[#fcf9f4]">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-16 scroll-reveal">
-           <span class="text-[#9c404d] italic block mb-2 font-serif text-lg">Masterpieces</span>
-           <h2 class="text-4xl md:text-5xl font-serif font-bold text-[#2d0a0e] mb-4">Choose Your <span class="italic text-[#9c404d]">Style</span></h2>
-           <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-6"></div>
+           <span class="text-[#5f0f1a] italic block mb-2 font-serif text-lg">Masterpieces</span>
+           <h2 class="text-4xl md:text-5xl font-serif font-bold text-[#2d0a0e] mb-4">Choose Your <span class="italic text-[#5f0f1a]">Style</span></h2>
+           <div class="w-12 h-0.5 bg-[#5f0f1a]/30 mx-auto mt-6"></div>
         </div>
         <div class="grid grid-cols-1 max-w-[320px] mx-auto md:max-w-none md:grid-cols-2 lg:grid-cols-2 lg:max-w-4xl lg:mx-auto gap-12 gap-y-16 mb-16">
           <!-- Template 1: Heritage -->
@@ -507,15 +512,8 @@
 
               <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
                  <div class="flex flex-col gap-3 w-full max-w-[160px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                    <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#9c404d] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation()">Preview Demo</a>
-                    <button class="bg-[#9c404d] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
-                 </div>
-              </div>
-            </div>
-            
-            <!-- Neat UI Below the Card -->
-            <div class="py-3 px-4 text-center flex-shrink-0 w-full flex flex-col justify-center items-center z-40">
-              <h3 class="text-lg font-serif font-bold text-[#2d0a0e] leading-tight px-2 truncate w-full" id="name-template01">Heritage</h3>
+                    <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#5f0f1a] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation()">Preview Demo</a>
+                    <button class="bg-[#5f0f1a] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation(); handleSelectTemplate('template01')">Buy Now</button>Heritage</h3>
               <div class="flex items-center justify-center gap-1.5 mt-0.5 w-full">
                  <span class="text-gray-400 line-through text-[10px] font-semibold" id="original-price-template01">₹1499</span>
                  <span class="text-[#d4af37] text-base font-bold leading-none" id="price-template01">₹499</span>
@@ -538,7 +536,7 @@
                <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
                   <div class="flex flex-col gap-3 w-full max-w-[160px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                      <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation()">Preview Demo</a>
-                     <button class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl">Select Studio</button>
+                     <button class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation(); handleSelectTemplate('template02')">Buy Now</button>
                  </div>
               </div>
             </div>
@@ -565,57 +563,57 @@
     </section>
 
     <!-- Separation -->
-    <div class="max-w-20 mx-auto h-px bg-[#9c404d]/30 scroll-reveal"></div>
+    <div class="max-w-20 mx-auto h-px bg-[#5f0f1a]/30 scroll-reveal"></div>
 
     <!-- How It Works Section -->
     <section id="how-it-works" class="py-24 px-6">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-24 scroll-reveal">
-          <span class="text-[#9c404d] italic font-serif text-lg block mb-2">Simple Process</span>
+          <span class="text-[#5f0f1a] italic font-serif text-lg block mb-2">Simple Process</span>
           <h2 class="text-4xl font-serif text-[#2d0a0e]">How It Works</h2>
-          <div class="w-12 h-0.5 bg-[#9c404d]/40 mx-auto mt-6"></div>
+          <div class="w-12 h-0.5 bg-[#5f0f1a]/40 mx-auto mt-6"></div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-4 gap-16 relative">
           <!-- Connector Line -->
-          <div class="hidden md:block absolute top-10 left-32 right-32 h-px bg-[#9c404d]/10 -z-0"></div>
+          <div class="hidden md:block absolute top-10 left-32 right-32 h-px bg-[#5f0f1a]/10 -z-0"></div>
           
           <!-- Step 1 -->
           <div class="text-center scroll-reveal group" style="transition-delay: 100ms;">
-            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#9c404d]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
-              <svg class="w-8 h-8 text-[#9c404d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#5f0f1a]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
+              <svg class="w-8 h-8 text-[#5f0f1a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
             </div>
-            <span class="text-[#9c404d] font-serif text-2xl italic block mb-3">01</span>
+            <span class="text-[#5f0f1a] font-serif text-2xl italic block mb-3">01</span>
             <h3 class="text-lg font-bold text-[#2d0a0e] mb-3">Choose Template</h3>
             <p class="text-gray-500 text-[14px] leading-relaxed px-4">Browse our collection of premium, uniquely crafted designs</p>
           </div>
           
           <!-- Step 2 -->
           <div class="text-center scroll-reveal group" style="transition-delay: 200ms;">
-            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#9c404d]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
-              <svg class="w-8 h-8 text-[#9c404d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#5f0f1a]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
+              <svg class="w-8 h-8 text-[#5f0f1a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
             </div>
-            <span class="text-[#9c404d] font-serif text-2xl italic block mb-3">02</span>
+            <span class="text-[#5f0f1a] font-serif text-2xl italic block mb-3">02</span>
             <h3 class="text-lg font-bold text-[#2d0a0e] mb-3">Make Payment</h3>
             <p class="text-gray-500 text-[14px] leading-relaxed px-4">Secure one-time payment, no subscriptions</p>
           </div>
           
           <!-- Step 3 -->
           <div class="text-center scroll-reveal group" style="transition-delay: 300ms;">
-            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#9c404d]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
-              <svg class="w-8 h-8 text-[#9c404d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#5f0f1a]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
+              <svg class="w-8 h-8 text-[#5f0f1a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
             </div>
-            <span class="text-[#9c404d] font-serif text-2xl italic block mb-3">03</span>
+            <span class="text-[#5f0f1a] font-serif text-2xl italic block mb-3">03</span>
             <h3 class="text-lg font-bold text-[#2d0a0e] mb-3">Fill a Simple Form</h3>
             <p class="text-gray-500 text-[14px] leading-relaxed px-4">Enter your wedding details — names, venue, dates</p>
           </div>
           
           <!-- Step 4 -->
           <div class="text-center scroll-reveal group" style="transition-delay: 400ms;">
-            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#9c404d]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
-              <svg class="w-8 h-8 text-[#9c404d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+            <div class="w-20 h-20 bg-[#fdf2f3] border border-[#5f0f1a]/20 rounded-2xl flex items-center justify-center mx-auto mb-8 relative z-10 transition-all group-hover:-translate-y-1 group-hover:shadow-[0_0_15px_rgba(156,64,77,0.2)]">
+              <svg class="w-8 h-8 text-[#5f0f1a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
             </div>
-            <span class="text-[#9c404d] font-serif text-2xl italic block mb-3">04</span>
+            <span class="text-[#5f0f1a] font-serif text-2xl italic block mb-3">04</span>
             <h3 class="text-lg font-bold text-[#2d0a0e] mb-3">Share Your Link</h3>
             <p class="text-gray-500 text-[14px] leading-relaxed px-4">Get a unique invitation link — share anywhere</p>
           </div>
@@ -624,22 +622,22 @@
     </section>
 
     <!-- Separation -->
-    <div class="max-w-20 mx-auto h-px bg-[#9c404d]/30 scroll-reveal"></div>
+    <div class="max-w-20 mx-auto h-px bg-[#5f0f1a]/30 scroll-reveal"></div>
 
     <!-- Premium Features Section -->
     <section id="features" class="py-24 px-6">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-20 scroll-reveal">
-          <span class="text-[#9c404d] italic font-serif text-lg block mb-2">Everything You Need</span>
+          <span class="text-[#5f0f1a] italic font-serif text-lg block mb-2">Everything You Need</span>
           <h2 class="text-4xl font-serif text-[#2d0a0e]">Premium Features</h2>
           <p class="mt-6 text-gray-500 max-w-xl mx-auto leading-relaxed">Every invitation comes packed with interactive features that make your wedding announcement unforgettable.</p>
-          <div class="w-12 h-0.5 bg-[#9c404d]/40 mx-auto mt-8"></div>
+          <div class="w-12 h-0.5 bg-[#5f0f1a]/40 mx-auto mt-8"></div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <!-- Feature Card 1 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+          <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Scratch to Reveal Date</h3>
@@ -647,8 +645,8 @@
           </div>
           
           <!-- Feature Card 2 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 100ms;">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+          <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 100ms;">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Live Countdown</h3>
@@ -656,8 +654,8 @@
           </div>
           
           <!-- Feature Card 3 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 200ms;">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+          <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 200ms;">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Guest Messaging</h3>
@@ -665,8 +663,8 @@
           </div>
           
           <!-- Feature Card 4 -->
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 300ms;">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+          <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 300ms;">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Background Music</h3>
@@ -676,32 +674,32 @@
         
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <!-- Row 2 -->
-           <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+           <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Venue with Maps</h3>
             <p class="text-gray-400 text-[13px] leading-relaxed">Integrated Google Maps for seamless navigation to your wedding and reception venues.</p>
           </div>
           
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 100ms;">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+          <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 100ms;">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Premium Animations</h3>
             <p class="text-gray-400 text-[13px] leading-relaxed">3D door reveals, curtains, and sparkles for a truly magical introduction.</p>
           </div>
           
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 200ms;">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+          <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 200ms;">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Custom Image Upload</h3>
             <p class="text-gray-400 text-[13px] leading-relaxed">High-quality slideshow galleries and hero images to showcase your journey.</p>
           </div>
           
-          <div class="bg-white p-12 rounded-[24px] border border-[#9c404d]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 300ms;">
-            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#9c404d]">
+          <div class="bg-white p-12 rounded-[24px] border border-[#5f0f1a]/30 card-hover text-center scroll-slide-left shadow-sm shiny-border" style="transition-delay: 300ms;">
+            <div class="w-12 h-12 bg-[#fdf2f3] rounded-xl flex items-center justify-center mx-auto mb-8 text-[#5f0f1a]">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
             </div>
             <h3 class="text-lg font-bold mb-4">Full Customization</h3>
@@ -716,13 +714,13 @@
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div class="scroll-reveal">
-            <span class="text-[#9c404d] italic font-serif text-lg block mb-2">Sustainable Elegance</span>
-            <h2 class="text-4xl md:text-5xl font-serif text-[#2d0a0e] mb-8 leading-tight">Beyond Just Paper: <br><span class="italic text-[#9c404d]">The Digital Revolution</span></h2>
+            <span class="text-[#5f0f1a] italic font-serif text-lg block mb-2">Sustainable Elegance</span>
+            <h2 class="text-4xl md:text-5xl font-serif text-[#2d0a0e] mb-8 leading-tight">Beyond Just Paper: <br><span class="italic text-[#5f0f1a]">The Digital Revolution</span></h2>
             <p class="text-gray-500 mb-10 leading-relaxed text-lg">Why settle for a static card when you can offer your guests an immersive experience? Our digital invitations aren't just eco-friendly—they're alive with music, motion, and interaction.</p>
             
             <div class="space-y-8">
               <div class="flex gap-6">
-                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d]">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a]">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <div>
@@ -732,7 +730,7 @@
               </div>
 
               <div class="flex gap-6">
-                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d]">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a]">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <div>
@@ -742,7 +740,7 @@
               </div>
 
               <div class="flex gap-6">
-                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d]">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a]">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                 </div>
                 <div>
@@ -758,10 +756,10 @@
              <div class="absolute -top-20 -right-20 w-80 h-80 bg-[#fdf2f3] rounded-full blur-3xl opacity-60"></div>
              <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-[#fdf2f3] rounded-full blur-3xl opacity-60"></div>
              
-             <div class="relative z-10 bg-white p-1 rounded-3xl shadow-2xl border border-[#9c404d]/10 overflow-hidden transform rotate-3">
+             <div class="relative z-10 bg-white p-1 rounded-3xl shadow-2xl border border-[#5f0f1a]/10 overflow-hidden transform rotate-3">
                <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=1000" alt="Wedding Celebration" class="rounded-2xl grayscale hover:grayscale-0 transition-all duration-700">
              </div>
-             <div class="absolute top-2/3 -left-10 z-20 bg-[#9c404d] text-white p-8 rounded-2xl shadow-xl transform -rotate-6">
+             <div class="absolute top-2/3 -left-10 z-20 bg-[#5f0f1a] text-white p-8 rounded-2xl shadow-xl transform -rotate-6">
                <p class="text-2xl font-serif italic mb-1">Save 90%</p>
                <p class="text-[10px] uppercase tracking-widest opacity-80">Compared to Paper Prints</p>
              </div>
@@ -776,26 +774,26 @@
     <section id="pricing" class="py-24 px-6 relative bg-[#fdf2f3]/20">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-16 scroll-reveal">
-           <span class="text-[#9c404d] italic block mb-2 font-serif text-lg">Incredible Value</span>
+           <span class="text-[#5f0f1a] italic block mb-2 font-serif text-lg">Incredible Value</span>
            <h2 class="text-4xl md:text-5xl font-serif text-[#2d0a0e]">Everything You Need for One Price</h2>
            <p class="text-gray-500 mt-4 max-w-xl mx-auto">Professional digital invitations shouldn't break the bank. Get full access to our premium suite for a fraction of the cost of paper cards.</p>
-           <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-8"></div>
+           <div class="w-12 h-0.5 bg-[#5f0f1a]/30 mx-auto mt-8"></div>
         </div>
         
-        <div class="max-w-5xl mx-auto bg-white rounded-[40px] border border-[#9c404d]/20 shadow-[0_40px_80px_rgba(156,64,77,0.08)] relative scroll-reveal overflow-hidden flex flex-col lg:flex-row group">
+        <div class="max-w-5xl mx-auto bg-white rounded-[40px] border border-[#5f0f1a]/20 shadow-[0_40px_80px_rgba(156,64,77,0.08)] relative scroll-reveal overflow-hidden flex flex-col lg:flex-row group">
             <!-- Decorative corner ribbon -->
             <div class="absolute top-0 right-0 z-20 overflow-hidden w-28 h-28 pointer-events-none">
-                <div class="bg-[#9c404d] text-white text-[10px] font-bold py-1.5 w-40 text-center absolute top-6 -right-10 transform rotate-45 shadow-sm uppercase tracking-tighter">Limited Offer</div>
+                <div class="bg-[#5f0f1a] text-white text-[10px] font-bold py-1.5 w-40 text-center absolute top-6 -right-10 transform rotate-45 shadow-sm uppercase tracking-tighter">Limited Offer</div>
             </div>
 
             <!-- Left Side: Price & CTA -->
-            <div class="lg:w-[40%] p-10 lg:p-14 bg-[#fdf2f3]/40 flex flex-col justify-center text-center border-b lg:border-b-0 lg:border-r border-[#9c404d]/10 relative">
+            <div class="lg:w-[40%] p-10 lg:p-14 bg-[#fdf2f3]/40 flex flex-col justify-center text-center border-b lg:border-b-0 lg:border-r border-[#5f0f1a]/10 relative">
                 <div class="absolute -top-10 -left-10 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
-                    <svg class="w-64 h-64" viewBox="0 0 100 100" fill="#9c404d"><path d="M50 0L60 40L100 50L60 60L50 100L40 60L0 50L40 40L50 0Z"/></svg>
+                    <svg class="w-64 h-64" viewBox="0 0 100 100" fill="#5f0f1a"><path d="M50 0L60 40L100 50L60 60L50 100L40 60L0 50L40 40L50 0Z"/></svg>
                 </div>
 
                 <div class="relative z-10">
-                    <span class="text-[#9c404d] italic font-serif text-lg block mb-2">The Premium Experience</span>
+                    <span class="text-[#5f0f1a] italic font-serif text-lg block mb-2">The Premium Experience</span>
                     <div class="mb-6 relative inline-block">
                         <div class="absolute -top-2 -right-10 bg-green-600 text-white text-[8px] font-extrabold px-2 py-0.5 rounded-full shadow-sm">66% OFF</div>
                         <span class="text-gray-400 line-through text-sm font-medium mr-1">₹1,499</span>
@@ -803,7 +801,7 @@
                             <span class="text-3xl mr-1 font-bold">₹</span>499
                         </h3>
                     </div>
-                    <p class="text-[#9c404d]/70 mb-10 font-bold text-sm tracking-wide">PER WEDDING TEMPLATE</p>
+                    <p class="text-[#5f0f1a]/70 mb-10 font-bold text-sm tracking-wide">PER WEDDING TEMPLATE</p>
                     
                     <a href="/login?plan=premium" class="btn-primary w-full inline-block text-center flex items-center justify-center group py-6 text-xl tracking-tight relative overflow-hidden">
                         <span class="relative z-10">Grab This Offer Now</span>
@@ -824,12 +822,12 @@
             <div class="lg:w-[60%] p-10 lg:p-14 bg-white relative">
                 <h4 class="text-[#2d0a0e] font-serif italic text-xl mb-12 flex items-center">
                     Everything you need for your big day
-                    <div class="ml-4 flex-grow h-px bg-gradient-to-r from-[#9c404d]/20 to-transparent"></div>
+                    <div class="ml-4 flex-grow h-px bg-gradient-to-r from-[#5f0f1a]/20 to-transparent"></div>
                 </h4>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d] mr-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a] mr-4">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                         <div>
@@ -839,7 +837,7 @@
                     </div>
 
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d] mr-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a] mr-4">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                         <div>
@@ -849,7 +847,7 @@
                     </div>
 
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d] mr-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a] mr-4">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                         <div>
@@ -859,7 +857,7 @@
                     </div>
 
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d] mr-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a] mr-4">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                         <div>
@@ -869,7 +867,7 @@
                     </div>
 
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d] mr-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a] mr-4">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                         <div>
@@ -879,7 +877,7 @@
                     </div>
 
                     <div class="flex items-start">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#9c404d] mr-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#fdf2f3] flex items-center justify-center text-[#5f0f1a] mr-4">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                         <div>
@@ -889,7 +887,7 @@
                     </div>
                 </div>
 
-                <div class="mt-12 bg-[#9c404d]/5 p-6 rounded-2xl border border-[#9c404d]/10">
+                <div class="mt-12 bg-[#5f0f1a]/5 p-6 rounded-2xl border border-[#5f0f1a]/10">
                     <p class="text-[11px] text-gray-500 leading-relaxed italic text-center">
                         "Go paperless and save over 90% of your traditional card costs while offering a much more interactive experience for your guests."
                     </p>
@@ -903,32 +901,32 @@
     <section class="py-24 px-6 bg-[#fdf2f3]/30">
       <div class="max-w-3xl mx-auto">
         <div class="text-center mb-16 scroll-reveal">
-          <span class="text-[#9c404d] italic block mb-2 font-serif text-lg">Got Questions?</span>
+          <span class="text-[#5f0f1a] italic block mb-2 font-serif text-lg">Got Questions?</span>
           <h2 class="text-4xl font-serif text-[#2d0a0e]">Frequently Asked Questions</h2>
-          <div class="w-12 h-0.5 bg-[#9c404d]/30 mx-auto mt-6"></div>
+          <div class="w-12 h-0.5 bg-[#5f0f1a]/30 mx-auto mt-6"></div>
         </div>
         
         <div class="space-y-4">
-          <details class="bg-white rounded-2xl border border-[#9c404d]/20 p-6 scroll-reveal cursor-pointer group shiny-border" open>
+          <details class="bg-white rounded-2xl border border-[#5f0f1a]/20 p-6 scroll-reveal cursor-pointer group shiny-border" open>
             <summary class="font-bold flex items-center justify-between list-none text-[#2d0a0e]">
               How does the digital invitation work?
-              <span class="text-[#9c404d] transform group-open:rotate-180 transition-transform">↓</span>
+              <span class="text-[#5f0f1a] transform group-open:rotate-180 transition-transform">↓</span>
             </summary>
             <p class="mt-4 text-gray-500 text-sm leading-relaxed">Simply pick a template, enter your wedding details in a user-friendly form, choose your animations and music, and generate your live link. You can share this link via any messaging app.</p>
           </details>
           
-          <details class="bg-white rounded-2xl border border-[#9c404d]/20 p-6 scroll-reveal cursor-pointer group shiny-border">
+          <details class="bg-white rounded-2xl border border-[#5f0f1a]/20 p-6 scroll-reveal cursor-pointer group shiny-border">
             <summary class="font-bold flex items-center justify-between list-none text-[#2d0a0e]">
               Can I edit my invitation after creating it?
-              <span class="text-[#9c404d] transform group-open:rotate-180 transition-transform">↓</span>
+              <span class="text-[#5f0f1a] transform group-open:rotate-180 transition-transform">↓</span>
             </summary>
             <p class="mt-4 text-gray-500 text-sm leading-relaxed">Yes! You get unlimited edits until your wedding date. Simply log in to your dashboard to change details, photos, or music anytime.</p>
           </details>
           
-          <details class="bg-white rounded-2xl border border-[#9c404d]/20 p-6 scroll-reveal cursor-pointer group shiny-border">
+          <details class="bg-white rounded-2xl border border-[#5f0f1a]/20 p-6 scroll-reveal cursor-pointer group shiny-border">
             <summary class="font-bold flex items-center justify-between list-none text-[#2d0a0e]">
               Is there a limit on how many guests can view it?
-              <span class="text-[#9c404d] transform group-open:rotate-180 transition-transform">↓</span>
+              <span class="text-[#5f0f1a] transform group-open:rotate-180 transition-transform">↓</span>
             </summary>
             <p class="mt-4 text-gray-500 text-sm leading-relaxed">No limits. Whether you have 50 or 5,000 guests, your invitation link will handle all views perfectly without any extra cost.</p>
           </details>
@@ -941,11 +939,11 @@
       <div class="max-w-4xl mx-auto text-center relative z-10 scroll-reveal">
         <!-- Background decorative line -->
         <div class="absolute inset-0 flex items-center justify-center opacity-5 -z-10">
-           <svg width="600" height="400" viewBox="0 0 600 400" fill="none"><path d="M0 200C150 100 450 300 600 200" stroke="#9c404d" stroke-width="2"/></svg>
+           <svg width="600" height="400" viewBox="0 0 600 400" fill="none"><path d="M0 200C150 100 450 300 600 200" stroke="#5f0f1a" stroke-width="2"/></svg>
         </div>
         
-        <span class="text-[#9c404d] text-2xl mb-8 block">❤</span>
-        <h2 class="text-4xl md:text-5xl font-serif mb-10 text-[#2d0a0e]">Ready to Create Your <span class="italic text-[#9c404d]">Perfect Invitation</span>?</h2>
+        <span class="text-[#5f0f1a] text-2xl mb-8 block">❤</span>
+        <h2 class="text-4xl md:text-5xl font-serif mb-10 text-[#2d0a0e]">Ready to Create Your <span class="italic text-[#5f0f1a]">Perfect Invitation</span>?</h2>
         <p class="text-gray-500 mb-12 max-w-xl mx-auto">Join hundreds of couples who chose elegance for their special day.</p>
         
         <a href="/templates" class="btn-primary inline-flex items-center group uppercase tracking-widest text-sm">
@@ -956,23 +954,23 @@
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 bg-pattern border-t border-[#9c404d]/10">
+    <footer class="py-12 bg-pattern border-t border-[#5f0f1a]/10">
       <div class="max-w-7xl mx-auto px-6 text-center">
         <div class="mb-10">
-          <a href="/" class="text-xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
+          <a href="/" class="text-xl font-serif font-bold text-[#5f0f1a] italic">Sync & Style</a>
         </div>
         
         <div class="flex flex-wrap justify-center gap-x-10 gap-y-4 text-sm font-medium text-gray-500 mb-10">
-          <a href="/contact-us.html" class="hover:text-[#9c404d] transition-colors">Contact</a>
-          <a href="/terms-and-conditions.html" class="hover:text-[#9c404d] transition-colors">Terms & Conditions</a>
-          <a href="/privacy-policy.html" class="hover:text-[#9c404d] transition-colors">Privacy Policy</a>
-          <a href="/cancellation-and-refund.html" class="hover:text-[#9c404d] transition-colors">Refund Policy</a>
-          <a href="/shipping-and-exchange.html" class="hover:text-[#9c404d] transition-colors">Shipping & Exchange</a>
+          <a href="/contact-us.html" class="hover:text-[#5f0f1a] transition-colors">Contact</a>
+          <a href="/terms-and-conditions.html" class="hover:text-[#5f0f1a] transition-colors">Terms & Conditions</a>
+          <a href="/privacy-policy.html" class="hover:text-[#5f0f1a] transition-colors">Privacy Policy</a>
+          <a href="/cancellation-and-refund.html" class="hover:text-[#5f0f1a] transition-colors">Refund Policy</a>
+          <a href="/shipping-and-exchange.html" class="hover:text-[#5f0f1a] transition-colors">Shipping & Exchange</a>
         </div>
         
         <div class="flex justify-center space-x-6 mb-10 text-gray-400">
-          <a href="#" class="hover:text-[#9c404d] transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-          <a href="#" class="hover:text-[#9c404d] transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
+          <a href="#" class="hover:text-[#5f0f1a] transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+          <a href="#" class="hover:text-[#5f0f1a] transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
         </div>
         
         <p class="text-sm text-gray-400">© 2026 Sync & Style. Crafted with ❤</p>
@@ -1176,7 +1174,8 @@
       mobileNavLinks.forEach(link => {
         link.addEventListener('click', () => toggleMobileMenu(false));
       });
-      
+    </script>
+
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -1190,7 +1189,6 @@
     "query-input": "required name=search_term_string"
   }
 }
-</script>
     </script>
   </body>
 </html>
