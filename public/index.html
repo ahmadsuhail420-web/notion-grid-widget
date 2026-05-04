@@ -498,63 +498,51 @@
            <h2 class="text-4xl md:text-5xl font-serif font-bold text-[#2d0a0e] mb-4">Choose Your <span class="italic text-[#5f0f1a]">Style</span></h2>
            <div class="w-12 h-0.5 bg-[#5f0f1a]/30 mx-auto mt-6"></div>
         </div>
-        <div class="grid grid-cols-2 gap-8 mb-16">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-5 max-w-4xl mx-auto mb-12">
           <!-- Template 1: Heritage -->
-          <div class="flex flex-col relative template-card group scroll-pop cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#fcfaf8] rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-[#f0ebe1] overflow-hidden aspect-[4/5]" onclick="handleCardClick(this)" data-template-id="template01">
-            <div class="relative flex-1 bg-[#4B334F] w-full card-glare border-b border-[#f0ebe1] overflow-hidden rounded-t-[2rem]">
-              <!-- Real Hero Preview -->
+          <div class="flex flex-col relative template-card group scroll-pop cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#fcfaf8] rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-500 border border-[#f0ebe1] overflow-hidden aspect-[3/4]" onclick="handleCardClick(this)" data-template-id="template01">
+            <div class="relative flex-1 bg-[#4B334F] w-full card-glare border-b border-[#f0ebe1] overflow-hidden rounded-t-2xl">
               <div class="iframe-preview-container" id="preview-template01">
                  <iframe src="/wedding/islamic-invitation.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
               </div>
-
-              <!-- Crown/Premium Badge (Top Right) — populated by JS -->
-              <div class="absolute top-4 right-4 z-40" id="badge-template01"></div>
-
-              <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                 <div class="flex flex-col gap-3 w-full max-w-[160px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                    <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#5f0f1a] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation()">Preview Demo</a>
-                    <button class="bg-[#5f0f1a] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation(); handleSelectTemplate('template01')">Buy Now</button>
+              <div class="absolute top-2 right-2 z-40" id="badge-template01"></div>
+              <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-4 text-center">
+                 <div class="flex flex-col gap-2 w-full max-w-[130px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                    <a href="/wedding/islamic-invitation" target="_blank" class="bg-white text-[#5f0f1a] px-4 py-2 rounded-lg font-bold text-[11px] text-center hover:scale-105 transition-all shadow-lg" onclick="event.stopPropagation()">Preview Demo</a>
+                    <button class="bg-[#5f0f1a] text-white px-4 py-2 rounded-lg font-bold text-[11px] text-center hover:scale-105 transition-all shadow-lg" onclick="event.stopPropagation(); handleSelectTemplate('template01')">Buy Now</button>
                  </div>
               </div>
             </div>
-
-            <!-- Neat UI Below the Card -->
-            <div class="py-3 px-4 text-center flex-shrink-0 w-full flex flex-col justify-center items-center z-40">
-              <h3 class="text-lg font-serif font-bold text-[#2d0a0e] leading-tight px-2 truncate w-full" id="name-template01">Heritage</h3>
-              <div class="flex items-center justify-center gap-1.5 mt-0.5 w-full">
-                 <span class="text-gray-400 line-through text-[10px] font-semibold" id="original-price-template01">₹1499</span>
-                 <span class="text-[#d4af37] text-base font-bold leading-none" id="price-template01">₹499</span>
-                 <span class="text-green-700 bg-green-50/80 font-bold text-[8px] px-1.5 py-[1px] rounded border border-green-100 uppercase tracking-wider" id="offer-template01">66% OFF</span>
+            <div class="py-2 px-3 text-center flex-shrink-0 w-full flex flex-col justify-center items-center z-40">
+              <h3 class="text-sm font-serif font-bold text-[#2d0a0e] leading-tight truncate w-full" id="name-template01">Heritage</h3>
+              <div class="flex items-center justify-center gap-1 mt-0.5 w-full">
+                 <span class="text-gray-400 line-through text-[9px] font-semibold" id="original-price-template01">₹1499</span>
+                 <span class="text-[#d4af37] text-sm font-bold leading-none" id="price-template01">₹499</span>
+                 <span class="text-green-700 bg-green-50/80 font-bold text-[7px] px-1 py-px rounded border border-green-100 uppercase tracking-wider" id="offer-template01">66% OFF</span>
               </div>
             </div>
           </div>
 
           <!-- Template 2: Minimalist -->
-          <div class="flex flex-col relative template-card group scroll-pop cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#fcfaf8] rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-[#f0ebe1] overflow-hidden aspect-[4/5]" style="transition-delay: 100ms;" onclick="handleCardClick(this)" data-template-id="template02">
-            <div class="relative flex-1 bg-[#1a050a] w-full card-glare border-b border-[#f0ebe1] overflow-hidden rounded-t-[2rem]">
-               <!-- Real Hero Preview -->
+          <div class="flex flex-col relative template-card group scroll-pop cursor-pointer bg-gradient-to-br from-[#ffffff] to-[#fcfaf8] rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-500 border border-[#f0ebe1] overflow-hidden aspect-[3/4]" style="transition-delay: 100ms;" onclick="handleCardClick(this)" data-template-id="template02">
+            <div class="relative flex-1 bg-[#1a050a] w-full card-glare border-b border-[#f0ebe1] overflow-hidden rounded-t-2xl">
                <div class="iframe-preview-container" id="preview-template02">
                   <iframe src="/wedding/islamic-invitation-premium.html?preview=true" class="preview-iframe" scrolling="no"></iframe>
                </div>
-               
-               <!-- Crown/Premium Badge — populated by JS -->
-               <div class="absolute top-4 right-4 z-40" id="badge-template02"></div>
-   
-               <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-6 text-center">
-                  <div class="flex flex-col gap-3 w-full max-w-[160px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                     <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation()">Preview Demo</a>
-                     <button class="bg-[#b08d5b] text-white px-6 py-3 rounded-xl font-bold text-xs text-center hover:scale-105 transition-all shadow-xl" onclick="event.stopPropagation(); handleSelectTemplate('template02')">Buy Now</button>
+               <div class="absolute top-2 right-2 z-40" id="badge-template02"></div>
+               <div class="hover-overlay absolute inset-0 bg-[#2d0a0e]/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-300 z-30 flex flex-col items-center justify-center p-4 text-center">
+                  <div class="flex flex-col gap-2 w-full max-w-[130px] transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                     <a href="/wedding/islamic-invitation-premium" target="_blank" class="bg-white text-[#b08d5b] px-4 py-2 rounded-lg font-bold text-[11px] text-center hover:scale-105 transition-all shadow-lg" onclick="event.stopPropagation()">Preview Demo</a>
+                     <button class="bg-[#b08d5b] text-white px-4 py-2 rounded-lg font-bold text-[11px] text-center hover:scale-105 transition-all shadow-lg" onclick="event.stopPropagation(); handleSelectTemplate('template02')">Buy Now</button>
                  </div>
               </div>
             </div>
-
-            <!-- Neat UI Below the Card -->
-            <div class="py-3 px-4 text-center flex-shrink-0 w-full flex flex-col justify-center items-center z-40">
-              <h3 class="text-lg font-serif font-bold text-[#2d0a0e] leading-tight px-2 truncate w-full" id="name-template02">Minimalist</h3>
-              <div class="flex items-center justify-center gap-1.5 mt-0.5 w-full">
-                 <span class="text-gray-400 line-through text-[10px] font-semibold" id="original-price-template02">₹1499</span>
-                 <span class="text-[#d4af37] text-base font-bold leading-none" id="price-template02">₹499</span>
-                 <span class="text-green-700 bg-green-50/80 font-bold text-[8px] px-1.5 py-[1px] rounded border border-green-100 uppercase tracking-wider" id="offer-template02">66% OFF</span>
+            <div class="py-2 px-3 text-center flex-shrink-0 w-full flex flex-col justify-center items-center z-40">
+              <h3 class="text-sm font-serif font-bold text-[#2d0a0e] leading-tight truncate w-full" id="name-template02">Minimalist</h3>
+              <div class="flex items-center justify-center gap-1 mt-0.5 w-full">
+                 <span class="text-gray-400 line-through text-[9px] font-semibold" id="original-price-template02">₹1499</span>
+                 <span class="text-[#d4af37] text-sm font-bold leading-none" id="price-template02">₹499</span>
+                 <span class="text-green-700 bg-green-50/80 font-bold text-[7px] px-1 py-px rounded border border-green-100 uppercase tracking-wider" id="offer-template02">66% OFF</span>
               </div>
             </div>
           </div>
