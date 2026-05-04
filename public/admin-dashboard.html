@@ -31,13 +31,19 @@
       --sidebar-w: 220px;
     }
 
-    html, body { height: 100%; overflow: hidden; }
+    html, body { height: 100%; }
 
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       display: flex;
+      overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+      html, body { overflow: auto; height: auto; }
+      body { overflow-x: hidden; }
     }
 
     /* ── SIDEBAR ── */
@@ -160,6 +166,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
 
     /* ── TOPBAR ── */
@@ -561,6 +568,124 @@
     /* scrollbar hide util */
     .no-scroll { overflow: hidden; }
 
+    /* ── MOBILE HAMBURGER ── */
+    .hamburger-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 38px; height: 38px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text2);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .hamburger-btn:hover { border-color: var(--primary); color: var(--text); }
+
+    /* ── SIDEBAR OVERLAY ── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 99;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+
+      body { flex-direction: column; }
+
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0;
+        height: 100vh;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 260px;
+        box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      .hamburger-btn { display: flex; }
+
+      .topbar {
+        padding: 0 16px;
+        height: 56px;
+      }
+
+      .topbar-title { font-size: 15px; }
+      .topbar-sub { display: none; }
+
+      .date-badge { display: none; }
+
+      .content { padding: 16px; }
+
+      /* Stack stats to 2 columns on mobile */
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat-value { font-size: 20px; }
+
+      /* Stack grids to single column */
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      /* Settings grid */
+      #section-settings > div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      /* Analytics metrics grid */
+      #analytics-metrics {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Revenue analytics sub-grid */
+      .card-body > div[style*="grid-template-columns:repeat(3"] {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+      }
+
+      /* Table: allow horizontal scroll */
+      .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table { min-width: 500px; }
+
+      /* Modal full-screen on mobile */
+      .modal { max-width: calc(100vw - 32px); margin: 0 16px; }
+      .modal-overlay { align-items: flex-end; padding-bottom: 0; }
+      .modal { border-radius: 18px 18px 0 0; }
+
+      /* Toast position */
+      #toast { bottom: 16px; right: 16px; left: 16px; }
+
+      /* Page titles */
+      .page-section-title { font-size: 18px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .cust-grid { grid-template-columns: 1fr; }
+    }
+
     /* SECTION PAGE TITLES */
     .page-section-title {
       font-family: 'Playfair Display', serif;
@@ -574,8 +699,11 @@
 </head>
 <body>
 
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -642,9 +770,14 @@
 <div class="main">
   <!-- TOPBAR -->
   <header class="topbar">
-    <div>
-      <div class="topbar-title" id="topbar-title">Dashboard Overview</div>
-      <div class="topbar-sub" id="topbar-sub">Welcome back! Here's what's happening with your store today.</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard Overview</div>
+        <div class="topbar-sub" id="topbar-sub">Welcome back! Here's what's happening with your store today.</div>
+      </div>
     </div>
     <div class="topbar-right">
       <div class="date-badge">
@@ -1780,6 +1913,26 @@ CREATE POLICY "Admin write templates" ON template_configs
     await loadSales();
   }
 
+  // ── SIDEBAR MOBILE ────────────────────────────────────────────────
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const isOpen = sidebar.classList.contains('open');
+    if (isOpen) {
+      closeSidebar();
+    } else {
+      sidebar.classList.add('open');
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
   // ── NAVIGATION ────────────────────────────────────────────────────
   const sectionTitles = {
     dashboard: ['Dashboard Overview', "Welcome back! Here's what's happening today."],
@@ -1805,6 +1958,9 @@ CREATE POLICY "Admin write templates" ON template_configs
     document.getElementById('topbar-sub').textContent = sub;
 
     if (name === 'analytics') buildAnalytics();
+
+    // Close sidebar on mobile after navigation
+    if (window.innerWidth <= 768) closeSidebar();
   }
 
   // ── UTILS ─────────────────────────────────────────────────────────

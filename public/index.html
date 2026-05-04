@@ -329,8 +329,8 @@
           <a href="#templates" class="bg-[#9c404d] text-white px-7 py-3 rounded-lg font-bold hover:shadow-lg hover:-translate-y-0.5 transition-all">Get Started</a>
         </div>
         
-        <button id="mobile-menu-btn" class="md:hidden text-gray-600 focus:outline-none">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m7 6H4"></path></svg>
+        <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-[#9c404d]/8 text-[#9c404d] hover:bg-[#9c404d]/15 transition-colors focus:outline-none">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m7 6H4"></path></svg>
         </button>
       </div>
     </nav>
@@ -338,31 +338,56 @@
     <!-- Mobile Menu Sidebar -->
     <div id="mobile-menu" class="fixed inset-0 z-[60] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
       <!-- Backdrop -->
-      <div id="mobile-menu-backdrop" class="absolute inset-0 bg-[#2d0a0e]/20 backdrop-blur-sm"></div>
+      <div id="mobile-menu-backdrop" class="absolute inset-0 bg-[#2d0a0e]/40 backdrop-blur-sm"></div>
       
       <!-- Sidebar Content -->
-      <div class="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl flex flex-col p-8">
-        <div class="flex items-center justify-between mb-12">
+      <div class="absolute right-0 top-0 bottom-0 w-[80vw] max-w-sm bg-white shadow-2xl flex flex-col" style="border-left: 1px solid rgba(156,64,77,0.12);">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-5" style="border-bottom: 1px solid rgba(156,64,77,0.1); background: linear-gradient(135deg, #fff9f9, #fff);">
           <span class="text-xl font-serif font-bold text-[#9c404d] italic">Sync & Style</span>
-          <button id="mobile-menu-close" class="text-gray-400 hover:text-[#9c404d] transition-colors focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <button id="mobile-menu-close" class="w-9 h-9 flex items-center justify-center rounded-full bg-[#9c404d]/8 text-[#9c404d] hover:bg-[#9c404d]/15 transition-colors focus:outline-none">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
         
-        <div class="flex flex-col space-y-8 text-lg font-medium text-gray-700">
-          <a href="/templates" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Templates</a>
-          <a href="#features" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Features</a>
-          <a href="#how-it-works" class="mobile-nav-link hover:text-[#9c404d] transition-colors">How It Works</a>
-          <a href="#pricing" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Pricing</a>
-          <a href="/login" id="mob-nav-login-link" class="mobile-nav-link hover:text-[#9c404d] transition-colors">Login</a>
-          <a href="/customer-dashboard" id="mob-nav-dashboard-link" class="mobile-nav-link hover:text-[#9c404d] transition-colors font-bold hidden">Dashboard</a>
-          <div class="pt-8 mt-auto">
-            <a href="#templates" class="mobile-nav-link block bg-[#9c404d] text-white px-7 py-4 rounded-lg font-bold text-center hover:bg-[#7d333e] transition-all">Get Started</a>
-          </div>
+        <!-- Nav Links -->
+        <div class="flex flex-col px-4 py-6 gap-1 flex-1 overflow-y-auto">
+          <a href="/templates" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+            <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            Templates
+          </a>
+          <a href="#features" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+            <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Features
+          </a>
+          <a href="#how-it-works" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+            <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            How It Works
+          </a>
+          <a href="#pricing" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+            <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Pricing
+          </a>
+          
+          <div style="height: 1px; background: rgba(156,64,77,0.08); margin: 8px 4px;"></div>
+          
+          <a href="/login" id="mob-nav-login-link" class="mobile-nav-link flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium text-gray-700 hover:text-[#9c404d] hover:bg-[#9c404d]/6 transition-all">
+            <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            Login
+          </a>
+          <a href="/customer-dashboard" id="mob-nav-dashboard-link" class="mobile-nav-link hidden flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-semibold text-[#9c404d] bg-[#9c404d]/6 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </a>
         </div>
 
-        <div class="mt-auto text-center">
-            <p class="text-xs text-gray-400">© 2026 Sync & Style</p>
+        <!-- CTA Bottom -->
+        <div class="px-5 pb-6 pt-2" style="border-top: 1px solid rgba(156,64,77,0.08);">
+          <a href="#templates" class="mobile-nav-link flex items-center justify-center gap-2 bg-[#9c404d] text-white px-6 py-4 rounded-xl font-bold text-[15px] hover:bg-[#7d333e] transition-all shadow-lg shadow-[#9c404d]/20 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            Get Started Free
+          </a>
+          <p class="text-center text-xs text-gray-400 mt-3">© 2026 Sync & Style</p>
         </div>
       </div>
     </div>
