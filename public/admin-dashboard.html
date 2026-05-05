@@ -1,238 +1,1223 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+  
+  <title>Admin Dashboard — Sync & Style</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-const navItems = ["Overview", "Revenue", "Templates", "Orders", "Customers", "RSVPs", "Guests", "Settings"];
+    :root {
+      --bg:        #0e0b0c;
+      --bg2:       #160f10;
+      --bg3:       #1e1517;
+      --border:    rgba(156,64,77,0.18);
+      --border2:   rgba(156,64,77,0.08);
+      --primary:   #9c404d;
+      --primary2:  #b34d5a;
+      --primary-glow: rgba(156,64,77,0.25);
+      --gold:      #c9a96e;
+      --gold-dim:  rgba(201,169,110,0.12);
+      --text:      #f0e8e9;
+      --text2:     #9b7e82;
+      --text3:     #6b5254;
+      --green:     #3ecf6c;
+      --green-bg:  rgba(62,207,108,0.10);
+      --red:       #f05252;
+      --red-bg:    rgba(240,82,82,0.10);
+      --sidebar-w: 220px;
+    }
 
-const overviewStats = [
-  { label: "Total Sales", value: "₹0", sub: "All time", icon: "💰" },
-  { label: "Total Orders", value: "0", sub: "Purchases", icon: "📦" },
-  { label: "Active Templates", value: "0", sub: "Live on site", icon: "🎨" },
-  { label: "Total RSVPs", value: "0", sub: "From all invitations", icon: "💌" },
-];
+    html, body { height: 100%; }
 
-const customerStats = [
-  { label: "Total Customers", value: "—" },
-  { label: "Paid Customers", value: "—" },
-  { label: "Avg. Order Value", value: "—" },
-  { label: "Total Guests", value: "—" },
-];
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      overflow: hidden;
+    }
 
-export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("Overview");
+    @media (max-width: 768px) {
+      html, body { overflow: auto; height: auto; }
+      body { overflow-x: hidden; }
+    }
 
-  return (
-    <div className="min-h-screen bg-[#FAF7F2] flex">
-      {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-56 bg-[#1a1a2e] text-white min-h-screen sticky top-0 h-screen">
-        <div className="px-6 py-6 border-b border-white/10">
-          <Link to="/" className="text-xl font-bold" style={{ fontFamily: "Georgia, serif" }}>
-            Sync <span className="text-[#C0392B]">&</span> Style
-          </Link>
-          <div className="mt-1 text-xs text-white/40 uppercase tracking-widest">Admin Panel</div>
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .sidebar-logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--gold));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .sidebar-section-label {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      padding: 20px 20px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 0;
+      color: var(--text2);
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      position: relative;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-item svg { flex-shrink: 0; opacity: 0.7; }
+
+    .nav-item:hover {
+      color: var(--text);
+      background: var(--border2);
+    }
+
+    .nav-item.active {
+      color: var(--text);
+      background: rgba(156,64,77,0.12);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 4px; bottom: 4px;
+      width: 3px;
+      background: linear-gradient(180deg, var(--primary), var(--gold));
+      border-radius: 0 2px 2px 0;
+    }
+
+    .nav-item.active svg { opacity: 1; color: var(--primary2); }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 16px 14px;
+      border-top: 1px solid var(--border2);
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: var(--bg3);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--gold));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: white;
+      flex-shrink: 0;
+    }
+
+    .user-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .user-role { font-size: 10px; color: var(--primary2); font-weight: 500; }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      height: 60px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      flex-shrink: 0;
+    }
+
+    .topbar-title { font-size: 18px; font-weight: 600; color: var(--text); }
+    .topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .date-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      width: 36px; height: 36px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text2);
+      transition: all 0.2s;
+    }
+    .icon-btn:hover { border-color: var(--primary); color: var(--text); }
+
+    /* ── CONTENT ── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+
+    .content::-webkit-scrollbar { width: 5px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── SECTION ── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .stat-card:hover { border-color: rgba(156,64,77,0.35); }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 80px; height: 80px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .stat-label { font-size: 11px; color: var(--text2); font-weight: 500; letter-spacing: 0.05em; margin-bottom: 8px; text-transform: uppercase; }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-change { font-size: 11px; margin-top: 6px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .stat-change.up { color: var(--green); }
+    .stat-change.down { color: var(--red); }
+
+    /* ── GRID LAYOUTS ── */
+    .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card-title svg { color: var(--primary2); }
+
+    .card-action {
+      font-size: 11px;
+      color: var(--primary2);
+      font-weight: 600;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.2s;
+    }
+    .card-action:hover { color: var(--gold); }
+
+    .card-body { padding: 18px 20px; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 10px 16px;
+      background: var(--bg3);
+      text-align: left;
+    }
+    tbody tr { border-top: 1px solid var(--border2); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(156,64,77,0.04); }
+    tbody td { padding: 13px 16px; font-size: 13px; color: var(--text); vertical-align: middle; }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-red   { background: var(--red-bg); color: var(--red); }
+    .badge-gold  { background: var(--gold-dim); color: var(--gold); }
+    .badge-gray  { background: rgba(255,255,255,0.05); color: var(--text2); }
+    .badge-primary { background: rgba(156,64,77,0.15); color: var(--primary2); }
+
+    /* ── BTN ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary2); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--text); }
+    .btn-danger { background: rgba(240,82,82,0.15); color: var(--red); border: 1px solid rgba(240,82,82,0.25); }
+    .btn-danger:hover { background: rgba(240,82,82,0.25); }
+
+    /* ── RECENT ORDER ROWS ── */
+    .order-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border2);
+    }
+    .order-row:last-child { border-bottom: none; }
+    .order-id { font-size: 12px; font-weight: 600; color: var(--text); }
+    .order-user { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .order-date { font-size: 11px; color: var(--text3); }
+    .order-amount { font-size: 13px; font-weight: 700; color: var(--green); }
+
+    /* ── CUSTOMER STAT BOXES ── */
+    .cust-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .cust-box {
+      background: var(--bg3);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid var(--border2);
+    }
+    .cust-box-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
+    .cust-box-value { font-size: 22px; font-weight: 700; color: var(--text); }
+    .cust-box-sub { font-size: 11px; color: var(--green); font-weight: 600; margin-top: 2px; }
+
+    /* ── CHART CONTAINER ── */
+    .chart-wrap { position: relative; }
+
+    /* ── DONUT LEGEND ── */
+    .donut-legend { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .donut-legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; }
+    .donut-legend-left { display: flex; align-items: center; gap: 8px; color: var(--text2); }
+    .donut-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .donut-legend-right { font-weight: 600; color: var(--text); }
+
+    /* ── INPUT ── */
+    .field {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(156,64,77,0.1); }
+    .field::placeholder { color: var(--text3); }
+    select.field option { background: var(--bg2); }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-group { margin-bottom: 14px; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border2);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .modal-sub { font-size: 11px; color: var(--text3); margin-top: 3px; font-family: 'DM Mono', monospace; }
+    .modal-close { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 22px; line-height: 1; padding: 0 2px; }
+    .modal-body { padding: 22px 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border2); display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* ── TOGGLE ── */
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+    .toggle {
+      position: relative;
+      width: 38px; height: 20px;
+      cursor: pointer;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      transition: 0.3s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      left: 3px; top: 50%;
+      transform: translateY(-50%);
+      width: 14px; height: 14px;
+      background: var(--text3);
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    .toggle input:checked + .toggle-slider { background: rgba(156,64,77,0.3); border-color: var(--primary); }
+    .toggle input:checked + .toggle-slider::before { left: calc(100% - 17px); background: var(--primary2); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      transform: translateY(10px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      color: white;
+    }
+    .toast-item.show { transform: translateY(0); opacity: 1; }
+    .toast-success { background: linear-gradient(135deg, #1a4731, #2d6a4f); border: 1px solid rgba(62,207,108,0.3); }
+    .toast-error   { background: linear-gradient(135deg, #4a1a1a, #6a2d2d); border: 1px solid rgba(240,82,82,0.3); }
+
+    /* ── LOADING ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg3) 25%, rgba(255,255,255,0.03) 50%, var(--bg3) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── TOP PRODUCTS ── */
+    .product-img { width: 36px; height: 44px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); background: var(--bg3); }
+    .product-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .product-id { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
+
+    /* ── RSVP TABLE ── */
+    .rsvp-status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── SETTINGS ── */
+    .settings-section { margin-bottom: 28px; }
+    .settings-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border2); }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border2); }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row-info { flex: 1; }
+    .settings-row-label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .settings-row-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+    /* ── ANALYTICS MINI STAT ── */
+    .ana-metric {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .ana-metric-val { font-size: 22px; font-weight: 700; color: var(--text); }
+    .ana-metric-label { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+    /* scrollbar hide util */
+    .no-scroll { overflow: hidden; }
+
+    /* ── MOBILE HAMBURGER ── */
+    .hamburger-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 38px; height: 38px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text2);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .hamburger-btn:hover { border-color: var(--primary); color: var(--text); }
+
+    /* ── SIDEBAR OVERLAY ── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 99;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+
+      body { flex-direction: column; }
+
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0;
+        height: 100vh;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 260px;
+        box-shadow: 4px 0 30px rgba(0,0,0,0.5);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main {
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      .hamburger-btn { display: flex; }
+
+      .topbar {
+        padding: 0 16px;
+        height: 56px;
+      }
+
+      .topbar-title { font-size: 15px; }
+      .topbar-sub { display: none; }
+
+      .date-badge { display: none; }
+
+      .content { padding: 16px; }
+
+      /* Stack stats to 2 columns on mobile */
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat-value { font-size: 20px; }
+
+      /* Stack grids to single column */
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      /* Settings grid */
+      #section-settings > div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      /* Analytics metrics grid */
+      #analytics-metrics {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      /* Revenue analytics sub-grid */
+      .card-body > div[style*="grid-template-columns:repeat(3"] {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+      }
+
+      /* Table: allow horizontal scroll */
+      .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table { min-width: 500px; }
+
+      /* Modal full-screen on mobile */
+      .modal { max-width: calc(100vw - 32px); margin: 0 16px; }
+      .modal-overlay { align-items: flex-end; padding-bottom: 0; }
+      .modal { border-radius: 18px 18px 0 0; }
+
+      /* Toast position */
+      #toast { bottom: 16px; right: 16px; left: 16px; }
+
+      /* Page titles */
+      .page-section-title { font-size: 18px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .cust-grid { grid-template-columns: 1fr; }
+    }
+
+    /* SECTION PAGE TITLES */
+    .page-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .page-section-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="logo-text">Sync & Style</span>
+  </div>
+
+  <div class="sidebar-section-label">Main Menu</div>
+
+  <button class="nav-item active" onclick="switchSection('dashboard', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Dashboard
+  </button>
+
+  <button class="nav-item" onclick="switchSection('templates', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    Templates
+  </button>
+
+  <button class="nav-item" onclick="switchSection('orders', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    Orders
+  </button>
+
+  <button class="nav-item" onclick="switchSection('customers', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    Customers
+  </button>
+
+  <button class="nav-item" onclick="switchSection('analytics', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+    Analytics
+  </button>
+
+  <button class="nav-item" onclick="switchSection('rsvp', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    RSVP Responses
+  </button>
+
+  <div class="sidebar-section-label">Management</div>
+
+  <button class="nav-item" onclick="switchSection('guests', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+    Guest Lists
+  </button>
+
+  <button class="nav-item" onclick="switchSection('settings', this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    Settings
+  </button>
+
+  <div class="sidebar-bottom">
+    <div class="user-chip">
+      <div class="user-avatar" id="sidebar-avatar">A</div>
+      <div>
+        <div class="user-name" id="sidebar-name">Admin</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div>
+        <div class="topbar-title" id="topbar-title">Dashboard Overview</div>
+        <div class="topbar-sub" id="topbar-sub">Welcome back! Here's what's happening with your store today.</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="date-badge">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span id="date-range">Loading...</span>
+      </div>
+      <button class="icon-btn" onclick="refreshAll()" title="Refresh">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+      </button>
+      <button class="icon-btn" onclick="handleLogout()" title="Logout">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="section active" id="section-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Sales</div>
+          <div class="stat-value" id="stat-sales">₹0</div>
+          <div class="stat-change up" id="stat-sales-change">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+            —
+          </div>
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          {navItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => setActiveTab(item)}
-              className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                activeTab === item
-                  ? "bg-[#C0392B] text-white"
-                  : "text-white/60 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              {item}
+        <div class="stat-card">
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-value" id="stat-orders">0</div>
+          <div class="stat-change up" id="stat-orders-change">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+            —
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Templates</div>
+          <div class="stat-value" id="stat-templates">0</div>
+          <div class="stat-change" style="color:var(--text2);">Live on site</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total RSVPs</div>
+          <div class="stat-value" id="stat-rsvps">0</div>
+          <div class="stat-change" style="color:var(--text2);">From all invitations</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Recent Orders -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+              Recent Orders
+            </div>
+            <button class="card-action" onclick="switchSection('orders', document.querySelector('[onclick*=orders]'))">View All</button>
+          </div>
+          <div class="card-body" style="padding-top:10px;">
+            <div id="recent-orders-list">
+              <div class="skeleton" style="height:48px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:48px;margin-bottom:8px;"></div>
+              <div class="skeleton" style="height:48px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Overview -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              Customer Overview
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="cust-grid">
+              <div class="cust-box">
+                <div class="cust-box-label">Total Customers</div>
+                <div class="cust-box-value" id="cust-total">—</div>
+                <div class="cust-box-sub" id="cust-total-sub">—</div>
+              </div>
+              <div class="cust-box">
+                <div class="cust-box-label">Paid Customers</div>
+                <div class="cust-box-value" id="cust-paid">—</div>
+                <div class="cust-box-sub" id="cust-paid-sub">—</div>
+              </div>
+              <div class="cust-box">
+                <div class="cust-box-label">Avg. Order Value</div>
+                <div class="cust-box-value" id="cust-avg">—</div>
+                <div class="cust-box-sub" style="color:var(--gold);">Per transaction</div>
+              </div>
+              <div class="cust-box">
+                <div class="cust-box-label">Total Guests</div>
+                <div class="cust-box-value" id="cust-guests">—</div>
+                <div class="cust-box-sub" style="color:var(--text2);">Across all lists</div>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="switchSection('customers', document.querySelector('[onclick*=customers]'))">Manage Customers</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue Analytics + Donut -->
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              Revenue Analytics
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Gross Revenue</div>
+                <div style="font-size:18px;font-weight:700;color:var(--text);" id="rev-gross">₹0</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Paid Orders</div>
+                <div style="font-size:18px;font-weight:700;color:var(--text);" id="rev-paid-count">0</div>
+              </div>
+              <div>
+                <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Total Orders</div>
+                <div style="font-size:18px;font-weight:700;color:var(--text);" id="rev-total-count">0</div>
+              </div>
+            </div>
+            <div class="chart-wrap" style="height:180px;">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales by Template -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0110 10"/></svg>
+              Sales by Template
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="height:160px;display:flex;justify-content:center;">
+              <canvas id="donutChart"></canvas>
+            </div>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Templates -->
+      <div class="card" style="margin-top:0;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Top Templates
+          </div>
+          <button class="card-action" onclick="switchSection('templates', document.querySelector('[onclick*=templates]'))">View All Templates</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th>Template</th>
+                <th>Category</th>
+                <th>Sales</th>
+                <th>Revenue</th>
+                <th>Status</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="top-templates-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TEMPLATES ===== -->
+    <div class="section" id="section-templates">
+      <div class="page-section-title">Template Configs</div>
+      <div class="page-section-sub">Manage your wedding invitation templates, pricing, and availability.</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            All Templates
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="card-action" onclick="loadTemplates()">↻ Refresh</button>
+            <button class="btn btn-primary" style="padding:6px 14px;font-size:12px;" onclick="openAddModal()">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Template
             </button>
-          ))}
-        </nav>
-        <div className="px-4 py-4 border-t border-white/10">
-          <button className="w-full text-sm text-white/50 hover:text-white transition text-left px-4 py-2 hover:bg-white/10 rounded-xl">
-            Logout
-          </button>
+          </div>
         </div>
-      </aside>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Preview</th>
+                <th>ID / Name</th>
+                <th>Price (₹)</th>
+                <th>Premium</th>
+                <th>Status</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="templates-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text3);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        {/* Mobile Top Bar */}
-        <div className="md:hidden bg-[#1a1a2e] text-white px-4 py-3 flex items-center justify-between">
-          <span className="text-lg font-bold" style={{ fontFamily: "Georgia, serif" }}>
-            Sync <span className="text-[#C0392B]">&</span> Style
-          </span>
-          <span className="text-xs text-white/50">Admin</span>
+    <!-- ===== ORDERS ===== -->
+    <div class="section" id="section-orders">
+      <div class="page-section-title">Orders & Payments</div>
+      <div class="page-section-sub">All customer purchases with payment verification status.</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+            Sales History
+          </div>
+          <button class="card-action" onclick="loadSales()">↻ Refresh</button>
         </div>
-        {/* Mobile Tabs Scroll */}
-        <div className="md:hidden overflow-x-auto flex gap-2 px-4 py-3 bg-white border-b border-[#E8D5C4]">
-          {navItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => setActiveTab(item)}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeTab === item ? "bg-[#C0392B] text-white" : "bg-[#FAF7F2] text-[#7a6652] border border-[#E8D5C4]"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Order ID</th>
+                <th>Email</th>
+                <th>Template</th>
+                <th>Payment ID</th>
+                <th>Amount</th>
+                <th>RSVPs</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="sales-tbody">
+              <tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3);">Loading...</td></tr>
+            </tbody>
+          </table>
         </div>
+      </div>
+    </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-          {/* Page Title */}
-          <div className="mb-7">
-            <p className="text-xs uppercase tracking-widest text-[#B8960C] font-semibold mb-1">Admin</p>
-            <h1 className="text-3xl font-bold text-[#1a1a2e]" style={{ fontFamily: "Georgia, serif" }}>
-              {activeTab}
-            </h1>
+    <!-- ===== CUSTOMERS ===== -->
+    <div class="section" id="section-customers">
+      <div class="page-section-title">Customers</div>
+      <div class="page-section-sub">All registered users who have purchased invitations.</div>
+      <div class="stats-grid" style="margin-bottom:16px;">
+        <div class="stat-card">
+          <div class="stat-label">Total Customers</div>
+          <div class="stat-value" id="cust-page-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Paid Customers</div>
+          <div class="stat-value" id="cust-page-paid">0</div>
+          <div class="stat-change up">With verified payment</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Guest Lists</div>
+          <div class="stat-value" id="cust-page-guests">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg. Revenue/Customer</div>
+          <div class="stat-value" id="cust-page-avg">₹0</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Customer List</div>
+          <button class="card-action" onclick="loadCustomers()">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Template</th>
+                <th>Invitation Title</th>
+                <th>Payment</th>
+                <th>RSVP Count</th>
+                <th>Joined</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="customers-tbody">
+              <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text3);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ANALYTICS ===== -->
+    <div class="section" id="section-analytics">
+      <div class="page-section-title">Analytics</div>
+      <div class="page-section-sub">Detailed performance metrics for your platform.</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;" id="analytics-metrics"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Monthly Revenue Trend</div></div>
+          <div class="card-body"><div style="height:220px;"><canvas id="analyticsLineChart"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Template Performance</div></div>
+          <div class="card-body"><div style="height:220px;"><canvas id="analyticsBarChart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RSVP ===== -->
+    <div class="section" id="section-rsvp">
+      <div class="page-section-title">RSVP Responses</div>
+      <div class="page-section-sub">All guest responses across every invitation.</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            All RSVPs
+            <span class="badge badge-primary" id="rsvp-count-badge">0</span>
+          </div>
+          <button class="card-action" onclick="loadRsvps()">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Invitation</th>
+                <th>Guest Name</th>
+                <th>Status</th>
+                <th>Guest Count</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody id="rsvp-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== GUESTS ===== -->
+    <div class="section" id="section-guests">
+      <div class="page-section-title">Guest Lists</div>
+      <div class="page-section-sub">All guests added by customers across all accounts.</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">All Guests
+            <span class="badge badge-primary" id="guest-count-badge">0</span>
+          </div>
+          <button class="card-action" onclick="loadGuests()">↻ Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Guest Name</th>
+                <th>Phone</th>
+                <th>User ID</th>
+                <th>Status</th>
+                <th>Added</th>
+              </tr>
+            </thead>
+            <tbody id="guests-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text3);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="section" id="section-settings">
+      <div class="page-section-title">Settings</div>
+      <div class="page-section-sub">Manage your platform configuration.</div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:16px;">
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><div class="card-title">Platform Info</div></div>
+            <div class="card-body">
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div class="settings-row-info">
+                    <div class="settings-row-label">Platform Name</div>
+                    <div class="settings-row-sub">Sync & Style</div>
+                  </div>
+                  <span class="badge badge-green">Active</span>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-info">
+                    <div class="settings-row-label">Admin Email</div>
+                    <div class="settings-row-sub" id="settings-admin-email">—</div>
+                  </div>
+                  <span class="badge badge-primary">Admin</span>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-info">
+                    <div class="settings-row-label">Payment Gateway</div>
+                    <div class="settings-row-sub">Razorpay (INR)</div>
+                  </div>
+                  <span class="badge badge-green">Connected</span>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-info">
+                    <div class="settings-row-label">Database</div>
+                    <div class="settings-row-sub">Supabase PostgreSQL</div>
+                  </div>
+                  <span class="badge badge-green">Connected</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {activeTab === "Overview" && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {overviewStats.map((s) => (
-                  <div key={s.label} className="bg-white border border-[#E8D5C4] rounded-2xl p-5 shadow-sm">
-                    <div className="text-2xl mb-2">{s.icon}</div>
-                    <div className="text-2xl font-bold text-[#1a1a2e]">{s.value}</div>
-                    <div className="text-xs text-[#7a6652] font-medium mt-0.5">{s.label}</div>
-                    <div className="text-xs text-[#b5a090] mt-0.5">{s.sub}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-white border border-[#E8D5C4] rounded-2xl p-6 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-[#1a1a2e]" style={{ fontFamily: "Georgia, serif" }}>Recent Orders</h3>
-                    <button onClick={() => setActiveTab("Orders")} className="text-xs text-[#C0392B] hover:underline font-semibold">View All</button>
-                  </div>
-                  <div className="text-center py-8 text-[#7a6652] text-sm">No orders yet.</div>
-                </div>
-                <div className="bg-white border border-[#E8D5C4] rounded-2xl p-6 shadow-sm">
-                  <h3 className="font-bold text-[#1a1a2e] mb-4" style={{ fontFamily: "Georgia, serif" }}>Customer Overview</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {customerStats.map((s) => (
-                      <div key={s.label} className="bg-[#FAF7F2] rounded-xl p-3">
-                        <div className="text-lg font-bold text-[#1a1a2e]">{s.value}</div>
-                        <div className="text-xs text-[#7a6652]">{s.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">SQL Setup Reference</div></div>
+            <div class="card-body">
+              <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">Run these in your Supabase SQL Editor if tables are missing:</p>
+              <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'DM Mono',monospace;font-size:10.5px;color:var(--gold);overflow-x:auto;line-height:1.6;white-space:pre-wrap;">-- See SQL box on right →</pre>
             </div>
-          )}
-
-          {activeTab === "Revenue" && (
-            <div className="space-y-4">
-              <div className="grid sm:grid-cols-3 gap-4">
-                {[
-                  { label: "Gross Revenue", value: "₹0" },
-                  { label: "Paid Orders", value: "0" },
-                  { label: "Total Orders", value: "0" },
-                ].map((s) => (
-                  <div key={s.label} className="bg-white border border-[#E8D5C4] rounded-2xl p-5 shadow-sm">
-                    <div className="text-2xl font-bold text-[#1a1a2e]">{s.value}</div>
-                    <div className="text-xs text-[#7a6652] font-medium mt-1">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="bg-white border border-[#E8D5C4] rounded-2xl p-6 shadow-sm">
-                <h3 className="font-bold text-[#1a1a2e] mb-4" style={{ fontFamily: "Georgia, serif" }}>Monthly Revenue Trend</h3>
-                <div className="text-center py-16 text-[#7a6652] text-sm">No revenue data yet.</div>
-              </div>
-              <div className="bg-white border border-[#E8D5C4] rounded-2xl p-6 shadow-sm">
-                <h3 className="font-bold text-[#1a1a2e] mb-4" style={{ fontFamily: "Georgia, serif" }}>Sales by Template</h3>
-                <div className="text-center py-8 text-[#7a6652] text-sm">No sales data yet.</div>
-              </div>
-            </div>
-          )}
-
-          {(activeTab === "Templates" || activeTab === "Orders" || activeTab === "Customers" || activeTab === "RSVPs" || activeTab === "Guests") && (
-            <AdminTable tab={activeTab} />
-          )}
-
-          {activeTab === "Settings" && <AdminSettings />}
+          </div>
         </div>
-      </div>
-    </div>
-  );
-}
 
-function AdminTable({ tab }) {
-  const configs = {
-    Templates: {
-      title: "Template Configs",
-      desc: "Manage your wedding invitation templates, pricing, and availability.",
-      headers: ["Preview", "ID / Name", "Price (₹)", "Premium", "Status", "Actions"],
-    },
-    Orders: {
-      title: "Orders & Payments",
-      desc: "All customer purchases with payment verification status.",
-      headers: ["Date", "Order ID", "Email", "Template", "Payment ID", "Amount", "RSVPs", "Status"],
-    },
-    Customers: {
-      title: "Customer List",
-      desc: "All registered users who have purchased invitations.",
-      headers: ["Customer", "Template", "Invitation Title", "Payment", "RSVP Count", "Joined", "Status"],
-    },
-    RSVPs: {
-      title: "RSVP Responses",
-      desc: "All guest responses across every invitation.",
-      headers: ["Invitation", "Guest Name", "Status", "Guest Count", "Submitted"],
-    },
-    Guests: {
-      title: "Guest Lists",
-      desc: "All guests added by customers across all accounts.",
-      headers: ["Guest Name", "Phone", "User ID", "Status", "Added"],
-    },
-  };
-
-  const { title, desc, headers } = configs[tab];
-
-  return (
-    <div className="bg-white border border-[#E8D5C4] rounded-2xl shadow-sm overflow-hidden">
-      <div className="p-6 border-b border-[#E8D5C4] flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="font-bold text-[#1a1a2e] text-lg" style={{ fontFamily: "Georgia, serif" }}>{title}</h2>
-          <p className="text-sm text-[#7a6652] mt-0.5">{desc}</p>
-        </div>
-        <div className="flex gap-2">
-          <button className="text-sm border border-[#E8D5C4] text-[#7a6652] px-3 py-1.5 rounded-lg hover:border-[#C0392B] hover:text-[#C0392B] transition font-semibold">
-            ↻ Refresh
-          </button>
-          {tab === "Templates" && (
-            <button className="text-sm bg-[#C0392B] text-white px-4 py-1.5 rounded-lg hover:bg-[#a93226] transition font-semibold">
-              + New Template
-            </button>
-          )}
-        </div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-[#FAF7F2]">
-            <tr>
-              {headers.map((h) => (
-                <th key={h} className="text-left py-3 px-4 text-xs uppercase tracking-wide text-[#7a6652] font-semibold border-b border-[#E8D5C4]">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={headers.length} className="text-center py-14 text-[#7a6652] text-sm">
-                No data available.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-function AdminSettings() {
-  const [copied, setCopied] = useState(false);
-  const sql = `-- template_configs table
+          <div class="card">
+            <div class="card-header"><div class="card-title">Required SQL Schema</div></div>
+            <div class="card-body">
+              <pre id="sql-box" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);overflow-x:auto;line-height:1.7;white-space:pre-wrap;max-height:480px;overflow-y:auto;">-- template_configs table
 CREATE TABLE IF NOT EXISTS public.template_configs (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -265,55 +1250,904 @@ CREATE TABLE IF NOT EXISTS public.guest_list (
   phone TEXT NOT NULL,
   status TEXT DEFAULT 'Added',
   created_at TIMESTAMPTZ DEFAULT NOW()
-);`;
+);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(sql);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+-- Enable RLS
+ALTER TABLE template_configs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customer_invitations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE guest_list ENABLE ROW LEVEL SECURITY;
 
-  return (
-    <div className="space-y-4">
-      <div className="bg-white border border-[#E8D5C4] rounded-2xl shadow-sm p-6">
-        <h2 className="font-bold text-[#1a1a2e] text-lg mb-5" style={{ fontFamily: "Georgia, serif" }}>Platform Info</h2>
-        <div className="space-y-4">
-          {[
-            { label: "Platform Name", value: "Sync & Style", badge: "Active", badgeColor: "bg-green-100 text-green-700" },
-            { label: "Admin Email", value: "—", badge: "Admin", badgeColor: "bg-[#FAF7F2] text-[#7a6652] border border-[#E8D5C4]" },
-            { label: "Payment Gateway", value: "Razorpay (INR)", badge: "Connected", badgeColor: "bg-green-100 text-green-700" },
-            { label: "Database", value: "Supabase PostgreSQL", badge: "Connected", badgeColor: "bg-green-100 text-green-700" },
-          ].map((row) => (
-            <div key={row.label} className="flex items-center justify-between py-3 border-b border-[#F0E8E0] last:border-0">
-              <div>
-                <div className="text-xs uppercase tracking-wide text-[#7a6652] font-semibold">{row.label}</div>
-                <div className="text-sm font-semibold text-[#1a1a2e] mt-0.5">{row.value}</div>
-              </div>
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${row.badgeColor}`}>{row.badge}</span>
+-- Admin can read all (set role=admin in user_metadata)
+CREATE POLICY "Admin all" ON customer_invitations
+  FOR ALL USING (true);
+CREATE POLICY "Admin all" ON guest_list
+  FOR ALL USING (true);
+CREATE POLICY "Public read templates" ON template_configs
+  FOR SELECT USING (true);
+CREATE POLICY "Admin write templates" ON template_configs
+  FOR ALL USING (true);</pre>
+              <button class="btn btn-outline" style="margin-top:12px;width:100%;justify-content:center;" onclick="copySQL()">Copy SQL</button>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-
-      <div className="bg-white border border-[#E8D5C4] rounded-2xl shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-[#1a1a2e] text-lg" style={{ fontFamily: "Georgia, serif" }}>
-            Required SQL Schema
-          </h2>
-          <button
-            onClick={handleCopy}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition ${
-              copied ? "bg-green-100 text-green-700" : "bg-[#FAF7F2] border border-[#E8D5C4] text-[#7a6652] hover:border-[#C0392B] hover:text-[#C0392B]"
-            }`}
-          >
-            {copied ? "✓ Copied!" : "Copy SQL"}
-          </button>
-        </div>
-        <p className="text-xs text-[#7a6652] mb-3">Run these in your Supabase SQL Editor if tables are missing.</p>
-        <pre className="bg-[#1a1a2e] text-green-300 text-xs rounded-xl p-4 overflow-x-auto leading-relaxed">
-          {sql}
-        </pre>
       </div>
     </div>
-  );
-}
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ADD / EDIT TEMPLATE MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">Edit Template</div>
+        <div class="modal-sub" id="edit-id-display">—</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <!-- ID field (only shown when Adding) -->
+      <div class="form-group" id="id-field-group" style="display:none;">
+        <label class="field-label">Template ID <span style="color:var(--red);font-size:10px;">*unique, no spaces</span></label>
+        <input type="text" id="edit-new-id" class="field" placeholder="e.g. tp3, islamic-floral">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Template Name</label>
+        <input type="text" id="edit-name" class="field" placeholder="e.g. Islamic Classic">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Price (₹)</label>
+        <input type="number" id="edit-price" class="field" placeholder="499">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Placeholder Image (Upload)</label>
+        <input type="file" id="edit-image-file" accept="image/*" class="field" style="padding:8px;">
+        <p style="font-size:11px;color:var(--text3);margin-top:5px;">Uploads to Supabase Storage 'placeholders' bucket</p>
+        <input type="url" id="edit-image" class="field" style="margin-top:8px;color:var(--text3);font-size:11px;" placeholder="Current image URL..." readonly>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="field-label">Active</label>
+          <label class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="edit-active"><span class="toggle-slider"></span></label>
+            <span style="font-size:12px;color:var(--text2);">Show on site</span>
+          </label>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="field-label">Premium 👑</label>
+          <label class="toggle-wrap">
+            <label class="toggle"><input type="checkbox" id="edit-premium"><span class="toggle-slider"></span></label>
+            <span style="font-size:12px;color:var(--text2);">Gold badge</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveTemplate()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="delete-modal-overlay">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" style="color:var(--red);">Delete Template</div>
+        <div class="modal-sub" id="delete-template-name">—</div>
+      </div>
+      <button class="modal-close" onclick="closeDeleteModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:40px;height:40px;background:var(--red-bg);border:1px solid rgba(240,82,82,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <p style="font-size:13px;color:var(--text);font-weight:500;margin-bottom:6px;">Are you sure you want to delete this template?</p>
+          <p style="font-size:12px;color:var(--text2);line-height:1.5;">This will permanently remove it from your Supabase database. Existing customer orders using this template will not be affected, but the template will no longer appear on the site.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger" id="confirm-delete-btn" onclick="executeDelete()" style="padding:8px 18px;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        Delete Template
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+  let sb = null;
+  let templatesData = [];
+  let salesData = [];
+  let guestData = [];
+  let revenueChartInstance = null;
+  let donutChartInstance = null;
+  let analyticsLineInstance = null;
+  let analyticsBarInstance = null;
+
+  // ── INIT ─────────────────────────────────────────────────────────
+  async function initAdmin() {
+    try {
+      const today = new Date();
+      document.getElementById('date-range').textContent =
+        today.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+
+      const res = await fetch('/api/config');
+      if (!res.ok) throw new Error('Config fetch failed');
+      const config = await res.json();
+      if (!config.supabaseUrl || !config.supabaseAnonKey) {
+        showDemoMode();
+        return;
+      }
+
+      sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+      const { data: { session } } = await sb.auth.getSession();
+
+      if (!session) {
+        window.location.href = '/login?redirect=' + encodeURIComponent('/admin');
+        return;
+      }
+
+      const userRole = session.user.user_metadata?.role;
+      if (userRole !== 'admin') {
+        document.body.innerHTML = `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:'DM Sans',sans-serif;">
+          <div style="text-align:center;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:48px;max-width:360px;">
+            <div style="font-size:48px;margin-bottom:16px;">🚫</div>
+            <h2 style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:8px;">Access Denied</h2>
+            <p style="color:var(--text2);font-size:13px;margin-bottom:24px;">You need admin privileges to access this page.</p>
+            <a href="/" style="background:var(--primary);color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;">Go Home</a>
+          </div>
+        </div>`;
+        return;
+      }
+
+      const email = session.user.email || 'Admin';
+      document.getElementById('sidebar-name').textContent = email.split('@')[0];
+      document.getElementById('sidebar-avatar').textContent = email[0].toUpperCase();
+      document.getElementById('settings-admin-email').textContent = email;
+
+      await ensureTemplates();
+      await refreshAll();
+
+    } catch(e) {
+      console.error('Admin init failed', e);
+      showDemoMode();
+    }
+  }
+
+  function showDemoMode() {
+    showToast('Running in demo mode (no Supabase)', 'error');
+    document.getElementById('sidebar-name').textContent = 'Demo Admin';
+    renderDemoStats();
+  }
+
+  async function refreshAll() {
+    await Promise.all([
+      loadTemplates(),
+      loadSales(),
+      loadGuests(),
+    ]);
+    loadRsvps();
+    loadCustomers();
+    buildAnalytics();
+  }
+
+  // ── SUPABASE ENSURE ───────────────────────────────────────────────
+  async function ensureTemplates() {
+    if (!sb) return;
+    const { data, error } = await sb.from('template_configs').select('id').limit(1);
+    if (error) return;
+    if (data && data.length === 0) {
+      await sb.from('template_configs').insert([
+        { id: 'tp1', name: 'Islamic Classic', price: 499, is_active: true, is_premium: false },
+        { id: 'tp2', name: 'Islamic Premium', price: 799, is_active: true, is_premium: true },
+      ]);
+    }
+  }
+
+  // ── LOAD TEMPLATES ────────────────────────────────────────────────
+  async function loadTemplates() {
+    const tbody = document.getElementById('templates-tbody');
+    const topTbody = document.getElementById('top-templates-tbody');
+    if (!sb) return;
+
+    const { data, error } = await sb.from('template_configs').select('*').order('id');
+    if (error) { tbody.innerHTML = errRow(6, 'Failed to load templates'); return; }
+
+    templatesData = data || [];
+    document.getElementById('stat-templates').textContent = templatesData.filter(t => t.is_active).length;
+
+    tbody.innerHTML = templatesData.length === 0
+      ? `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text3);">No templates found.</td></tr>`
+      : templatesData.map(t => `
+        <tr>
+          <td><img src="${t.placeholder_url || 'https://placehold.co/36x44/1e1517/9c404d?text=T'}" class="product-img" alt="${t.name}"></td>
+          <td>
+            <div class="product-name">${t.is_premium ? '👑 ' : ''}${t.name}</div>
+            <div class="product-id">${t.id}</div>
+          </td>
+          <td><strong style="color:var(--gold);">₹${t.price}</strong></td>
+          <td>${t.is_premium ? '<span class="badge badge-gold">Premium</span>' : '<span class="badge badge-gray">Standard</span>'}</td>
+          <td>${t.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-gray">Inactive</span>'}</td>
+          <td style="text-align:right;">
+            <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">
+              <button class="btn btn-outline" style="padding:5px 12px;font-size:11px;" onclick="openModal('${t.id}')">Edit</button>
+              <button class="btn btn-danger" style="padding:5px 10px;font-size:11px;" onclick="confirmDelete('${t.id}', '${t.name.replace(/'/g,"\\'")}')">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>`).join('');
+
+    // Top templates table on dashboard
+    if (topTbody) {
+      const salesMap = {};
+      salesData.forEach(s => { salesMap[s.template_type] = (salesMap[s.template_type] || 0) + 1; });
+      const sorted = [...templatesData].sort((a,b) => (salesMap[b.id]||0) - (salesMap[a.id]||0));
+      topTbody.innerHTML = sorted.map((t, i) => {
+        const count = salesMap[t.id] || 0;
+        const revenue = count * Number(t.price);
+        return `<tr>
+          <td style="color:var(--text3);font-weight:600;">${i+1}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <img src="${t.placeholder_url || 'https://placehold.co/36x44/1e1517/9c404d?text=T'}" class="product-img">
+              <div>
+                <div class="product-name">${t.is_premium ? '👑 ':' '}${t.name}</div>
+                <div class="product-id">${t.id}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge badge-primary">Wedding</span></td>
+          <td style="font-weight:600;">${count}</td>
+          <td style="color:var(--green);font-weight:600;">₹${revenue.toLocaleString('en-IN')}</td>
+          <td>${t.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-gray">Inactive</span>'}</td>
+          <td style="text-align:right;"><button class="btn btn-outline" style="padding:5px 12px;font-size:11px;" onclick="openModal('${t.id}')">Edit</button></td>
+        </tr>`;
+      }).join('');
+    }
+  }
+
+  // ── LOAD SALES ────────────────────────────────────────────────────
+  async function loadSales() {
+    const tbody = document.getElementById('sales-tbody');
+    if (!sb) return;
+
+    const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
+    if (error) { tbody.innerHTML = errRow(8, 'Failed to load orders'); return; }
+
+    salesData = data || [];
+
+    // Update stats
+    let totalRevenue = 0, paidCount = 0, totalRsvps = 0;
+    salesData.forEach(s => {
+      const tpl = templatesData.find(t => t.id === s.template_type);
+      const price = tpl ? Number(tpl.price) : 499;
+      if (s.payment_id) { totalRevenue += price; paidCount++; }
+      totalRsvps += Array.isArray(s.rsvps) ? s.rsvps.length : 0;
+    });
+
+    document.getElementById('stat-sales').textContent = '₹' + totalRevenue.toLocaleString('en-IN');
+    document.getElementById('stat-orders').textContent = salesData.length;
+    document.getElementById('stat-rsvps').textContent = totalRsvps;
+    document.getElementById('rev-gross').textContent = '₹' + totalRevenue.toLocaleString('en-IN');
+    document.getElementById('rev-paid-count').textContent = paidCount;
+    document.getElementById('rev-total-count').textContent = salesData.length;
+
+    // Recent orders widget
+    const recentEl = document.getElementById('recent-orders-list');
+    const recent = salesData.slice(0, 6);
+    recentEl.innerHTML = recent.length === 0
+      ? '<p style="text-align:center;color:var(--text3);padding:20px;font-size:13px;">No orders yet.</p>'
+      : recent.map((s, i) => {
+          const tpl = templatesData.find(t => t.id === s.template_type);
+          const price = tpl ? Number(tpl.price) : 499;
+          const date = new Date(s.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+          const shortId = s.id ? '#' + s.id.slice(0,8).toUpperCase() : '#—';
+          return `<div class="order-row">
+            <div>
+              <div class="order-id">${shortId}</div>
+              <div class="order-user">${s.user_email || 'Anonymous'}</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="order-date">${date}</div>
+              ${s.payment_id ? '<span class="badge badge-green" style="margin-top:3px;">Paid</span>' : '<span class="badge badge-gold" style="margin-top:3px;">Pending</span>'}
+            </div>
+            <div class="order-amount">₹${price.toLocaleString('en-IN')}</div>
+          </div>`;
+        }).join('');
+
+    // Full sales table
+    tbody.innerHTML = salesData.length === 0
+      ? errRow(8, 'No orders found.')
+      : salesData.map(s => {
+          const tpl = templatesData.find(t => t.id === s.template_type);
+          const price = tpl ? Number(tpl.price) : 499;
+          const rsvpCount = Array.isArray(s.rsvps) ? s.rsvps.length : 0;
+          const date = new Date(s.created_at).toLocaleDateString('en-IN');
+          const shortId = s.id ? s.id.slice(0,8).toUpperCase() : '—';
+          const orderId = s.order_id ? s.order_id.slice(-8) : '—';
+          const payId = s.payment_id ? s.payment_id.slice(-10) : '—';
+          return `<tr>
+            <td style="color:var(--text3);font-size:12px;">${date}</td>
+            <td><code style="font-family:'DM Mono',monospace;font-size:11px;color:var(--primary2);">#${shortId}</code></td>
+            <td style="font-size:12px;">${s.user_email || '<span style="color:var(--text3)">Anonymous</span>'}</td>
+            <td><span class="badge badge-primary">${tpl?.name || s.template_type || '—'}</span></td>
+            <td><code style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);">${payId}</code></td>
+            <td style="font-weight:700;color:var(--green);">₹${price.toLocaleString('en-IN')}</td>
+            <td style="text-align:center;">${rsvpCount}</td>
+            <td>${s.payment_id ? '<span class="badge badge-green">Paid</span>' : '<span class="badge badge-gold">Pending</span>'}</td>
+          </tr>`;
+        }).join('');
+
+    buildCharts();
+    buildDonut();
+    loadTemplates(); // refresh top templates with sales data
+  }
+
+  // ── LOAD GUESTS ───────────────────────────────────────────────────
+  async function loadGuests() {
+    const tbody = document.getElementById('guests-tbody');
+    if (!sb) return;
+
+    const { data, error } = await sb.from('guest_list').select('*').order('created_at', { ascending: false });
+    if (error) { tbody.innerHTML = errRow(5, 'Failed to load guests'); return; }
+
+    guestData = data || [];
+    document.getElementById('guest-count-badge').textContent = guestData.length;
+    document.getElementById('cust-guests').textContent = guestData.length;
+    document.getElementById('cust-page-guests').textContent = guestData.length;
+
+    tbody.innerHTML = guestData.length === 0
+      ? errRow(5, 'No guests found.')
+      : guestData.map(g => `<tr>
+          <td style="font-weight:600;">${g.name}</td>
+          <td><code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);">${g.phone}</code></td>
+          <td><code style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);">${(g.user_id||'').slice(0,12)}...</code></td>
+          <td><span class="badge badge-primary">${g.status || 'Added'}</span></td>
+          <td style="color:var(--text3);font-size:12px;">${new Date(g.created_at).toLocaleDateString('en-IN')}</td>
+        </tr>`).join('');
+  }
+
+  // ── LOAD CUSTOMERS ────────────────────────────────────────────────
+  async function loadCustomers() {
+    const tbody = document.getElementById('customers-tbody');
+    if (!sb) return;
+
+    const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
+    if (error) { tbody.innerHTML = errRow(7, 'Failed to load customers'); return; }
+
+    const allData = data || [];
+    const emailSet = new Set(allData.filter(s => s.user_email).map(s => s.user_email));
+    const paidSet = new Set(allData.filter(s => s.payment_id && s.user_email).map(s => s.user_email));
+    const totalRev = allData.reduce((acc, s) => {
+      const tpl = templatesData.find(t => t.id === s.template_type);
+      return acc + (s.payment_id ? (tpl ? Number(tpl.price) : 499) : 0);
+    }, 0);
+    const avg = paidSet.size > 0 ? Math.round(totalRev / paidSet.size) : 0;
+
+    document.getElementById('cust-total').textContent = emailSet.size;
+    document.getElementById('cust-paid').textContent = paidSet.size;
+    document.getElementById('cust-avg').textContent = '₹' + avg;
+    document.getElementById('cust-page-total').textContent = emailSet.size;
+    document.getElementById('cust-page-paid').textContent = paidSet.size;
+    document.getElementById('cust-page-avg').textContent = '₹' + avg;
+
+    const paidRate = emailSet.size > 0 ? Math.round((paidSet.size / emailSet.size) * 100) : 0;
+    document.getElementById('cust-total-sub').textContent = 'Unique accounts';
+    document.getElementById('cust-paid-sub').textContent = paidRate + '% conversion';
+
+    tbody.innerHTML = allData.length === 0
+      ? errRow(7, 'No customers found.')
+      : allData.map(s => {
+          const tpl = templatesData.find(t => t.id === s.template_type);
+          const rsvpCount = Array.isArray(s.rsvps) ? s.rsvps.length : 0;
+          return `<tr>
+            <td style="font-size:12px;">${s.user_email || '<span style="color:var(--text3)">Anonymous</span>'}</td>
+            <td><span class="badge badge-primary">${tpl?.name || s.template_type || '—'}</span></td>
+            <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;">${s.title || '—'}</td>
+            <td>${s.payment_id ? '<span class="badge badge-green">Paid</span>' : '<span class="badge badge-gold">Pending</span>'}</td>
+            <td style="text-align:center;">${rsvpCount}</td>
+            <td style="color:var(--text3);font-size:12px;">${new Date(s.created_at).toLocaleDateString('en-IN')}</td>
+            <td><span class="badge ${s.status === 'published' ? 'badge-green' : 'badge-gray'}">${s.status || 'draft'}</span></td>
+          </tr>`;
+        }).join('');
+  }
+
+  // ── LOAD RSVPs ────────────────────────────────────────────────────
+  async function loadRsvps() {
+    const tbody = document.getElementById('rsvp-tbody');
+    if (!sb) return;
+
+    const { data, error } = await sb.from('customer_invitations').select('id, title, rsvps').order('created_at', { ascending: false });
+    if (error) { tbody.innerHTML = errRow(5, 'Failed to load RSVPs'); return; }
+
+    const rows = [];
+    (data || []).forEach(inv => {
+      (inv.rsvps || []).forEach(r => {
+        rows.push({ invTitle: inv.title || inv.id?.slice(0,8) || '—', ...r });
+      });
+    });
+
+    document.getElementById('rsvp-count-badge').textContent = rows.length;
+
+    tbody.innerHTML = rows.length === 0
+      ? errRow(5, 'No RSVP responses yet.')
+      : rows.map(r => {
+          const statusClass = r.status === 'attending' ? 'badge-green' : r.status === 'not-attending' ? 'badge-red' : 'badge-gold';
+          const date = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('en-IN') : '—';
+          return `<tr>
+            <td style="font-size:12px;color:var(--text2);">${r.invTitle}</td>
+            <td style="font-weight:600;">${r.guest_name || '—'}</td>
+            <td><span class="badge ${statusClass}">${r.status || 'pending'}</span></td>
+            <td style="text-align:center;">${r.guest_count || 1}</td>
+            <td style="color:var(--text3);font-size:12px;">${date}</td>
+          </tr>`;
+        }).join('');
+  }
+
+  // ── ANALYTICS ─────────────────────────────────────────────────────
+  function buildAnalytics() {
+    const metricsEl = document.getElementById('analytics-metrics');
+    if (!metricsEl) return;
+
+    const totalRevenue = salesData.reduce((acc, s) => {
+      const tpl = templatesData.find(t => t.id === s.template_type);
+      return acc + (s.payment_id ? (tpl ? Number(tpl.price) : 499) : 0);
+    }, 0);
+    const paidCount = salesData.filter(s => s.payment_id).length;
+    const totalRsvps = salesData.reduce((acc, s) => acc + (Array.isArray(s.rsvps) ? s.rsvps.length : 0), 0);
+    const avgOrder = paidCount > 0 ? Math.round(totalRevenue / paidCount) : 0;
+
+    const metrics = [
+      { label: 'Gross Revenue', value: '₹' + totalRevenue.toLocaleString('en-IN') },
+      { label: 'Paid Orders', value: paidCount },
+      { label: 'Avg. Order Value', value: '₹' + avgOrder },
+      { label: 'Total RSVPs', value: totalRsvps },
+    ];
+
+    metricsEl.innerHTML = metrics.map(m => `
+      <div class="ana-metric">
+        <div class="ana-metric-val">${m.value}</div>
+        <div class="ana-metric-label">${m.label}</div>
+      </div>`).join('');
+
+    // Line chart - monthly
+    buildAnalyticsLine();
+    buildAnalyticsBar();
+  }
+
+  function buildAnalyticsLine() {
+    const ctx = document.getElementById('analyticsLineChart');
+    if (!ctx) return;
+    if (analyticsLineInstance) analyticsLineInstance.destroy();
+
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthlySales = Array(12).fill(0);
+
+    salesData.forEach(s => {
+      if (!s.payment_id) return;
+      const month = new Date(s.created_at).getMonth();
+      const tpl = templatesData.find(t => t.id === s.template_type);
+      monthlySales[month] += tpl ? Number(tpl.price) : 499;
+    });
+
+    analyticsLineInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Revenue',
+          data: monthlySales,
+          borderColor: '#9c404d',
+          backgroundColor: 'rgba(156,64,77,0.12)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#9c404d',
+          pointRadius: 3,
+        }]
+      },
+      options: chartOptions('₹')
+    });
+  }
+
+  function buildAnalyticsBar() {
+    const ctx = document.getElementById('analyticsBarChart');
+    if (!ctx) return;
+    if (analyticsBarInstance) analyticsBarInstance.destroy();
+
+    const labels = templatesData.map(t => t.name);
+    const values = templatesData.map(t => salesData.filter(s => s.template_type === t.id).length);
+
+    analyticsBarInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Orders',
+          data: values,
+          backgroundColor: 'rgba(156,64,77,0.5)',
+          borderColor: '#9c404d',
+          borderWidth: 1,
+          borderRadius: 6,
+        }]
+      },
+      options: chartOptions('')
+    });
+  }
+
+  // ── CHARTS ────────────────────────────────────────────────────────
+  function chartOptions(prefix = '') {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e1517',
+          borderColor: '#9c404d',
+          borderWidth: 1,
+          titleColor: '#f0e8e9',
+          bodyColor: '#9b7e82',
+          callbacks: {
+            label: ctx => `${prefix}${ctx.parsed.y.toLocaleString('en-IN')}`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#6b5254', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#6b5254', font: { size: 10 }, callback: v => prefix + v } }
+      }
+    };
+  }
+
+  function buildCharts() {
+    const ctx = document.getElementById('revenueChart');
+    if (!ctx) return;
+    if (revenueChartInstance) revenueChartInstance.destroy();
+
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthlySales = Array(12).fill(0);
+    salesData.forEach(s => {
+      if (!s.payment_id) return;
+      const m = new Date(s.created_at).getMonth();
+      const tpl = templatesData.find(t => t.id === s.template_type);
+      monthlySales[m] += tpl ? Number(tpl.price) : 499;
+    });
+
+    revenueChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          data: monthlySales,
+          backgroundColor: ctx2 => {
+            const g = ctx2.chart.ctx.createLinearGradient(0,0,0,180);
+            g.addColorStop(0,'rgba(156,64,77,0.8)');
+            g.addColorStop(1,'rgba(156,64,77,0.1)');
+            return g;
+          },
+          borderColor: '#9c404d',
+          borderWidth: 1,
+          borderRadius: 5,
+        }]
+      },
+      options: chartOptions('₹')
+    });
+  }
+
+  function buildDonut() {
+    const ctx = document.getElementById('donutChart');
+    const legend = document.getElementById('donut-legend');
+    if (!ctx) return;
+    if (donutChartInstance) donutChartInstance.destroy();
+
+    const colors = ['#9c404d','#c9a96e','#3ecf6c','#6c8ecf','#9b59b6'];
+    const labels = templatesData.map(t => t.name);
+    const values = templatesData.map(t => salesData.filter(s => s.template_type === t.id).length);
+    const total = values.reduce((a,b) => a+b, 0);
+
+    donutChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data: values.length > 0 && total > 0 ? values : [1],
+          backgroundColor: values.length > 0 && total > 0 ? colors.slice(0, values.length) : ['rgba(255,255,255,0.05)'],
+          borderColor: 'transparent',
+          hoverBorderColor: 'rgba(255,255,255,0.2)',
+          hoverBorderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1e1517',
+            borderColor: '#9c404d',
+            borderWidth: 1,
+            titleColor: '#f0e8e9',
+            bodyColor: '#9b7e82',
+          }
+        }
+      }
+    });
+
+    // Legend
+    if (legend) {
+      legend.innerHTML = total === 0
+        ? '<p style="text-align:center;color:var(--text3);font-size:12px;">No sales data yet</p>'
+        : labels.map((l, i) => {
+            const tpl = templatesData[i];
+            const rev = (values[i] || 0) * (tpl ? Number(tpl.price) : 499);
+            const pct = total > 0 ? Math.round((values[i]/total)*100) : 0;
+            return `<div class="donut-legend-item">
+              <div class="donut-legend-left">
+                <div class="donut-dot" style="background:${colors[i]};"></div>
+                ${l}
+              </div>
+              <div class="donut-legend-right">${pct}% · ₹${rev.toLocaleString('en-IN')}</div>
+            </div>`;
+          }).join('');
+    }
+  }
+
+  // ── TEMPLATE MODAL ────────────────────────────────────────────────
+  let _modalMode = 'edit'; // 'edit' | 'add'
+  let _deleteTargetId = null;
+
+  function openAddModal() {
+    _modalMode = 'add';
+    document.getElementById('modal-title').textContent = 'Add New Template';
+    document.getElementById('edit-id-display').textContent = 'New template';
+    document.getElementById('edit-id').value = '';
+    document.getElementById('edit-new-id').value = '';
+    document.getElementById('edit-name').value = '';
+    document.getElementById('edit-price').value = '499';
+    document.getElementById('edit-image').value = '';
+    document.getElementById('edit-image-file').value = '';
+    document.getElementById('edit-active').checked = true;
+    document.getElementById('edit-premium').checked = false;
+    document.getElementById('id-field-group').style.display = 'block';
+    document.getElementById('save-btn').textContent = 'Create Template';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function openModal(id) {
+    _modalMode = 'edit';
+    const item = templatesData.find(t => t.id === id);
+    if (!item) return;
+    document.getElementById('modal-title').textContent = 'Edit Template';
+    document.getElementById('edit-id').value = item.id;
+    document.getElementById('edit-id-display').textContent = item.id;
+    document.getElementById('edit-name').value = item.name;
+    document.getElementById('edit-price').value = item.price;
+    document.getElementById('edit-image').value = item.placeholder_url || '';
+    document.getElementById('edit-image-file').value = '';
+    document.getElementById('edit-active').checked = item.is_active;
+    document.getElementById('edit-premium').checked = item.is_premium || false;
+    document.getElementById('id-field-group').style.display = 'none';
+    document.getElementById('save-btn').textContent = 'Save Changes';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+
+  async function saveTemplate() {
+    if (!sb) { showToast('No database connection', 'error'); return; }
+
+    const name = document.getElementById('edit-name').value.trim();
+    const price = parseFloat(document.getElementById('edit-price').value);
+    const is_active = document.getElementById('edit-active').checked;
+    const is_premium = document.getElementById('edit-premium').checked;
+    const btn = document.getElementById('save-btn');
+
+    if (!name) { showToast('Template name is required', 'error'); return; }
+    if (isNaN(price) || price < 0) { showToast('Enter a valid price', 'error'); return; }
+
+    btn.textContent = 'Saving…';
+    btn.disabled = true;
+
+    // Handle image upload
+    let placeholder_url = document.getElementById('edit-image').value;
+    const fileInput = document.getElementById('edit-image-file');
+    const id = _modalMode === 'add'
+      ? document.getElementById('edit-new-id').value.trim().replace(/\s+/g, '-').toLowerCase()
+      : document.getElementById('edit-id').value;
+
+    if (_modalMode === 'add' && !id) {
+      showToast('Template ID is required', 'error');
+      btn.textContent = 'Create Template'; btn.disabled = false;
+      return;
+    }
+
+    if (fileInput.files && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const ext = file.name.split('.').pop();
+      const fileName = `${id}-${Date.now()}.${ext}`;
+      const { error: upErr } = await sb.storage.from('placeholders').upload(fileName, file);
+      if (upErr) {
+        showToast('Upload failed: ' + upErr.message, 'error');
+        btn.textContent = _modalMode === 'add' ? 'Create Template' : 'Save Changes';
+        btn.disabled = false;
+        return;
+      }
+      const { data: urlData } = sb.storage.from('placeholders').getPublicUrl(fileName);
+      placeholder_url = urlData.publicUrl;
+    }
+
+    let error;
+    if (_modalMode === 'add') {
+      // Check ID uniqueness
+      const exists = templatesData.find(t => t.id === id);
+      if (exists) {
+        showToast('Template ID already exists. Choose a different ID.', 'error');
+        btn.textContent = 'Create Template'; btn.disabled = false;
+        return;
+      }
+      const result = await sb.from('template_configs').insert([{
+        id, name, price, placeholder_url: placeholder_url || null,
+        is_active, is_premium, updated_at: new Date().toISOString()
+      }]);
+      error = result.error;
+    } else {
+      const result = await sb.from('template_configs')
+        .update({ name, price, placeholder_url, is_active, is_premium, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      error = result.error;
+    }
+
+    btn.textContent = _modalMode === 'add' ? 'Create Template' : 'Save Changes';
+    btn.disabled = false;
+
+    if (error) { showToast('Save failed: ' + error.message, 'error'); return; }
+    showToast(_modalMode === 'add' ? 'Template created!' : 'Template updated!', 'success');
+    closeModal();
+    await loadTemplates();
+    await loadSales();
+  }
+
+  // ── DELETE TEMPLATE ───────────────────────────────────────────────
+  function confirmDelete(id, name) {
+    _deleteTargetId = id;
+    document.getElementById('delete-template-name').textContent = `"${name}" (${id})`;
+    document.getElementById('delete-modal-overlay').classList.add('open');
+  }
+
+  function closeDeleteModal() {
+    _deleteTargetId = null;
+    document.getElementById('delete-modal-overlay').classList.remove('open');
+  }
+
+  async function executeDelete() {
+    if (!sb || !_deleteTargetId) return;
+    const btn = document.getElementById('confirm-delete-btn');
+    btn.textContent = 'Deleting…';
+    btn.disabled = true;
+
+    const { error } = await sb.from('template_configs').delete().eq('id', _deleteTargetId);
+
+    btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg> Delete Template`;
+    btn.disabled = false;
+
+    if (error) { showToast('Delete failed: ' + error.message, 'error'); return; }
+    showToast('Template deleted.', 'success');
+    closeDeleteModal();
+    await loadTemplates();
+    await loadSales();
+  }
+
+  // ── SIDEBAR MOBILE ────────────────────────────────────────────────
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const isOpen = sidebar.classList.contains('open');
+    if (isOpen) {
+      closeSidebar();
+    } else {
+      sidebar.classList.add('open');
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── NAVIGATION ────────────────────────────────────────────────────
+  const sectionTitles = {
+    dashboard: ['Dashboard Overview', "Welcome back! Here's what's happening today."],
+    templates: ['Template Configs', 'Manage your wedding invitation templates.'],
+    orders: ['Orders & Payments', 'All customer purchases and payment statuses.'],
+    customers: ['Customers', 'Registered users and purchase data.'],
+    analytics: ['Analytics', 'Platform performance and revenue metrics.'],
+    rsvp: ['RSVP Responses', 'Guest responses across all invitations.'],
+    guests: ['Guest Lists', 'All guests added by customers.'],
+    settings: ['Settings', 'Platform configuration and SQL schema reference.'],
+  };
+
+  function switchSection(name, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+    const el = document.getElementById('section-' + name);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+
+    const [title, sub] = sectionTitles[name] || ['Admin', ''];
+    document.getElementById('topbar-title').textContent = title;
+    document.getElementById('topbar-sub').textContent = sub;
+
+    if (name === 'analytics') buildAnalytics();
+
+    // Close sidebar on mobile after navigation
+    if (window.innerWidth <= 768) closeSidebar();
+  }
+
+  // ── UTILS ─────────────────────────────────────────────────────────
+  function errRow(cols, msg) {
+    return `<tr><td colspan="${cols}" style="text-align:center;padding:30px;color:var(--text3);">${msg}</td></tr>`;
+  }
+
+  function showToast(msg, type = 'success') {
+    const container = document.getElementById('toast');
+    const el = document.createElement('div');
+    el.className = `toast-item toast-${type}`;
+    el.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      ${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+    </svg>${msg}`;
+    container.appendChild(el);
+    setTimeout(() => el.classList.add('show'), 10);
+    setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3500);
+  }
+
+  function copySQL() {
+    const sql = document.getElementById('sql-box').textContent;
+    navigator.clipboard.writeText(sql).then(() => showToast('SQL copied to clipboard!'));
+  }
+
+  async function handleLogout() {
+    if (sb) await sb.auth.signOut();
+    window.location.href = '/login';
+  }
+
+  function renderDemoStats() {
+    document.getElementById('stat-sales').textContent = '₹45,678';
+    document.getElementById('stat-orders').textContent = '24';
+    document.getElementById('stat-templates').textContent = '2';
+    document.getElementById('stat-rsvps').textContent = '87';
+    document.getElementById('rev-gross').textContent = '₹45,678';
+    document.getElementById('rev-paid-count').textContent = '18';
+    document.getElementById('rev-total-count').textContent = '24';
+  }
+
+  // Close modals on overlay click
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+  document.getElementById('delete-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+
+  initAdmin();
+</script>
+</body>
+</html>
