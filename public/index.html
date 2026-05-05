@@ -13,7 +13,7 @@
   <link rel="canonical" href="https://syncandstyle.com/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://syncandstyle.com/">
-  <meta property="og:title" content="Digital Wedding Invitations | Animated Wedding Invitation Website | Sync &amp; Style">
+  <meta property="og:title" content="Digital Wedding Invitations | Sync &amp; Style">
   <meta property="og:description" content="Create beautiful animated wedding invitation webpages. Share via WhatsApp, email or social media. One-time payment starting &#8377;499.">
   <meta property="og:image" content="https://syncandstyle.com/og-image.jpg">
   <meta property="og:site_name" content="Sync &amp; Style">
@@ -24,176 +24,447 @@
   <title>Sync &amp; Style &#8212; Digital Wedding Invitations</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Ms+Madi&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --crimson: #9c404d;
-      --crimson-deep: #5f0f1a;
-      --crimson-dark: #2d0a0e;
-      --gold: #c9a96e;
-      --gold-pale: #e8d5b0;
-      --cream: #fdf8f3;
-      --ink: #0e0608;
+      --ivory:        #fdf8f0;
+      --ivory-deep:   #f5ece0;
+      --ivory-card:   #fffcf8;
+      --rose:         #c4566a;
+      --rose-deep:    #a03050;
+      --rose-blush:   #f7e8ec;
+      --rose-pale:    #fdf0f3;
+      --gold:         #b8882a;
+      --gold-light:   #d4a843;
+      --gold-pale:    #f5e6c8;
+      --gold-bg:      #fdf8ee;
+      --ink:          #1c0a10;
+      --ink-mid:      #4a2030;
+      --muted:        #8a6070;
+      --border:       rgba(180,120,100,0.15);
+      --border-gold:  rgba(180,140,60,0.25);
     }
+
     html { scroll-behavior: smooth; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: #f0e8e9; overflow-x: hidden; }
-    .font-display { font-family: 'Cormorant Garamond', serif; }
-    .font-cinzel { font-family: 'Cinzel', serif; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--ink); }
-    ::-webkit-scrollbar-thumb { background: rgba(156,64,77,0.4); border-radius: 3px; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ivory);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--ivory); }
+    ::-webkit-scrollbar-thumb { background: rgba(180,100,120,0.3); border-radius: 3px; }
+
     /* Iframe preview */
     .iframe-preview-container { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-    .preview-iframe { width: 300%; height: 300%; transform: scale(0.3333); transform-origin: 0 0; border: none; overflow: hidden; scrollbar-width: none; -ms-overflow-style: none; }
+    .preview-iframe { width: 300%; height: 300%; transform: scale(0.3333); transform-origin: 0 0; border: none; scrollbar-width: none; -ms-overflow-style: none; }
     .preview-iframe::-webkit-scrollbar { display: none; }
-    /* Noise */
-    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"); }
-    /* Navbar */
-    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 40px; height: 72px; display: flex; align-items: center; justify-content: space-between; transition: background 0.4s, border-color 0.4s; }
-    .navbar.scrolled { background: rgba(14,6,8,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(201,169,110,0.12); }
-    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; font-style: italic; color: var(--gold); letter-spacing: 0.02em; text-decoration: none; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 48px; height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.4s ease;
+    }
+    .navbar.scrolled {
+      background: rgba(253,248,240,0.92);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border), 0 8px 32px rgba(180,100,80,0.06);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 700; font-style: italic;
+      color: var(--rose-deep); letter-spacing: 0.02em; text-decoration: none;
+    }
     .nav-links { display: flex; align-items: center; gap: 36px; }
-    .nav-links a { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: rgba(240,232,233,0.6); text-decoration: none; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--gold-pale); }
-    .nav-cta { font-size: 12px !important; font-weight: 700 !important; letter-spacing: 0.1em !important; text-transform: uppercase; color: var(--ink) !important; background: linear-gradient(135deg, var(--gold), #b8962e); padding: 10px 24px; border-radius: 4px; transition: opacity 0.2s, transform 0.2s !important; }
-    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px) !important; }
-    #mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--gold-pale); padding: 4px; }
+    .nav-links a {
+      font-size: 13px; font-weight: 500; letter-spacing: 0.05em;
+      color: var(--ink-mid); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rose); }
+    .nav-cta {
+      background: var(--rose-deep) !important;
+      color: #fff !important;
+      font-size: 12px !important; font-weight: 700 !important;
+      letter-spacing: 0.1em !important; text-transform: uppercase;
+      padding: 10px 24px; border-radius: 4px;
+      transition: background 0.2s, transform 0.2s !important;
+      box-shadow: 0 4px 16px rgba(160,48,80,0.25);
+    }
+    .nav-cta:hover { background: var(--rose) !important; transform: translateY(-1px) !important; }
+    #mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--ink-mid); padding: 4px; }
     @media (max-width: 768px) { .navbar { padding: 0 20px; } .nav-links { display: none; } #mobile-menu-btn { display: block; } }
-    /* Mobile menu */
+
+    /* ── MOBILE MENU ── */
     #mobile-menu { position: fixed; inset: 0; z-index: 200; transform: translateX(100%); transition: transform 0.3s ease; }
     #mobile-menu.open { transform: translateX(0); }
-    #mobile-backdrop { position: absolute; inset: 0; background: rgba(14,6,8,0.75); backdrop-filter: blur(4px); }
-    #mobile-panel { position: absolute; right: 0; top: 0; bottom: 0; width: 80vw; max-width: 320px; background: #160a0c; border-left: 1px solid rgba(201,169,110,0.15); display: flex; flex-direction: column; padding: 32px 24px; }
-    .mob-nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 0; font-size: 15px; font-weight: 500; color: rgba(240,232,233,0.7); text-decoration: none; border-bottom: 1px solid rgba(201,169,110,0.07); transition: color 0.2s; }
-    .mob-nav-link:hover { color: var(--gold-pale); }
-    .mob-nav-cta { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), #b8962e); color: var(--ink); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 16px; border-radius: 4px; text-decoration: none; }
-    /* Hero */
-    .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 140px 24px 80px; overflow: hidden; }
-    .hero-bg { position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(156,64,77,0.18) 0%, transparent 70%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(201,169,110,0.08) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 20% 60%, rgba(95,15,26,0.12) 0%, transparent 60%); }
-    .hero-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(201,169,110,0.07); top: 50%; left: 50%; }
-    @keyframes ringPulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity:0.5; } 50% { transform: translate(-50%,-50%) scale(1.03); opacity:1; } }
-    .hero-eyebrow { font-family:'Cinzel',serif; font-size:11px; font-weight:500; letter-spacing:0.3em; text-transform:uppercase; color:var(--gold); opacity:0.8; margin-bottom:28px; display:inline-flex; align-items:center; gap:12px; }
-    .hero-eyebrow::before,.hero-eyebrow::after { content:''; display:inline-block; width:40px; height:1px; background:linear-gradient(90deg,transparent,var(--gold)); }
-    .hero-eyebrow::after { background:linear-gradient(90deg,var(--gold),transparent); }
-    .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(52px,8vw,110px); font-weight:300; line-height:1.0; color:#f5ede0; letter-spacing:-0.01em; margin-bottom:16px; }
-    .hero-title em { font-style:italic; font-weight:600; background:linear-gradient(135deg,var(--gold-pale) 0%,var(--gold) 50%,#a87940 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-    .hero-subtitle { font-size:15px; font-weight:300; line-height:1.8; color:rgba(240,232,233,0.5); max-width:520px; margin:24px auto 48px; letter-spacing:0.02em; }
-    .hero-actions { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
-    .btn-gold { display:inline-flex; align-items:center; gap:10px; background:linear-gradient(135deg,var(--gold) 0%,#b8962e 100%); color:var(--ink); font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:16px 36px; border:none; border-radius:4px; cursor:pointer; text-decoration:none; box-shadow:0 8px 32px rgba(201,169,110,0.25); transition:all 0.3s ease; }
-    .btn-gold:hover { box-shadow:0 12px 40px rgba(201,169,110,0.4); transform:translateY(-2px); }
-    .btn-ghost { display:inline-flex; align-items:center; gap:10px; background:transparent; color:rgba(240,232,233,0.75); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; padding:15px 32px; border:1px solid rgba(201,169,110,0.3); border-radius:4px; cursor:pointer; text-decoration:none; transition:all 0.3s ease; }
-    .btn-ghost:hover { border-color:var(--gold); color:var(--gold-pale); background:rgba(201,169,110,0.05); }
-    .hero-stats { display:flex; gap:48px; margin-top:72px; padding-top:40px; border-top:1px solid rgba(201,169,110,0.12); }
-    .hero-stat-num { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:600; color:var(--gold); line-height:1; }
-    .hero-stat-label { font-size:11px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:rgba(240,232,233,0.35); margin-top:4px; }
-    @media (max-width:640px) { .hero-stats { gap:28px; } .hero-stat-num { font-size:28px; } }
-    /* Scroll reveal */
-    .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); }
-    .reveal.visible { opacity:1; transform:translateY(0); }
-    .reveal-pop { opacity:0; transform:scale(0.88) translateY(48px); transition:opacity 0.8s cubic-bezier(0.34,1.4,0.64,1), transform 0.8s cubic-bezier(0.34,1.4,0.64,1); }
-    .reveal-pop.visible { opacity:1; transform:scale(1) translateY(0); }
-    /* Common section */
-    .section { position:relative; z-index:1; }
-    .section-eyebrow { font-family:'Cinzel',serif; font-size:10px; font-weight:500; letter-spacing:0.35em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; display:block; }
-    .section-title { font-family:'Cormorant Garamond',serif; font-size:clamp(36px,5vw,64px); font-weight:300; line-height:1.1; color:#f5ede0; }
-    .section-title em { font-style:italic; font-weight:600; color:var(--gold); }
-    .section-body { font-size:15px; font-weight:300; line-height:1.85; color:rgba(240,232,233,0.45); max-width:540px; }
-    .gold-divider { display:block; width:48px; height:1px; background:linear-gradient(90deg,var(--gold),transparent); margin:20px 0; }
-    .gold-line { display:inline-flex; align-items:center; gap:16px; font-family:'Cinzel',serif; font-size:11px; font-weight:500; letter-spacing:0.2em; text-transform:uppercase; color:rgba(201,169,110,0.6); }
-    .gold-line::before,.gold-line::after { content:''; display:inline-block; width:32px; height:1px; background:rgba(201,169,110,0.3); }
-    /* Templates */
-    .templates-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:24px; max-width:1100px; margin:0 auto; }
-    @media (max-width:640px) { .templates-grid { grid-template-columns:repeat(2,1fr); gap:16px; } }
-    .template-card { position:relative; display:flex; flex-direction:column; border-radius:12px; overflow:hidden; background:#160a0c; border:1px solid rgba(201,169,110,0.1); cursor:pointer; aspect-ratio:3/5; transition:transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease; }
-    .template-card:hover { transform:translateY(-6px); box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(201,169,110,0.2); border-color:rgba(201,169,110,0.25); }
-    .card-media { position:relative; flex:1; overflow:hidden; background:#0e0608; }
-    .card-badge { position:absolute; top:10px; right:10px; z-index:40; display:flex; align-items:center; gap:5px; background:linear-gradient(135deg,var(--gold),#b8962e); color:var(--ink); font-size:9px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
-    .card-overlay { position:absolute; inset:0; z-index:30; background:rgba(14,6,8,0.75); backdrop-filter:blur(2px); opacity:0; transition:opacity 0.3s ease; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:20px; }
-    @media (min-width:1024px) { .template-card:hover .card-overlay { opacity:1; } }
-    .template-card.mobile-active .card-overlay { opacity:1; }
-    .card-btn { display:block; width:100%; text-align:center; padding:9px 16px; border-radius:6px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; text-decoration:none; transition:transform 0.15s; border:none; }
-    .card-btn:hover { transform:scale(1.04); }
-    .card-btn-preview-style { background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.9); border:1px solid rgba(255,255,255,0.2) !important; }
-    .card-btn-preview-style:hover { background:rgba(255,255,255,0.2); }
-    .card-btn-buy-style { background:linear-gradient(135deg,var(--gold),#b8962e); color:var(--ink); box-shadow:0 4px 16px rgba(201,169,110,0.35); }
-    .card-info { padding:12px 14px 14px; background:#160a0c; border-top:1px solid rgba(201,169,110,0.08); }
-    .card-name { font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:600; color:#f0e8e9; margin-bottom:4px; }
-    .card-price { display:flex; align-items:center; gap:8px; }
-    .price-current { font-size:16px; font-weight:700; color:var(--gold); }
-    .price-original { font-size:11px; color:rgba(240,232,233,0.3); text-decoration:line-through; }
-    .price-badge { font-size:9px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:#3ecf6c; background:rgba(62,207,108,0.12); padding:2px 6px; border-radius:3px; border:1px solid rgba(62,207,108,0.2); }
-    /* Features */
-    .features-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(201,169,110,0.08); border:1px solid rgba(201,169,110,0.08); border-radius:16px; overflow:hidden; }
-    @media (max-width:900px) { .features-grid { grid-template-columns:repeat(2,1fr); } }
-    @media (max-width:520px) { .features-grid { grid-template-columns:1fr; } }
-    .feature-cell { background:#0e0608; padding:40px 32px; transition:background 0.3s; }
-    .feature-cell:hover { background:#160a0c; }
-    .feature-icon { width:44px; height:44px; border-radius:10px; background:rgba(156,64,77,0.12); border:1px solid rgba(156,64,77,0.2); display:flex; align-items:center; justify-content:center; color:var(--crimson); margin-bottom:24px; }
-    .feature-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:#f0e8e9; margin-bottom:10px; }
-    .feature-text { font-size:13px; font-weight:300; line-height:1.75; color:rgba(240,232,233,0.4); }
-    /* Why */
-    .why-inner { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
-    @media (max-width:900px) { .why-inner { grid-template-columns:1fr; gap:60px; } .why-visual { display:none; } }
-    .why-point { display:flex; gap:24px; padding:32px 0; border-bottom:1px solid rgba(201,169,110,0.07); }
-    .why-point:last-child { border-bottom:none; }
-    .why-num { font-family:'Cormorant Garamond',serif; font-size:13px; font-weight:600; color:rgba(201,169,110,0.35); letter-spacing:0.1em; flex-shrink:0; padding-top:4px; width:28px; }
-    .why-point-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:#f0e8e9; margin-bottom:8px; }
-    .why-point-text { font-size:13px; font-weight:300; line-height:1.75; color:rgba(240,232,233,0.4); }
-    .why-card { background:#160a0c; border:1px solid rgba(201,169,110,0.12); border-radius:16px; padding:40px; position:relative; overflow:hidden; }
-    .why-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
-    .why-card-quote { font-family:'Cormorant Garamond',serif; font-size:28px; font-style:italic; font-weight:300; color:#f0e8e9; line-height:1.5; margin-bottom:24px; }
-    .why-card-quote span { color:var(--gold); }
-    .why-card-author { font-size:12px; font-weight:500; letter-spacing:0.08em; color:rgba(240,232,233,0.35); text-transform:uppercase; }
-    /* Steps */
-    .steps-inner { max-width:900px; margin:0 auto; }
-    .steps-track { display:grid; grid-template-columns:repeat(3,1fr); gap:0; position:relative; }
-    .steps-track::before { content:''; position:absolute; top:28px; left:calc(16.66% + 14px); right:calc(16.66% + 14px); height:1px; background:linear-gradient(90deg,var(--gold) 0%,rgba(201,169,110,0.2) 100%); }
-    @media (max-width:640px) { .steps-track { grid-template-columns:1fr; gap:32px; } .steps-track::before { display:none; } }
-    .step { text-align:center; padding:0 24px; }
-    .step-num { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,rgba(156,64,77,0.2),rgba(156,64,77,0.05)); border:1px solid rgba(156,64,77,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 28px; font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--crimson); position:relative; z-index:1; }
-    .step-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:#f0e8e9; margin-bottom:12px; }
-    .step-text { font-size:13px; font-weight:300; line-height:1.75; color:rgba(240,232,233,0.4); }
-    /* Pricing */
-    .pricing-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-    @media (max-width:640px) { .pricing-grid { grid-template-columns:1fr; } }
-    .pricing-card { background:#160a0c; border:1px solid rgba(201,169,110,0.1); border-radius:16px; padding:48px 40px; position:relative; overflow:hidden; transition:border-color 0.3s, transform 0.3s; }
-    .pricing-card:hover { border-color:rgba(201,169,110,0.25); transform:translateY(-4px); }
-    .pricing-card.featured { border-color:rgba(201,169,110,0.3); background:linear-gradient(135deg,#1e0c10 0%,#160a0c 100%); }
-    .pricing-card.featured::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
-    .featured-label { display:inline-block; font-family:'Cinzel',serif; font-size:9px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink); background:linear-gradient(135deg,var(--gold),#b8962e); padding:4px 12px; border-radius:20px; margin-bottom:24px; }
-    .pricing-name { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#f0e8e9; margin-bottom:8px; }
-    .pricing-tagline { font-size:13px; font-weight:300; color:rgba(240,232,233,0.4); margin-bottom:32px; line-height:1.6; }
-    .pricing-amount { margin-bottom:36px; }
-    .pricing-currency { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300; color:var(--gold); vertical-align:top; margin-top:8px; display:inline-block; }
-    .pricing-number { font-family:'Cormorant Garamond',serif; font-size:64px; font-weight:300; color:#f0e8e9; line-height:1; }
-    .pricing-period { font-size:13px; font-weight:300; color:rgba(240,232,233,0.3); display:block; margin-top:4px; }
-    .pricing-features { list-style:none; margin-bottom:40px; display:flex; flex-direction:column; gap:14px; }
-    .pricing-features li { display:flex; align-items:flex-start; gap:12px; font-size:13px; font-weight:300; line-height:1.5; color:rgba(240,232,233,0.6); }
-    .pricing-features li::before { content:'\2726'; color:var(--gold); font-size:9px; flex-shrink:0; margin-top:3px; }
-    /* CTA band */
-    .cta-band { padding:120px 24px; background:linear-gradient(135deg,#2d0a0e 0%,#160a0c 50%,#0e0608 100%); position:relative; overflow:hidden; text-align:center; }
-    .cta-band::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(201,169,110,0.3),transparent); }
-    .cta-deco { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:600px; border-radius:50%; background:radial-gradient(circle,rgba(156,64,77,0.12) 0%,transparent 70%); pointer-events:none; }
-    .cta-title { font-family:'Cormorant Garamond',serif; font-size:clamp(40px,6vw,72px); font-weight:300; line-height:1.1; color:#f5ede0; position:relative; z-index:1; }
-    .cta-title em { font-style:italic; font-weight:600; color:var(--gold); }
-    .cta-sub { font-size:15px; font-weight:300; color:rgba(240,232,233,0.4); max-width:480px; margin:20px auto 48px; line-height:1.8; position:relative; z-index:1; }
-    /* Footer */
-    footer { background:#07030404; padding:60px 40px 40px; border-top:1px solid rgba(201,169,110,0.08); }
-    .footer-inner { max-width:1100px; margin:0 auto; }
-    .footer-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:48px; gap:40px; flex-wrap:wrap; }
-    .footer-brand { max-width:280px; }
-    .footer-logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; font-style:italic; color:var(--gold); text-decoration:none; display:block; margin-bottom:12px; }
-    .footer-tagline { font-size:13px; font-weight:300; line-height:1.7; color:rgba(240,232,233,0.3); }
-    .footer-links-group h4 { font-family:'Cinzel',serif; font-size:9px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:rgba(201,169,110,0.5); margin-bottom:16px; }
-    .footer-links-group a { display:block; font-size:13px; font-weight:300; color:rgba(240,232,233,0.4); text-decoration:none; margin-bottom:10px; transition:color 0.2s; }
-    .footer-links-group a:hover { color:var(--gold-pale); }
-    .footer-bottom { padding-top:32px; border-top:1px solid rgba(201,169,110,0.07); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
-    .footer-copy { font-size:12px; font-weight:300; color:rgba(240,232,233,0.2); }
-    .footer-socials { display:flex; gap:16px; }
-    .footer-socials a { width:36px; height:36px; border-radius:8px; border:1px solid rgba(201,169,110,0.12); display:flex; align-items:center; justify-content:center; color:rgba(240,232,233,0.3); transition:all 0.2s; }
-    .footer-socials a:hover { border-color:var(--gold); color:var(--gold); }
-    .hidden { display:none !important; }
+    #mobile-backdrop { position: absolute; inset: 0; background: rgba(28,10,16,0.5); backdrop-filter: blur(4px); }
+    #mobile-panel {
+      position: absolute; right: 0; top: 0; bottom: 0; width: 80vw; max-width: 320px;
+      background: var(--ivory-card); border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; padding: 32px 24px;
+      box-shadow: -16px 0 48px rgba(180,100,80,0.1);
+    }
+    .mob-nav-link {
+      display: block; padding: 14px 0; font-size: 15px; font-weight: 500;
+      color: var(--ink-mid); text-decoration: none;
+      border-bottom: 1px solid var(--border); transition: color 0.2s;
+    }
+    .mob-nav-link:hover { color: var(--rose); }
+    .mob-nav-cta {
+      margin-top: auto; display: flex; align-items: center; justify-content: center;
+      background: var(--rose-deep); color: #fff; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 16px; border-radius: 4px; text-decoration: none;
+      box-shadow: 0 8px 24px rgba(160,48,80,0.25);
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--rose-deep);
+      color: #fff; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 16px 40px; border: none; border-radius: 4px;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 8px 32px rgba(160,48,80,0.3);
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover { background: var(--rose); box-shadow: 0 12px 40px rgba(160,48,80,0.45); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent; color: var(--rose-deep);
+      font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 15px 36px; border: 1.5px solid rgba(160,48,80,0.35); border-radius: 4px;
+      cursor: pointer; text-decoration: none; transition: all 0.3s ease;
+    }
+    .btn-outline:hover { border-color: var(--rose-deep); background: var(--rose-pale); transform: translateY(-1px); }
+    .btn-gold {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+      color: #fff; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 16px 40px; border: none; border-radius: 4px;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 8px 32px rgba(180,140,40,0.35);
+      transition: all 0.3s ease;
+    }
+    .btn-gold:hover { box-shadow: 0 12px 40px rgba(180,140,40,0.5); transform: translateY(-2px); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(36px); transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-pop { opacity: 0; transform: scale(0.9) translateY(40px); transition: opacity 0.75s cubic-bezier(0.34,1.4,0.64,1), transform 0.75s cubic-bezier(0.34,1.4,0.64,1); }
+    .reveal-pop.visible { opacity: 1; transform: scale(1) translateY(0); }
+
+    /* ── TYPOGRAPHY HELPERS ── */
+    .eyebrow {
+      font-family: 'Cinzel', serif; font-size: 10px; font-weight: 500;
+      letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold); display: block; margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 5vw, 62px); font-weight: 300; line-height: 1.1;
+      color: var(--ink);
+    }
+    .section-title em { font-style: italic; font-weight: 600; color: var(--rose-deep); }
+    .section-body { font-size: 15px; font-weight: 300; line-height: 1.85; color: var(--muted); max-width: 520px; }
+    .gold-rule { display: block; width: 48px; height: 2px; background: linear-gradient(90deg, var(--gold-light), transparent); margin: 20px 0; border-radius: 2px; }
+    .section { position: relative; z-index: 1; }
+    .hidden { display: none !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 140px 24px 80px;
+      position: relative; overflow: hidden;
+      background: var(--ivory);
+    }
+    /* Decorative petals / blobs */
+    .hero::before {
+      content: '';
+      position: absolute; top: -120px; right: -160px;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,86,106,0.09) 0%, rgba(196,86,106,0.04) 40%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -80px; left: -120px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,136,42,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-pattern {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
+      background-image:
+        radial-gradient(rgba(196,86,106,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--rose-pale); border: 1px solid rgba(196,86,106,0.2);
+      color: var(--rose-deep); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.08em; padding: 8px 20px; border-radius: 40px;
+      margin-bottom: 32px;
+    }
+    .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--rose); display: inline-block; animation: badgePulse 2s ease-in-out infinite; }
+    @keyframes badgePulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.6; transform:scale(0.8); } }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(54px, 9vw, 120px);
+      font-weight: 300; line-height: 0.95;
+      color: var(--ink); letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .hero-title em {
+      font-style: italic; font-weight: 600;
+      color: var(--rose-deep);
+      display: block;
+    }
+    .hero-title .gold-word {
+      font-style: italic; font-weight: 400;
+      color: var(--gold);
+    }
+    .hero-sub {
+      font-size: 16px; font-weight: 300; line-height: 1.8;
+      color: var(--muted); max-width: 500px; margin: 0 auto 52px;
+    }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+    /* Floating cards */
+    .hero-float-cards {
+      display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+      margin-top: 72px; position: relative; z-index: 1;
+    }
+    .float-card {
+      display: flex; align-items: center; gap: 12px;
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 20px;
+      box-shadow: 0 4px 24px rgba(180,100,80,0.07);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .float-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(180,100,80,0.12); }
+    .float-card-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .float-card-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+    .float-card-value { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+
+    /* ── MARQUEE STRIP ── */
+    .marquee-strip {
+      background: var(--rose-deep); overflow: hidden;
+      padding: 14px 0; white-space: nowrap;
+    }
+    .marquee-track {
+      display: inline-flex; gap: 48px;
+      animation: marqueeScroll 22s linear infinite;
+    }
+    @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .marquee-item {
+      font-family: 'Cinzel', serif; font-size: 11px; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.85);
+      display: inline-flex; align-items: center; gap: 24px;
+    }
+    .marquee-item::after { content: '✦'; color: rgba(255,255,255,0.4); font-size: 8px; }
+
+    /* ── TEMPLATES ── */
+    #templates { padding: 120px 24px; background: var(--ivory); }
+    .templates-header { text-align: center; margin-bottom: 72px; }
+    .templates-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px; max-width: 1100px; margin: 0 auto;
+    }
+    @media (max-width: 640px) { .templates-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+
+    /* Template card */
+    .template-card {
+      position: relative; display: flex; flex-direction: column;
+      border-radius: 16px; overflow: hidden;
+      background: #fff; cursor: pointer; aspect-ratio: 3/5;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(180,100,80,0.06);
+      transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.4s ease;
+    }
+    .template-card:hover { transform: translateY(-8px); box-shadow: 0 24px 64px rgba(160,48,80,0.16); }
+    .card-media { position: relative; flex: 1; overflow: hidden; background: var(--ivory-deep); }
+    .card-badge {
+      position: absolute; top: 10px; right: 10px; z-index: 40;
+      display: flex; align-items: center; gap: 5px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #fff; font-size: 9px; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(180,140,40,0.4);
+    }
+    .card-overlay {
+      position: absolute; inset: 0; z-index: 30;
+      background: linear-gradient(to top, rgba(28,10,16,0.75) 0%, rgba(28,10,16,0.3) 60%, transparent 100%);
+      opacity: 0; transition: opacity 0.35s ease;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      gap: 8px; padding: 20px;
+    }
+    @media (min-width: 1024px) { .template-card:hover .card-overlay { opacity: 1; } }
+    .template-card.mobile-active .card-overlay { opacity: 1; }
+    .card-btn {
+      display: block; width: 100%; text-align: center;
+      padding: 10px 16px; border-radius: 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; text-decoration: none; transition: transform 0.15s; border: none;
+    }
+    .card-btn:hover { transform: scale(1.04); }
+    .card-btn-preview-style { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.35) !important; backdrop-filter: blur(4px); }
+    .card-btn-buy-style { background: var(--rose-deep); color: #fff; box-shadow: 0 4px 16px rgba(160,48,80,0.4); }
+    .card-info { padding: 14px 16px 16px; background: #fff; border-top: 1px solid var(--border); }
+    .card-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+    .card-price { display: flex; align-items: center; gap: 8px; }
+    .price-current { font-size: 17px; font-weight: 700; color: var(--rose-deep); }
+    .price-original { font-size: 12px; color: var(--muted); text-decoration: line-through; }
+    .price-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1a7a4a; background: rgba(26,122,74,0.1); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(26,122,74,0.15); }
+
+    /* ── FEATURES ── */
+    #features { padding: 120px 24px; background: var(--ivory-deep); }
+    .features-inner { max-width: 1100px; margin: 0 auto; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) { .features-grid { grid-template-columns: 1fr 1fr; gap: 14px; } }
+    .feature-card {
+      background: var(--ivory-card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px 28px;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(180,100,80,0.1); border-color: rgba(196,86,106,0.25); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 14px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--rose-pale); color: var(--rose-deep);
+    }
+    .feature-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+    .feature-text { font-size: 13px; font-weight: 300; line-height: 1.75; color: var(--muted); }
+
+    /* ── WHY DIGITAL ── */
+    #why { padding: 140px 24px; background: var(--ivory); }
+    .why-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    @media (max-width: 900px) { .why-inner { grid-template-columns: 1fr; gap: 56px; } .why-visual { display: none; } }
+    .why-point { display: flex; gap: 20px; padding: 28px 0; border-bottom: 1px solid var(--border); }
+    .why-point:last-child { border-bottom: none; }
+    .why-num { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; color: var(--gold); letter-spacing: 0.1em; flex-shrink: 0; padding-top: 3px; min-width: 28px; }
+    .why-point-title { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+    .why-point-text { font-size: 13px; font-weight: 300; line-height: 1.75; color: var(--muted); }
+    /* Visual card */
+    .why-visual-card {
+      background: linear-gradient(135deg, #fff9f4 0%, #fff 100%);
+      border: 1px solid var(--border); border-radius: 24px;
+      padding: 48px 40px; position: relative; overflow: hidden;
+      box-shadow: 0 16px 64px rgba(180,100,80,0.1);
+    }
+    .why-visual-card::before {
+      content: '&#10086;';
+      position: absolute; top: -20px; right: 24px;
+      font-size: 100px; color: rgba(196,86,106,0.05); pointer-events: none;
+      font-family: serif; line-height: 1;
+    }
+    .why-card-quote { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-style: italic; font-weight: 400; color: var(--ink); line-height: 1.55; margin-bottom: 20px; }
+    .why-card-quote em { color: var(--rose-deep); font-style: italic; }
+    .why-card-author { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .why-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    .why-stat-box { background: var(--rose-pale); border: 1px solid rgba(196,86,106,0.12); border-radius: 14px; padding: 20px; text-align: center; }
+    .why-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; color: var(--rose-deep); line-height: 1; }
+    .why-stat-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+    /* ── HOW IT WORKS ── */
+    #how-it-works { padding: 120px 24px; background: var(--gold-bg); }
+    .steps-inner { max-width: 900px; margin: 0 auto; }
+    .steps-header { text-align: center; margin-bottom: 80px; }
+    .steps-track { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; position: relative; }
+    .steps-track::before { content: ''; position: absolute; top: 28px; left: calc(16.66% + 16px); right: calc(16.66% + 16px); height: 1px; background: linear-gradient(90deg, var(--gold-light), rgba(184,136,42,0.2)); }
+    @media (max-width: 640px) { .steps-track { grid-template-columns: 1fr; gap: 32px; } .steps-track::before { display: none; } }
+    .step { text-align: center; padding: 0 16px; }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      color: #fff; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px; position: relative; z-index: 1;
+      box-shadow: 0 8px 24px rgba(180,140,40,0.35);
+    }
+    .step-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+    .step-text { font-size: 13px; font-weight: 300; line-height: 1.75; color: var(--muted); }
+
+    /* ── PRICING ── */
+    #pricing { padding: 120px 24px; background: var(--ivory); }
+    .pricing-inner { max-width: 900px; margin: 0 auto; }
+    .pricing-header { text-align: center; margin-bottom: 64px; }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr; } }
+    .pricing-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 20px;
+      padding: 48px 40px; position: relative; overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 24px rgba(180,100,80,0.06);
+    }
+    .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(180,100,80,0.12); }
+    .pricing-card.featured {
+      border-color: rgba(196,86,106,0.35);
+      background: linear-gradient(160deg, #fff9f4 0%, #fff 70%);
+    }
+    .pricing-card.featured::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rose-deep), var(--rose), var(--gold-light)); }
+    .featured-label { display: inline-block; font-family: 'Cinzel', serif; font-size: 9px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; background: linear-gradient(135deg, var(--rose-deep), var(--rose)); padding: 4px 14px; border-radius: 20px; margin-bottom: 20px; }
+    .pricing-name { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+    .pricing-tagline { font-size: 13px; font-weight: 300; color: var(--muted); margin-bottom: 32px; line-height: 1.6; }
+    .pricing-amount { margin-bottom: 36px; display: flex; align-items: flex-end; gap: 4px; }
+    .pricing-currency { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; color: var(--rose-deep); margin-bottom: 6px; }
+    .pricing-number { font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300; color: var(--ink); line-height: 1; }
+    .pricing-period-wrap { display: flex; flex-direction: column; gap: 2px; margin-bottom: 4px; }
+    .pricing-period { font-size: 12px; font-weight: 300; color: var(--muted); }
+    .pricing-features { list-style: none; margin-bottom: 40px; display: flex; flex-direction: column; gap: 12px; }
+    .pricing-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; font-weight: 400; line-height: 1.5; color: var(--ink-mid); }
+    .pricing-features li::before { content: ''; width: 18px; height: 18px; border-radius: 50%; background: var(--rose-pale); border: 1px solid rgba(196,86,106,0.2); flex-shrink: 0; background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='%23a03050' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; }
+
+    /* ── CTA BAND ── */
+    .cta-band {
+      padding: 120px 24px; text-align: center; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--rose-deep) 0%, #c4566a 50%, #d4704a 100%);
+    }
+    .cta-band::before { content: ''; position: absolute; top: -100px; right: -100px; width: 500px; height: 500px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .cta-band::after { content: ''; position: absolute; bottom: -80px; left: -80px; width: 400px; height: 400px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none; }
+    .cta-eyebrow { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.7); display: block; margin-bottom: 20px; }
+    .cta-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(40px, 6vw, 72px); font-weight: 300; line-height: 1.1; color: #fff; position: relative; z-index: 1; }
+    .cta-title em { font-style: italic; font-weight: 600; color: var(--gold-pale); }
+    .cta-sub { font-size: 15px; font-weight: 300; color: rgba(255,255,255,0.75); max-width: 480px; margin: 20px auto 48px; line-height: 1.8; position: relative; z-index: 1; }
+    .btn-cta-white { display: inline-flex; align-items: center; gap: 10px; background: #fff; color: var(--rose-deep); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 16px 44px; border-radius: 4px; text-decoration: none; box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+    .btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,0,0,0.3); }
+
+    /* ── FOOTER ── */
+    footer { background: var(--ink); padding: 64px 48px 40px; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px; gap: 40px; flex-wrap: wrap; }
+    .footer-brand { max-width: 260px; }
+    .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; font-style: italic; color: var(--gold-light); text-decoration: none; display: block; margin-bottom: 12px; }
+    .footer-tagline { font-size: 13px; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.3); }
+    .footer-links-group h4 { font-family: 'Cinzel', serif; font-size: 9px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(184,136,42,0.6); margin-bottom: 16px; }
+    .footer-links-group a { display: block; font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.4); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; }
+    .footer-links-group a:hover { color: rgba(255,255,255,0.8); }
+    .footer-bottom { padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .footer-copy { font-size: 12px; font-weight: 300; color: rgba(255,255,255,0.2); }
+    .footer-socials { display: flex; gap: 12px; }
+    .footer-socials a { width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); transition: all 0.2s; }
+    .footer-socials a:hover { border-color: var(--gold-light); color: var(--gold-light); }
+    @media (max-width: 640px) { footer { padding: 48px 20px 32px; } .footer-top { flex-direction: column; gap: 32px; } }
   </style>
 </head>
 <body>
@@ -207,7 +478,7 @@
     <a href="#how-it-works">How It Works</a>
     <a href="#pricing">Pricing</a>
     <a href="/login" id="nav-login-link">Login</a>
-    <a href="/dashboard" id="nav-dashboard-link" class="hidden" style="font-weight:600;color:var(--gold-pale)">Dashboard</a>
+    <a href="/dashboard" id="nav-dashboard-link" class="hidden" style="font-weight:600;color:var(--rose-deep)">Dashboard</a>
     <a href="#templates" class="nav-cta">Get Started</a>
   </div>
   <button id="mobile-menu-btn" aria-label="Open menu">
@@ -219,9 +490,9 @@
 <div id="mobile-menu">
   <div id="mobile-backdrop"></div>
   <div id="mobile-panel">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:40px">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--gold)">Sync &amp; Style</span>
-      <button id="mobile-close-btn" style="background:none;border:none;color:rgba(240,232,233,0.5);cursor:pointer">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:36px">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;font-style:italic;color:var(--rose-deep)">Sync &amp; Style</span>
+      <button id="mobile-close-btn" style="background:none;border:none;color:var(--muted);cursor:pointer">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
@@ -230,58 +501,93 @@
     <a href="#how-it-works" class="mob-nav-link">How It Works</a>
     <a href="#pricing" class="mob-nav-link">Pricing</a>
     <a href="/login" id="mob-login-link" class="mob-nav-link">Login</a>
-    <a href="/dashboard" id="mob-dashboard-link" class="mob-nav-link hidden" style="color:var(--gold)">Dashboard</a>
+    <a href="/dashboard" id="mob-dashboard-link" class="mob-nav-link hidden" style="color:var(--rose-deep)">Dashboard</a>
     <a href="#templates" class="mob-nav-cta" style="margin-top:32px">Get Started</a>
   </div>
 </div>
 
 <!-- HERO -->
 <section class="hero section">
-  <div class="hero-bg"></div>
-  <div class="hero-ring" style="width:600px;height:600px;animation:ringPulse 8s ease-in-out infinite;animation-delay:0s"></div>
-  <div class="hero-ring" style="width:900px;height:900px;animation:ringPulse 8s ease-in-out infinite;animation-delay:2s;opacity:0.4"></div>
-  <div class="hero-ring" style="width:1200px;height:1200px;animation:ringPulse 8s ease-in-out infinite;animation-delay:4s;opacity:0.2"></div>
+  <div class="hero-pattern"></div>
   <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center">
-    <div class="hero-eyebrow reveal" style="transition-delay:0ms">Digital Wedding Invitations</div>
-    <h1 class="hero-title reveal" style="transition-delay:100ms">
-      Your Love Story,<br><em>Beautifully Told</em>
+    <div class="hero-badge reveal" style="transition-delay:0ms">
+      <span></span> Digital Wedding Invitations
+    </div>
+    <h1 class="hero-title reveal" style="transition-delay:80ms">
+      Your Love Story,
+      <em>Beautifully Told</em>
     </h1>
-    <p class="hero-subtitle reveal" style="transition-delay:200ms">
-      Animated invitation websites with RSVP, countdown, music &amp; WhatsApp sharing.<br>One-time payment. No subscription.
+    <p class="hero-sub reveal" style="transition-delay:180ms">
+      Animated invitation websites with RSVP, countdown, music &amp; WhatsApp sharing. One-time payment. No subscription.
     </p>
-    <div class="hero-actions reveal" style="transition-delay:300ms">
-      <a href="#templates" class="btn-gold">
+    <div class="hero-actions reveal" style="transition-delay:280ms">
+      <a href="#templates" class="btn-primary">
         Explore Templates
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
       </a>
-      <a href="/wedding/islamic-invitation" target="_blank" class="btn-ghost">See a Live Demo</a>
+      <a href="/wedding/islamic-invitation" target="_blank" class="btn-outline">See a Live Demo</a>
     </div>
-    <div class="hero-stats reveal" style="transition-delay:450ms">
-      <div style="text-align:center">
-        <div class="hero-stat-num">500+</div>
-        <div class="hero-stat-label">Invitations Sent</div>
+    <div class="hero-float-cards reveal" style="transition-delay:400ms">
+      <div class="float-card">
+        <div class="float-card-icon" style="background:var(--rose-pale)">
+          <svg width="20" height="20" fill="none" stroke="var(--rose-deep)" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        </div>
+        <div>
+          <div class="float-card-value">500+</div>
+          <div class="float-card-label">Invitations Sent</div>
+        </div>
       </div>
-      <div style="width:1px;background:rgba(201,169,110,0.15)"></div>
-      <div style="text-align:center">
-        <div class="hero-stat-num">&#8377;499</div>
-        <div class="hero-stat-label">Starting Price</div>
+      <div class="float-card">
+        <div class="float-card-icon" style="background:var(--gold-pale)">
+          <svg width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <div class="float-card-value">&#8377;499</div>
+          <div class="float-card-label">Starting From</div>
+        </div>
       </div>
-      <div style="width:1px;background:rgba(201,169,110,0.15)"></div>
-      <div style="text-align:center">
-        <div class="hero-stat-num">100%</div>
-        <div class="hero-stat-label">Paperless</div>
+      <div class="float-card">
+        <div class="float-card-icon" style="background:#edf7f1">
+          <svg width="20" height="20" fill="none" stroke="#1a7a4a" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <div class="float-card-value">4.9&#9733;</div>
+          <div class="float-card-label">Customer Rating</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- MARQUEE STRIP -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span class="marquee-item">Islamic Wedding Invitations</span>
+    <span class="marquee-item">Live RSVP Tracking</span>
+    <span class="marquee-item">Animated Countdown</span>
+    <span class="marquee-item">Background Music</span>
+    <span class="marquee-item">WhatsApp Sharing</span>
+    <span class="marquee-item">One-Time Payment</span>
+    <span class="marquee-item">Lifetime Access</span>
+    <span class="marquee-item">Google Maps Venue</span>
+    <span class="marquee-item">Islamic Wedding Invitations</span>
+    <span class="marquee-item">Live RSVP Tracking</span>
+    <span class="marquee-item">Animated Countdown</span>
+    <span class="marquee-item">Background Music</span>
+    <span class="marquee-item">WhatsApp Sharing</span>
+    <span class="marquee-item">One-Time Payment</span>
+    <span class="marquee-item">Lifetime Access</span>
+    <span class="marquee-item">Google Maps Venue</span>
+  </div>
+</div>
+
 <!-- TEMPLATES -->
 <section id="templates" class="section">
-  <div style="padding:120px 24px;background:linear-gradient(180deg,var(--ink) 0%,#160a0c 100%)">
-    <div style="text-align:center;margin-bottom:72px" class="reveal">
-      <span class="section-eyebrow">Our Collection</span>
+  <div style="padding:120px 24px;background:var(--ivory)">
+    <div class="templates-header reveal">
+      <span class="eyebrow">Our Collection</span>
       <h2 class="section-title" style="margin-bottom:16px">Handcrafted <em>Templates</em></h2>
-      <p class="section-body" style="margin:0 auto;text-align:center">Each template is a masterpiece &#8212; built with cultural care and modern elegance.</p>
+      <p class="section-body" style="margin:0 auto;text-align:center">Each template crafted with cultural care and modern elegance.</p>
     </div>
     <div class="templates-grid" id="templates-grid">
       <div class="template-card reveal-pop" style="transition-delay:0ms">
@@ -313,7 +619,7 @@
       </div>
     </div>
     <div style="text-align:center;margin-top:48px">
-      <button id="view-more-templates" class="btn-ghost hidden" onclick="showMoreTemplates()">
+      <button id="view-more-templates" class="btn-outline hidden" onclick="showMoreTemplates()">
         View All Templates
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
       </button>
@@ -323,52 +629,52 @@
 
 <!-- FEATURES -->
 <section id="features" class="section">
-  <div style="padding:120px 24px;background:#0a0406">
+  <div style="padding:120px 24px;background:var(--ivory-deep)">
     <div style="max-width:1100px;margin:0 auto">
-      <div class="reveal" style="margin-bottom:80px">
-        <span class="section-eyebrow">What's Included</span>
+      <div class="reveal" style="margin-bottom:64px">
+        <span class="eyebrow">What's Included</span>
         <h2 class="section-title">Everything You <em>Need</em></h2>
-        <span class="gold-divider"></span>
-        <p class="section-body">Every feature designed to make your guests feel the magic before they even arrive.</p>
+        <span class="gold-rule"></span>
+        <p class="section-body">Every feature crafted to make your guests feel the magic before they even arrive.</p>
       </div>
       <div class="features-grid">
-        <div class="feature-cell reveal" style="transition-delay:0ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:0ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
           <div class="feature-title">Live Countdown</div>
           <div class="feature-text">Animated countdown to your special day, building anticipation with every tick.</div>
         </div>
-        <div class="feature-cell reveal" style="transition-delay:60ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:60ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
           <div class="feature-title">RSVP &amp; Messaging</div>
           <div class="feature-text">Collect attendance confirmations and guest messages directly from the invitation.</div>
         </div>
-        <div class="feature-cell reveal" style="transition-delay:120ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:120ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg></div>
           <div class="feature-title">Background Music</div>
           <div class="feature-text">Romantic instrumentals with an elegant mute toggle for a cinematic experience.</div>
         </div>
-        <div class="feature-cell reveal" style="transition-delay:180ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:180ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
           <div class="feature-title">Venue &amp; Maps</div>
           <div class="feature-text">Integrated Google Maps for seamless navigation to your venues.</div>
         </div>
-        <div class="feature-cell reveal" style="transition-delay:0ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:0ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></div>
           <div class="feature-title">Premium Animations</div>
           <div class="feature-text">3D door reveals, curtains, and sparkles for a truly magical opening.</div>
         </div>
-        <div class="feature-cell reveal" style="transition-delay:60ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:60ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
           <div class="feature-title">Photo Gallery</div>
           <div class="feature-text">High-quality slideshows and hero images to showcase your journey together.</div>
         </div>
-        <div class="feature-cell reveal" style="transition-delay:120ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:120ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg></div>
           <div class="feature-title">WhatsApp Sharing</div>
           <div class="feature-text">Share your invitation link instantly via WhatsApp, email, or social media.</div>
         </div>
-        <div class="feature-cell reveal" style="transition-delay:180ms">
-          <div class="feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg></div>
+        <div class="feature-card reveal" style="transition-delay:180ms">
+          <div class="feature-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg></div>
           <div class="feature-title">Full Customization</div>
           <div class="feature-text">Your names, date, venue, dress code &mdash; every detail, your way.</div>
         </div>
@@ -379,47 +685,40 @@
 
 <!-- WHY DIGITAL -->
 <section id="why" class="section">
-  <div style="padding:140px 24px;background:linear-gradient(180deg,#0a0406 0%,var(--ink) 100%)">
+  <div style="padding:140px 24px;background:var(--ivory)">
     <div class="why-inner">
       <div>
         <div class="reveal">
-          <span class="section-eyebrow">Why Go Digital</span>
+          <span class="eyebrow">Why Go Digital</span>
           <h2 class="section-title">Beyond<br><em>Paper</em></h2>
-          <span class="gold-divider"></span>
+          <span class="gold-rule"></span>
         </div>
         <div>
-          <div class="why-point reveal" style="transition-delay:100ms">
+          <div class="why-point reveal" style="transition-delay:80ms">
             <div class="why-num">01</div>
-            <div><div class="why-point-title">Instant Global Reach</div><div class="why-point-text">Send across the world in seconds via WhatsApp or email. No shipping delays, no lost mail &mdash; just instant joy delivered to every guest.</div></div>
+            <div><div class="why-point-title">Instant Global Reach</div><div class="why-point-text">Send across the world in seconds via WhatsApp or email. No shipping delays, no lost mail &mdash; just instant joy.</div></div>
           </div>
-          <div class="why-point reveal" style="transition-delay:150ms">
+          <div class="why-point reveal" style="transition-delay:130ms">
             <div class="why-num">02</div>
-            <div><div class="why-point-title">Alive with Experience</div><div class="why-point-text">Music, animation, countdown, and RSVP &mdash; your invitation isn't a piece of paper, it's a moment your guests will remember opening.</div></div>
+            <div><div class="why-point-title">Alive with Experience</div><div class="why-point-text">Music, animation, countdown and RSVP &mdash; a moment your guests will remember opening.</div></div>
           </div>
-          <div class="why-point reveal" style="transition-delay:200ms">
+          <div class="why-point reveal" style="transition-delay:180ms">
             <div class="why-num">03</div>
-            <div><div class="why-point-title">Eco-Conscious Celebration</div><div class="why-point-text">100% paperless. Celebrate your love while being kind to the planet. No trees, no waste, no guilt.</div></div>
+            <div><div class="why-point-title">Eco-Conscious Celebration</div><div class="why-point-text">100% paperless. Celebrate your love while being kind to the planet.</div></div>
           </div>
-          <div class="why-point reveal" style="transition-delay:250ms">
+          <div class="why-point reveal" style="transition-delay:230ms">
             <div class="why-num">04</div>
-            <div><div class="why-point-title">Real-Time RSVP Tracking</div><div class="why-point-text">No more spreadsheets. See who's coming, who's not, and manage your guest list from a clean dashboard.</div></div>
+            <div><div class="why-point-title">Real-Time RSVP Tracking</div><div class="why-point-text">See who's coming, who's not, and manage your guest list from a clean dashboard.</div></div>
           </div>
         </div>
       </div>
-      <div class="why-visual reveal" style="transition-delay:200ms">
-        <div class="why-card">
-          <div class="why-card-quote">"Finally, an invitation that feels as <span>special</span> as the day itself."</div>
+      <div class="why-visual reveal" style="transition-delay:150ms">
+        <div class="why-visual-card">
+          <div class="why-card-quote">"Finally, an invitation that feels as <em>special</em> as the day itself."</div>
           <div class="why-card-author">&#8212; A Happy Couple</div>
-          <div style="position:absolute;bottom:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(156,64,77,0.12) 0%,transparent 70%)"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
-          <div style="background:#160a0c;border:1px solid rgba(201,169,110,0.1);border-radius:12px;padding:24px;text-align:center">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:var(--gold);line-height:1">500+</div>
-            <div style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,232,233,0.3);margin-top:6px">Invitations Sent</div>
-          </div>
-          <div style="background:#160a0c;border:1px solid rgba(201,169,110,0.1);border-radius:12px;padding:24px;text-align:center">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:var(--gold);line-height:1">4.9&#9733;</div>
-            <div style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,232,233,0.3);margin-top:6px">Avg. Rating</div>
+          <div class="why-stat-row">
+            <div class="why-stat-box"><div class="why-stat-num">500+</div><div class="why-stat-label">Invitations Sent</div></div>
+            <div class="why-stat-box"><div class="why-stat-num">4.9&#9733;</div><div class="why-stat-label">Avg. Rating</div></div>
           </div>
         </div>
       </div>
@@ -429,12 +728,12 @@
 
 <!-- HOW IT WORKS -->
 <section id="how-it-works" class="section">
-  <div style="padding:120px 24px;background:#0a0406">
+  <div style="padding:120px 24px;background:var(--gold-bg)">
     <div class="steps-inner">
-      <div style="text-align:center;margin-bottom:80px" class="reveal">
-        <span class="section-eyebrow">The Process</span>
+      <div class="steps-header reveal">
+        <span class="eyebrow">The Process</span>
         <h2 class="section-title">Ready in <em>Minutes</em></h2>
-        <p class="section-body" style="margin:20px auto 0;text-align:center">From choosing a template to sharing your link &mdash; it's that simple.</p>
+        <p class="section-body" style="margin:16px auto 0;text-align:center">From choosing a template to sharing your link &mdash; it's that simple.</p>
       </div>
       <div class="steps-track">
         <div class="step reveal" style="transition-delay:0ms">
@@ -459,10 +758,10 @@
 
 <!-- PRICING -->
 <section id="pricing" class="section">
-  <div style="padding:120px 24px;background:var(--ink)">
-    <div style="max-width:900px;margin:0 auto">
-      <div style="text-align:center;margin-bottom:64px" class="reveal">
-        <span class="section-eyebrow">Simple Pricing</span>
+  <div style="padding:120px 24px;background:var(--ivory)">
+    <div class="pricing-inner">
+      <div class="pricing-header reveal">
+        <span class="eyebrow">Simple Pricing</span>
         <h2 class="section-title">One-Time <em>Payment</em></h2>
         <p class="section-body" style="margin:16px auto 0;text-align:center">No subscriptions. No hidden fees. Pay once, keep forever.</p>
       </div>
@@ -471,8 +770,9 @@
           <div class="pricing-name">Classic</div>
           <div class="pricing-tagline">All the essentials to create a beautiful digital invitation your guests will love.</div>
           <div class="pricing-amount">
-            <span class="pricing-currency">&#8377;</span><span class="pricing-number">499</span>
-            <span class="pricing-period">one-time payment &middot; lifetime access</span>
+            <span class="pricing-currency">&#8377;</span>
+            <span class="pricing-number">499</span>
+            <div class="pricing-period-wrap"><span class="pricing-period">one-time payment</span><span class="pricing-period">lifetime access</span></div>
           </div>
           <ul class="pricing-features">
             <li>Animated invitation website</li>
@@ -482,15 +782,16 @@
             <li>WhatsApp &amp; email sharing</li>
             <li>Lifetime access</li>
           </ul>
-          <a href="#templates" class="btn-ghost" style="width:100%;justify-content:center">Choose Classic</a>
+          <a href="#templates" class="btn-outline" style="width:100%;justify-content:center">Choose Classic</a>
         </div>
         <div class="pricing-card featured reveal" style="transition-delay:100ms">
           <span class="featured-label">Most Popular</span>
           <div class="pricing-name">Premium</div>
           <div class="pricing-tagline">The full experience &mdash; cinematic animations, music, and photo galleries.</div>
           <div class="pricing-amount">
-            <span class="pricing-currency">&#8377;</span><span class="pricing-number">999</span>
-            <span class="pricing-period" style="color:rgba(240,232,233,0.3)"><s style="color:rgba(240,232,233,0.2)">&#8377;1499</s> &middot; save &#8377;500</span>
+            <span class="pricing-currency">&#8377;</span>
+            <span class="pricing-number">999</span>
+            <div class="pricing-period-wrap"><span class="pricing-period" style="text-decoration:line-through;color:#ccc">&#8377;1499</span><span class="pricing-period" style="color:var(--rose-deep);font-weight:600">Save &#8377;500</span></div>
           </div>
           <ul class="pricing-features">
             <li>Everything in Classic</li>
@@ -500,7 +801,7 @@
             <li>Sparkle &amp; particle effects</li>
             <li>Priority support</li>
           </ul>
-          <a href="#templates" class="btn-gold" style="width:100%;justify-content:center">Choose Premium</a>
+          <a href="#templates" class="btn-primary" style="width:100%;justify-content:center">Choose Premium</a>
         </div>
       </div>
     </div>
@@ -509,17 +810,16 @@
 
 <!-- CTA BAND -->
 <section class="cta-band section">
-  <div class="cta-deco"></div>
   <div style="position:relative;z-index:1">
-    <span class="gold-line reveal">Begin Your Story</span>
-    <h2 class="cta-title reveal" style="transition-delay:100ms;margin-top:24px">
+    <span class="cta-eyebrow reveal">Begin Your Story</span>
+    <h2 class="cta-title reveal" style="transition-delay:100ms;margin-top:16px">
       Your Day Deserves<br><em>Something Extraordinary</em>
     </h2>
     <p class="cta-sub reveal" style="transition-delay:200ms">
       Join hundreds of couples who chose a digital invitation as memorable as the moment itself.
     </p>
     <div class="reveal" style="transition-delay:300ms">
-      <a href="#templates" class="btn-gold">
+      <a href="#templates" class="btn-cta-white">
         Start Creating
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
       </a>
@@ -559,12 +859,8 @@
     <div class="footer-bottom">
       <div class="footer-copy">&copy; <span id="year"></span> Sync &amp; Style &middot; Crafted with &#9825;</div>
       <div class="footer-socials">
-        <a href="#" aria-label="Instagram">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-        </a>
-        <a href="#" aria-label="Email">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-        </a>
+        <a href="#" aria-label="Instagram"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+        <a href="#" aria-label="Email"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>
       </div>
     </div>
   </div>
@@ -573,28 +869,23 @@
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Year
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  // Navbar scroll
   const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 40); }, { passive: true });
+  window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
 
-  // Mobile menu
   const mobileMenu = document.getElementById('mobile-menu');
   document.getElementById('mobile-menu-btn').addEventListener('click', () => mobileMenu.classList.add('open'));
   document.getElementById('mobile-close-btn').addEventListener('click', () => mobileMenu.classList.remove('open'));
   document.getElementById('mobile-backdrop').addEventListener('click', () => mobileMenu.classList.remove('open'));
   mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
 
-  // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
+  }, { threshold: 0.1 });
   document.querySelectorAll('.reveal, .reveal-pop').forEach(el => observer.observe(el));
 
-  // Mobile card tap
   document.addEventListener('click', (e) => {
     const card = e.target.closest('.template-card');
     if (!card) { document.querySelectorAll('.template-card.mobile-active').forEach(c => c.classList.remove('mobile-active')); return; }
@@ -605,7 +896,6 @@
     }
   });
 
-  // Supabase
   let sb;
   async function initSupabase() {
     try {
@@ -633,27 +923,15 @@
     card.className = 'template-card reveal-pop';
     card.style.transitionDelay = (index * 80) + 'ms';
     card.setAttribute('data-template-id', t.id);
-    const badgeHTML = t.is_premium
-      ? `<div class="card-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>` : '';
+    const badgeHTML = t.is_premium ? '<div class="card-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>' : '';
     const mediaHTML = t.preview_url
-      ? `<div class="iframe-preview-container"><iframe src="${t.preview_url}?preview=true" class="preview-iframe" scrolling="no"></iframe></div>`
-      : t.placeholder_url ? `<img src="${t.placeholder_url}" style="width:100%;height:100%;object-fit:cover" alt="${t.name}">` : '';
+      ? '<div class="iframe-preview-container"><iframe src="' + t.preview_url + '?preview=true" class="preview-iframe" scrolling="no"></iframe></div>'
+      : t.placeholder_url ? '<img src="' + t.placeholder_url + '" style="width:100%;height:100%;object-fit:cover" alt="' + t.name + '">' : '';
     const priceHTML = discount > 0
-      ? `<span class="price-original">&#8377;${originalPrice}</span><span class="price-current">&#8377;${t.price}</span><span class="price-badge">${discount}% OFF</span>`
-      : `<span class="price-current">&#8377;${t.price}</span>`;
-    const demoBtn = t.demo_url ? `<a href="${t.demo_url}" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>` : '';
-    card.innerHTML = `
-      <div class="card-media">
-        ${mediaHTML}${badgeHTML}
-        <div class="card-overlay">
-          ${demoBtn}
-          <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('${t.id}')">Buy Now</button>
-        </div>
-      </div>
-      <div class="card-info">
-        <div class="card-name">${t.name || t.id}</div>
-        <div class="card-price">${priceHTML}</div>
-      </div>`;
+      ? '<span class="price-original">&#8377;' + originalPrice + '</span><span class="price-current">&#8377;' + t.price + '</span><span class="price-badge">' + discount + '% OFF</span>'
+      : '<span class="price-current">&#8377;' + t.price + '</span>';
+    const demoBtn = t.demo_url ? '<a href="' + t.demo_url + '" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>' : '';
+    card.innerHTML = '<div class="card-media">' + mediaHTML + badgeHTML + '<div class="card-overlay">' + demoBtn + '<button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate(\'' + t.id + '\')">Buy Now</button></div></div><div class="card-info"><div class="card-name">' + (t.name || t.id) + '</div><div class="card-price">' + priceHTML + '</div></div>';
     return card;
   }
 
