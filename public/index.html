@@ -162,6 +162,9 @@
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-pop { opacity: 0; transform: scale(0.9) translateY(40px); transition: opacity 0.75s cubic-bezier(0.34,1.4,0.64,1), transform 0.75s cubic-bezier(0.34,1.4,0.64,1); }
     .reveal-pop.visible { opacity: 1; transform: scale(1) translateY(0); }
+    /* Template card scroll topup */
+    .template-card.reveal-pop { opacity: 0; transform: translateY(60px) scale(0.96); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+    .template-card.reveal-pop.visible { opacity: 1; transform: translateY(0) scale(1); }
 
     /* ── TYPOGRAPHY HELPERS ── */
     .eyebrow {
@@ -262,10 +265,11 @@
     .float-card-value { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--ink); line-height: 1.1; }
     @media (max-width: 640px) {
       .hero-float-cards { flex-wrap: nowrap; gap: 0; margin-top: 36px; width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 4px 24px rgba(180,100,80,0.07); overflow: hidden; }
-      .float-card { flex: 1; min-width: 0; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4px; padding: 14px 6px; border-radius: 0; background: transparent; border: none; box-shadow: none; position: relative; }
+      .float-card { flex: 1; min-width: 0; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 0; padding: 14px 6px; border-radius: 0; background: transparent; border: none; box-shadow: none; position: relative; }
       .float-card + .float-card::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 1px; background: var(--border); }
-      .float-card-icon { display: none; }
-      .float-card-value { font-size: 18px; line-height: 1.1; }
+      .float-card-icon { display: flex; width: 26px; height: 26px; border-radius: 7px; margin-bottom: 7px; }
+      .float-card-icon svg { width: 13px; height: 13px; }
+      .float-card-value { font-size: 17px; line-height: 1.15; margin-bottom: 3px; }
       .float-card-label { font-size: 9px; letter-spacing: 0.04em; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     }
 
