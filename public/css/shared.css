@@ -82,11 +82,13 @@ a { color: inherit; text-decoration: none; }
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px; font-weight: 700; font-style: italic;
   color: var(--rose-deep); letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .ss-nav-links { display: flex; align-items: center; gap: 28px; }
 .ss-nav-links a {
   font-size: 13px; font-weight: 500; letter-spacing: 0.05em;
   color: var(--ink-mid); transition: color 0.2s;
+  white-space: nowrap;
 }
 .ss-nav-links a:hover { color: var(--rose); }
 .ss-back-link {
@@ -95,8 +97,17 @@ a { color: inherit; text-decoration: none; }
   color: var(--muted); transition: color 0.2s;
 }
 .ss-back-link:hover { color: var(--rose-deep); }
-@media (max-width: 768px) { .ss-navbar { padding: 0 20px; } .ss-nav-links { gap: 14px; } }
-@media (max-width: 480px) { .ss-nav-links a:not(.ss-back-link) { display: none; } }
+@media (max-width: 900px) { .ss-navbar { padding: 0 24px; } .ss-nav-links { gap: 18px; } }
+@media (max-width: 640px) {
+  .ss-navbar { padding: 0 16px; height: 64px; }
+  .ss-logo { font-size: 19px; }
+  .ss-nav-links { gap: 12px; }
+  .ss-nav-links a { font-size: 12px; }
+  .ss-nav-links a:not(.ss-back-link):not(.ss-mobile-keep) { display: none; }
+}
+@media (max-width: 380px) {
+  .ss-nav-links a { font-size: 11px; }
+}
 
 /* ── BUTTONS ── */
 .ss-btn-primary {
@@ -109,9 +120,12 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 8px 32px rgba(160,48,80,0.3);
   transition: all 0.3s ease;
   font-family: inherit;
+  line-height: 1;
 }
 .ss-btn-primary:hover { background: var(--rose); box-shadow: 0 12px 40px rgba(160,48,80,0.45); transform: translateY(-2px); }
 .ss-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.ss-btn-primary:active { transform: translateY(0); }
+@media (max-width: 480px) { .ss-btn-primary { padding: 14px 24px; font-size: 11px; } }
 
 .ss-btn-outline {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
@@ -254,3 +268,27 @@ a { color: inherit; text-decoration: none; }
 
 /* ── UTIL ── */
 .ss-hidden { display: none !important; }
+
+/* ── RESPONSIVE SAFETY NET ── */
+@media (max-width: 640px) {
+  body { -webkit-text-size-adjust: 100%; }
+  .ss-title { font-size: clamp(28px, 7vw, 40px); }
+  .ss-sub { font-size: 14px; line-height: 1.7; }
+  .ss-eyebrow { font-size: 10px; letter-spacing: 0.28em; margin-bottom: 12px; }
+  .ss-input { padding: 12px 14px; font-size: 15px; /* keeps iOS from zooming */ }
+  .ss-btn-outline, .ss-btn-gold { padding: 13px 22px; font-size: 11px; }
+  .ss-footer { margin-top: 48px; padding: 40px 20px 28px; }
+  .ss-footer-inner { flex-direction: column; align-items: flex-start; gap: 20px; text-align: left; }
+  .ss-footer-copy { text-align: left; padding-top: 20px; }
+}
+/* Prevent input zoom on iOS */
+@media (max-width: 768px) {
+  .ss-input, input[type="email"], input[type="text"], input[type="password"], input[type="tel"] {
+    font-size: 16px !important;
+  }
+}
+
+/* Touch target minimum sizes */
+@media (hover: none) {
+  .ss-btn-primary, .ss-btn-outline, .ss-btn-gold, .ss-nav-links a { min-height: 44px; }
+}

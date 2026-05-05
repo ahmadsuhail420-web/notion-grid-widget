@@ -28,6 +28,12 @@ Fonts: **Cormorant Garamond (display)** · **DM Sans (body)** · **Cinzel (eyebr
 ### New integration:
 - **Google login** added to `login.html` (both Sign-in and Sign-up panels). Uses Supabase's native `supabase.auth.signInWithOAuth({ provider: 'google' })`. Handles `redirectTo` so after Google returns the user lands back on `/dashboard` (or the `?redirect=` query param).
 
+### Mobile responsiveness pass:
+- `shared.css` — navbar collapses extra links below 640px (only logo + back/home remain), buttons shrink on <480px, inputs forced to 16px on <768px to prevent iOS auto-zoom, ≥44px touch targets on touch devices, footer stacks vertically with left-aligned content.
+- `login.html` — auth shell stacks to single column at <900px, aside hidden, card padding tightened at <480px (32px → 22px), title shrinks to 32px.
+- `dashboard.html` — head stacks on small screens, user-chip collapses to avatar-only on <420px, tabs scroll horizontally with snap, section row CTA goes full-width, tables scroll with min-width 560px, template cards single-column below 640px, toast container goes full-width on mobile.
+- Contact + policy pages already had proper @media rules for <800/640.
+
 ### Setup required on the user side (before Google login works in production):
 1. **Supabase Dashboard** → Authentication → Providers → enable **Google** and paste a Google OAuth `Client ID` + `Client Secret`.
 2. **Google Cloud Console** → OAuth consent screen + Credentials → create a **Web application** OAuth client with authorized redirect URI:
