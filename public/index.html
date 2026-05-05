@@ -285,13 +285,13 @@
       display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 24px; max-width: 1100px; margin: 0 auto;
     }
-    @media (max-width: 640px) { .templates-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+    @media (max-width: 640px) { .templates-grid { grid-template-columns: 1fr; gap: 20px; } }
 
     /* Template card */
     .template-card {
       position: relative; display: flex; flex-direction: column;
       border-radius: 16px; overflow: hidden;
-      background: #fff; cursor: pointer; aspect-ratio: 3/5;
+      background: #fff; cursor: pointer; aspect-ratio: 4/5;
       border: 1px solid var(--border);
       box-shadow: 0 4px 24px rgba(180,100,80,0.06);
       transition: transform 0.4s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.4s ease;
@@ -341,7 +341,7 @@
       gap: 24px;
     }
     @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 520px) { .features-grid { grid-template-columns: 1fr 1fr; gap: 14px; } }
+    @media (max-width: 520px) { .features-grid { grid-template-columns: 1fr; gap: 14px; } }
     .feature-card {
       background: var(--ivory-card); border: 1px solid var(--border);
       border-radius: 20px; padding: 36px 28px;
