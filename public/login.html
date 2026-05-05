@@ -1,270 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
-    
-    <title>Login - Sync & Style</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --primary: #9c404d;
-            --bg-cream: #FFF9F9;
-        }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-cream);
-            background-image: radial-gradient(rgba(156, 64, 77, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+  <title>Login &mdash; Sync &amp; Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="/css/shared.css">
+  <style>
+    main.auth-shell {
+      min-height: calc(100vh - 72px);
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) { main.auth-shell { grid-template-columns: 1fr; } .auth-aside { display: none !important; } }
 
-        .btn-primary {
-          @apply bg-[#9c404d] text-white px-8 py-3 font-bold transition-all duration-300 border-2 border-white shadow-[0_5px_15px_rgba(156,64,77,0.2)] hover:bg-[#7d333e] active:scale-95 text-center;
-          font-family: 'Times New Roman', Times, serif;
-          border-radius: 0;
-        }
+    .auth-form-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 32px; }
+    .auth-card { width: 100%; max-width: 460px; padding: 48px 44px; position: relative; }
+    .auth-card::before {
+      content: ''; position: absolute; top: -24px; right: -24px;
+      width: 120px; height: 120px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,86,106,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .auth-meta { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: block; }
+    .auth-title { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; line-height: 1.05; color: var(--ink); margin-bottom: 12px; }
+    .auth-title em { font-style: italic; font-weight: 600; color: var(--rose-deep); }
+    .auth-sub { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.7; margin-bottom: 32px; }
 
-        .input-field {
-          @apply w-full px-4 py-3 bg-white border border-[#9c404d]/20 rounded-none focus:outline-none focus:border-[#9c404d]/50 transition-all;
-        }
-    </style>
+    .form-grid { display: flex; flex-direction: column; gap: 18px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } .auth-card { padding: 36px 24px; } .auth-form-wrap { padding: 40px 16px; } }
+
+    .auth-card .ss-btn-primary { width: 100%; padding: 17px 28px; }
+
+    .auth-toggle { margin-top: 28px; text-align: center; font-size: 13px; color: var(--muted); }
+    .auth-toggle button { background: none; border: none; padding: 0; cursor: pointer; font: inherit; color: var(--rose-deep); font-weight: 600; border-bottom: 1px dashed rgba(160,48,80,0.5); transition: color .2s; }
+    .auth-toggle button:hover { color: var(--rose); }
+
+    /* Decorative aside */
+    .auth-aside {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--rose-deep) 0%, #c4566a 55%, #d4704a 100%);
+      color: #fff; padding: 80px 56px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .auth-aside::before { content: ''; position: absolute; top: -100px; right: -120px; width: 460px; height: 460px; border-radius: 50%; background: rgba(255,255,255,0.07); }
+    .auth-aside::after { content: ''; position: absolute; bottom: -80px; left: -100px; width: 360px; height: 360px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+    .aside-eyebrow { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.7); position: relative; z-index: 1; }
+    .aside-quote { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; font-style: italic; line-height: 1.2; max-width: 460px; position: relative; z-index: 1; }
+    .aside-quote em { color: var(--gold-pale); font-weight: 600; }
+    .aside-stats { display: flex; gap: 32px; position: relative; z-index: 1; }
+    .aside-stat { display: flex; flex-direction: column; gap: 4px; }
+    .aside-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: #fff; line-height: 1; }
+    .aside-stat-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+
+    .form-error {
+      background: var(--rose-pale);
+      border: 1px solid rgba(196,86,106,0.3);
+      color: var(--rose-deep);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    /* Google OAuth button */
+    .google-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%;
+      background: #fff; color: var(--ink);
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 14px 20px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .google-btn:hover { border-color: rgba(160,48,80,0.3); box-shadow: 0 6px 20px rgba(160,48,80,0.1); transform: translateY(-1px); }
+    .google-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .google-btn svg { width: 18px; height: 18px; }
+
+    .divider {
+      display: flex; align-items: center; gap: 14px;
+      margin: 20px 0;
+      font-family: 'Cinzel', serif; font-size: 10px;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <!-- Simple Navbar -->
-    <nav class="p-8">
-        <div class="max-w-7xl mx-auto">
-            <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
-        </div>
-    </nav>
+<body>
 
-    <main class="flex-grow flex items-center justify-center px-6 pb-20">
-        <div class="max-w-md w-full">
-            <div id="login-container" class="bg-white border border-[#9c404d]/20 p-10 shadow-2xl relative overflow-hidden">
-                <!-- Decorative element -->
-                <div class="absolute -top-10 -right-10 w-24 h-24 bg-[#fdf2f3] rounded-full opacity-50"></div>
-                
-                <div id="login-form">
-                    <h2 class="text-3xl font-serif font-bold text-[#2d0a0e] mb-2">Welcome Back</h2>
-                    <p class="text-gray-400 text-sm mb-10 italic">Login to manage your invitations</p>
-                    
-                    <form class="space-y-6" onsubmit="handleLogin(event)">
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Email Address</label>
-                            <input type="email" placeholder="you@example.com" class="input-field" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Password</label>
-                            <input type="password" placeholder="••••••••" class="input-field" required>
-                        </div>
-                        <button type="submit" class="btn-primary w-full uppercase tracking-widest">Login</button>
-                    </form>
-                    
-                    <p class="mt-8 text-center text-sm text-gray-500">
-                        Don't have an account? 
-                        <button onclick="toggleForm()" class="text-[#9c404d] font-bold hover:underline">Create Account</button>
-                    </p>
-                </div>
+<div class="page-bg"></div>
+<div class="page-pattern"></div>
 
-                <div id="signup-form" class="hidden">
-                    <h2 class="text-3xl font-serif font-bold text-[#2d0a0e] mb-2">Create Account</h2>
-                    <p class="text-gray-400 text-sm mb-10 italic">Join for your perfect invitation</p>
-                    
-                    <form class="space-y-6" onsubmit="handleSignup(event)">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">First Name</label>
-                                <input type="text" placeholder="John" class="input-field" required>
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Last Name</label>
-                                <input type="text" placeholder="Doe" class="input-field" required>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Email Address</label>
-                            <input type="email" placeholder="you@example.com" class="input-field" required>
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#9c404d] font-bold mb-2">Password</label>
-                            <input type="password" placeholder="••••••••" class="input-field" required>
-                        </div>
-                        <button type="submit" class="btn-primary w-full uppercase tracking-widest">Sign Up</button>
-                    </form>
-                    
-                    <p class="mt-8 text-center text-sm text-gray-500">
-                        Already have an account? 
-                        <button onclick="toggleForm()" class="text-[#9c404d] font-bold hover:underline">Login instead</button>
-                    </p>
-                </div>
+<nav class="ss-navbar">
+  <a href="/" class="ss-logo">Sync &amp; Style</a>
+  <div class="ss-nav-links">
+    <a href="/#templates">Templates</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/" class="ss-back-link">&larr; Back to Home</a>
+  </div>
+</nav>
+
+<main class="auth-shell">
+  <div class="auth-form-wrap">
+    <div class="ss-card auth-card ss-reveal">
+      <!-- LOGIN -->
+      <div id="login-form">
+        <span class="auth-meta">Welcome Back</span>
+        <h1 class="auth-title">Sign in to your <em>account</em></h1>
+        <p class="auth-sub">Manage templates, RSVPs &amp; share your invitations.</p>
+        <div id="login-error" class="form-error ss-hidden"></div>
+
+        <button type="button" class="google-btn" onclick="handleGoogleAuth()" data-original="Continue with Google">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider">or</div>
+
+        <form class="form-grid" onsubmit="handleLogin(event)" autocomplete="on">
+          <div>
+            <label class="ss-label" for="login-email">Email Address</label>
+            <input type="email" id="login-email" class="ss-input" placeholder="you@example.com" required autocomplete="email">
+          </div>
+          <div>
+            <label class="ss-label" for="login-password">Password</label>
+            <input type="password" id="login-password" class="ss-input" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="ss-btn-primary" data-original="Sign In">Sign In
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+          </button>
+        </form>
+        <p class="auth-toggle">Don&rsquo;t have an account? <button type="button" onclick="toggleForm()">Create one</button></p>
+      </div>
+
+      <!-- SIGNUP -->
+      <div id="signup-form" class="ss-hidden">
+        <span class="auth-meta">Begin Your Story</span>
+        <h1 class="auth-title">Create your <em>account</em></h1>
+        <p class="auth-sub">Start crafting beautiful digital wedding invitations.</p>
+        <div id="signup-error" class="form-error ss-hidden"></div>
+
+        <button type="button" class="google-btn" onclick="handleGoogleAuth()" data-original="Continue with Google">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+          Continue with Google
+        </button>
+        <div class="divider">or</div>
+
+        <form class="form-grid" onsubmit="handleSignup(event)" autocomplete="on">
+          <div class="form-row">
+            <div>
+              <label class="ss-label" for="signup-first">First Name</label>
+              <input type="text" id="signup-first" class="ss-input" placeholder="First" required autocomplete="given-name">
             </div>
-            
-            <p class="text-center mt-12">
-                <a href="/" class="text-sm text-gray-400 hover:text-[#9c404d] transition-colors">← Back to Home</a>
-            </p>
-        </div>
-    </main>
+            <div>
+              <label class="ss-label" for="signup-last">Last Name</label>
+              <input type="text" id="signup-last" class="ss-input" placeholder="Last" required autocomplete="family-name">
+            </div>
+          </div>
+          <div>
+            <label class="ss-label" for="signup-email">Email Address</label>
+            <input type="email" id="signup-email" class="ss-input" placeholder="you@example.com" required autocomplete="email">
+          </div>
+          <div>
+            <label class="ss-label" for="signup-password">Password</label>
+            <input type="password" id="signup-password" class="ss-input" placeholder="At least 6 characters" required autocomplete="new-password" minlength="6">
+          </div>
+          <button type="submit" class="ss-btn-primary" data-original="Create Account">Create Account
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+          </button>
+        </form>
+        <p class="auth-toggle">Already have an account? <button type="button" onclick="toggleForm()">Sign in instead</button></p>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        let sb;
+  <aside class="auth-aside">
+    <span class="aside-eyebrow">Sync &amp; Style</span>
+    <p class="aside-quote">&ldquo;Your love story, <em>beautifully</em> told &mdash; one shareable invitation away.&rdquo;</p>
+    <div class="aside-stats">
+      <div class="aside-stat"><span class="aside-stat-num">500+</span><span class="aside-stat-label">Invitations Sent</span></div>
+      <div class="aside-stat"><span class="aside-stat-num">4.9&starf;</span><span class="aside-stat-label">Avg. Rating</span></div>
+      <div class="aside-stat"><span class="aside-stat-num">&#8377;499</span><span class="aside-stat-label">Starting From</span></div>
+    </div>
+  </aside>
+</main>
 
-        async function initSupabase() {
-            try {
-                const response = await fetch('/api/config');
-                if (!response.ok) {
-                    const err = await response.json();
-                    console.error("Supabase config error:", err);
-                    return;
-                }
-                const config = await response.json();
-                
-                if (!config.supabaseUrl || !config.supabaseAnonKey) {
-                    console.error('Supabase config missing. Please check your environment variables.');
-                    return;
-                }
+<script src="/css/shared.js"></script>
+<script>
+  let sb;
 
-                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: false,
-                        detectSessionInUrl: true
-                    }
-                });
-                
-                // Check if already logged in
-                const { data: { session } } = await sb.auth.getSession();
-                if (session) {
-                    // Check 12h timeout
-                    const loginTime = localStorage.getItem('ss_login_time');
-                    const now = Date.now();
-                    if (loginTime && (now - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
-                        await sb.auth.signOut();
-                        localStorage.removeItem('ss_login_time');
-                        return; // stay on login page
-                    }
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirectUrl = urlParams.get('redirect');
-                    window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-                }
-            } catch (err) {
-                console.error('Error initializing Supabase:', err);
-            }
+  async function initSupabase() {
+    try {
+      const response = await fetch('/api/config');
+      if (!response.ok) { console.error('Supabase config fetch failed'); return; }
+      const config = await response.json();
+      if (!config.supabaseUrl || !config.supabaseAnonKey) { console.warn('Supabase config missing'); return; }
+
+      sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
+        auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: true }
+      });
+
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        const loginTime = localStorage.getItem('ss_login_time');
+        const now = Date.now();
+        if (loginTime && (now - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
+          await sb.auth.signOut();
+          localStorage.removeItem('ss_login_time');
+          return;
         }
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect');
+        window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+      }
+    } catch (err) { console.error('Error initializing Supabase:', err); }
+  }
+  initSupabase();
 
-        initSupabase();
+  function toggleForm() {
+    document.getElementById('login-form').classList.toggle('ss-hidden');
+    document.getElementById('signup-form').classList.toggle('ss-hidden');
+    document.getElementById('login-error').classList.add('ss-hidden');
+    document.getElementById('signup-error').classList.add('ss-hidden');
+  }
 
-        function toggleForm() {
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            
-            if (loginForm.classList.contains('hidden')) {
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-            } else {
-                loginForm.classList.add('hidden');
-                signupForm.classList.remove('hidden');
-            }
-        }
+  async function handleGoogleAuth() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect');
+    const target = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+    const redirectTo = `${window.location.origin}${target}`;
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = e.target.querySelector('input[type="email"]').value;
-            const password = e.target.querySelector('input[type="password"]').value;
+    if (!sb) {
+      showError('login-error', 'Authentication service is not available right now.');
+      showError('signup-error', 'Authentication service is not available right now.');
+      return;
+    }
 
-            if (!sb) {
-                alert('Supabase is not initialized. Please check your configuration.');
-                return;
-            }
+    // Mark that a login session will start (for 12h timeout tracking after redirect back)
+    localStorage.setItem('ss_login_time', Date.now().toString());
 
-            const button = e.target.querySelector('button');
-            const originalText = button.innerText;
-            button.innerText = 'Logging in...';
-            button.disabled = true;
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo }
+    });
+    if (error) {
+      console.error('Google auth error:', error);
+      showError('login-error', error.message || 'Unable to start Google sign-in.');
+      showError('signup-error', error.message || 'Unable to start Google sign-in.');
+    }
+  }
 
-            try {
-                const { data, error } = await sb.auth.signInWithPassword({
-                    email,
-                    password,
-                });
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.remove('ss-hidden');
+  }
 
-                if (error) {
-                    alert(error.message);
-                    button.innerText = originalText;
-                    button.disabled = false;
-                } else {
-                    localStorage.setItem('ss_login_time', Date.now().toString());
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirectUrl = urlParams.get('redirect');
-                    
-                    if (redirectUrl) {
-                        window.location.href = decodeURIComponent(redirectUrl);
-                    } else {
-                        window.location.href = '/dashboard';
-                    }
-                }
-            } catch (err) {
-                console.error('Login error:', err);
-                alert('An unexpected error occurred during login.');
-                button.innerText = originalText;
-                button.disabled = false;
-            }
-        }
+  function setBtnLoading(btn, loadingText) {
+    btn.disabled = true;
+    btn.dataset.busy = '1';
+    btn.innerHTML = loadingText;
+  }
+  function resetBtn(btn) {
+    btn.disabled = false;
+    btn.dataset.busy = '';
+    btn.innerHTML = btn.dataset.original + ' <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+  }
 
-        async function handleSignup(e) {
-            e.preventDefault();
-            const firstName = e.target.querySelectorAll('input')[0].value;
-            const lastName = e.target.querySelectorAll('input')[1].value;
-            const email = e.target.querySelector('input[type="email"]').value;
-            const password = e.target.querySelector('input[type="password"]').value;
+  async function handleLogin(e) {
+    e.preventDefault();
+    document.getElementById('login-error').classList.add('ss-hidden');
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!sb) { showError('login-error', 'Authentication service is not available right now.'); return; }
+    const btn = e.target.querySelector('button[type=submit]');
+    setBtnLoading(btn, 'Signing in&hellip;');
+    try {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { showError('login-error', error.message); resetBtn(btn); return; }
+      localStorage.setItem('ss_login_time', Date.now().toString());
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get('redirect');
+      window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+    } catch (err) {
+      console.error('Login error:', err);
+      showError('login-error', 'Something went wrong. Please try again.');
+      resetBtn(btn);
+    }
+  }
 
-            if (!sb) {
-                alert('Supabase is not initialized. Please check your configuration.');
-                return;
-            }
-
-            const button = e.target.querySelector('button');
-            const originalText = button.innerText;
-            button.innerText = 'Creating account...';
-            button.disabled = true;
-
-            try {
-                const { data, error } = await sb.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            first_name: firstName,
-                            last_name: lastName,
-                        }
-                    }
-                });
-
-                if (error) {
-                    alert(error.message);
-                    button.innerText = originalText;
-                    button.disabled = false;
-                } else {
-                    alert('Registration successful! Please check your email for a verification link or try logging in.');
-                    toggleForm();
-                    button.innerText = originalText;
-                    button.disabled = false;
-                }
-            } catch (err) {
-                console.error('Signup error:', err);
-                alert('An unexpected error occurred during signup.');
-                button.innerText = originalText;
-                button.disabled = false;
-            }
-        }
-    </script>
+  async function handleSignup(e) {
+    e.preventDefault();
+    document.getElementById('signup-error').classList.add('ss-hidden');
+    const firstName = document.getElementById('signup-first').value.trim();
+    const lastName  = document.getElementById('signup-last').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!sb) { showError('signup-error', 'Authentication service is not available right now.'); return; }
+    const btn = e.target.querySelector('button[type=submit]');
+    setBtnLoading(btn, 'Creating account&hellip;');
+    try {
+      const { data, error } = await sb.auth.signUp({
+        email, password,
+        options: { data: { first_name: firstName, last_name: lastName } }
+      });
+      if (error) { showError('signup-error', error.message); resetBtn(btn); return; }
+      alert('Registration successful! Please check your email for a verification link or try signing in.');
+      toggleForm();
+      resetBtn(btn);
+    } catch (err) {
+      console.error('Signup error:', err);
+      showError('signup-error', 'Something went wrong. Please try again.');
+      resetBtn(btn);
+    }
+  }
+</script>
 </body>
 </html>
-

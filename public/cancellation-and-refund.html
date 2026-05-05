@@ -1,40 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
-    
-    <title>Cancellation & Refund Policy - Sync & Style</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #FFF9F9; }
-        h1, h2 { font-family: 'Playfair Display', serif; }
-    </style>
+  <title>Cancellation &amp; Refund &mdash; Sync &amp; Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/shared.css">
+  <style>
+    .policy-shell { max-width: 880px; margin: 0 auto; padding: 80px 24px 48px; }
+    .policy-body { padding: 48px 44px; margin-top: 48px; }
+    .policy-body p { font-size: 15px; line-height: 1.95; color: var(--ink-mid); margin-bottom: 18px; font-weight: 300; }
+    .policy-body p:last-child { margin-bottom: 0; }
+    .policy-body a { color: var(--rose-deep); font-weight: 600; border-bottom: 1px dashed rgba(160,48,80,0.4); transition: color .2s, border-color .2s; }
+    .policy-body a:hover { color: var(--rose); border-color: var(--rose); }
+    .policy-meta { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 30px; background: var(--ivory-deep); border: 1px solid var(--border); font-size: 11px; font-family: 'Cinzel', serif; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+    .policy-meta::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--gold-light); }
+    @media (max-width: 640px) { .policy-shell { padding: 48px 16px; } .policy-body { padding: 32px 24px; } }
+  </style>
 </head>
-<body class="min-h-screen">
-    <nav class="bg-white border-b border-gray-100 p-6">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <a href="/" class="text-2xl font-serif font-bold text-[#9c404d] italic">Sync & Style</a>
-            <a href="/" class="text-sm text-gray-500 hover:text-[#9c404d] transition-colors">← Back to Home</a>
-        </div>
-    </nav>
-    <main class="max-w-4xl mx-auto px-6 py-16">
-        <h1 class="text-4xl font-serif font-bold text-[#2d0a0e] mb-4">Cancellation & Refund Policy</h1>
-        <p class="text-sm text-gray-400 mb-10 italic">Last updated: June 2025</p>
-        <div class="prose prose-slate max-w-none">
-            <p class="text-gray-600 leading-relaxed text-base mb-6">Due to the digital nature of our products, refunds are not available once a template has been purchased and accessed. If you experience technical issues, please contact our support team within 7 days of purchase.</p>
-            <p class="text-gray-600 leading-relaxed text-base mb-6">For any questions regarding this policy, please contact us at <a href="mailto:support@syncandstyle.in" class="text-[#9c404d] font-bold">support@syncandstyle.in</a>.</p>
-        </div>
-    </main>
-    <footer class="border-t border-gray-100 py-10 mt-20">
-        <div class="max-w-4xl mx-auto px-6 text-center text-sm text-gray-400">
-            © 2025 Sync & Style. All rights reserved.
-        </div>
-    </footer>
+<body>
+
+<div class="page-bg"></div>
+<div class="page-pattern"></div>
+
+<nav class="ss-navbar">
+  <a href="/" class="ss-logo">Sync &amp; Style</a>
+  <div class="ss-nav-links">
+    <a href="/#templates">Templates</a>
+    <a href="/contact-us.html">Contact</a>
+    <a href="/" class="ss-back-link">&larr; Back to Home</a>
+  </div>
+</nav>
+
+<main class="policy-shell">
+  <div class="ss-reveal">
+    <div class="policy-meta">Last updated &middot; June 2025</div>
+    <span class="ss-eyebrow">Our Commitment</span>
+    <h1 class="ss-title">Cancellation &amp; <em>Refund</em></h1>
+    <span class="ss-gold-rule"></span>
+  </div>
+  <article class="ss-card policy-body ss-reveal" style="transition-delay:120ms">
+    <p>Due to the digital nature of our products, refunds are not available once a template has been purchased and accessed. If you experience technical issues, please contact our support team within 7 days of purchase.</p>
+    <p>For any questions regarding this policy, please contact us at <a href="mailto:support@syncandstyle.in">support@syncandstyle.in</a>.</p>
+  </article>
+</main>
+
+<div id="ss-footer-slot"></div>
+<script src="/css/shared.js"></script>
 </body>
 </html>

@@ -1,570 +1,431 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
-    
-    <title>Dashboard - Sync & Style</title>
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --primary: #9c404d;
-            --bg-cream: #FBFBFB;
-        }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); }
-        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
-        .toast {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform: translateY(1rem);
-            opacity: 0;
-        }
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .btn-effect {
-            position: relative;
-            z-index: 1;
-        }
-        .btn-effect::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
-            transform: translateX(-100%) skewX(-15deg);
-            z-index: -1;
-            transition: all 0.7s ease;
-        }
-        .btn-effect:hover::before {
-            transform: translateX(100%) skewX(-15deg);
-        }
-    </style>
+  <title>Dashboard &mdash; Sync &amp; Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="/css/shared.css">
+  <style>
+    .dash-shell { max-width: 1200px; margin: 0 auto; padding: 56px 24px 32px; }
+    @media (max-width: 640px) { .dash-shell { padding: 32px 16px; } }
+
+    .dash-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 40px; }
+    .dash-greet h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 44px); font-weight: 300; line-height: 1.1; color: var(--ink); }
+    .dash-greet h1 em { font-style: italic; font-weight: 600; color: var(--rose-deep); }
+    .dash-greet p { font-size: 14px; color: var(--muted); margin-top: 6px; max-width: 540px; line-height: 1.6; }
+    .dash-actions { display: flex; gap: 10px; align-items: center; }
+
+    .user-chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; background: var(--ivory-card); border: 1px solid var(--border); border-radius: 40px; font-size: 13px; color: var(--ink-mid); }
+    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--rose-deep), var(--gold)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 14px; }
+    .logout-btn { background: none; border: 1px solid var(--border); border-radius: 30px; padding: 8px 18px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: all .2s; font-family: inherit; }
+    .logout-btn:hover { border-color: rgba(160,48,80,0.4); color: var(--rose-deep); background: var(--rose-pale); }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; padding: 6px; background: var(--ivory-card); border: 1px solid var(--border); border-radius: 40px; overflow-x: auto; margin-bottom: 32px; width: fit-content; max-width: 100%; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn { background: none; border: none; padding: 10px 20px; border-radius: 30px; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .25s; }
+    .tab-btn:hover { color: var(--rose-deep); }
+    .tab-btn.active { background: var(--rose-deep); color: #fff; box-shadow: 0 4px 16px rgba(160,48,80,0.25); }
+
+    /* Section heading */
+    .sec-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--ink); }
+    .sec-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 40px;
+      background: var(--rose-deep); color: #fff;
+      font-family: 'Cinzel', serif; font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase; margin-left: 6px;
+    }
+
+    /* Template grid */
+    .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .tpl-card { padding: 26px 24px 22px; position: relative; overflow: hidden; transition: transform .3s ease, box-shadow .3s ease, border-color .3s; }
+    .tpl-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(160,48,80,0.12); border-color: rgba(196,86,106,0.25); }
+    .tpl-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rose-deep), var(--gold-light)); opacity: 0; transition: opacity .3s; }
+    .tpl-card:hover::before { opacity: 1; }
+    .tpl-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 40px; font-family: 'Cinzel', serif; font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
+    .status-pill.published { background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.2); color: #1a7a4a; }
+    .status-pill.published::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #1a7a4a; }
+    .status-pill.draft { background: var(--ivory-deep); border: 1px solid var(--border); color: var(--muted); }
+    .tpl-id { font-family: 'DM Sans', monospace; font-size: 10px; color: var(--muted); background: var(--ivory-deep); padding: 3px 8px; border-radius: 4px; }
+    .tpl-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+    .tpl-meta { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-bottom: 22px; }
+    .tpl-actions { display: flex; gap: 8px; }
+    .tpl-actions .ss-btn-primary { flex: 1; padding: 12px 18px; font-size: 11px; }
+    .icon-btn { width: 42px; height: 42px; border-radius: 8px; border: 1px solid var(--border); background: #fff; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s; }
+    .icon-btn:hover { border-color: rgba(220,30,30,0.3); color: #c33; background: #fff5f5; }
+
+    /* Empty state */
+    .empty-tpl { grid-column: 1/-1; padding: 56px 32px; text-align: center; border: 2px dashed rgba(196,86,106,0.25); border-radius: 20px; background: rgba(255,252,248,0.5); cursor: pointer; transition: all .25s; }
+    .empty-tpl:hover { background: var(--rose-pale); border-color: var(--rose-deep); }
+    .empty-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--rose-pale); color: var(--rose-deep); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+    .empty-tpl h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin-bottom: 8px; color: var(--ink); }
+    .empty-tpl p { font-size: 14px; color: var(--muted); margin-bottom: 24px; max-width: 420px; margin-left: auto; margin-right: auto; }
+
+    /* Tables */
+    .table-card { padding: 0; overflow: hidden; }
+    .table-wrap { overflow-x: auto; }
+    table.ss-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    .ss-table thead { background: var(--ivory-deep); }
+    .ss-table th { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rose-deep); text-align: left; padding: 16px 24px; }
+    .ss-table td { padding: 18px 24px; font-size: 14px; color: var(--ink-mid); border-top: 1px solid var(--border); }
+    .ss-table tbody tr:hover { background: rgba(253,240,243,0.5); }
+
+    .table-empty { padding: 56px 24px; text-align: center; color: var(--muted); font-size: 14px; }
+    .table-empty .empty-icon { margin-bottom: 12px; }
+
+    /* RSVP status */
+    .rsvp-pill { display: inline-flex; padding: 3px 10px; border-radius: 30px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; }
+    .rsvp-pill.attending { background: rgba(26,122,74,0.1); color: #1a7a4a; border: 1px solid rgba(26,122,74,0.2); }
+    .rsvp-pill.declined { background: var(--rose-pale); color: var(--rose-deep); border: 1px solid rgba(196,86,106,0.2); }
+    .rsvp-pill.added { background: var(--gold-pale); color: var(--gold); border: 1px solid var(--border-gold); }
+
+    /* Action icons in table */
+    .share-row { display: inline-flex; gap: 6px; }
+    .share-btn { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: #fff; transition: all .2s; }
+    .share-btn:hover { transform: translateY(-2px); }
+    .share-btn.wa { color: #25d366; }
+    .share-btn.wa:hover { border-color: #25d366; background: rgba(37,211,102,0.07); }
+    .share-btn.email { color: #1f6feb; }
+    .share-btn.email:hover { border-color: #1f6feb; background: rgba(31,111,235,0.06); }
+    .share-btn.ig { color: #d93175; }
+    .share-btn.ig:hover { border-color: #d93175; background: rgba(217,49,117,0.06); }
+
+    /* Add guest form */
+    .add-guest-card { padding: 36px 32px; max-width: 540px; }
+    .add-guest-card .form-grid { display: flex; flex-direction: column; gap: 18px; }
+
+    /* Toast */
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+    .toast { padding: 14px 22px; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 16px 40px rgba(0,0,0,0.18); transform: translateY(12px); opacity: 0; transition: opacity .25s, transform .25s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: var(--rose-deep); }
+    .toast.error { background: #b22a2a; }
+
+    .skel { background: linear-gradient(90deg, var(--ivory-card), var(--ivory-deep), var(--ivory-card)); background-size: 300% 100%; animation: skel 1.4s linear infinite; border-radius: 16px; height: 220px; border: 1px solid var(--border); }
+    @keyframes skel { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+  </style>
 </head>
-<body class="min-h-screen">
-    <div id="toast-container" class="fixed bottom-8 right-8 z-[100] flex flex-col gap-3"></div>
-    <nav class="bg-white border-b border-gray-100 p-4 md:p-6">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <a href="/" class="text-xl md:text-2xl font-serif font-bold text-[#9c404d] italic text-center sm:text-left">Sync & Style</a>
-            <div class="flex items-center justify-center space-x-4 md:space-x-6 text-sm">
-                <span id="user-welcome" class="text-gray-500 truncate max-w-[150px] sm:max-w-none">Loading...</span>
-                <button onclick="handleLogout()" class="text-[#9c404d] font-bold whitespace-nowrap">Logout</button>
-            </div>
+<body>
+
+<div class="page-bg"></div>
+<div class="page-pattern"></div>
+
+<nav class="ss-navbar">
+  <a href="/" class="ss-logo">Sync &amp; Style</a>
+  <div class="ss-nav-links">
+    <a href="/templates">Templates</a>
+    <a href="/contact-us.html">Support</a>
+    <a href="/" class="ss-back-link">&larr; Home</a>
+  </div>
+</nav>
+
+<div id="toast-container"></div>
+
+<main class="dash-shell">
+  <div class="dash-head ss-reveal">
+    <div class="dash-greet">
+      <span class="ss-eyebrow">Your Workspace</span>
+      <h1>Welcome back, <em id="user-welcome">friend</em></h1>
+      <p>Manage your purchased templates, personalize guest lists, and track RSVPs &mdash; all in one place.</p>
+    </div>
+    <div class="dash-actions">
+      <span class="user-chip"><span class="user-avatar" id="user-avatar">S</span><span id="user-email">&hellip;</span></span>
+      <button onclick="handleLogout()" class="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <div class="tabs ss-reveal" style="transition-delay:80ms" role="tablist">
+    <button class="tab-btn active" id="tab-templates" onclick="switchTab('templates')">My Templates</button>
+    <button class="tab-btn" id="tab-invites" onclick="switchTab('invites')">All Invites</button>
+    <button class="tab-btn" id="tab-rsvp" onclick="switchTab('rsvp')">RSVP Responses</button>
+    <button class="tab-btn" id="tab-add-guests" onclick="switchTab('add-guests')">Add Guests</button>
+  </div>
+
+  <!-- Templates -->
+  <section id="content-templates" class="tab-content ss-reveal" style="transition-delay:160ms">
+    <div class="sec-row">
+      <h2 class="sec-title">Purchased Templates</h2>
+      <button onclick="createInvitation()" class="ss-btn-primary" style="padding:13px 26px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        New Template
+      </button>
+    </div>
+    <div id="invitation-grid" class="tpl-grid">
+      <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+    </div>
+  </section>
+
+  <!-- All Invites -->
+  <section id="content-invites" class="tab-content ss-hidden">
+    <div class="sec-row"><h2 class="sec-title">Guest Invitations</h2></div>
+    <div class="ss-card table-card">
+      <div class="table-wrap">
+        <table class="ss-table">
+          <thead><tr><th>Guest Name</th><th>Phone</th><th>Status</th><th style="text-align:right">Share</th></tr></thead>
+          <tbody id="guest-list-body"></tbody>
+        </table>
+      </div>
+      <div id="guest-empty-state" class="table-empty ss-hidden">
+        <div class="empty-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
+        No guests added yet. Go to &ldquo;Add Guests&rdquo; to start.
+      </div>
+    </div>
+  </section>
+
+  <!-- RSVP -->
+  <section id="content-rsvp" class="tab-content ss-hidden">
+    <div class="sec-row"><h2 class="sec-title">RSVP Responses <span class="pill" id="rsvp-total-pill">0</span></h2></div>
+    <div class="ss-card table-card">
+      <div class="table-wrap">
+        <table class="ss-table">
+          <thead><tr><th>Invitation</th><th>Guest Name</th><th>Status</th><th style="text-align:center">People</th><th style="text-align:right">Date</th></tr></thead>
+          <tbody id="rsvp-list-body"></tbody>
+        </table>
+      </div>
+      <div id="rsvp-empty-state" class="table-empty">
+        <div class="empty-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        No RSVP responses yet &mdash; share your invitation to start collecting replies.
+      </div>
+    </div>
+  </section>
+
+  <!-- Add Guests -->
+  <section id="content-add-guests" class="tab-content ss-hidden">
+    <div class="sec-row"><h2 class="sec-title">Send Personal Invitations</h2></div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;max-width:540px;line-height:1.7">Add individual guests to send them a customized link with their name pre-filled.</p>
+    <div class="ss-card add-guest-card">
+      <form class="form-grid" onsubmit="handleAddGuest(event)">
+        <div>
+          <label class="ss-label" for="guest_name">Guest Full Name</label>
+          <input type="text" id="guest_name" name="guest_name" class="ss-input" required placeholder="e.g. John Doe">
         </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto p-4 sm:p-6 md:p-12">
-        <div class="mb-8 md:mb-12">
-            <h1 class="text-2xl md:text-4xl font-serif font-bold mb-2">My Dashboard</h1>
-            <p class="text-sm md:text-base text-gray-500">Manage your templates and guest invitations.</p>
+        <div>
+          <label class="ss-label" for="guest_phone">Phone Number (with country code)</label>
+          <input type="tel" id="guest_phone" name="guest_phone" class="ss-input" required placeholder="e.g. +91 9876543210">
         </div>
+        <button type="submit" id="add-guest-btn" class="ss-btn-primary">Add to List &amp; Generate Link
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+        </button>
+      </form>
+    </div>
+  </section>
+</main>
 
-        <!-- Tab Navigation -->
-        <div class="flex overflow-x-auto whitespace-nowrap border-b border-gray-200 mb-8 space-x-4 md:space-x-8 pb-1 scrollbar-hide">
-            <button onclick="switchTab('templates')" id="tab-templates" class="pb-3 px-2 border-b-2 border-[#9c404d] text-[#9c404d] font-bold transition-all shrink-0">My Templates</button>
-            <button onclick="switchTab('invites')" id="tab-invites" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">All Invites</button>
-            <button onclick="switchTab('rsvp')" id="tab-rsvp" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">RSVP Responses</button>
-            <button onclick="switchTab('add-guests')" id="tab-add-guests" class="pb-3 px-2 border-b-2 border-transparent text-gray-500 hover:text-[#9c404d] transition-all shrink-0">Add Special Guests</button>
+<div id="ss-footer-slot"></div>
+<script src="/css/shared.js"></script>
+<script>
+  let sb;
+  let currentUser;
+  let currentTab = 'templates';
+  let globalInvitations = [];
+
+  async function initSupabase() {
+    try {
+      const response = await fetch('/api/config');
+      const config = await response.json();
+      if (!config.supabaseUrl || !config.supabaseAnonKey) {
+        console.error('Supabase config missing.');
+        return;
+      }
+      sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { window.location.href = '/login'; return; }
+      const loginTime = localStorage.getItem('ss_login_time');
+      if (loginTime && (Date.now() - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
+        await sb.auth.signOut();
+        localStorage.removeItem('ss_login_time');
+        window.location.href = '/login'; return;
+      }
+      currentUser = session.user;
+      const meta = currentUser.user_metadata || {};
+      const firstName = meta.first_name || (currentUser.email || 'Friend').split('@')[0];
+      document.getElementById('user-welcome').textContent = firstName;
+      document.getElementById('user-email').textContent = currentUser.email || '';
+      document.getElementById('user-avatar').textContent = (firstName[0] || 'S').toUpperCase();
+
+      fetchInvitations();
+      fetchGuests();
+      fetchRsvpData();
+    } catch (err) { console.error('Error initializing Supabase:', err); }
+  }
+  initSupabase();
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('ss-hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`content-${tabId}`).classList.remove('ss-hidden');
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+    currentTab = tabId;
+  }
+
+  async function fetchRsvpData() {
+    if (!sb) return;
+    const { data, error } = await sb.from('customer_invitations').select('id, title, rsvps').eq('user_id', currentUser.id);
+    if (error) { console.error('RSVP fetch error:', error); return; }
+    const body = document.getElementById('rsvp-list-body');
+    const emptyState = document.getElementById('rsvp-empty-state');
+    const totalPill = document.getElementById('rsvp-total-pill');
+    let allRsvps = [];
+    (data || []).forEach(inv => { if (Array.isArray(inv.rsvps)) inv.rsvps.forEach(r => allRsvps.push({ ...r, invitation_title: inv.title })); });
+    allRsvps.sort((a,b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+    if (!allRsvps.length) { body.innerHTML = ''; emptyState.classList.remove('ss-hidden'); totalPill.textContent = '0'; return; }
+    emptyState.classList.add('ss-hidden');
+    totalPill.textContent = allRsvps.length;
+    body.innerHTML = allRsvps.map(r => `
+      <tr>
+        <td><strong>${r.invitation_title || '&mdash;'}</strong></td>
+        <td>${r.guest_name || '&mdash;'}</td>
+        <td><span class="rsvp-pill ${r.status === 'attending' ? 'attending' : 'declined'}">${r.status || 'pending'}</span></td>
+        <td style="text-align:center">${r.guest_count || 1}</td>
+        <td style="text-align:right;color:var(--muted);font-size:12px">${r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : 'N/A'}</td>
+      </tr>
+    `).join('');
+  }
+
+  async function fetchInvitations() {
+    if (!sb) return;
+    const { data, error } = await sb.from('customer_invitations').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    if (error) { console.error('Invitations fetch error:', error); return; }
+    globalInvitations = data || [];
+    renderInvitations(globalInvitations);
+    if (window.lastGuests) renderGuests(window.lastGuests);
+  }
+
+  async function fetchGuests() {
+    if (!sb) return;
+    const { data, error } = await sb.from('guest_list').select('*').order('created_at', { ascending: false });
+    if (error) {
+      console.error('Guests fetch error:', error);
+      const empty = document.getElementById('guest-empty-state');
+      empty.classList.remove('ss-hidden');
+      empty.innerHTML = `Please ensure the <code>guest_list</code> table is created in Supabase.`;
+      return;
+    }
+    window.lastGuests = data || [];
+    renderGuests(window.lastGuests);
+  }
+
+  function renderInvitations(invitations) {
+    const grid = document.getElementById('invitation-grid');
+    if (!invitations.length) {
+      grid.innerHTML = `
+        <div class="empty-tpl" onclick="createInvitation()">
+          <div class="empty-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></div>
+          <h3>No purchased templates yet</h3>
+          <p>Browse the gallery and pick the design that speaks to your love story.</p>
+          <span class="ss-btn-primary" style="pointer-events:none">Browse Templates</span>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = invitations.map(inv => `
+      <div class="ss-card tpl-card">
+        <div class="tpl-card-head">
+          <span class="status-pill ${inv.status === 'published' ? 'published' : 'draft'}">${inv.status || 'draft'}</span>
+          <span class="tpl-id">#${(inv.id || '').slice(0,6)}</span>
         </div>
-
-        <!-- Tab Content: Templates -->
-        <div id="content-templates" class="tab-content transition-opacity duration-300">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 md:mb-8">
-                <h2 class="text-lg md:text-2xl font-serif font-bold">Purchased Templates</h2>
-                <button onclick="createInvitation()" id="create-btn" class="bg-[#9c404d] text-white px-6 py-3 sm:py-2 rounded-lg font-bold hover:bg-[#7d333e] transition-all text-sm w-full sm:w-auto">
-                    + New Template
-                </button>
-            </div>
-            <div id="invitation-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
-                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
-                <div class="animate-pulse bg-white rounded-3xl p-8 border border-gray-100 h-64"></div>
-            </div>
+        <div class="tpl-name">${inv.title || 'Untitled invitation'}</div>
+        <div class="tpl-meta">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          ${new Date(inv.created_at).toLocaleDateString()}
         </div>
-
-        <!-- Tab Content: RSVP List -->
-        <div id="content-rsvp" class="tab-content hidden opacity-0 transition-opacity duration-300">
-            <div class="flex justify-between items-center mb-6 md:mb-8">
-                <h2 class="text-lg md:text-2xl font-serif font-bold">RSVP Responses <span id="rsvp-total-pill" class="ml-2 bg-[#9c404d] text-white px-3 py-1 rounded-full text-[10px] md:text-xs">0</span></h2>
-            </div>
-            <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left min-w-[600px]">
-                        <thead class="bg-gray-50 text-xs uppercase tracking-wider text-[#9c404d] font-bold">
-                            <tr>
-                                <th class="px-6 py-5 md:px-8">Invitation</th>
-                                <th class="px-6 py-5 md:px-8">Guest Name</th>
-                                <th class="px-6 py-5 md:px-8">Status</th>
-                                <th class="px-6 py-5 md:px-8 text-center">People</th>
-                                <th class="px-6 py-5 md:px-8 text-right">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rsvp-list-body" class="divide-y divide-gray-50">
-                            <!-- RSVP data will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-                <div id="rsvp-empty-state" class="p-20 text-center text-gray-400">
-                    No RSVP responses received yet.
-                </div>
-            </div>
+        <div class="tpl-actions">
+          <button onclick="viewTemplate('${inv.id}','${inv.template_type || ''}')" class="ss-btn-primary">View &amp; Edit</button>
+          <button class="icon-btn" onclick="deleteInvitation('${inv.id}')" title="Delete template">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
         </div>
+      </div>
+    `).join('');
+  }
 
-        <!-- Tab Content: All Invites -->
-        <div id="content-invites" class="tab-content hidden opacity-0 transition-opacity duration-300">
-            <h2 class="text-lg md:text-2xl font-serif font-bold mb-6 md:mb-8">Guest Invitations</h2>
-            <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left min-w-[600px]">
-                        <thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500 font-bold">
-                            <tr>
-                                <th class="px-6 py-4 md:px-8">Guest Name</th>
-                                <th class="px-6 py-4 md:px-8">Phone Number</th>
-                                <th class="px-6 py-4 md:px-8">Status</th>
-                                <th class="px-6 py-4 md:px-8 text-right">Share Invitation</th>
-                            </tr>
-                        </thead>
-                        <tbody id="guest-list-body" class="divide-y divide-gray-50">
-                            <!-- Guests will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-                <div id="guest-empty-state" class="p-12 text-center text-gray-400 hidden">
-                    No guests added yet. Go to "Add Special Guests" to start.
-                </div>
+  function viewTemplate(id, templateType) {
+    let editorPath = '/edit/islamic-invitation';
+    if (templateType === 'template02' || templateType === 'tp2') editorPath = '/edit/islamic-invitation-premium';
+    window.location.href = `${editorPath}?id=${id}`;
+  }
+
+  async function deleteInvitation(id) {
+    if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) return;
+    if (!sb) return;
+    const { error } = await sb.from('customer_invitations').delete().eq('id', id);
+    if (error) { showToast('Failed to delete template.', 'error'); console.error(error); }
+    else { showToast('Template deleted successfully.', 'success'); fetchInvitations(); }
+  }
+
+  function renderGuests(guests) {
+    const body = document.getElementById('guest-list-body');
+    const emptyState = document.getElementById('guest-empty-state');
+    if (!guests.length) { body.innerHTML = ''; emptyState.classList.remove('ss-hidden'); return; }
+    emptyState.classList.add('ss-hidden');
+    body.innerHTML = guests.map(guest => {
+      let inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation`;
+      let idParam = '';
+      if (globalInvitations && globalInvitations.length) {
+        const inv = globalInvitations.find(i => i.status === 'published') || globalInvitations[0];
+        if (inv.template_type === 'tp2' || inv.template_type === 'template02') {
+          inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation-premium`;
+        }
+        idParam = `id=${inv.id}&`;
+      }
+      const inviteLink = `${inviteLinkUrl}?${idParam}guest=${encodeURIComponent(guest.name)}`;
+      const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
+      return `
+        <tr>
+          <td><strong>${guest.name}</strong></td>
+          <td style="font-family: 'DM Sans', monospace; color: var(--muted);">${guest.phone}</td>
+          <td><span class="rsvp-pill added">${guest.status || 'Added'}</span></td>
+          <td style="text-align:right">
+            <div class="share-row">
+              <a href="https://wa.me/${guest.phone.replace(/\D/g,'')}?text=${message}" target="_blank" class="share-btn wa" title="WhatsApp"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.765-5.764-5.765zm3.394 8.163c-.147.416-.855.762-1.156.789-.3.027-.601.121-1.74-.355-1.457-.607-2.393-2.094-2.466-2.191-.073-.097-.593-.791-.593-1.503 0-.712.373-1.063.506-1.205.133-.142.29-.178.387-.178.097 0 .193.001.277.005.088.004.208-.033.325.249.117.282.401.977.436 1.048.035.071.058.154.011.248-.047.094-.07.153-.141.236-.071.083-.148.185-.212.248-.069.068-.142.143-.061.282.081.139.362.597.776.967.534.477.986.626 1.125.696.14.07.221.058.303-.038.082-.096.347-.406.44-.544.093-.138.186-.117.311-.071.125.046.793.374.93.443s.228.104.262.161c.034.057.034.331-.113.747z"/></svg></a>
+              <a href="mailto:?subject=You are Invited!&body=${message}" class="share-btn email" title="Email"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></a>
+              <a href="https://www.instagram.com/direct/inbox/" target="_blank" class="share-btn ig" title="Instagram"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
             </div>
-        </div>
+          </td>
+        </tr>`;
+    }).join('');
+  }
 
-        <!-- Tab Content: Add Guests -->
-        <div id="content-add-guests" class="tab-content hidden opacity-0 transition-opacity duration-300">
-            <div class="max-w-xl mx-auto md:mx-0">
-                <h2 class="text-lg md:text-2xl font-serif font-bold mb-2">Send Personal Invitations</h2>
-                <p class="text-gray-500 text-xs md:text-base mb-6 md:mb-8">Add individual guests to send them a customized link with their name.</p>
-                
-                <form onsubmit="handleAddGuest(event)" class="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Guest Full Name</label>
-                        <input type="text" name="guest_name" required placeholder="e.g. John Doe" 
-                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number (with country code)</label>
-                        <input type="tel" name="guest_phone" required placeholder="e.g. +91 9876543210" 
-                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#9c404d] transition-all">
-                    </div>
-                    <button type="submit" id="add-guest-btn" 
-                            class="w-full bg-[#9c404d] text-white py-4 rounded-xl font-bold hover:bg-[#7d333e] transition-all shadow-lg shadow-[#9c404d]/20">
-                        Add to List & Generate Link
-                    </button>
-                </form>
-            </div>
-        </div>
+  async function handleAddGuest(e) {
+    e.preventDefault();
+    if (!sb || !currentUser) return;
+    const form = e.target;
+    const name = form.guest_name.value;
+    const phone = form.guest_phone.value;
+    const btn = document.getElementById('add-guest-btn');
+    btn.disabled = true; btn.innerHTML = 'Adding&hellip;';
+    const { error } = await sb.from('guest_list').insert([{ user_id: currentUser.id, name, phone, status: 'Added' }]).select();
+    if (error) { showToast('Error: Failed to save guest', 'error'); console.error(error); }
+    else { showToast('Saved successfully!', 'success'); form.reset(); fetchGuests(); setTimeout(() => switchTab('invites'), 800); }
+    btn.disabled = false; btn.innerHTML = 'Add to List &amp; Generate Link';
+  }
 
-        <!-- Activity Feed (Optional, moved to bottom) -->
-        <div class="mt-24 pt-12 border-t border-gray-100">
-            <h2 class="text-xl font-serif font-bold mb-6">Recent Activity</h2>
-            <div id="activity-feed" class="bg-white rounded-3xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
-                <div class="p-10 text-center text-gray-400 italic text-sm">
-                    No recent activity to show.
-                </div>
-            </div>
-        </div>
-    </main>
+  function showToast(message, type='success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+        ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>'}
+      </svg><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+  }
 
-    <script>
-        let sb;
-        let currentUser;
-        let currentTab = 'templates';
-
-        async function initSupabase() {
-            try {
-                const response = await fetch('/api/config');
-                const config = await response.json();
-                
-                if (!config.supabaseUrl || !config.supabaseAnonKey) {
-                    console.error('Supabase config missing.');
-                    return;
-                }
-
-                sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-                
-                // Check session
-                const { data: { session } } = await sb.auth.getSession();
-                if (!session) {
-                    window.location.href = '/login';
-                    return;
-                }
-
-                // 12h session timeout
-                const loginTime = localStorage.getItem('ss_login_time');
-                if (loginTime && (Date.now() - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
-                    await sb.auth.signOut();
-                    localStorage.removeItem('ss_login_time');
-                    window.location.href = '/login';
-                    return;
-                }
-
-                currentUser = session.user;
-                
-                // Update welcome message
-                const firstName = currentUser.user_metadata.first_name || 'Customer';
-                document.getElementById('user-welcome').innerText = `Welcome, ${firstName}`;
-
-                // Initial fetch
-                fetchInvitations();
-                fetchGuests();
-                fetchRsvpData();
-            } catch (err) {
-                console.error('Error initializing Supabase:', err);
-            }
-        }
-
-        async function fetchRsvpData() {
-            if (!sb) return;
-            const { data, error } = await sb
-                .from('customer_invitations')
-                .select('id, title, rsvps')
-                .eq('user_id', currentUser.id);
-
-            if (error) {
-                console.error('Error fetching RSVP data:', error);
-                return;
-            }
-
-            const body = document.getElementById('rsvp-list-body');
-            const emptyState = document.getElementById('rsvp-empty-state');
-            const totalPill = document.getElementById('rsvp-total-pill');
-
-            let allRsvps = [];
-            data.forEach(inv => {
-                if (inv.rsvps && Array.isArray(inv.rsvps)) {
-                    inv.rsvps.forEach(r => {
-                        allRsvps.push({ ...r, invitation_title: inv.title });
-                    });
-                }
-            });
-
-            // Sort by date desc
-            allRsvps.sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
-
-            if (allRsvps.length === 0) {
-                body.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                totalPill.innerText = '0';
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            totalPill.innerText = allRsvps.length;
-
-            body.innerHTML = allRsvps.map(rsvp => `
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-5 md:px-8">
-                        <div class="text-sm font-medium text-gray-800">${rsvp.invitation_title}</div>
-                    </td>
-                    <td class="px-6 py-5 md:px-8">
-                        <div class="text-sm text-gray-600">${rsvp.guest_name}</div>
-                    </td>
-                    <td class="px-6 py-5 md:px-8">
-                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${rsvp.status === 'attending' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}">
-                            ${rsvp.status}
-                        </span>
-                    </td>
-                    <td class="px-6 py-5 md:px-8 text-center text-sm text-gray-600">
-                        ${rsvp.guest_count || 1}
-                    </td>
-                    <td class="px-6 py-5 md:px-8 text-right text-xs text-gray-400">
-                        ${rsvp.submitted_at ? new Date(rsvp.submitted_at).toLocaleDateString() : 'N/A'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function switchTab(tabId) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-                content.classList.remove('opacity-100');
-                content.classList.add('opacity-0');
-            });
-
-            // Reset all tab buttons
-            document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
-                btn.classList.remove('border-[#9c404d]', 'text-[#9c404d]', 'font-bold');
-                btn.classList.add('border-transparent', 'text-gray-500');
-            });
-
-            // Show active tab content
-            const activeContent = document.getElementById(`content-${tabId}`);
-            activeContent.classList.remove('hidden');
-            setTimeout(() => {
-                activeContent.classList.remove('opacity-0');
-                activeContent.classList.add('opacity-100');
-            }, 50);
-
-            // Set active tab button
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.classList.add('border-[#9c404d]', 'text-[#9c404d]', 'font-bold');
-            activeBtn.classList.remove('border-transparent', 'text-gray-500');
-
-            currentTab = tabId;
-        }
-
-        let globalInvitations = [];
-        async function fetchInvitations() {
-            if (!sb) return;
-
-            const { data, error } = await sb
-                .from('customer_invitations')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                console.error('Error fetching invitations:', error);
-                return;
-            }
-
-            globalInvitations = data;
-            renderInvitations(data);
-            
-            // Re-render guests if they were already loaded so they get correct IDs
-            if (window.lastGuests) renderGuests(window.lastGuests);
-        }
-
-        async function fetchGuests() {
-            if (!sb) return;
-
-            const { data, error } = await sb
-                .from('guest_list')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                console.error('Error fetching guests:', error);
-                // The table might not exist yet, we'll gracefully handle it
-                document.getElementById('guest-empty-state').classList.remove('hidden');
-                document.getElementById('guest-empty-state').innerText = "Please ensure the 'guest_list' table is created in Supabase.";
-                return;
-            }
-
-            window.lastGuests = data;
-            renderGuests(data);
-        }
-
-        function renderInvitations(invitations) {
-            const grid = document.getElementById('invitation-grid');
-            
-            if (invitations.length === 0) {
-                grid.innerHTML = `
-                    <div onclick="createInvitation()" class="col-span-1 md:col-span-3 bg-white/50 border-2 border-dashed border-[#9c404d]/20 rounded-3xl p-8 md:p-12 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-[#fdf2f3] transition-colors">
-                        <div class="w-16 h-16 bg-[#fdf2f3] rounded-full flex items-center justify-center mb-4 text-[#9c404d] group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        </div>
-                        <h3 class="text-lg md:text-xl font-serif font-bold mb-2">No Purchased Templates</h3>
-                        <p class="text-gray-400 mb-6 text-sm md:text-base">Start by creating your first wedding invitation template.</p>
-                        <span class="bg-[#9c404d] text-white px-6 md:px-8 py-3 rounded-lg font-bold w-full sm:w-auto text-sm md:text-base">Create Now</span>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = invitations.map(invitation => `
-                <div class="bg-white rounded-3xl p-6 md:p-8 border border-[#9c404d]/10 shadow-sm hover:shadow-lg hover:border-[#9c404d]/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#9c404d]/5 to-transparent rounded-bl-full -z-10"></div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="px-3 py-1 ${invitation.status === 'published' ? 'bg-[#9c404d] text-white' : 'bg-gray-100 text-gray-500'} text-[10px] uppercase tracking-widest font-bold rounded-full shadow-sm">
-                            ${invitation.status}
-                        </span>
-                        <span class="text-gray-400 font-mono text-[10px] bg-gray-50 px-2 py-1 rounded">#${invitation.id.slice(0, 6)}</span>
-                        <button onclick="deleteInvitation('${invitation.id}')" class="text-red-400 hover:text-red-600 transition-colors ml-auto flex items-center justify-center p-1 rounded-full hover:bg-red-50" title="Delete Template">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-serif font-black text-[#2d0a0e] mb-1 group-hover:text-[#9c404d] transition-colors">${invitation.title}</h3>
-                    <p class="text-gray-400 text-xs mb-6 font-medium italic flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        ${new Date(invitation.created_at).toLocaleDateString()}
-                    </p>
-                    <div class="flex flex-col gap-3 text-sm mt-4">
-                        <button onclick="viewTemplate('${invitation.id}', '${invitation.template_type}')" class="w-full py-3 bg-[#9c404d] text-white hover:bg-[#7d333e] transition-all font-bold rounded-xl text-center flex justify-center items-center gap-2 uppercase tracking-widest text-[11px] shadow-md shadow-[#9c404d]/20 relative overflow-hidden btn-effect">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                            View & Edit Template
-                        </button>
-                     </div>
-                </div>
-            `).join('');
-
-            grid.innerHTML = html;
-        }
-
-        function viewTemplate(id, templateType) {
-            let editorPath = '/edit/islamic-invitation';
-            if (templateType === 'template02' || templateType === 'tp2') {
-                editorPath = '/edit/islamic-invitation-premium';
-            }
-            window.location.href = `${editorPath}?id=${id}`;
-        }
-
-        async function deleteInvitation(id) {
-            if (!confirm('Are you sure you want to delete this specific template? This action cannot be undone.')) return;
-            
-            if (!sb) return;
-            const { error } = await sb
-                .from('customer_invitations')
-                .delete()
-                .eq('id', id);
-            
-            if (error) {
-                showToast('Failed to delete template.', 'error');
-                console.error(error);
-            } else {
-                showToast('Template deleted successfully.', 'success');
-                fetchInvitations();
-            }
-        }
-
-        function renderGuests(guests) {
-            const body = document.getElementById('guest-list-body');
-            const emptyState = document.getElementById('guest-empty-state');
-
-            if (guests.length === 0) {
-                body.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            
-            body.innerHTML = guests.map(guest => {
-                // ── FIX: pick most recently created (published) invitation, or just most recent ──
-                let inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation`;
-                let idParam = '';
-
-                if (globalInvitations && globalInvitations.length > 0) {
-                    // Prefer published invitation; fall back to most recent draft
-                    const inv = globalInvitations.find(i => i.status === 'published') || globalInvitations[0];
-                    if (inv.template_type === 'tp2' || inv.template_type === 'template02') {
-                        inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation-premium`;
-                    }
-                    idParam = `id=${inv.id}&`;
-                }
-
-                const inviteLink = `${inviteLinkUrl}?${idParam}guest=${encodeURIComponent(guest.name)}`;
-                const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
-                
-                return `
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-5 md:px-8 font-medium text-gray-800 break-words max-w-[150px] md:max-w-none">${guest.name}</td>
-                        <td class="px-6 py-5 md:px-8 text-gray-500 font-mono text-xs md:text-sm whitespace-nowrap">${guest.phone}</td>
-                        <td class="px-6 py-5 md:px-8">
-                            <span class="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-wider">${guest.status || 'Added'}</span>
-                        </td>
-                        <td class="px-6 py-5 md:px-8 text-right">
-                            <div class="flex justify-end space-x-2 md:space-x-3">
-                                <a href="https://wa.me/${guest.phone.replace(/\D/g, '')}?text=${message}" target="_blank" title="WhatsApp" class="p-2 hover:bg-green-50 text-green-600 rounded-full transition-colors">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.765-5.764-5.765zm3.394 8.163c-.147.416-.855.762-1.156.789-.3.027-.601.121-1.74-.355-1.457-.607-2.393-2.094-2.466-2.191-.073-.097-.593-.791-.593-1.503 0-.712.373-1.063.506-1.205.133-.142.29-.178.387-.178.097 0 .193.001.277.005.088.004.208-.033.325.249.117.282.401.977.436 1.048.035.071.058.154.011.248-.047.094-.07.153-.141.236-.071.083-.148.185-.212.248-.069.068-.142.143-.061.282.081.139.362.597.776.967.534.477.986.626 1.125.696.14.07.221.058.303-.038.082-.096.347-.406.44-.544.093-.138.186-.117.311-.071.125.046.793.374.93.443s.228.104.262.161c.034.057.034.331-.113.747z"/></svg>
-                                </a>
-                                <a href="mailto:?subject=You are Invited!&body=${message}" title="Email" class="p-2 hover:bg-blue-50 text-blue-600 rounded-full transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                </a>
-                                <a href="https://www.instagram.com/direct/inbox/" target="_blank" title="Instagram" class="p-2 hover:bg-pink-50 text-pink-600 rounded-full transition-colors">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        async function handleAddGuest(e) {
-            e.preventDefault();
-            if (!sb || !currentUser) return;
-
-            const form = e.target;
-            const name = form.guest_name.value;
-            const phone = form.guest_phone.value;
-            const btn = document.getElementById('add-guest-btn');
-
-            btn.disabled = true;
-            btn.innerText = "Adding...";
-
-            const { data, error } = await sb
-                .from('guest_list')
-                .insert([
-                    {
-                        user_id: currentUser.id,
-                        name: name,
-                        phone: phone,
-                        status: 'Added'
-                    }
-                ])
-                .select();
-
-            if (error) {
-                showToast('Error: Failed to save guest', 'error');
-                console.error(error);
-            } else {
-                showToast('Saved Successfully!', 'success');
-                form.reset();
-                fetchGuests();
-                setTimeout(() => switchTab('invites'), 1000);
-            }
-
-            btn.disabled = false;
-            btn.innerText = "Add to List & Generate Link";
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            const bgColor = type === 'success' ? 'bg-[#9c404d]' : 'bg-red-600';
-            
-            toast.className = `toast px-6 py-4 rounded-xl text-white font-bold shadow-2xl ${bgColor} flex items-center space-x-3`;
-            toast.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    ${type === 'success' ? 
-                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>' : 
-                        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>'}
-                </svg>
-                <span>${message}</span>
-            `;
-            
-            container.appendChild(toast);
-            
-            // Trigger animation
-            setTimeout(() => toast.classList.add('show'), 10);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        async function createInvitation() {
-            window.location.href = '/templates';
-        }
-
-        async function handleLogout() {
-            if (sb) {
-                await sb.auth.signOut();
-                window.location.href = '/login';
-            }
-        }
-
-        initSupabase();
-    </script>
-    <script src="/app.js"></script>
+  function createInvitation() { window.location.href = '/templates'; }
+  async function handleLogout() { if (sb) { await sb.auth.signOut(); window.location.href = '/login'; } }
+</script>
+<script src="/app.js"></script>
 </body>
 </html>
-
