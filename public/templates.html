@@ -524,6 +524,19 @@
     return card;
   }
 
+
+  function normalizeTemplateRows(rows) {
+    const aliases = { tp1: 'template01', tp2: 'template02', 'islamic-invitation': 'template01', 'islamic-invitation-premium': 'template02' };
+    const byId = new Map();
+    (rows || []).forEach(row => {
+      const canonicalId = aliases[row.id] || row.id;
+      const normalized = { ...row, id: canonicalId };
+      const existing = byId.get(canonicalId);
+      if (!existing || row.id === canonicalId) byId.set(canonicalId, normalized);
+    });
+    return Array.from(byId.values());
+  }
+
   async function loadTemplateCardData() {
     if (!sb) return;
     try {
@@ -536,17 +549,18 @@
         // Try to patch static cards using Supabase data
         return;
       }
+      const templates = normalizeTemplateRows(data);
       // Patch static fallback cards first (template01 / template02 by id)
-      data.forEach(t => {
+      templates.forEach(t => {
         const nameEl = document.getElementById('name-' + t.id);
         if (nameEl) {
           if (t.name) nameEl.textContent = t.name;
           const priceEl = document.getElementById('price-' + t.id);
-          if (priceEl) priceEl.textContent = '&#8377;' + t.price;
+          if (priceEl) priceEl.textContent = '₹' + t.price;
           const origEl = document.getElementById('original-price-' + t.id);
           const offerEl = document.getElementById('offer-' + t.id);
           const origPrice = t.original_price || 1499;
-          if (origEl) origEl.textContent = '&#8377;' + origPrice;
+          if (origEl) origEl.textContent = '₹' + origPrice;
           if (offerEl && t.price < origPrice) {
             offerEl.textContent = Math.round(((origPrice - t.price) / origPrice) * 100) + '% OFF';
           } else if (offerEl) { offerEl.style.display='none'; if(origEl) origEl.style.display='none'; }
@@ -568,7 +582,7 @@
       const staticIds = ['template01', 'template02'];
       const grid = document.getElementById('template-grid-inner');
       let dynamicIndex = 2;
-      data.forEach(t => {
+      templates.forEach(t => {
         if (!staticIds.includes(t.id)) {
           const card = buildDynamicCard(t, dynamicIndex++);
           if (dynamicIndex - 2 >= MAX_VISIBLE) card.style.display = 'none';
@@ -582,6 +596,13 @@
   }
 
   async function handleSelectTemplate(templateId) {
+    const templateAliases = {
+      'islamic-invitation': 'template01',
+      'islamic-invitation-premium': 'template02',
+      'tp1': 'template01',
+      'tp2': 'template02'
+    };
+    templateId = templateAliases[templateId] || templateId;
     if (!sb) { window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId); return; }
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId); return; }

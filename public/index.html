@@ -609,7 +609,7 @@
           <div class="iframe-preview-container"><iframe src="/wedding/islamic-invitation?preview=true" class="preview-iframe" scrolling="no"></iframe></div>
           <div class="card-overlay">
             <a href="/wedding/islamic-invitation" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>
-            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('islamic-invitation')">Buy Now</button>
+            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('template01')">Buy Now</button>
           </div>
         </div>
         <div class="card-info">
@@ -623,7 +623,7 @@
           <div class="card-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>
           <div class="card-overlay">
             <a href="/wedding/islamic-invitation-premium" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>
-            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('islamic-invitation-premium')">Buy Now</button>
+            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('template02')">Buy Now</button>
           </div>
         </div>
         <div class="card-info">
@@ -949,6 +949,19 @@
     return card;
   }
 
+
+  function normalizeTemplateRows(rows) {
+    const aliases = { tp1: 'template01', tp2: 'template02', 'islamic-invitation': 'template01', 'islamic-invitation-premium': 'template02' };
+    const byId = new Map();
+    (rows || []).forEach(row => {
+      const canonicalId = aliases[row.id] || row.id;
+      const normalized = { ...row, id: canonicalId };
+      const existing = byId.get(canonicalId);
+      if (!existing || row.id === canonicalId) byId.set(canonicalId, normalized);
+    });
+    return Array.from(byId.values());
+  }
+
   async function loadTemplateCardData() {
     if (!sb) return;
     try {
@@ -956,16 +969,17 @@
         .select('id, name, price, original_price, is_premium, placeholder_url, preview_url, demo_url, is_active')
         .eq('is_active', true).order('created_at', { ascending: true });
       if (error || !data || !data.length) return;
+      const templates = normalizeTemplateRows(data);
       const grid = document.getElementById('templates-grid');
       const viewMore = document.getElementById('view-more-templates');
       const MAX_VISIBLE = 4;
       if (grid) grid.innerHTML = '';
-      data.forEach((t, i) => {
+      templates.forEach((t, i) => {
         const card = buildTemplateCard(t, i);
         if (i >= MAX_VISIBLE) card.style.display = 'none';
         if (grid) grid.appendChild(card);
       });
-      if (data.length > MAX_VISIBLE) {
+      if (templates.length > MAX_VISIBLE) {
           const link = document.getElementById('view-all-link');
           if (link) { link.style.display = 'inline-flex'; }
         }
@@ -976,6 +990,13 @@
   // showMoreTemplates replaced by /templates link
 
   async function handleSelectTemplate(templateId) {
+    const templateAliases = {
+      'islamic-invitation': 'template01',
+      'islamic-invitation-premium': 'template02',
+      'tp1': 'template01',
+      'tp2': 'template02'
+    };
+    templateId = templateAliases[templateId] || templateId;
     if (!sb) { window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId); return; }
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId); return; }

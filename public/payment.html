@@ -589,11 +589,18 @@
 <script>
 // ── URL param ──────────────────────────────────────────────
 const urlParams = new URLSearchParams(window.location.search);
-const templateParam = urlParams.get('template') || 'template01';
+const templateAliases = {
+    'islamic-invitation': 'template01',
+    'islamic-invitation-premium': 'template02',
+    'tp1': 'template01',
+    'tp2': 'template02'
+};
+const rawTemplateParam = urlParams.get('template') || 'template01';
+const templateParam = templateAliases[rawTemplateParam] || rawTemplateParam;
 
 const templateDetails = {
-    'template01': { name: 'Royal Heritage', desc: "Timeless patterns meet royal deep-plum elegance." },
-    'template02': { name: 'Minimalist Gold', desc: "Sophisticated minimalism with gold accents." },
+    'template01': { name: 'Islamic Classic', desc: "Elegant classic wedding invitation with RSVP, countdown, and sharing." },
+    'template02': { name: 'Islamic Premium', desc: "Premium invitation experience with refined styling and richer presentation." },
     'template03': { name: 'Floral Garden', desc: "A delicate blend of garden aesthetics and soft floral romance." },
     'template04': { name: 'Majestic Gold', desc: "Bold, full-screen gold brilliance for a truly majestic announcement." }
 };
@@ -646,11 +653,12 @@ async function initPage() {
 
         // Fetch real price from template_configs
         try {
-            const { data: tpl } = await sb
+            const candidateIds = [...new Set([templateParam, rawTemplateParam])];
+            const { data: tplRows } = await sb
                 .from('template_configs')
-                .select('price, name')
-                .eq('id', templateParam)
-                .single();
+                .select('id, price, name')
+                .in('id', candidateIds);
+            const tpl = (tplRows || []).find(t => t.id === templateParam) || (tplRows || [])[0];
 
             if (tpl && !isNaN(tpl.price) && !isAdmin) {
                 resolvedAmount = Number(tpl.price);
