@@ -151,6 +151,48 @@
     }
     .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
 
+    /* Phone OTP button */
+    .phone-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      width: 100%; padding: 14px 20px;
+      background: #fff; color: var(--ink);
+      font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      cursor: pointer; transition: all 0.25s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      margin-top: 10px;
+    }
+    .phone-btn:hover { border-color: rgba(196,86,106,0.35); box-shadow: 0 6px 24px rgba(160,48,80,0.12); transform: translateY(-1px); }
+    .phone-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .phone-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    /* OTP view */
+    #otp-view .otp-inputs { display: flex; gap: 10px; justify-content: center; margin: 24px 0; }
+    .otp-digit {
+      width: 48px; height: 56px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: #fff;
+      font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600;
+      color: var(--ink); text-align: center; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .otp-digit:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(196,86,106,0.12); }
+    @media (max-width: 420px) { .otp-digit { width: 40px; height: 50px; font-size: 22px; } }
+
+    /* Phone input row */
+    .phone-row { display: flex; gap: 8px; }
+    .country-code {
+      width: 76px; flex-shrink: 0; padding: 12px 10px;
+      background: #fff; border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: inherit; font-size: 14px; color: var(--ink); outline: none;
+      transition: border-color .2s, box-shadow .2s; text-align: center;
+    }
+    .country-code:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(196,86,106,0.1); }
+    .resend-link { font-size: 13px; color: var(--muted); text-align: center; margin-top: 4px; }
+    .resend-link button { background: none; border: none; font: inherit; font-size: 13px; color: var(--rose-deep); font-weight: 600; cursor: pointer; padding: 0; border-bottom: 1px dashed rgba(160,48,80,.4); }
+    .resend-link button:disabled { opacity: .5; cursor: not-allowed; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer; background: none; border: none; font-family: inherit; padding: 0; margin-bottom: 18px; transition: color .2s; }
+    .back-link:hover { color: var(--rose-deep); }
+
     /* Form fields */
     .form-stack { display:flex; flex-direction:column; gap:16px; }
     .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
@@ -280,6 +322,10 @@
           <span>Continue with Google</span>
         </button>
 
+        <button class="phone-btn" onclick="showView('phone')" type="button">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498A1 1 0 0121 15v3a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          Continue with Mobile Number
+        </button>
         <div class="divider">or sign in with email</div>
 
         <form class="form-stack" onsubmit="handleLogin(event)" autocomplete="on">
@@ -317,6 +363,10 @@
           <span>Continue with Google</span>
         </button>
 
+        <button class="phone-btn" onclick="showView('phone')" type="button">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498A1 1 0 0121 15v3a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          Continue with Mobile Number
+        </button>
         <div class="divider">or sign up with email</div>
 
         <form class="form-stack" onsubmit="handleSignup(event)" autocomplete="on">
@@ -344,6 +394,61 @@
           </button>
         </form>
         <p class="toggle-text">Already have an account? <button type="button" onclick="showView('login')">Sign in</button></p>
+      </div>
+
+
+      <!-- PHONE VIEW: enter number -->
+      <div id="phone-view" class="hidden">
+        <button class="back-link" onclick="showView('login')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Back
+        </button>
+        <span class="card-eyebrow">Mobile Login</span>
+        <h1 class="card-title">Enter your <em>number</em></h1>
+        <p class="card-sub">We&rsquo;ll send a one-time code to verify your mobile number.</p>
+        <div id="phone-error" class="form-error hidden"></div>
+        <form class="form-stack" onsubmit="handleSendOtp(event)">
+          <div class="field">
+            <label>Mobile Number</label>
+            <div class="phone-row">
+              <input type="text" id="phone-country" class="country-code" value="+91" placeholder="+91" maxlength="5">
+              <input type="tel" id="phone-number" placeholder="98765 43210" required autocomplete="tel" style="flex:1;padding:12px 15px;background:#fff;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;">
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="send-otp-btn">
+            Send OTP
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- OTP VIEW: enter code -->
+      <div id="otp-view" class="hidden">
+        <button class="back-link" onclick="showView('phone')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Back
+        </button>
+        <span class="card-eyebrow">Verify</span>
+        <h1 class="card-title">Enter the <em>OTP</em></h1>
+        <p class="card-sub" id="otp-sent-to">Code sent to your mobile number.</p>
+        <div id="otp-error" class="form-error hidden"></div>
+        <div class="otp-inputs">
+          <input class="otp-digit" id="otp-0" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" id="otp-1" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" id="otp-2" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" id="otp-3" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" id="otp-4" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+          <input class="otp-digit" id="otp-5" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        </div>
+        <button class="btn-submit" id="verify-otp-btn" onclick="handleVerifyOtp()">
+          Verify &amp; Sign In
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+        </button>
+        <p class="resend-link" style="margin-top:18px">
+          Didn&rsquo;t receive it?&nbsp;
+          <button id="resend-btn" onclick="resendOtp()" disabled>Resend OTP</button>
+          <span id="resend-timer"></span>
+        </p>
       </div>
 
     </div>
@@ -429,12 +534,7 @@
   }
   initSupabase();
 
-  function showView(view) {
-    document.getElementById('login-view').classList.toggle('hidden', view !== 'login');
-    document.getElementById('signup-view').classList.toggle('hidden', view !== 'signup');
-    document.getElementById('login-error').classList.add('hidden');
-    document.getElementById('signup-error').classList.add('hidden');
-  }
+  // showView is defined in the OTP section below
 
   async function handleGoogleAuth() {
     if (!sb) { showErr('login-error', 'Authentication not available right now.'); return; }
@@ -515,6 +615,128 @@
       showErr('signup-error', 'Something went wrong. Please try again.');
       btn.disabled=false; btn.innerHTML='Create Account <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
     }
+  }
+
+  // ── PHONE / OTP AUTH ──
+  let otpPhone = '';
+  let resendInterval;
+
+  function showView(view) {
+    ['login-view','signup-view','phone-view','otp-view'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden', id !== view + '-view');
+    });
+    ['login-error','signup-error','phone-error','otp-error'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+  }
+
+  function startResendTimer(seconds) {
+    clearInterval(resendInterval);
+    const btn = document.getElementById('resend-btn');
+    const timer = document.getElementById('resend-timer');
+    btn.disabled = true;
+    let t = seconds;
+    timer.textContent = ' (' + t + 's)';
+    resendInterval = setInterval(() => {
+      t--;
+      if (t <= 0) {
+        clearInterval(resendInterval);
+        btn.disabled = false;
+        timer.textContent = '';
+      } else {
+        timer.textContent = ' (' + t + 's)';
+      }
+    }, 1000);
+  }
+
+  // Auto-advance OTP digits
+  document.querySelectorAll('.otp-digit').forEach((input, idx, all) => {
+    input.addEventListener('input', e => {
+      const val = e.target.value.replace(/[^0-9]/g, '');
+      e.target.value = val;
+      if (val && idx < all.length - 1) all[idx + 1].focus();
+      // Auto-verify when all filled
+      const code = Array.from(all).map(i => i.value).join('');
+      if (code.length === 6) handleVerifyOtp();
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !e.target.value && idx > 0) all[idx - 1].focus();
+    });
+    input.addEventListener('paste', e => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+      paste.split('').forEach((ch, i) => { if (all[i]) all[i].value = ch; });
+      if (all[Math.min(paste.length, all.length - 1)]) all[Math.min(paste.length, all.length - 1)].focus();
+      const code = Array.from(all).map(i => i.value).join('');
+      if (code.length === 6) setTimeout(handleVerifyOtp, 100);
+    });
+  });
+
+  async function handleSendOtp(e) {
+    e.preventDefault();
+    document.getElementById('phone-error').classList.add('hidden');
+    if (!sb) { showErr('phone-error', 'Authentication not available right now.'); return; }
+    const cc = document.getElementById('phone-country').value.trim() || '+91';
+    const num = document.getElementById('phone-number').value.replace(/\s/g, '').replace(/^0+/, '');
+    const fullPhone = cc + num;
+    if (!/^\+[1-9]\d{6,14}$/.test(fullPhone)) {
+      showErr('phone-error', 'Please enter a valid mobile number with country code.'); return;
+    }
+    const btn = document.getElementById('send-otp-btn');
+    btn.disabled = true; btn.innerHTML = 'Sending OTP…';
+    try {
+      const { error } = await sb.auth.signInWithOtp({ phone: fullPhone });
+      if (error) {
+        showErr('phone-error', error.message || 'Failed to send OTP. Please try again.');
+        btn.disabled = false; btn.innerHTML = 'Send OTP <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+        return;
+      }
+      otpPhone = fullPhone;
+      document.getElementById('otp-sent-to').textContent = 'Code sent to ' + fullPhone;
+      document.querySelectorAll('.otp-digit').forEach(i => i.value = '');
+      showView('otp');
+      document.getElementById('otp-0').focus();
+      startResendTimer(30);
+      btn.disabled = false; btn.innerHTML = 'Send OTP <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+    } catch(err) {
+      showErr('phone-error', 'Something went wrong. Please try again.');
+      btn.disabled = false; btn.innerHTML = 'Send OTP <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+    }
+  }
+
+  async function handleVerifyOtp() {
+    document.getElementById('otp-error').classList.add('hidden');
+    const code = Array.from(document.querySelectorAll('.otp-digit')).map(i => i.value).join('');
+    if (code.length < 6) { showErr('otp-error', 'Please enter all 6 digits.'); return; }
+    if (!sb || !otpPhone) { showErr('otp-error', 'Session expired. Please go back and try again.'); return; }
+    const btn = document.getElementById('verify-otp-btn');
+    btn.disabled = true; btn.innerHTML = 'Verifying…';
+    try {
+      const { error } = await sb.auth.verifyOtp({ phone: otpPhone, token: code, type: 'sms' });
+      if (error) {
+        showErr('otp-error', error.message || 'Invalid OTP. Please try again.');
+        btn.disabled = false; btn.innerHTML = 'Verify &amp; Sign In <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+        return;
+      }
+      localStorage.setItem('ss_login_time', Date.now().toString());
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      window.location.href = redirect ? decodeURIComponent(redirect) : '/dashboard';
+    } catch(err) {
+      showErr('otp-error', 'Something went wrong. Please try again.');
+      btn.disabled = false; btn.innerHTML = 'Verify &amp; Sign In <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+    }
+  }
+
+  async function resendOtp() {
+    if (!sb || !otpPhone) return;
+    document.getElementById('resend-btn').disabled = true;
+    const { error } = await sb.auth.signInWithOtp({ phone: otpPhone });
+    if (error) { showErr('otp-error', 'Failed to resend OTP.'); return; }
+    document.getElementById('otp-error').classList.add('hidden');
+    startResendTimer(30);
   }
 </script>
 </body>
