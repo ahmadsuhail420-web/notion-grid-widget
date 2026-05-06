@@ -3,337 +3,517 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
-  <title>Login &mdash; Sync &amp; Style</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <title>Sign In &mdash; Sync &amp; Style</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="/css/shared.css">
   <style>
-    main.auth-shell {
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ivory:      #fdf8f0;
+      --ivory-card: #fffcf8;
+      --rose:       #c4566a;
+      --rose-deep:  #a03050;
+      --rose-pale:  #fdf0f3;
+      --rose-blush: #f7e8ec;
+      --gold:       #b8882a;
+      --gold-light: #d4a843;
+      --gold-pale:  #f5e6c8;
+      --ink:        #1c0a10;
+      --ink-mid:    #4a2030;
+      --muted:      #8a6070;
+      --border:     rgba(180,120,100,0.15);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ivory);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--ivory); }
+    ::-webkit-scrollbar-thumb { background: rgba(180,100,120,0.3); border-radius: 3px; }
+
+    /* Page background blobs + dot pattern */
+    .page-bg {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background: var(--ivory);
+    }
+    .page-bg::before {
+      content: ''; position: absolute; top: -120px; right: -160px;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,86,106,0.09) 0%, transparent 70%);
+    }
+    .page-bg::after {
+      content: ''; position: absolute; bottom: -80px; left: -120px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(184,136,42,0.08) 0%, transparent 65%);
+    }
+    .page-pattern {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.35;
+      background-image: radial-gradient(rgba(196,86,106,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100; padding: 0 48px; height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(253,248,240,0.92); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700; font-style:italic; color:var(--rose-deep); text-decoration:none; }
+    .nav-back { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; color:var(--muted); text-decoration:none; transition:color .2s; }
+    .nav-back:hover { color:var(--rose-deep); }
+    @media (max-width:640px) { .navbar { padding:0 16px; height:64px; } }
+
+    /* ── SHELL — two columns ── */
+    .shell {
       min-height: calc(100vh - 72px);
       display: grid; grid-template-columns: 1fr 1fr;
       align-items: stretch;
     }
-    @media (max-width: 900px) {
-      main.auth-shell { grid-template-columns: 1fr; min-height: auto; }
-      .auth-aside { display: none !important; }
+    @media (max-width:900px) { .shell { grid-template-columns: 1fr; } .aside { display:none!important; } }
+
+    /* ── FORM SIDE ── */
+    .form-side {
+      display: flex; align-items: center; justify-content: center;
+      padding: 64px 32px;
     }
+    @media (max-width:640px) { .form-side { padding: 40px 20px 56px; } }
 
-    .auth-form-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 32px; }
-    @media (max-width: 640px) { .auth-form-wrap { padding: 36px 16px 48px; } }
-
-    .auth-card { width: 100%; max-width: 460px; padding: 48px 44px; position: relative; }
-    .auth-card::before {
-      content: ''; position: absolute; top: -24px; right: -24px;
-      width: 120px; height: 120px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(196,86,106,0.12) 0%, transparent 70%);
+    .card {
+      width: 100%; max-width: 460px;
+      background: var(--ivory-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 52px 48px;
+      box-shadow: 0 8px 48px rgba(180,100,80,0.08);
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ''; position: absolute; top: -40px; right: -40px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,86,106,0.09) 0%, transparent 70%);
       pointer-events: none;
     }
-    .auth-meta { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 500; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: block; }
-    .auth-title { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; line-height: 1.05; color: var(--ink); margin-bottom: 12px; }
-    .auth-title em { font-style: italic; font-weight: 600; color: var(--rose-deep); }
-    .auth-sub { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.7; margin-bottom: 32px; }
-    @media (max-width: 480px) {
-      .auth-card { padding: 32px 22px; border-radius: 14px; }
-      .auth-title { font-size: 32px; }
-      .auth-sub { font-size: 13px; margin-bottom: 24px; }
+    @media (max-width:640px) { .card { padding: 36px 24px; border-radius: 18px; } }
+
+    .card-eyebrow {
+      font-family:'Cinzel',serif; font-size:10px; font-weight:500;
+      letter-spacing:.35em; text-transform:uppercase; color:var(--gold);
+      display:block; margin-bottom:14px;
     }
+    .card-title {
+      font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:300; line-height:1.08;
+      color:var(--ink); margin-bottom:10px;
+    }
+    .card-title em { font-style:italic; font-weight:600; color:var(--rose-deep); }
+    .card-sub { font-size:14px; font-weight:300; color:var(--muted); line-height:1.7; margin-bottom:32px; }
+    @media (max-width:480px) { .card-title { font-size:30px; } }
 
-    .form-grid { display: flex; flex-direction: column; gap: 18px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; gap: 14px; } .form-grid { gap: 14px; } }
-
-    .auth-card .ss-btn-primary { width: 100%; padding: 17px 28px; }
-    @media (max-width: 480px) { .auth-card .ss-btn-primary { padding: 15px 22px; } }
-
-    .auth-toggle { margin-top: 28px; text-align: center; font-size: 13px; color: var(--muted); }
-    .auth-toggle button { background: none; border: none; padding: 0; cursor: pointer; font: inherit; color: var(--rose-deep); font-weight: 600; border-bottom: 1px dashed rgba(160,48,80,0.5); transition: color .2s; }
-    .auth-toggle button:hover { color: var(--rose); }
-
-    /* Decorative aside */
-    .auth-aside {
+    /* Google button — premium style */
+    .google-btn {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      width: 100%; padding: 14px 20px;
+      background: #fff; color: var(--ink);
+      font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      cursor: pointer; transition: all 0.25s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
       position: relative; overflow: hidden;
-      background: linear-gradient(135deg, var(--rose-deep) 0%, #c4566a 55%, #d4704a 100%);
+    }
+    .google-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(196,86,106,0.04), rgba(184,136,42,0.04));
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .google-btn:hover { border-color: rgba(196,86,106,0.35); box-shadow: 0 6px 24px rgba(160,48,80,0.12); transform: translateY(-1px); }
+    .google-btn:hover::before { opacity: 1; }
+    .google-btn:active { transform: translateY(0); }
+    .google-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .google-btn svg { width: 20px; height: 20px; flex-shrink: 0; position: relative; z-index: 1; }
+    .google-btn span { position: relative; z-index: 1; }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 14px;
+      margin: 22px 0;
+      font-family:'Cinzel',serif; font-size:9px; font-weight:500;
+      letter-spacing:.3em; text-transform:uppercase; color:var(--muted);
+    }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* Form fields */
+    .form-stack { display:flex; flex-direction:column; gap:16px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media (max-width:480px) { .form-row { grid-template-columns:1fr; } }
+
+    .field { display:flex; flex-direction:column; gap:7px; }
+    label {
+      font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+      color:var(--ink-mid);
+    }
+    input[type=email], input[type=password], input[type=text] {
+      width:100%; padding:13px 16px;
+      background:#fff; border:1.5px solid var(--border); border-radius:8px;
+      font-family:inherit; font-size:14px; font-weight:400; color:var(--ink);
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus { border-color:var(--rose); box-shadow:0 0 0 3px rgba(196,86,106,0.1); }
+    input::placeholder { color:rgba(138,96,112,0.45); }
+
+    /* Submit button */
+    .btn-submit {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      width:100%; padding:16px 28px;
+      background:var(--rose-deep); color:#fff;
+      font-family:inherit; font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      border:none; border-radius:8px; cursor:pointer;
+      box-shadow:0 8px 28px rgba(160,48,80,0.28);
+      transition:all .3s ease;
+    }
+    .btn-submit:hover { background:var(--rose); box-shadow:0 12px 36px rgba(160,48,80,0.4); transform:translateY(-1px); }
+    .btn-submit:active { transform:translateY(0); }
+    .btn-submit:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+    /* Error */
+    .form-error {
+      background:var(--rose-pale); border:1px solid rgba(196,86,106,0.25);
+      color:var(--rose-deep); padding:12px 16px;
+      border-radius:8px; font-size:13px; line-height:1.5;
+    }
+    .hidden { display:none!important; }
+
+    /* Toggle */
+    .toggle-text {
+      margin-top:26px; text-align:center; font-size:13px; color:var(--muted);
+    }
+    .toggle-text button {
+      background:none; border:none; padding:0; cursor:pointer;
+      font:inherit; color:var(--rose-deep); font-weight:600;
+      border-bottom:1px dashed rgba(160,48,80,0.45); transition:color .2s;
+    }
+    .toggle-text button:hover { color:var(--rose); }
+
+    /* ── ASIDE — decorative right panel ── */
+    .aside {
+      position: relative; overflow: hidden;
+      background: linear-gradient(145deg, var(--rose-deep) 0%, #b03060 40%, #c4566a 75%, #d4704a 100%);
       color: #fff; padding: 80px 56px;
       display: flex; flex-direction: column; justify-content: space-between;
     }
-    .auth-aside::before { content: ''; position: absolute; top: -100px; right: -120px; width: 460px; height: 460px; border-radius: 50%; background: rgba(255,255,255,0.07); }
-    .auth-aside::after { content: ''; position: absolute; bottom: -80px; left: -100px; width: 360px; height: 360px; border-radius: 50%; background: rgba(255,255,255,0.05); }
-    .aside-eyebrow { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.7); position: relative; z-index: 1; }
-    .aside-quote { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; font-style: italic; line-height: 1.2; max-width: 460px; position: relative; z-index: 1; }
-    .aside-quote em { color: var(--gold-pale); font-weight: 600; }
-    .aside-stats { display: flex; gap: 32px; position: relative; z-index: 1; }
-    .aside-stat { display: flex; flex-direction: column; gap: 4px; }
-    .aside-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: #fff; line-height: 1; }
-    .aside-stat-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+    .aside::before { content:''; position:absolute; top:-100px; right:-120px; width:460px; height:460px; border-radius:50%; background:rgba(255,255,255,0.07); }
+    .aside::after  { content:''; position:absolute; bottom:-80px; left:-100px; width:360px; height:360px; border-radius:50%; background:rgba(255,255,255,0.05); }
 
-    .form-error {
-      background: var(--rose-pale);
-      border: 1px solid rgba(196,86,106,0.3);
-      color: var(--rose-deep);
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      margin-bottom: 4px;
+    /* Floating rings */
+    .aside-ring {
+      position:absolute; border-radius:50%; border:1px solid rgba(255,255,255,0.07);
+      animation: ringPulse 8s ease-in-out infinite;
     }
+    @keyframes ringPulse { 0%,100%{opacity:.4;transform:scale(1)} 50%{opacity:.8;transform:scale(1.03)} }
 
-    /* Google OAuth button */
-    .google-btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%;
-      background: #fff; color: var(--ink);
-      font-family: inherit; font-size: 13px; font-weight: 600;
-      letter-spacing: 0.04em;
-      padding: 14px 20px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-    }
-    .google-btn:hover { border-color: rgba(160,48,80,0.3); box-shadow: 0 6px 20px rgba(160,48,80,0.1); transform: translateY(-1px); }
-    .google-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .google-btn svg { width: 18px; height: 18px; }
+    .aside-top { position:relative; z-index:1; }
+    .aside-eyebrow { font-family:'Cinzel',serif; font-size:10px; letter-spacing:.35em; text-transform:uppercase; color:rgba(255,255,255,0.65); display:block; margin-bottom:40px; }
+    .aside-quote { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:300; font-style:italic; line-height:1.25; max-width:420px; }
+    .aside-quote em { color:var(--gold-pale); font-weight:600; font-style:italic; }
 
-    .divider {
-      display: flex; align-items: center; gap: 14px;
-      margin: 20px 0;
-      font-family: 'Cinzel', serif; font-size: 10px;
-      letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--muted);
+    /* Feature list */
+    .aside-features { position:relative; z-index:1; display:flex; flex-direction:column; gap:20px; }
+    .aside-feature { display:flex; align-items:center; gap:14px; }
+    .aside-feature-icon {
+      width:40px; height:40px; border-radius:10px; flex-shrink:0;
+      background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.15);
+      display:flex; align-items:center; justify-content:center;
     }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .aside-feature-text { font-size:14px; font-weight:300; color:rgba(255,255,255,0.85); line-height:1.4; }
+    .aside-feature-text strong { font-weight:600; color:#fff; }
+
+    /* Stats row */
+    .aside-stats { position:relative; z-index:1; display:flex; gap:28px; padding-top:32px; border-top:1px solid rgba(255,255,255,0.12); }
+    .aside-stat-num { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:600; color:#fff; line-height:1; display:block; }
+    .aside-stat-label { font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,0.6); margin-top:4px; display:block; }
   </style>
 </head>
 <body>
-
 <div class="page-bg"></div>
 <div class="page-pattern"></div>
 
-<nav class="ss-navbar">
-  <a href="/" class="ss-logo">Sync &amp; Style</a>
-  <div class="ss-nav-links">
-    <a href="/#templates">Templates</a>
-    <a href="/#pricing">Pricing</a>
-    <a href="/" class="ss-back-link">&larr; Back to Home</a>
-  </div>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/" class="nav-logo">Sync &amp; Style</a>
+  <a href="/" class="nav-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    Back to Home
+  </a>
 </nav>
 
-<main class="auth-shell">
-  <div class="auth-form-wrap">
-    <div class="ss-card auth-card ss-reveal">
-      <!-- LOGIN -->
-      <div id="login-form">
-        <span class="auth-meta">Welcome Back</span>
-        <h1 class="auth-title">Sign in to your <em>account</em></h1>
-        <p class="auth-sub">Manage templates, RSVPs &amp; share your invitations.</p>
-        <div id="login-error" class="form-error ss-hidden"></div>
+<main class="shell">
 
-        <button type="button" class="google-btn" onclick="handleGoogleAuth()" data-original="Continue with Google">
-          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-          Continue with Google
+  <!-- FORM SIDE -->
+  <div class="form-side">
+    <div class="card">
+
+      <!-- LOGIN VIEW -->
+      <div id="login-view">
+        <span class="card-eyebrow">Welcome Back</span>
+        <h1 class="card-title">Sign in to your <em>account</em></h1>
+        <p class="card-sub">Manage templates, RSVPs &amp; share your invitations.</p>
+        <div id="login-error" class="form-error hidden"></div>
+
+        <!-- Google -->
+        <button class="google-btn" id="google-btn-login" onclick="handleGoogleAuth()" type="button">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+          </svg>
+          <span>Continue with Google</span>
         </button>
-        <div class="divider">or</div>
 
-        <form class="form-grid" onsubmit="handleLogin(event)" autocomplete="on">
-          <div>
-            <label class="ss-label" for="login-email">Email Address</label>
-            <input type="email" id="login-email" class="ss-input" placeholder="you@example.com" required autocomplete="email">
+        <div class="divider">or sign in with email</div>
+
+        <form class="form-stack" onsubmit="handleLogin(event)" autocomplete="on">
+          <div class="field">
+            <label for="login-email">Email Address</label>
+            <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
           </div>
-          <div>
-            <label class="ss-label" for="login-password">Password</label>
-            <input type="password" id="login-password" class="ss-input" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required autocomplete="current-password">
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required autocomplete="current-password">
           </div>
-          <button type="submit" class="ss-btn-primary" data-original="Sign In">Sign In
+          <button type="submit" class="btn-submit" id="login-submit">
+            Sign In
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
           </button>
         </form>
-        <p class="auth-toggle">Don&rsquo;t have an account? <button type="button" onclick="toggleForm()">Create one</button></p>
+        <p class="toggle-text">Don&rsquo;t have an account? <button type="button" onclick="showView('signup')">Create one</button></p>
       </div>
 
-      <!-- SIGNUP -->
-      <div id="signup-form" class="ss-hidden">
-        <span class="auth-meta">Begin Your Story</span>
-        <h1 class="auth-title">Create your <em>account</em></h1>
-        <p class="auth-sub">Start crafting beautiful digital wedding invitations.</p>
-        <div id="signup-error" class="form-error ss-hidden"></div>
+      <!-- SIGNUP VIEW -->
+      <div id="signup-view" class="hidden">
+        <span class="card-eyebrow">Begin Your Story</span>
+        <h1 class="card-title">Create your <em>account</em></h1>
+        <p class="card-sub">Start crafting beautiful digital wedding invitations.</p>
+        <div id="signup-error" class="form-error hidden"></div>
 
-        <button type="button" class="google-btn" onclick="handleGoogleAuth()" data-original="Continue with Google">
-          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-          Continue with Google
+        <!-- Google -->
+        <button class="google-btn" id="google-btn-signup" onclick="handleGoogleAuth()" type="button">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+          </svg>
+          <span>Continue with Google</span>
         </button>
-        <div class="divider">or</div>
 
-        <form class="form-grid" onsubmit="handleSignup(event)" autocomplete="on">
+        <div class="divider">or sign up with email</div>
+
+        <form class="form-stack" onsubmit="handleSignup(event)" autocomplete="on">
           <div class="form-row">
-            <div>
-              <label class="ss-label" for="signup-first">First Name</label>
-              <input type="text" id="signup-first" class="ss-input" placeholder="First" required autocomplete="given-name">
+            <div class="field">
+              <label for="signup-first">First Name</label>
+              <input type="text" id="signup-first" placeholder="Ayesha" required autocomplete="given-name">
             </div>
-            <div>
-              <label class="ss-label" for="signup-last">Last Name</label>
-              <input type="text" id="signup-last" class="ss-input" placeholder="Last" required autocomplete="family-name">
+            <div class="field">
+              <label for="signup-last">Last Name</label>
+              <input type="text" id="signup-last" placeholder="Khan" required autocomplete="family-name">
             </div>
           </div>
-          <div>
-            <label class="ss-label" for="signup-email">Email Address</label>
-            <input type="email" id="signup-email" class="ss-input" placeholder="you@example.com" required autocomplete="email">
+          <div class="field">
+            <label for="signup-email">Email Address</label>
+            <input type="email" id="signup-email" placeholder="you@example.com" required autocomplete="email">
           </div>
-          <div>
-            <label class="ss-label" for="signup-password">Password</label>
-            <input type="password" id="signup-password" class="ss-input" placeholder="At least 6 characters" required autocomplete="new-password" minlength="6">
+          <div class="field">
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" placeholder="Min. 8 characters" required autocomplete="new-password" minlength="8">
           </div>
-          <button type="submit" class="ss-btn-primary" data-original="Create Account">Create Account
+          <button type="submit" class="btn-submit" id="signup-submit">
+            Create Account
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
           </button>
         </form>
-        <p class="auth-toggle">Already have an account? <button type="button" onclick="toggleForm()">Sign in instead</button></p>
+        <p class="toggle-text">Already have an account? <button type="button" onclick="showView('login')">Sign in</button></p>
       </div>
+
     </div>
   </div>
 
-  <aside class="auth-aside">
-    <span class="aside-eyebrow">Sync &amp; Style</span>
-    <p class="aside-quote">&ldquo;Your love story, <em>beautifully</em> told &mdash; one shareable invitation away.&rdquo;</p>
+  <!-- DECORATIVE ASIDE -->
+  <aside class="aside">
+    <!-- Floating rings -->
+    <div class="aside-ring" style="width:300px;height:300px;top:10%;left:55%;animation-delay:0s"></div>
+    <div class="aside-ring" style="width:500px;height:500px;top:20%;left:45%;animation-delay:2.5s;opacity:.5"></div>
+
+    <div class="aside-top">
+      <span class="aside-eyebrow">Sync &amp; Style</span>
+      <p class="aside-quote">
+        &ldquo;Your love story,<br><em>beautifully told</em> &mdash;<br>one shareable invitation away.&rdquo;
+      </p>
+    </div>
+
+    <div class="aside-features">
+      <div class="aside-feature">
+        <div class="aside-feature-icon">
+          <svg width="18" height="18" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="aside-feature-text"><strong>One-time payment</strong> &mdash; no subscriptions, ever</div>
+      </div>
+      <div class="aside-feature">
+        <div class="aside-feature-icon">
+          <svg width="18" height="18" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="aside-feature-text"><strong>Live countdown</strong> &amp; animated RSVP built-in</div>
+      </div>
+      <div class="aside-feature">
+        <div class="aside-feature-icon">
+          <svg width="18" height="18" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m6.632 6l-6.632-3.316m0-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684z"/></svg>
+        </div>
+        <div class="aside-feature-text"><strong>Share instantly</strong> via WhatsApp, email &amp; social</div>
+      </div>
+    </div>
+
     <div class="aside-stats">
-      <div class="aside-stat"><span class="aside-stat-num">500+</span><span class="aside-stat-label">Invitations Sent</span></div>
-      <div class="aside-stat"><span class="aside-stat-num">4.9&starf;</span><span class="aside-stat-label">Avg. Rating</span></div>
-      <div class="aside-stat"><span class="aside-stat-num">&#8377;499</span><span class="aside-stat-label">Starting From</span></div>
+      <div>
+        <span class="aside-stat-num">500+</span>
+        <span class="aside-stat-label">Invitations Sent</span>
+      </div>
+      <div>
+        <span class="aside-stat-num">4.9&#9733;</span>
+        <span class="aside-stat-label">Avg. Rating</span>
+      </div>
+      <div>
+        <span class="aside-stat-num">&#8377;499</span>
+        <span class="aside-stat-label">Starting From</span>
+      </div>
     </div>
   </aside>
+
 </main>
 
-<script src="/css/shared.js"></script>
 <script>
   let sb;
 
   async function initSupabase() {
     try {
-      const response = await fetch('/api/config');
-      if (!response.ok) { console.error('Supabase config fetch failed'); return; }
-      const config = await response.json();
-      if (!config.supabaseUrl || !config.supabaseAnonKey) { console.warn('Supabase config missing'); return; }
-
+      const res = await fetch('/api/config');
+      if (!res.ok) return;
+      const config = await res.json();
+      if (!config.supabaseUrl || !config.supabaseAnonKey) return;
       sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
         auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: true }
       });
-
       const { data: { session } } = await sb.auth.getSession();
       if (session) {
         const loginTime = localStorage.getItem('ss_login_time');
-        const now = Date.now();
-        if (loginTime && (now - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
+        if (loginTime && (Date.now() - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
           await sb.auth.signOut();
           localStorage.removeItem('ss_login_time');
           return;
         }
-        const urlParams = new URLSearchParams(window.location.search);
-        const redirectUrl = urlParams.get('redirect');
-        window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect');
+        window.location.href = redirect ? decodeURIComponent(redirect) : '/dashboard';
       }
-    } catch (err) { console.error('Error initializing Supabase:', err); }
+    } catch(e) { console.error('Supabase init error:', e); }
   }
   initSupabase();
 
-  function toggleForm() {
-    document.getElementById('login-form').classList.toggle('ss-hidden');
-    document.getElementById('signup-form').classList.toggle('ss-hidden');
-    document.getElementById('login-error').classList.add('ss-hidden');
-    document.getElementById('signup-error').classList.add('ss-hidden');
+  function showView(view) {
+    document.getElementById('login-view').classList.toggle('hidden', view !== 'login');
+    document.getElementById('signup-view').classList.toggle('hidden', view !== 'signup');
+    document.getElementById('login-error').classList.add('hidden');
+    document.getElementById('signup-error').classList.add('hidden');
   }
 
   async function handleGoogleAuth() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const redirectUrl = urlParams.get('redirect');
-    const target = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-    const redirectTo = `${window.location.origin}${target}`;
+    if (!sb) { showErr('login-error', 'Authentication not available right now.'); return; }
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
+    const target = redirect ? decodeURIComponent(redirect) : '/dashboard';
 
-    if (!sb) {
-      showError('login-error', 'Authentication service is not available right now.');
-      showError('signup-error', 'Authentication service is not available right now.');
-      return;
-    }
+    // Disable both Google buttons
+    ['google-btn-login','google-btn-signup'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) { b.disabled = true; b.querySelector('span').textContent = 'Redirecting…'; }
+    });
 
-    // Mark that a login session will start (for 12h timeout tracking after redirect back)
     localStorage.setItem('ss_login_time', Date.now().toString());
-
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo }
+      options: { redirectTo: window.location.origin + target }
     });
     if (error) {
-      console.error('Google auth error:', error);
-      showError('login-error', error.message || 'Unable to start Google sign-in.');
-      showError('signup-error', error.message || 'Unable to start Google sign-in.');
+      ['google-btn-login','google-btn-signup'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) { b.disabled = false; b.querySelector('span').textContent = 'Continue with Google'; }
+      });
+      showErr('login-error', error.message || 'Unable to start Google sign-in.');
     }
   }
 
-  function showError(id, msg) {
+  function showErr(id, msg) {
     const el = document.getElementById(id);
+    if (!el) return;
     el.textContent = msg;
-    el.classList.remove('ss-hidden');
-  }
-
-  function setBtnLoading(btn, loadingText) {
-    btn.disabled = true;
-    btn.dataset.busy = '1';
-    btn.innerHTML = loadingText;
-  }
-  function resetBtn(btn) {
-    btn.disabled = false;
-    btn.dataset.busy = '';
-    btn.innerHTML = btn.dataset.original + ' <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+    el.classList.remove('hidden');
   }
 
   async function handleLogin(e) {
     e.preventDefault();
-    document.getElementById('login-error').classList.add('ss-hidden');
+    document.getElementById('login-error').classList.add('hidden');
+    if (!sb) { showErr('login-error', 'Authentication not available right now.'); return; }
+    const btn = document.getElementById('login-submit');
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
-    if (!sb) { showError('login-error', 'Authentication service is not available right now.'); return; }
-    const btn = e.target.querySelector('button[type=submit]');
-    setBtnLoading(btn, 'Signing in&hellip;');
+    btn.disabled = true;
+    btn.innerHTML = 'Signing in…';
     try {
-      const { data, error } = await sb.auth.signInWithPassword({ email, password });
-      if (error) { showError('login-error', error.message); resetBtn(btn); return; }
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { showErr('login-error', error.message); btn.disabled=false; btn.innerHTML='Sign In <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>'; return; }
       localStorage.setItem('ss_login_time', Date.now().toString());
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirectUrl = urlParams.get('redirect');
-      window.location.href = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-    } catch (err) {
-      console.error('Login error:', err);
-      showError('login-error', 'Something went wrong. Please try again.');
-      resetBtn(btn);
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      window.location.href = redirect ? decodeURIComponent(redirect) : '/dashboard';
+    } catch(err) {
+      showErr('login-error', 'Something went wrong. Please try again.');
+      btn.disabled=false; btn.innerHTML='Sign In <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
     }
   }
 
   async function handleSignup(e) {
     e.preventDefault();
-    document.getElementById('signup-error').classList.add('ss-hidden');
+    document.getElementById('signup-error').classList.add('hidden');
+    if (!sb) { showErr('signup-error', 'Authentication not available right now.'); return; }
+    const btn = document.getElementById('signup-submit');
     const firstName = document.getElementById('signup-first').value.trim();
     const lastName  = document.getElementById('signup-last').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-    const password = document.getElementById('signup-password').value;
-    if (!sb) { showError('signup-error', 'Authentication service is not available right now.'); return; }
-    const btn = e.target.querySelector('button[type=submit]');
-    setBtnLoading(btn, 'Creating account&hellip;');
+    const email     = document.getElementById('signup-email').value.trim();
+    const password  = document.getElementById('signup-password').value;
+    btn.disabled = true;
+    btn.innerHTML = 'Creating account…';
     try {
-      const { data, error } = await sb.auth.signUp({
+      const { error } = await sb.auth.signUp({
         email, password,
         options: { data: { first_name: firstName, last_name: lastName } }
       });
-      if (error) { showError('signup-error', error.message); resetBtn(btn); return; }
-      alert('Registration successful! Please check your email for a verification link or try signing in.');
-      toggleForm();
-      resetBtn(btn);
-    } catch (err) {
-      console.error('Signup error:', err);
-      showError('signup-error', 'Something went wrong. Please try again.');
-      resetBtn(btn);
+      if (error) { showErr('signup-error', error.message); btn.disabled=false; btn.innerHTML='Create Account <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>'; return; }
+      alert('Account created! Please check your email for a verification link, then sign in.');
+      showView('login');
+      btn.disabled=false; btn.innerHTML='Create Account <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
+    } catch(err) {
+      showErr('signup-error', 'Something went wrong. Please try again.');
+      btn.disabled=false; btn.innerHTML='Create Account <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
     }
   }
 </script>
