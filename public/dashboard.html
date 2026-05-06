@@ -3,278 +3,379 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <title>Dashboard &mdash; Sync &amp; Style</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="/css/shared.css">
   <style>
-    .dash-shell { max-width: 1200px; margin: 0 auto; padding: 56px 24px 32px; }
-    @media (max-width: 640px) { .dash-shell { padding: 28px 14px 24px; } }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ivory:      #fdf8f0;
+      --ivory-deep: #f5ece0;
+      --ivory-card: #fffcf8;
+      --rose:       #c4566a;
+      --rose-deep:  #a03050;
+      --rose-pale:  #fdf0f3;
+      --rose-blush: #f7e8ec;
+      --gold:       #b8882a;
+      --gold-light: #d4a843;
+      --gold-pale:  #f5e6c8;
+      --ink:        #1c0a10;
+      --ink-mid:    #4a2030;
+      --muted:      #8a6070;
+      --border:     rgba(180,120,100,0.15);
+      --green:      #1a7a4a;
+      --green-pale: rgba(26,122,74,0.1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--ivory); color:var(--ink); min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:var(--ivory); }
+    ::-webkit-scrollbar-thumb { background:rgba(180,100,120,0.3); border-radius:3px; }
+    a { text-decoration:none; color:inherit; }
+    .hidden { display:none !important; }
 
-    .dash-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 40px; }
-    .dash-greet h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 300; line-height: 1.1; color: var(--ink); }
-    .dash-greet h1 em { font-style: italic; font-weight: 600; color: var(--rose-deep); }
-    .dash-greet p { font-size: 14px; color: var(--muted); margin-top: 6px; max-width: 540px; line-height: 1.6; }
-    .dash-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    @media (max-width: 640px) {
-      .dash-head { gap: 16px; margin-bottom: 24px; }
-      .dash-greet p { font-size: 13px; }
-      .dash-actions { width: 100%; justify-content: space-between; }
+    /* BG */
+    .page-bg { position:fixed; inset:0; z-index:-1; background:var(--ivory); pointer-events:none; }
+    .page-bg::before { content:''; position:absolute; top:-120px; right:-160px; width:700px; height:700px; border-radius:50%; background:radial-gradient(circle,rgba(196,86,106,0.07) 0%,transparent 70%); }
+    .page-bg::after  { content:''; position:absolute; bottom:-80px; left:-120px; width:500px; height:500px; border-radius:50%; background:radial-gradient(circle,rgba(184,136,42,0.06) 0%,transparent 65%); }
+    .page-pattern { position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.3; background-image:radial-gradient(rgba(196,86,106,0.06) 1px,transparent 1px); background-size:48px 48px; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position:sticky; top:0; z-index:100;
+      height:64px; padding:0 32px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      background:rgba(253,248,240,0.92); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    .nav-logo { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:700; font-style:italic; color:var(--rose-deep); white-space:nowrap; }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .user-chip {
+      display:flex; align-items:center; gap:8px;
+      padding:5px 14px 5px 5px; border-radius:40px;
+      background:var(--ivory-card); border:1px solid var(--border); max-width:220px;
+    }
+    .user-avatar {
+      width:32px; height:32px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,var(--rose-deep),var(--gold));
+      color:#fff; font-family:'Cormorant Garamond',serif; font-weight:700; font-size:15px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .user-email { font-size:12px; color:var(--ink-mid); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .logout-btn {
+      background:none; border:1px solid var(--border); border-radius:30px;
+      padding:7px 16px; font:inherit; font-size:11px; font-weight:600;
+      letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+      cursor:pointer; transition:all .2s; white-space:nowrap;
+    }
+    .logout-btn:hover { border-color:rgba(160,48,80,.4); color:var(--rose-deep); background:var(--rose-pale); }
+    @media (max-width:640px) {
+      .navbar { padding:0 16px; height:58px; }
+      .user-email { display:none; }
+      .user-chip { padding:4px; border-radius:50%; }
+      .logout-btn { padding:6px 12px; font-size:10px; }
     }
 
-    .user-chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; background: var(--ivory-card); border: 1px solid var(--border); border-radius: 40px; font-size: 13px; color: var(--ink-mid); max-width: 240px; }
-    .user-chip span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--rose-deep), var(--gold)); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 14px; flex-shrink: 0; }
-    .logout-btn { background: none; border: 1px solid var(--border); border-radius: 30px; padding: 8px 18px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: all .2s; font-family: inherit; }
-    .logout-btn:hover { border-color: rgba(160,48,80,0.4); color: var(--rose-deep); background: var(--rose-pale); }
-    @media (max-width: 420px) {
-      .user-chip { padding: 6px 10px 6px 6px; font-size: 12px; max-width: 180px; }
-      .user-chip span:not(.user-avatar) { display: none; }
-      .user-chip .user-avatar { width: 28px; height: 28px; font-size: 13px; }
-      .user-chip { padding: 4px; }
+    /* ── MAIN SHELL ── */
+    .shell { max-width:1100px; margin:0 auto; padding:40px 24px 60px; }
+    @media (max-width:640px) { .shell { padding:24px 14px 48px; } }
+
+    /* ── HEADER ── */
+    .dash-header { display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:20px; margin-bottom:36px; }
+    .dash-greet h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(26px,4vw,42px); font-weight:300; line-height:1.1; }
+    .dash-greet h1 em { font-style:italic; font-weight:600; color:var(--rose-deep); }
+    .dash-greet p { font-size:14px; color:var(--muted); margin-top:6px; font-weight:300; line-height:1.6; }
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--rose-deep); color:#fff;
+      font:inherit; font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      padding:12px 28px; border:none; border-radius:6px; cursor:pointer;
+      box-shadow:0 6px 20px rgba(160,48,80,.28); transition:all .3s;
     }
+    .btn-primary:hover { background:var(--rose); transform:translateY(-1px); box-shadow:0 10px 28px rgba(160,48,80,.38); }
+    @media (max-width:640px) { .dash-header { gap:14px; } .btn-primary { width:100%; justify-content:center; padding:13px 20px; } }
 
-    /* Tabs */
-    .tabs { display: flex; gap: 4px; padding: 6px; background: var(--ivory-card); border: 1px solid var(--border); border-radius: 40px; overflow-x: auto; margin-bottom: 32px; width: fit-content; max-width: 100%; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tab-btn { background: none; border: none; padding: 10px 20px; border-radius: 30px; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .25s; }
-    .tab-btn:hover { color: var(--rose-deep); }
-    .tab-btn.active { background: var(--rose-deep); color: #fff; box-shadow: 0 4px 16px rgba(160,48,80,0.25); }
-    @media (max-width: 640px) {
-      .tabs { width: 100%; padding: 5px; margin-bottom: 24px; }
-      .tab-btn { padding: 9px 14px; font-size: 10px; letter-spacing: 0.14em; }
+    /* ── STAT CARDS ── */
+    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:36px; }
+    @media (max-width:640px) { .stats-row { grid-template-columns:repeat(3,1fr); gap:10px; } }
+    @media (max-width:380px) { .stats-row { grid-template-columns:1fr 1fr; } }
+    .stat-card {
+      background:var(--ivory-card); border:1px solid var(--border); border-radius:16px;
+      padding:20px 22px; position:relative; overflow:hidden;
+      transition:transform .3s, box-shadow .3s;
     }
+    .stat-card:hover { transform:translateY(-3px); box-shadow:0 10px 32px rgba(160,48,80,.1); }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:3px 3px 0 0; }
+    .stat-card.rose::before { background:linear-gradient(90deg,var(--rose-deep),var(--rose)); }
+    .stat-card.gold::before { background:linear-gradient(90deg,var(--gold-light),var(--gold)); }
+    .stat-card.green::before { background:linear-gradient(90deg,#1a7a4a,#2ecc71); }
+    .stat-label { font-family:'Cinzel',serif; font-size:9px; font-weight:500; letter-spacing:.25em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+    .stat-num { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:600; line-height:1; color:var(--ink); }
+    .stat-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+    @media (max-width:640px) { .stat-card { padding:16px 14px; } .stat-num { font-size:28px; } .stat-label { font-size:8px; } }
 
-    /* Section heading */
-    .sec-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--ink); }
-    .sec-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
-    @media (max-width: 640px) {
-      .sec-title { font-size: 22px; }
-      .sec-row { gap: 12px; }
-      .sec-row .ss-btn-primary { width: 100%; padding: 13px 20px; }
+    /* ── TABS ── */
+    .tabs-wrap {
+      background:var(--ivory-card); border:1px solid var(--border); border-radius:40px;
+      padding:5px; display:flex; gap:3px;
+      width:fit-content; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+      margin-bottom:28px;
     }
-
-    .pill {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 10px; border-radius: 40px;
-      background: var(--rose-deep); color: #fff;
-      font-family: 'Cinzel', serif; font-size: 10px;
-      letter-spacing: 0.18em; text-transform: uppercase; margin-left: 6px;
+    .tabs-wrap::-webkit-scrollbar { display:none; }
+    .tab-btn {
+      background:none; border:none; padding:9px 20px; border-radius:30px;
+      font-family:'Cinzel',serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+      font-weight:500; color:var(--muted); cursor:pointer; white-space:nowrap; transition:all .25s;
     }
+    .tab-btn:hover { color:var(--rose-deep); }
+    .tab-btn.active { background:var(--rose-deep); color:#fff; box-shadow:0 4px 14px rgba(160,48,80,.25); }
+    @media (max-width:640px) { .tabs-wrap { width:100%; } .tab-btn { padding:8px 14px; font-size:9px; } }
 
-    /* Template grid */
-    .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    @media (max-width: 640px) { .tpl-grid { grid-template-columns: 1fr; gap: 14px; } }
-    .tpl-card { padding: 26px 24px 22px; position: relative; overflow: hidden; transition: transform .3s ease, box-shadow .3s ease, border-color .3s; }
-    @media (max-width: 480px) { .tpl-card { padding: 22px 20px 20px; } }
-    .tpl-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(160,48,80,0.12); border-color: rgba(196,86,106,0.25); }
-    .tpl-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rose-deep), var(--gold-light)); opacity: 0; transition: opacity .3s; }
-    .tpl-card:hover::before { opacity: 1; }
-    .tpl-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 40px; font-family: 'Cinzel', serif; font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
-    .status-pill.published { background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.2); color: #1a7a4a; }
-    .status-pill.published::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #1a7a4a; }
-    .status-pill.draft { background: var(--ivory-deep); border: 1px solid var(--border); color: var(--muted); }
-    .tpl-id { font-family: 'DM Sans', monospace; font-size: 10px; color: var(--muted); background: var(--ivory-deep); padding: 3px 8px; border-radius: 4px; }
-    .tpl-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-    .tpl-meta { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-bottom: 22px; }
-    .tpl-actions { display: flex; gap: 8px; }
-    .tpl-actions .ss-btn-primary { flex: 1; padding: 12px 18px; font-size: 11px; }
-    .icon-btn { width: 42px; height: 42px; border-radius: 8px; border: 1px solid var(--border); background: #fff; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s; }
-    .icon-btn:hover { border-color: rgba(220,30,30,0.3); color: #c33; background: #fff5f5; }
+    /* ── CARD BASE ── */
+    .card { background:var(--ivory-card); border:1px solid var(--border); border-radius:16px; }
 
-    /* Empty state */
-    .empty-tpl { grid-column: 1/-1; padding: 56px 32px; text-align: center; border: 2px dashed rgba(196,86,106,0.25); border-radius: 20px; background: rgba(255,252,248,0.5); cursor: pointer; transition: all .25s; }
-    .empty-tpl:hover { background: var(--rose-pale); border-color: var(--rose-deep); }
-    .empty-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--rose-pale); color: var(--rose-deep); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px; }
-    .empty-tpl h3 { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin-bottom: 8px; color: var(--ink); }
-    .empty-tpl p { font-size: 14px; color: var(--muted); margin-bottom: 24px; max-width: 420px; margin-left: auto; margin-right: auto; }
+    /* ── INVITATION GRID ── */
+    .inv-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; }
+    @media (max-width:640px) { .inv-grid { grid-template-columns:1fr; gap:14px; } }
 
-    /* Tables */
-    .table-card { padding: 0; overflow: hidden; }
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table.ss-table { width: 100%; border-collapse: collapse; min-width: 560px; }
-    .ss-table thead { background: var(--ivory-deep); }
-    .ss-table th { font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rose-deep); text-align: left; padding: 16px 24px; }
-    .ss-table td { padding: 18px 24px; font-size: 14px; color: var(--ink-mid); border-top: 1px solid var(--border); }
-    .ss-table tbody tr:hover { background: rgba(253,240,243,0.5); }
-    @media (max-width: 640px) {
-      .ss-table th, .ss-table td { padding: 14px 16px; font-size: 13px; }
-      .ss-table th { font-size: 9px; }
+    .inv-card {
+      background:var(--ivory-card); border:1px solid var(--border); border-radius:16px;
+      padding:24px 22px 20px; position:relative; overflow:hidden;
+      transition:transform .3s, box-shadow .3s, border-color .3s;
     }
+    .inv-card:hover { transform:translateY(-4px); box-shadow:0 14px 44px rgba(160,48,80,.12); border-color:rgba(196,86,106,.25); }
+    .inv-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--rose-deep),var(--gold-light)); opacity:0; transition:opacity .3s; }
+    .inv-card:hover::before { opacity:1; }
+    .inv-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .status-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:40px; font-family:'Cinzel',serif; font-size:9px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; }
+    .status-pill.published { background:var(--green-pale); border:1px solid rgba(26,122,74,.2); color:var(--green); }
+    .status-pill.published::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--green); flex-shrink:0; }
+    .status-pill.draft { background:var(--ivory-deep); border:1px solid var(--border); color:var(--muted); }
+    .inv-id { font-family:'DM Sans',monospace; font-size:10px; color:var(--muted); background:var(--ivory-deep); padding:2px 7px; border-radius:4px; }
+    .inv-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--ink); margin-bottom:4px; }
+    .inv-date { display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); margin-bottom:20px; }
+    .inv-actions { display:flex; gap:8px; }
+    .inv-actions .btn-primary { flex:1; padding:11px 16px; font-size:11px; }
+    .icon-btn { width:40px; height:40px; border-radius:8px; border:1px solid var(--border); background:#fff; color:var(--muted); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; flex-shrink:0; }
+    .icon-btn:hover { border-color:rgba(200,30,30,.3); color:#c33; background:#fff5f5; }
 
-    .table-empty { padding: 56px 24px; text-align: center; color: var(--muted); font-size: 14px; }
-    .table-empty .empty-icon { margin-bottom: 12px; }
+    /* Empty */
+    .empty-state {
+      padding:56px 24px; text-align:center;
+      border:2px dashed rgba(196,86,106,.22); border-radius:16px;
+      background:rgba(255,252,248,.6); cursor:pointer; transition:all .25s;
+    }
+    .empty-state:hover { background:var(--rose-pale); border-color:var(--rose-deep); }
+    .empty-icon { width:60px; height:60px; border-radius:50%; background:var(--rose-pale); color:var(--rose-deep); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px; }
+    .empty-state h3 { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; margin-bottom:8px; }
+    .empty-state p { font-size:13px; color:var(--muted); margin-bottom:22px; max-width:360px; margin-left:auto; margin-right:auto; line-height:1.7; }
 
-    /* RSVP status */
-    .rsvp-pill { display: inline-flex; padding: 3px 10px; border-radius: 30px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; }
-    .rsvp-pill.attending { background: rgba(26,122,74,0.1); color: #1a7a4a; border: 1px solid rgba(26,122,74,0.2); }
-    .rsvp-pill.declined { background: var(--rose-pale); color: var(--rose-deep); border: 1px solid rgba(196,86,106,0.2); }
-    .rsvp-pill.added { background: var(--gold-pale); color: var(--gold); border: 1px solid var(--border-gold); }
+    /* ── TABLE ── */
+    .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:16px; }
+    table { width:100%; border-collapse:collapse; min-width:520px; }
+    thead { background:var(--ivory-deep); }
+    th { font-family:'Cinzel',serif; font-size:9px; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--rose-deep); text-align:left; padding:14px 20px; }
+    td { padding:16px 20px; font-size:13px; color:var(--ink-mid); border-top:1px solid var(--border); vertical-align:middle; }
+    tbody tr { transition:background .15s; }
+    tbody tr:hover { background:rgba(253,240,243,.55); }
+    .table-empty { padding:48px 24px; text-align:center; color:var(--muted); font-size:13px; }
+    @media (max-width:640px) { th,td { padding:12px 14px; font-size:12px; } th { font-size:8px; } }
 
-    /* Action icons in table */
-    .share-row { display: inline-flex; gap: 6px; }
-    .share-btn { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: #fff; transition: all .2s; }
-    .share-btn:hover { transform: translateY(-2px); }
-    .share-btn.wa { color: #25d366; }
-    .share-btn.wa:hover { border-color: #25d366; background: rgba(37,211,102,0.07); }
-    .share-btn.email { color: #1f6feb; }
-    .share-btn.email:hover { border-color: #1f6feb; background: rgba(31,111,235,0.06); }
-    .share-btn.ig { color: #d93175; }
-    .share-btn.ig:hover { border-color: #d93175; background: rgba(217,49,117,0.06); }
+    /* RSVP pills */
+    .rsvp-pill { display:inline-flex; padding:3px 10px; border-radius:30px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:.16em; text-transform:uppercase; font-weight:600; }
+    .rsvp-pill.attending { background:var(--green-pale); color:var(--green); border:1px solid rgba(26,122,74,.2); }
+    .rsvp-pill.declined { background:var(--rose-pale); color:var(--rose-deep); border:1px solid rgba(196,86,106,.2); }
+    .rsvp-pill.added { background:var(--gold-pale); color:var(--gold); border:1px solid rgba(184,136,42,.25); }
 
-    /* Add guest form */
-    .add-guest-card { padding: 36px 32px; max-width: 540px; }
-    .add-guest-card .form-grid { display: flex; flex-direction: column; gap: 18px; }
-    .add-guest-card .ss-btn-primary { width: 100%; }
-    @media (max-width: 480px) { .add-guest-card { padding: 28px 20px; } }
+    /* Share buttons */
+    .share-row { display:inline-flex; gap:6px; }
+    .share-btn { width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:#fff; display:inline-flex; align-items:center; justify-content:center; transition:all .2s; }
+    .share-btn.wa:hover { background:#25d366; border-color:#25d366; color:#fff; }
+    .share-btn.email:hover { background:var(--rose-deep); border-color:var(--rose-deep); color:#fff; }
+    .share-btn.ig:hover { background:#e1306c; border-color:#e1306c; color:#fff; }
+    .share-btn svg { width:14px; height:14px; }
 
-    /* Toast */
-    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 10px; max-width: calc(100vw - 32px); }
-    @media (max-width: 640px) { #toast-container { bottom: 16px; right: 16px; left: 16px; } }
-    .toast { padding: 14px 22px; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 16px 40px rgba(0,0,0,0.18); transform: translateY(12px); opacity: 0; transition: opacity .25s, transform .25s; }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { background: var(--rose-deep); }
-    .toast.error { background: #b22a2a; }
+    /* ── ADD GUEST FORM ── */
+    .guest-form-card { padding:32px 28px; }
+    @media (max-width:640px) { .guest-form-card { padding:22px 18px; } }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    @media (max-width:640px) { .form-grid { grid-template-columns:1fr; gap:14px; } }
+    .field { display:flex; flex-direction:column; gap:7px; }
+    label { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-mid); }
+    input[type=text], input[type=tel] {
+      width:100%; padding:12px 15px;
+      background:#fff; border:1.5px solid var(--border); border-radius:8px;
+      font-family:inherit; font-size:14px; color:var(--ink); outline:none;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    input:focus { border-color:var(--rose); box-shadow:0 0 0 3px rgba(196,86,106,.1); }
+    input::placeholder { color:rgba(138,96,112,.4); }
+    .form-submit { grid-column:1/-1; }
+    @media (max-width:640px) { .form-submit { grid-column:1; } }
 
-    .skel { background: linear-gradient(90deg, var(--ivory-card), var(--ivory-deep), var(--ivory-card)); background-size: 300% 100%; animation: skel 1.4s linear infinite; border-radius: 16px; height: 220px; border: 1px solid var(--border); }
-    @keyframes skel { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+    /* ── SECTION HEADER ── */
+    .sec-row { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-bottom:22px; }
+    .sec-title { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:var(--ink); }
+    .count-badge { display:inline-flex; align-items:center; background:var(--rose-deep); color:#fff; font-family:'Cinzel',serif; font-size:10px; letter-spacing:.16em; text-transform:uppercase; padding:3px 10px; border-radius:40px; margin-left:8px; vertical-align:middle; }
+    @media (max-width:640px) { .sec-title { font-size:20px; } }
+
+    /* ── TOAST ── */
+    #toast-container { position:fixed; bottom:24px; right:20px; z-index:500; display:flex; flex-direction:column; gap:10px; }
+    .toast { display:flex; align-items:center; gap:10px; padding:12px 18px; border-radius:10px; color:#fff; font-weight:600; font-size:13px; box-shadow:0 8px 28px rgba(0,0,0,.15); transform:translateY(8px); opacity:0; transition:all .3s; }
+    .toast.show { transform:translateY(0); opacity:1; }
+    .toast.success { background:var(--rose-deep); }
+    .toast.error { background:#c0392b; }
   </style>
 </head>
 <body>
-
 <div class="page-bg"></div>
 <div class="page-pattern"></div>
+<div id="toast-container"></div>
 
-<nav class="ss-navbar">
-  <a href="/" class="ss-logo">Sync &amp; Style</a>
-  <div class="ss-nav-links">
-    <a href="/templates">Templates</a>
-    <a href="/contact-us.html">Support</a>
-    <a href="/" class="ss-back-link">&larr; Home</a>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/" class="nav-logo">Sync &amp; Style</a>
+  <div class="nav-right">
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">S</div>
+      <span class="user-email" id="user-email"></span>
+    </div>
+    <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
   </div>
 </nav>
 
-<div id="toast-container"></div>
+<!-- SHELL -->
+<div class="shell">
 
-<main class="dash-shell">
-  <div class="dash-head ss-reveal">
+  <!-- HEADER -->
+  <div class="dash-header">
     <div class="dash-greet">
-      <span class="ss-eyebrow">Your Workspace</span>
-      <h1>Welcome back, <em id="user-welcome">friend</em></h1>
-      <p>Manage your purchased templates, personalize guest lists, and track RSVPs &mdash; all in one place.</p>
+      <h1>Welcome back, <em id="user-welcome">there</em></h1>
+      <p>Manage your invitations, track RSVPs &amp; share your special day.</p>
     </div>
-    <div class="dash-actions">
-      <span class="user-chip"><span class="user-avatar" id="user-avatar">S</span><span id="user-email">&hellip;</span></span>
-      <button onclick="handleLogout()" class="logout-btn">Logout</button>
+    <button class="btn-primary" onclick="createInvitation()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      New Template
+    </button>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat-card rose">
+      <div class="stat-label">Invitations</div>
+      <div class="stat-num" id="stat-invitations">0</div>
+      <div class="stat-sub">total created</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Guests</div>
+      <div class="stat-num" id="stat-guests">0</div>
+      <div class="stat-sub">in your list</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">RSVPs</div>
+      <div class="stat-num" id="stat-rsvps">0</div>
+      <div class="stat-sub">responses</div>
     </div>
   </div>
 
-  <div class="tabs ss-reveal" style="transition-delay:80ms" role="tablist">
-    <button class="tab-btn active" id="tab-templates" onclick="switchTab('templates')">My Templates</button>
-    <button class="tab-btn" id="tab-invites" onclick="switchTab('invites')">All Invites</button>
-    <button class="tab-btn" id="tab-rsvp" onclick="switchTab('rsvp')">RSVP Responses</button>
-    <button class="tab-btn" id="tab-add-guests" onclick="switchTab('add-guests')">Add Guests</button>
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <button class="tab-btn active" id="tab-templates" onclick="switchTab('templates')">Invitations</button>
+    <button class="tab-btn" id="tab-invites" onclick="switchTab('invites')">Guest List</button>
+    <button class="tab-btn" id="tab-rsvp" onclick="switchTab('rsvp')">RSVP</button>
+    <button class="tab-btn" id="tab-add-guests" onclick="switchTab('add-guests')">Add Guest</button>
   </div>
 
-  <!-- Templates -->
-  <section id="content-templates" class="tab-content ss-reveal" style="transition-delay:160ms">
+  <!-- TAB: INVITATIONS -->
+  <section id="content-templates">
     <div class="sec-row">
-      <h2 class="sec-title">Purchased Templates</h2>
-      <button onclick="createInvitation()" class="ss-btn-primary" style="padding:13px 26px">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-        New Template
-      </button>
+      <h2 class="sec-title">My Invitations</h2>
     </div>
-    <div id="invitation-grid" class="tpl-grid">
-      <div class="skel"></div><div class="skel"></div><div class="skel"></div>
-    </div>
+    <div class="inv-grid" id="invitation-grid"></div>
   </section>
 
-  <!-- All Invites -->
-  <section id="content-invites" class="tab-content ss-hidden">
-    <div class="sec-row"><h2 class="sec-title">Guest Invitations</h2></div>
-    <div class="ss-card table-card">
-      <div class="table-wrap">
-        <table class="ss-table">
-          <thead><tr><th>Guest Name</th><th>Phone</th><th>Status</th><th style="text-align:right">Share</th></tr></thead>
-          <tbody id="guest-list-body"></tbody>
-        </table>
-      </div>
-      <div id="guest-empty-state" class="table-empty ss-hidden">
-        <div class="empty-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
-        No guests added yet. Go to &ldquo;Add Guests&rdquo; to start.
+  <!-- TAB: GUEST LIST -->
+  <section id="content-invites" class="hidden">
+    <div class="sec-row">
+      <h2 class="sec-title">Guest List</h2>
+    </div>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Phone</th><th>Status</th><th style="text-align:right">Share</th></tr></thead>
+        <tbody id="guest-list-body"></tbody>
+      </table>
+      <div id="guest-empty-state" class="table-empty hidden">
+        <div class="empty-icon" style="margin:0 auto 10px"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+        No guests yet &mdash; use "Add Guest" to start building your list.
       </div>
     </div>
   </section>
 
-  <!-- RSVP -->
-  <section id="content-rsvp" class="tab-content ss-hidden">
-    <div class="sec-row"><h2 class="sec-title">RSVP Responses <span class="pill" id="rsvp-total-pill">0</span></h2></div>
-    <div class="ss-card table-card">
-      <div class="table-wrap">
-        <table class="ss-table">
-          <thead><tr><th>Invitation</th><th>Guest Name</th><th>Status</th><th style="text-align:center">People</th><th style="text-align:right">Date</th></tr></thead>
-          <tbody id="rsvp-list-body"></tbody>
-        </table>
-      </div>
+  <!-- TAB: RSVP -->
+  <section id="content-rsvp" class="hidden">
+    <div class="sec-row">
+      <h2 class="sec-title">RSVP Responses <span class="count-badge" id="rsvp-total-pill">0</span></h2>
+    </div>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th>Invitation</th><th>Guest</th><th>Status</th><th style="text-align:center">Count</th><th style="text-align:right">Date</th></tr></thead>
+        <tbody id="rsvp-list-body"></tbody>
+      </table>
       <div id="rsvp-empty-state" class="table-empty">
-        <div class="empty-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        <div class="empty-icon" style="margin:0 auto 10px"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
         No RSVP responses yet &mdash; share your invitation to start collecting replies.
       </div>
     </div>
   </section>
 
-  <!-- Add Guests -->
-  <section id="content-add-guests" class="tab-content ss-hidden">
-    <div class="sec-row"><h2 class="sec-title">Send Personal Invitations</h2></div>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;max-width:540px;line-height:1.7">Add individual guests to send them a customized link with their name pre-filled.</p>
-    <div class="ss-card add-guest-card">
+  <!-- TAB: ADD GUEST -->
+  <section id="content-add-guests" class="hidden">
+    <div class="sec-row">
+      <h2 class="sec-title">Add a Guest</h2>
+    </div>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:22px;max-width:540px;line-height:1.7;font-weight:300">Add individual guests to generate a personalised invitation link with their name pre-filled.</p>
+    <div class="card guest-form-card">
       <form class="form-grid" onsubmit="handleAddGuest(event)">
-        <div>
-          <label class="ss-label" for="guest_name">Guest Full Name</label>
-          <input type="text" id="guest_name" name="guest_name" class="ss-input" required placeholder="e.g. John Doe">
+        <div class="field">
+          <label for="guest_name">Guest Full Name</label>
+          <input type="text" id="guest_name" required placeholder="e.g. Ayesha Khan">
         </div>
-        <div>
-          <label class="ss-label" for="guest_phone">Phone Number (with country code)</label>
-          <input type="tel" id="guest_phone" name="guest_phone" class="ss-input" required placeholder="e.g. +91 9876543210">
+        <div class="field">
+          <label for="guest_phone">Phone (with country code)</label>
+          <input type="tel" id="guest_phone" required placeholder="e.g. +91 9876543210">
         </div>
-        <button type="submit" id="add-guest-btn" class="ss-btn-primary">Add to List &amp; Generate Link
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
-        </button>
+        <div class="form-submit">
+          <button type="submit" id="add-guest-btn" class="btn-primary">
+            Add &amp; Generate Link
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+          </button>
+        </div>
       </form>
     </div>
   </section>
-</main>
 
-<div id="ss-footer-slot"></div>
-<script src="/css/shared.js"></script>
+</div><!-- /shell -->
+
 <script>
-  let sb;
-  let currentUser;
-  let currentTab = 'templates';
-  let globalInvitations = [];
+  let sb, currentUser, globalInvitations = [];
 
   async function initSupabase() {
     try {
-      const response = await fetch('/api/config');
-      const config = await response.json();
-      if (!config.supabaseUrl || !config.supabaseAnonKey) {
-        console.error('Supabase config missing.');
-        return;
-      }
+      const res = await fetch('/api/config');
+      if (!res.ok) return;
+      const config = await res.json();
+      if (!config.supabaseUrl || !config.supabaseAnonKey) return;
       sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = '/login'; return; }
       const loginTime = localStorage.getItem('ss_login_time');
       if (loginTime && (Date.now() - parseInt(loginTime)) > 12 * 60 * 60 * 1000) {
-        await sb.auth.signOut();
-        localStorage.removeItem('ss_login_time');
+        await sb.auth.signOut(); localStorage.removeItem('ss_login_time');
         window.location.href = '/login'; return;
       }
       currentUser = session.user;
@@ -283,179 +384,159 @@
       document.getElementById('user-welcome').textContent = firstName;
       document.getElementById('user-email').textContent = currentUser.email || '';
       document.getElementById('user-avatar').textContent = (firstName[0] || 'S').toUpperCase();
-
       fetchInvitations();
       fetchGuests();
       fetchRsvpData();
-    } catch (err) { console.error('Error initializing Supabase:', err); }
+    } catch(e) { console.error('Supabase init error:', e); }
   }
   initSupabase();
 
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('ss-hidden'));
+  function switchTab(id) {
+    document.querySelectorAll('[id^="content-"]').forEach(s => s.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`content-${tabId}`).classList.remove('ss-hidden');
-    document.getElementById(`tab-${tabId}`).classList.add('active');
-    currentTab = tabId;
-  }
-
-  async function fetchRsvpData() {
-    if (!sb) return;
-    const { data, error } = await sb.from('customer_invitations').select('id, title, rsvps').eq('user_id', currentUser.id);
-    if (error) { console.error('RSVP fetch error:', error); return; }
-    const body = document.getElementById('rsvp-list-body');
-    const emptyState = document.getElementById('rsvp-empty-state');
-    const totalPill = document.getElementById('rsvp-total-pill');
-    let allRsvps = [];
-    (data || []).forEach(inv => { if (Array.isArray(inv.rsvps)) inv.rsvps.forEach(r => allRsvps.push({ ...r, invitation_title: inv.title })); });
-    allRsvps.sort((a,b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
-    if (!allRsvps.length) { body.innerHTML = ''; emptyState.classList.remove('ss-hidden'); totalPill.textContent = '0'; return; }
-    emptyState.classList.add('ss-hidden');
-    totalPill.textContent = allRsvps.length;
-    body.innerHTML = allRsvps.map(r => `
-      <tr>
-        <td><strong>${r.invitation_title || '&mdash;'}</strong></td>
-        <td>${r.guest_name || '&mdash;'}</td>
-        <td><span class="rsvp-pill ${r.status === 'attending' ? 'attending' : 'declined'}">${r.status || 'pending'}</span></td>
-        <td style="text-align:center">${r.guest_count || 1}</td>
-        <td style="text-align:right;color:var(--muted);font-size:12px">${r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : 'N/A'}</td>
-      </tr>
-    `).join('');
+    document.getElementById('content-' + id).classList.remove('hidden');
+    document.getElementById('tab-' + id).classList.add('active');
   }
 
   async function fetchInvitations() {
     if (!sb) return;
     const { data, error } = await sb.from('customer_invitations').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-    if (error) { console.error('Invitations fetch error:', error); return; }
+    if (error) { console.error(error); return; }
     globalInvitations = data || [];
+    document.getElementById('stat-invitations').textContent = globalInvitations.length;
     renderInvitations(globalInvitations);
-    if (window.lastGuests) renderGuests(window.lastGuests);
   }
 
   async function fetchGuests() {
     if (!sb) return;
     const { data, error } = await sb.from('guest_list').select('*').order('created_at', { ascending: false });
-    if (error) {
-      console.error('Guests fetch error:', error);
-      const empty = document.getElementById('guest-empty-state');
-      empty.classList.remove('ss-hidden');
-      empty.innerHTML = `Please ensure the <code>guest_list</code> table is created in Supabase.`;
-      return;
-    }
+    if (error) { console.error(error); return; }
     window.lastGuests = data || [];
-    renderGuests(window.lastGuests);
+    document.getElementById('stat-guests').textContent = (data || []).length;
+    renderGuests(data || []);
+  }
+
+  async function fetchRsvpData() {
+    if (!sb) return;
+    const { data, error } = await sb.from('customer_invitations').select('id, title, rsvps').eq('user_id', currentUser.id);
+    if (error) { console.error(error); return; }
+    let all = [];
+    (data || []).forEach(inv => { if (Array.isArray(inv.rsvps)) inv.rsvps.forEach(r => all.push({ ...r, invitation_title: inv.title })); });
+    all.sort((a,b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+    document.getElementById('stat-rsvps').textContent = all.length;
+    document.getElementById('rsvp-total-pill').textContent = all.length;
+    const body = document.getElementById('rsvp-list-body');
+    const empty = document.getElementById('rsvp-empty-state');
+    if (!all.length) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    body.innerHTML = all.map(r => `
+      <tr>
+        <td><strong>${r.invitation_title || '&mdash;'}</strong></td>
+        <td>${r.guest_name || '&mdash;'}</td>
+        <td><span class="rsvp-pill ${r.status === 'attending' ? 'attending' : 'declined'}">${r.status || 'pending'}</span></td>
+        <td style="text-align:center">${r.guest_count || 1}</td>
+        <td style="text-align:right;color:var(--muted);font-size:11px">${r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : 'N/A'}</td>
+      </tr>`).join('');
   }
 
   function renderInvitations(invitations) {
     const grid = document.getElementById('invitation-grid');
     if (!invitations.length) {
-      grid.innerHTML = `
-        <div class="empty-tpl" onclick="createInvitation()">
-          <div class="empty-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></div>
-          <h3>No purchased templates yet</h3>
-          <p>Browse the gallery and pick the design that speaks to your love story.</p>
-          <span class="ss-btn-primary" style="pointer-events:none">Browse Templates</span>
-        </div>`;
+      grid.innerHTML = `<div class="empty-state" onclick="createInvitation()">
+        <div class="empty-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></div>
+        <h3>No invitations yet</h3>
+        <p>Browse the gallery and pick the design that speaks to your love story.</p>
+        <button class="btn-primary" style="pointer-events:none">Browse Templates</button>
+      </div>`;
       return;
     }
     grid.innerHTML = invitations.map(inv => `
-      <div class="ss-card tpl-card">
-        <div class="tpl-card-head">
+      <div class="inv-card">
+        <div class="inv-card-top">
           <span class="status-pill ${inv.status === 'published' ? 'published' : 'draft'}">${inv.status || 'draft'}</span>
-          <span class="tpl-id">#${(inv.id || '').slice(0,6)}</span>
+          <span class="inv-id">#${(inv.id || '').slice(0,6)}</span>
         </div>
-        <div class="tpl-name">${inv.title || 'Untitled invitation'}</div>
-        <div class="tpl-meta">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <div class="inv-title">${inv.title || 'Untitled invitation'}</div>
+        <div class="inv-date">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
           ${new Date(inv.created_at).toLocaleDateString()}
         </div>
-        <div class="tpl-actions">
-          <button onclick="viewTemplate('${inv.id}','${inv.template_type || ''}')" class="ss-btn-primary">View &amp; Edit</button>
-          <button class="icon-btn" onclick="deleteInvitation('${inv.id}')" title="Delete template">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        <div class="inv-actions">
+          <button onclick="viewTemplate('${inv.id}','${inv.template_type || ''}')" class="btn-primary">View &amp; Edit</button>
+          <button class="icon-btn" onclick="deleteInvitation('${inv.id}')" title="Delete">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
           </button>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  function viewTemplate(id, templateType) {
-    let editorPath = '/edit/islamic-invitation';
-    if (templateType === 'template02' || templateType === 'tp2') editorPath = '/edit/islamic-invitation-premium';
-    window.location.href = `${editorPath}?id=${id}`;
+  function viewTemplate(id, type) {
+    let path = '/edit/islamic-invitation';
+    if (type === 'template02' || type === 'tp2') path = '/edit/islamic-invitation-premium';
+    window.location.href = path + '?id=' + id;
   }
 
   async function deleteInvitation(id) {
-    if (!confirm('Are you sure you want to delete this template? This action cannot be undone.')) return;
-    if (!sb) return;
+    if (!confirm('Delete this invitation? This cannot be undone.')) return;
     const { error } = await sb.from('customer_invitations').delete().eq('id', id);
-    if (error) { showToast('Failed to delete template.', 'error'); console.error(error); }
-    else { showToast('Template deleted successfully.', 'success'); fetchInvitations(); }
+    if (error) showToast('Failed to delete.', 'error');
+    else { showToast('Invitation deleted.'); fetchInvitations(); }
   }
 
   function renderGuests(guests) {
     const body = document.getElementById('guest-list-body');
-    const emptyState = document.getElementById('guest-empty-state');
-    if (!guests.length) { body.innerHTML = ''; emptyState.classList.remove('ss-hidden'); return; }
-    emptyState.classList.add('ss-hidden');
-    body.innerHTML = guests.map(guest => {
-      let inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation`;
+    const empty = document.getElementById('guest-empty-state');
+    if (!guests.length) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    body.innerHTML = guests.map(g => {
+      let url = window.location.origin + '/wedding/islamic-invitation';
       let idParam = '';
-      if (globalInvitations && globalInvitations.length) {
+      if (globalInvitations.length) {
         const inv = globalInvitations.find(i => i.status === 'published') || globalInvitations[0];
-        if (inv.template_type === 'tp2' || inv.template_type === 'template02') {
-          inviteLinkUrl = `${window.location.origin}/wedding/islamic-invitation-premium`;
-        }
-        idParam = `id=${inv.id}&`;
+        if (inv.template_type === 'tp2' || inv.template_type === 'template02') url = window.location.origin + '/wedding/islamic-invitation-premium';
+        idParam = 'id=' + inv.id + '&';
       }
-      const inviteLink = `${inviteLinkUrl}?${idParam}guest=${encodeURIComponent(guest.name)}`;
-      const message = encodeURIComponent(`Hi ${guest.name}! We'd love for you to join us on our special day. Check out our invitation here: ${inviteLink}`);
-      return `
-        <tr>
-          <td><strong>${guest.name}</strong></td>
-          <td style="font-family: 'DM Sans', monospace; color: var(--muted);">${guest.phone}</td>
-          <td><span class="rsvp-pill added">${guest.status || 'Added'}</span></td>
-          <td style="text-align:right">
-            <div class="share-row">
-              <a href="https://wa.me/${guest.phone.replace(/\D/g,'')}?text=${message}" target="_blank" class="share-btn wa" title="WhatsApp"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.765-5.764-5.765zm3.394 8.163c-.147.416-.855.762-1.156.789-.3.027-.601.121-1.74-.355-1.457-.607-2.393-2.094-2.466-2.191-.073-.097-.593-.791-.593-1.503 0-.712.373-1.063.506-1.205.133-.142.29-.178.387-.178.097 0 .193.001.277.005.088.004.208-.033.325.249.117.282.401.977.436 1.048.035.071.058.154.011.248-.047.094-.07.153-.141.236-.071.083-.148.185-.212.248-.069.068-.142.143-.061.282.081.139.362.597.776.967.534.477.986.626 1.125.696.14.07.221.058.303-.038.082-.096.347-.406.44-.544.093-.138.186-.117.311-.071.125.046.793.374.93.443s.228.104.262.161c.034.057.034.331-.113.747z"/></svg></a>
-              <a href="mailto:?subject=You are Invited!&body=${message}" class="share-btn email" title="Email"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></a>
-              <a href="https://www.instagram.com/direct/inbox/" target="_blank" class="share-btn ig" title="Instagram"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-            </div>
-          </td>
-        </tr>`;
+      const link = url + '?' + idParam + 'guest=' + encodeURIComponent(g.name);
+      const msg = encodeURIComponent('Hi ' + g.name + '! We\u2019d love for you to join us. See our invitation: ' + link);
+      return `<tr>
+        <td><strong>${g.name}</strong></td>
+        <td style="font-family:monospace;color:var(--muted)">${g.phone}</td>
+        <td><span class="rsvp-pill added">${g.status || 'Added'}</span></td>
+        <td style="text-align:right">
+          <div class="share-row">
+            <a href="https://wa.me/${g.phone.replace(/\D/g,'')}?text=${msg}" target="_blank" class="share-btn wa" title="WhatsApp"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.765-5.764-5.765zm3.394 8.163c-.147.416-.855.762-1.156.789-.3.027-.601.121-1.74-.355-1.457-.607-2.393-2.094-2.466-2.191-.073-.097-.593-.791-.593-1.503 0-.712.373-1.063.506-1.205.133-.142.29-.178.387-.178.097 0 .193.001.277.005.088.004.208-.033.325.249.117.282.401.977.436 1.048.035.071.058.154.011.248-.047.094-.07.153-.141.236-.071.083-.148.185-.212.248-.069.068-.142.143-.061.282.081.139.362.597.776.967.534.477.986.626 1.125.696.14.07.221.058.303-.038.082-.096.347-.406.44-.544.093-.138.186-.117.311-.071.125.046.793.374.93.443s.228.104.262.161c.034.057.034.331-.113.747z"/></svg></a>
+            <a href="mailto:?subject=You%20are%20Invited!&body=${msg}" class="share-btn email" title="Email"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></a>
+          </div>
+        </td>
+      </tr>`;
     }).join('');
   }
 
   async function handleAddGuest(e) {
     e.preventDefault();
     if (!sb || !currentUser) return;
-    const form = e.target;
-    const name = form.guest_name.value;
-    const phone = form.guest_phone.value;
+    const name = document.getElementById('guest_name').value.trim();
+    const phone = document.getElementById('guest_phone').value.trim();
     const btn = document.getElementById('add-guest-btn');
-    btn.disabled = true; btn.innerHTML = 'Adding&hellip;';
+    btn.disabled = true; btn.innerHTML = 'Adding\u2026';
     const { error } = await sb.from('guest_list').insert([{ user_id: currentUser.id, name, phone, status: 'Added' }]).select();
-    if (error) { showToast('Error: Failed to save guest', 'error'); console.error(error); }
-    else { showToast('Saved successfully!', 'success'); form.reset(); fetchGuests(); setTimeout(() => switchTab('invites'), 800); }
-    btn.disabled = false; btn.innerHTML = 'Add to List &amp; Generate Link';
+    if (error) showToast('Failed to add guest.', 'error');
+    else { showToast('Guest added!'); e.target.reset(); fetchGuests(); setTimeout(() => switchTab('invites'), 600); }
+    btn.disabled = false; btn.innerHTML = 'Add &amp; Generate Link <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>';
   }
 
-  function showToast(message, type='success') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
-        ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>'}
-      </svg><span>${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+  function showToast(msg, type='success') {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">${type==='success'?'<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>':'<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>'}</svg><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3000);
   }
 
   function createInvitation() { window.location.href = '/templates'; }
-  async function handleLogout() { if (sb) { await sb.auth.signOut(); window.location.href = '/login'; } }
+  async function handleLogout() { if (sb) { await sb.auth.signOut(); localStorage.removeItem('ss_login_time'); window.location.href = '/login'; } }
 </script>
-<script src="/app.js"></script>
 </body>
 </html>
