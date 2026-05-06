@@ -2034,16 +2034,25 @@ CREATE POLICY "Admin write templates" ON template_configs
         btn.textContent = 'Create Template'; btn.disabled = false;
         return;
       }
-      const result = await sb.from('template_configs').insert([{
-        id, name, price, placeholder_url: placeholder_url || null,
-        is_active, is_premium, updated_at: new Date().toISOString()
-      }]);
-      error = result.error;
+      // Uses /api/update-template (SERVICE_ROLE_KEY) — bypasses RLS
+      const { data: { session: _cs } } = await sb.auth.getSession();
+      const _cr = await fetch('/api/update-template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_cs?.access_token || ''}` },
+        body: JSON.stringify({ action: 'create', data: { id, name, price, placeholder_url: placeholder_url || null, is_active, is_premium } })
+      });
+      const _cj = await _cr.json();
+      error = _cr.ok ? null : { message: _cj.error || 'Failed to create template' };
     } else {
-      const result = await sb.from('template_configs')
-        .update({ name, price, placeholder_url, is_active, is_premium, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      error = result.error;
+      // Uses /api/update-template (SERVICE_ROLE_KEY) — bypasses RLS
+      const { data: { session: _us } } = await sb.auth.getSession();
+      const _ur = await fetch('/api/update-template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_us?.access_token || ''}` },
+        body: JSON.stringify({ action: 'update', id, data: { name, price, placeholder_url, is_active, is_premium } })
+      });
+      const _uj = await _ur.json();
+      error = _ur.ok ? null : { message: _uj.error || 'Failed to update template' };
     }
 
     btn.textContent = _modalMode === 'add' ? 'Create Template' : 'Save Changes';
@@ -2074,7 +2083,15 @@ CREATE POLICY "Admin write templates" ON template_configs
     btn.textContent = 'Deleting…';
     btn.disabled = true;
 
-    const { error } = await sb.from('template_configs').delete().eq('id', _deleteTargetId);
+    // Uses /api/update-template (SERVICE_ROLE_KEY) — bypasses RLS
+    const { data: { session: _ds } } = await sb.auth.getSession();
+    const _dr = await fetch('/api/update-template', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_ds?.access_token || ''}` },
+      body: JSON.stringify({ action: 'delete', id: _deleteTargetId })
+    });
+    const _dj = await _dr.json();
+    const error = _dr.ok ? null : { message: _dj.error || 'Failed to delete template' };
 
     btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg> Delete Template`;
     btn.disabled = false;
