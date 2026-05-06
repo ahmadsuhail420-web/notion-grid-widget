@@ -633,10 +633,10 @@
       </div>
     </div>
     <div style="text-align:center;margin-top:48px">
-      <button id="view-more-templates" class="btn-outline hidden" onclick="showMoreTemplates()">
+      <a href="/templates" id="view-all-link" class="btn-outline" style="display:inline-flex;align-items:center;gap:10px">
         View All Templates
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-      </button>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 12h16m0 0l-6-6m6 6l-6 6"/></svg>
+      </a>
     </div>
   </div>
 </section>
@@ -965,16 +965,15 @@
         if (i >= MAX_VISIBLE) card.style.display = 'none';
         if (grid) grid.appendChild(card);
       });
-      if (viewMore) viewMore.classList.toggle('hidden', data.length <= MAX_VISIBLE);
+      if (data.length > MAX_VISIBLE) {
+          const link = document.getElementById('view-all-link');
+          if (link) { link.style.display = 'inline-flex'; }
+        }
       document.querySelectorAll('.reveal-pop').forEach(el => observer.observe(el));
     } catch(e) { console.error('loadTemplateCardData error', e); }
   }
 
-  function showMoreTemplates() {
-    document.querySelectorAll('#templates-grid .template-card').forEach(c => c.style.display = '');
-    document.getElementById('view-more-templates').classList.add('hidden');
-    document.querySelectorAll('.reveal-pop').forEach(el => observer.observe(el));
-  }
+  // showMoreTemplates replaced by /templates link
 
   async function handleSelectTemplate(templateId) {
     if (!sb) { window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId); return; }
@@ -985,3 +984,4 @@
 </script>
 </body>
 </html>
+
