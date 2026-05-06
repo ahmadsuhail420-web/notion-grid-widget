@@ -387,7 +387,7 @@
       const config = await res.json();
       if (!config.supabaseUrl || !config.supabaseAnonKey) return;
       sb = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
-        auth: { persistSession: true, autoRefreshToken: false, detectSessionInUrl: true }
+        auth: { persistSession: true, detectSessionInUrl: true }
       });
       const { data: { session } } = await sb.auth.getSession();
       if (session) {

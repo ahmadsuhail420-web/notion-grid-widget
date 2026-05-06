@@ -736,12 +736,12 @@ function applyCoupon() {
 }
 
 // ── Razorpay flow ──────────────────────────────────────────
-const PAY_BTN_DEFAULT = `<span id="payBtnContent" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+function getPayBtnDefault() { return `<span id="payBtnContent" style="display:flex;align-items:center;justify-content:center;gap:10px;">
     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
     </svg>
     Pay ₹<span id="payBtnAmount">${resolvedAmount}</span> Securely
-</span>`;
+</span>`; }
 
 payButton.addEventListener('click', async function() {
     if (!termsCheckbox.checked) return;
@@ -787,7 +787,7 @@ payButton.addEventListener('click', async function() {
             console.error('Admin bypass catch block:', err);
             alert('Admin bypass failed: ' + err.message);
             payButton.disabled = false;
-            payButton.innerHTML = PAY_BTN_DEFAULT;
+            payButton.innerHTML = getPayBtnDefault();
             return;
         }
     }
@@ -836,6 +836,7 @@ payButton.addEventListener('click', async function() {
                             status: 'draft',
                             payment_id: rzpResponse.razorpay_payment_id,
                             order_id: rzpResponse.razorpay_order_id,
+                            payment_verified: true,
                             rsvps: []
                         }]);
 
@@ -857,7 +858,7 @@ payButton.addEventListener('click', async function() {
             modal: {
                 ondismiss: function() {
                     payButton.disabled = false;
-                    payButton.innerHTML = PAY_BTN_DEFAULT;
+                    payButton.innerHTML = getPayBtnDefault();
                 }
             }
         };
@@ -866,7 +867,7 @@ payButton.addEventListener('click', async function() {
         rzp.on('payment.failed', function(response) {
             alert('Payment failed: ' + response.error.description);
             payButton.disabled = false;
-            payButton.innerHTML = PAY_BTN_DEFAULT;
+            payButton.innerHTML = getPayBtnDefault();
         });
         rzp.open();
 
@@ -874,7 +875,7 @@ payButton.addEventListener('click', async function() {
         console.error("Razorpay init error:", error);
         alert("Failed to initiate payment. Please try again.");
         payButton.disabled = false;
-        payButton.innerHTML = PAY_BTN_DEFAULT;
+        payButton.innerHTML = getPayBtnDefault();
     }
 });
 </script>
