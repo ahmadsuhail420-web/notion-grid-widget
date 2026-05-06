@@ -11,7 +11,15 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { templateId } = req.body;
+  const TEMPLATE_ALIASES = {
+    'islamic-invitation': 'template01',
+    'islamic-invitation-premium': 'template02',
+    tp1: 'template01',
+    tp2: 'template02'
+  };
+
+  const rawTemplateId = req.body.templateId;
+  const templateId = TEMPLATE_ALIASES[rawTemplateId] || rawTemplateId;
 
   // ── FIX: Resolve price server-side — never trust client-sent amount ──
   let amount;
@@ -22,11 +30,12 @@ module.exports = async function handler(req, res) {
     );
 
     if (templateId) {
-      const { data: tpl, error } = await sb
+      const candidateIds = [...new Set([templateId, rawTemplateId].filter(Boolean))];
+      const { data: tplRows, error } = await sb
         .from('template_configs')
-        .select('price, is_active')
-        .eq('id', templateId)
-        .single();
+        .select('id, price, is_active')
+        .in('id', candidateIds);
+      const tpl = (tplRows || []).find(t => t.id === templateId) || (tplRows || [])[0];
 
       if (error || !tpl) {
         return res.status(400).json({ error: 'Invalid template ID' });
