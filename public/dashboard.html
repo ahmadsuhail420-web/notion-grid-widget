@@ -384,7 +384,7 @@
       document.getElementById('user-welcome').textContent = firstName;
       document.getElementById('user-email').textContent = currentUser.email || '';
       document.getElementById('user-avatar').textContent = (firstName[0] || 'S').toUpperCase();
-      fetchInvitations();
+      await fetchInvitations();
       fetchGuests();
       fetchRsvpData();
     } catch(e) { console.error('Supabase init error:', e); }
@@ -409,7 +409,7 @@
 
   async function fetchGuests() {
     if (!sb) return;
-    const { data, error } = await sb.from('guest_list').select('*').order('created_at', { ascending: false });
+    const { data, error } = await sb.from('guest_list').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
     if (error) { console.error(error); return; }
     window.lastGuests = data || [];
     document.getElementById('stat-guests').textContent = (data || []).length;
