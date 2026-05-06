@@ -472,7 +472,8 @@
 
   function viewTemplate(id, type) {
     let path = '/edit/islamic-invitation';
-    if (type === 'template02' || type === 'tp2') path = '/edit/islamic-invitation-premium';
+    type = ({ tp1: 'template01', tp2: 'template02', 'islamic-invitation': 'template01', 'islamic-invitation-premium': 'template02' }[type] || type);
+    if (type === 'template02') path = '/edit/islamic-invitation-premium';
     window.location.href = path + '?id=' + id;
   }
 
@@ -493,7 +494,8 @@
       let idParam = '';
       if (globalInvitations.length) {
         const inv = globalInvitations.find(i => i.status === 'published') || globalInvitations[0];
-        if (inv.template_type === 'tp2' || inv.template_type === 'template02') url = window.location.origin + '/wedding/islamic-invitation-premium';
+        const normalizedType = ({ tp1: 'template01', tp2: 'template02', 'islamic-invitation': 'template01', 'islamic-invitation-premium': 'template02' }[inv.template_type] || inv.template_type);
+        if (normalizedType === 'template02') url = window.location.origin + '/wedding/islamic-invitation-premium';
         idParam = 'id=' + inv.id + '&';
       }
       const link = url + '?' + idParam + 'guest=' + encodeURIComponent(g.name);

@@ -609,7 +609,7 @@
           <div class="iframe-preview-container"><iframe src="/wedding/islamic-invitation?preview=true" class="preview-iframe" scrolling="no"></iframe></div>
           <div class="card-overlay">
             <a href="/wedding/islamic-invitation" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>
-            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('template01')">Buy Now</button>
+            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('islamic-invitation')">Buy Now</button>
           </div>
         </div>
         <div class="card-info">
@@ -930,56 +930,93 @@
   }
   initSupabase();
 
+  const TEMPLATE_ID_ALIASES = {
+    'tp1': 'template01',
+    'tp2': 'template02',
+    'islamic-invitation': 'template01',
+    'islamic-invitation-premium': 'template02'
+  };
+  const TEMPLATE_FRONTEND = {
+    template01: {
+      previewUrl: '/wedding/islamic-invitation.html',
+      demoUrl: '/wedding/islamic-invitation',
+      originalPrice: 1499,
+      fallbackName: 'Heritage',
+      fallbackDesc: 'Timeless patterns meet royal deep-plum elegance.'
+    },
+    template02: {
+      previewUrl: '/wedding/islamic-invitation-premium.html',
+      demoUrl: '/wedding/islamic-invitation-premium',
+      originalPrice: 1499,
+      fallbackName: 'Minimalist',
+      fallbackDesc: 'Sophisticated minimalism with gold accents.'
+    }
+  };
+  function normalizeTemplateId(id) { return TEMPLATE_ID_ALIASES[id] || id || 'template01'; }
+  function templateMeta(id) { return TEMPLATE_FRONTEND[normalizeTemplateId(id)] || {}; }
+  function mergeTemplateRows(rows) {
+    const map = new Map();
+    (rows || []).forEach(row => {
+      const normalized = { ...row, id: normalizeTemplateId(row.id) };
+      // Canonical IDs win over old aliases; otherwise the later row wins.
+      const existing = map.get(normalized.id);
+      const isCanonical = row.id === normalized.id;
+      if (!existing || isCanonical || existing._source_id !== existing.id) {
+        map.set(normalized.id, { ...normalized, _source_id: row.id });
+      }
+    });
+    return Array.from(map.values());
+  }
+  function rupee(amount) { return '₹' + Number(amount || 0).toLocaleString('en-IN'); }
+  function calcDiscount(price, originalPrice) {
+    price = Number(price || 0); originalPrice = Number(originalPrice || 0);
+    return originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+  }
+
   function buildTemplateCard(t, index) {
-    const originalPrice = t.original_price || 1499;
-    const discount = t.price < originalPrice ? Math.round(((originalPrice - t.price) / originalPrice) * 100) : 0;
+    t.id = normalizeTemplateId(t.id);
+    const meta = templateMeta(t.id);
+    const originalPrice = meta.originalPrice || 1499;
+    const discount = calcDiscount(t.price, originalPrice);
     const card = document.createElement('div');
     card.className = 'template-card reveal-pop';
     card.style.transitionDelay = (index * 80) + 'ms';
     card.setAttribute('data-template-id', t.id);
+
+    // Preview rule kept exactly like before: iframe always points to the fixed wedding demo page.
+    // Admin image/placeholder does not replace the live preview for built-in templates.
+    const previewUrl = meta.previewUrl || t.placeholder_url || '';
+    const demoUrl = meta.demoUrl || previewUrl;
     const badgeHTML = t.is_premium ? '<div class="card-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>' : '';
-    const mediaHTML = t.preview_url
-      ? '<div class="iframe-preview-container"><iframe src="' + t.preview_url + '?preview=true" class="preview-iframe" scrolling="no"></iframe></div>'
-      : t.placeholder_url ? '<img src="' + t.placeholder_url + '" style="width:100%;height:100%;object-fit:cover" alt="' + t.name + '">' : '';
+    const mediaHTML = meta.previewUrl
+      ? '<div class="iframe-preview-container"><iframe src="' + meta.previewUrl + '?preview=true" class="preview-iframe" scrolling="no"></iframe></div>'
+      : t.placeholder_url ? '<img src="' + t.placeholder_url + '" style="width:100%;height:100%;object-fit:cover" alt="' + (t.name || t.id) + '">' : '';
     const priceHTML = discount > 0
-      ? '<span class="price-original">&#8377;' + originalPrice + '</span><span class="price-current">&#8377;' + t.price + '</span><span class="price-badge">' + discount + '% OFF</span>'
-      : '<span class="price-current">&#8377;' + t.price + '</span>';
-    const demoBtn = t.demo_url ? '<a href="' + t.demo_url + '" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>' : '';
-    card.innerHTML = '<div class="card-media">' + mediaHTML + badgeHTML + '<div class="card-overlay">' + demoBtn + '<button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate(\'' + t.id + '\')">Buy Now</button></div></div><div class="card-info"><div class="card-name">' + (t.name || t.id) + '</div><div class="card-price">' + priceHTML + '</div></div>';
+      ? '<span class="price-original">' + rupee(originalPrice) + '</span><span class="price-current">' + rupee(t.price) + '</span><span class="price-badge">' + discount + '% OFF</span>'
+      : '<span class="price-current">' + rupee(t.price) + '</span>';
+    const demoBtn = demoUrl ? '<a href="' + demoUrl + '" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>' : '';
+    card.innerHTML = '<div class="card-media">' + mediaHTML + badgeHTML + '<div class="card-overlay">' + demoBtn + '<button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate(\'' + t.id + '\')">Buy Now</button></div></div><div class="card-info"><div class="card-name">' + (t.name || meta.fallbackName || t.id) + '</div><div class="card-price">' + priceHTML + '</div></div>';
     return card;
-  }
-
-
-  function normalizeTemplateRows(rows) {
-    const aliases = { tp1: 'template01', tp2: 'template02', 'islamic-invitation': 'template01', 'islamic-invitation-premium': 'template02' };
-    const byId = new Map();
-    (rows || []).forEach(row => {
-      const canonicalId = aliases[row.id] || row.id;
-      const normalized = { ...row, id: canonicalId };
-      const existing = byId.get(canonicalId);
-      if (!existing || row.id === canonicalId) byId.set(canonicalId, normalized);
-    });
-    return Array.from(byId.values());
   }
 
   async function loadTemplateCardData() {
     if (!sb) return;
     try {
-      const { data, error } = await sb.from('template_configs')
-        .select('id, name, price, original_price, is_premium, placeholder_url, preview_url, demo_url, is_active')
+      let { data, error } = await sb.from('template_configs')
+        .select('id, name, price, is_premium, placeholder_url, is_active')
         .eq('is_active', true).order('created_at', { ascending: true });
       if (error || !data || !data.length) return;
-      const templates = normalizeTemplateRows(data);
+      data = mergeTemplateRows(data);
       const grid = document.getElementById('templates-grid');
       const viewMore = document.getElementById('view-more-templates');
       const MAX_VISIBLE = 4;
       if (grid) grid.innerHTML = '';
-      templates.forEach((t, i) => {
+      data.forEach((t, i) => {
         const card = buildTemplateCard(t, i);
         if (i >= MAX_VISIBLE) card.style.display = 'none';
         if (grid) grid.appendChild(card);
       });
-      if (templates.length > MAX_VISIBLE) {
+      if (data.length > MAX_VISIBLE) {
           const link = document.getElementById('view-all-link');
           if (link) { link.style.display = 'inline-flex'; }
         }
@@ -990,13 +1027,7 @@
   // showMoreTemplates replaced by /templates link
 
   async function handleSelectTemplate(templateId) {
-    const templateAliases = {
-      'islamic-invitation': 'template01',
-      'islamic-invitation-premium': 'template02',
-      'tp1': 'template01',
-      'tp2': 'template02'
-    };
-    templateId = templateAliases[templateId] || templateId;
+    templateId = normalizeTemplateId(templateId);
     if (!sb) { window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId); return; }
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = '/login?redirect=' + encodeURIComponent('/payment?template=' + templateId); return; }

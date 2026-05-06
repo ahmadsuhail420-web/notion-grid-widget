@@ -1291,7 +1291,7 @@ CREATE POLICY "Admin write templates" ON template_configs
       <!-- ID field (only shown when Adding) -->
       <div class="form-group" id="id-field-group" style="display:none;">
         <label class="field-label">Template ID <span style="color:var(--red);font-size:10px;">*unique, no spaces</span></label>
-        <input type="text" id="edit-new-id" class="field" placeholder="e.g. template03, islamic-floral">
+        <input type="text" id="edit-new-id" class="field" placeholder="e.g. tp3, islamic-floral">
       </div>
       <div class="form-group">
         <label class="field-label">Template Name</label>
@@ -1445,36 +1445,23 @@ CREATE POLICY "Admin write templates" ON template_configs
   // ── SUPABASE ENSURE ───────────────────────────────────────────────
   async function ensureTemplates() {
     if (!sb) return;
-
-    // Keep admin template IDs aligned with the public site/payment flow.
-    // Public pages and checkout use template01/template02, not tp1/tp2.
-    const defaults = [
-      {
-        id: 'template01',
-        name: 'Islamic Classic',
-        price: 499,
-        original_price: 1499,
-        is_active: true,
-        is_premium: false,
-        preview_url: '/wedding/islamic-invitation',
-        demo_url: '/wedding/islamic-invitation'
-      },
-      {
-        id: 'template02',
-        name: 'Islamic Premium',
-        price: 999,
-        original_price: 1499,
-        is_active: true,
-        is_premium: true,
-        preview_url: '/wedding/islamic-invitation-premium',
-        demo_url: '/wedding/islamic-invitation-premium'
-      }
-    ];
-
-    for (const tpl of defaults) {
-      const { data, error } = await sb.from('template_configs').select('id').eq('id', tpl.id).maybeSingle();
-      if (!error && !data) await sb.from('template_configs').insert([tpl]);
+    const { data, error } = await sb.from('template_configs').select('*');
+    if (error) return;
+    const rows = data || [];
+    if (rows.length === 0) {
+      await sb.from('template_configs').insert([
+        { id: 'template01', name: 'Heritage', price: 499, is_active: true, is_premium: false },
+        { id: 'template02', name: 'Minimalist', price: 999, is_active: true, is_premium: true },
+      ]);
+      return;
     }
+
+    // If an older database has tp1/tp2 but not template01/template02, copy them into the canonical IDs.
+    const byId = Object.fromEntries(rows.map(r => [r.id, r]));
+    const upserts = [];
+    if (byId.tp1 && !byId.template01) upserts.push({ ...byId.tp1, id: 'template01' });
+    if (byId.tp2 && !byId.template02) upserts.push({ ...byId.tp2, id: 'template02' });
+    if (upserts.length) await sb.from('template_configs').upsert(upserts, { onConflict: 'id' });
   }
 
   // ── LOAD TEMPLATES ────────────────────────────────────────────────
@@ -1486,7 +1473,7 @@ CREATE POLICY "Admin write templates" ON template_configs
     const { data, error } = await sb.from('template_configs').select('*').order('id');
     if (error) { tbody.innerHTML = errRow(6, 'Failed to load templates'); return; }
 
-    templatesData = data || [];
+    templatesData = mergeTemplateRows(data || []);
     document.getElementById('stat-templates').textContent = templatesData.filter(t => t.is_active).length;
 
     tbody.innerHTML = templatesData.length === 0
@@ -1548,7 +1535,7 @@ CREATE POLICY "Admin write templates" ON template_configs
     const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
     if (error) { tbody.innerHTML = errRow(8, 'Failed to load orders'); return; }
 
-    salesData = data || [];
+    salesData = (data || []).map(s => ({ ...s, template_type: normalizeTemplateType(s.template_type) }));
 
     // Update stats
     let totalRevenue = 0, paidCount = 0, totalRsvps = 0;
