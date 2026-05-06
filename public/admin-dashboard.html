@@ -1375,6 +1375,28 @@ CREATE POLICY "Admin write templates" ON template_configs
   let analyticsLineInstance = null;
   let analyticsBarInstance = null;
 
+
+  // ── TEMPLATE HELPERS (synced from index/templates pages) ─────────
+  const TEMPLATE_ID_ALIASES = {
+    'tp1': 'template01',
+    'tp2': 'template02',
+    'islamic-invitation': 'template01',
+    'islamic-invitation-premium': 'template02'
+  };
+  function normalizeTemplateId(id) { return TEMPLATE_ID_ALIASES[id] || id || 'template01'; }
+  function mergeTemplateRows(rows) {
+    const map = new Map();
+    (rows || []).forEach(row => {
+      const normalized = { ...row, id: normalizeTemplateId(row.id) };
+      const existing = map.get(normalized.id);
+      const isCanonical = row.id === normalized.id;
+      if (!existing || isCanonical || existing._source_id !== existing.id) {
+        map.set(normalized.id, { ...normalized, _source_id: row.id });
+      }
+    });
+    return Array.from(map.values());
+  }
+
   // ── INIT ─────────────────────────────────────────────────────────
   async function initAdmin() {
     try {
@@ -1399,7 +1421,8 @@ CREATE POLICY "Admin write templates" ON template_configs
       }
 
       const userRole = session.user.user_metadata?.role;
-      if (userRole !== 'admin') {
+      const adminEmail = 'ahmadsuhail420@gmail.com';
+      if (userRole !== 'admin' && session.user.email !== adminEmail) {
         document.body.innerHTML = `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:'DM Sans',sans-serif;">
           <div style="text-align:center;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:48px;max-width:360px;">
             <div style="font-size:48px;margin-bottom:16px;">🚫</div>
@@ -1432,9 +1455,10 @@ CREATE POLICY "Admin write templates" ON template_configs
   }
 
   async function refreshAll() {
+    // loadSales must run first — loadTemplates uses salesData for the top-templates widget
+    await loadSales();
     await Promise.all([
       loadTemplates(),
-      loadSales(),
       loadGuests(),
     ]);
     loadRsvps();
@@ -1535,14 +1559,15 @@ CREATE POLICY "Admin write templates" ON template_configs
     const { data, error } = await sb.from('customer_invitations').select('*').order('created_at', { ascending: false });
     if (error) { tbody.innerHTML = errRow(8, 'Failed to load orders'); return; }
 
-    salesData = (data || []).map(s => ({ ...s, template_type: normalizeTemplateType(s.template_type) }));
+    salesData = (data || []).map(s => ({ ...s, template_type: normalizeTemplateId(s.template_type) }));
 
     // Update stats
     let totalRevenue = 0, paidCount = 0, totalRsvps = 0;
     salesData.forEach(s => {
       const tpl = templatesData.find(t => t.id === s.template_type);
       const price = tpl ? Number(tpl.price) : 499;
-      if (s.payment_id) { totalRevenue += price; paidCount++; }
+      // Use payment_verified (new) OR payment_id (legacy) to count paid orders
+      if (s.payment_verified || s.payment_id) { totalRevenue += price; paidCount++; }
       totalRsvps += Array.isArray(s.rsvps) ? s.rsvps.length : 0;
     });
 
