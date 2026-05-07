@@ -519,14 +519,16 @@
     const discount = calcDiscount(t.price, originalPrice);
     const tier = t.is_premium ? 'premium' : 'classic';
     const badgeHTML = t.is_premium ? '<div class="card-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>' : '';
-    const mediaHTML = meta.previewUrl
-      ? '<div class="iframe-preview-container"><iframe src="' + meta.previewUrl + '?preview=true" class="preview-iframe" scrolling="no"></iframe></div>'
-      : t.placeholder_url ? '<img src="' + t.placeholder_url + '" style="width:100%;height:100%;object-fit:cover" alt="' + (t.name||t.id) + '">' : '';
+    // Auto-derive previewUrl from template ID if no TEMPLATE_FRONTEND entry
+    const _previewUrl = meta.previewUrl || ('/wedding/' + t.id + '.html');
+    const mediaHTML = t.placeholder_url && !meta.previewUrl
+      ? '<img src="' + t.placeholder_url + '" style="width:100%;height:100%;object-fit:cover" alt="' + (t.name||t.id) + '">'
+      : '<div class="iframe-preview-container"><iframe src="' + _previewUrl + '?preview=true" class="preview-iframe" scrolling="no"></iframe></div>';
     const priceHTML = discount > 0
       ? '<span class="price-original">' + rupee(originalPrice) + '</span><span class="price-current">' + rupee(t.price) + '</span><span class="price-badge">' + discount + '% OFF</span>'
       : '<span class="price-current">' + rupee(t.price) + '</span>';
-    const demoUrl = meta.demoUrl || '';
-    const demoBtn = demoUrl ? '<a href="' + demoUrl + '" target="_blank" class="card-btn card-btn-ghost" onclick="event.stopPropagation()">Preview Demo</a>' : '';
+    const demoUrl = meta.demoUrl || ('/wedding/' + t.id);
+    const demoBtn = '<a href="' + demoUrl + '" target="_blank" class="card-btn card-btn-ghost" onclick="event.stopPropagation()">Preview Demo</a>';
     const card = document.createElement('div');
     card.className = 'template-card reveal-pop';
     card.dataset.templateId = t.id;
