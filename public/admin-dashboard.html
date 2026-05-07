@@ -1218,10 +1218,14 @@
             <div class="card-header"><div class="card-title">Required SQL Schema</div></div>
             <div class="card-body">
               <pre id="sql-box" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--gold);overflow-x:auto;line-height:1.7;white-space:pre-wrap;max-height:480px;overflow-y:auto;">-- template_configs table
+-- Run this to add original_price if not exists:
+-- ALTER TABLE public.template_configs ADD COLUMN IF NOT EXISTS original_price NUMERIC;
+
 CREATE TABLE IF NOT EXISTS public.template_configs (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   price NUMERIC NOT NULL DEFAULT 499,
+  original_price NUMERIC,
   placeholder_url TEXT,
   is_active BOOLEAN DEFAULT TRUE,
   is_premium BOOLEAN DEFAULT FALSE,
@@ -1298,8 +1302,12 @@ CREATE POLICY "Admin write templates" ON template_configs
         <input type="text" id="edit-name" class="field" placeholder="e.g. Islamic Classic">
       </div>
       <div class="form-group">
-        <label class="field-label">Price (₹)</label>
-        <input type="number" id="edit-price" class="field" placeholder="499">
+        <label class="field-label">Selling Price (₹) <span style="font-size:10px;color:var(--text3);">— what customers pay</span></label>
+        <input type="number" id="edit-price" class="field" placeholder="499" min="0">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Original Price (₹) <span style="font-size:10px;color:var(--text3);">— shown crossed out (MRP)</span></label>
+        <input type="number" id="edit-original-price" class="field" placeholder="1499" min="0">
       </div>
       <div class="form-group">
         <label class="field-label">Placeholder Image (Upload)</label>
@@ -1509,7 +1517,10 @@ CREATE POLICY "Admin write templates" ON template_configs
             <div class="product-name">${t.is_premium ? '👑 ' : ''}${t.name}</div>
             <div class="product-id">${t.id}</div>
           </td>
-          <td><strong style="color:var(--gold);">₹${t.price}</strong></td>
+          <td>
+            <strong style="color:var(--gold);">₹${Number(t.price).toLocaleString('en-IN')}</strong>
+            ${t.original_price && t.original_price > t.price ? `<span style="font-size:10px;color:var(--text3);text-decoration:line-through;margin-left:5px;">₹${Number(t.original_price).toLocaleString('en-IN')}</span>` : ''}
+          </td>
           <td>${t.is_premium ? '<span class="badge badge-gold">Premium</span>' : '<span class="badge badge-gray">Standard</span>'}</td>
           <td>${t.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-gray">Inactive</span>'}</td>
           <td style="text-align:right;">
@@ -1951,6 +1962,7 @@ CREATE POLICY "Admin write templates" ON template_configs
     document.getElementById('edit-new-id').value = '';
     document.getElementById('edit-name').value = '';
     document.getElementById('edit-price').value = '499';
+    document.getElementById('edit-original-price').value = '1499';
     document.getElementById('edit-image').value = '';
     document.getElementById('edit-image-file').value = '';
     document.getElementById('edit-active').checked = true;
@@ -1969,6 +1981,7 @@ CREATE POLICY "Admin write templates" ON template_configs
     document.getElementById('edit-id-display').textContent = item.id;
     document.getElementById('edit-name').value = item.name;
     document.getElementById('edit-price').value = item.price;
+    document.getElementById('edit-original-price').value = item.original_price || '';
     document.getElementById('edit-image').value = item.placeholder_url || '';
     document.getElementById('edit-image-file').value = '';
     document.getElementById('edit-active').checked = item.is_active;
@@ -1987,12 +2000,15 @@ CREATE POLICY "Admin write templates" ON template_configs
 
     const name = document.getElementById('edit-name').value.trim();
     const price = parseFloat(document.getElementById('edit-price').value);
+    const originalPriceRaw = document.getElementById('edit-original-price').value;
+    const original_price = originalPriceRaw !== '' ? parseFloat(originalPriceRaw) : null;
     const is_active = document.getElementById('edit-active').checked;
     const is_premium = document.getElementById('edit-premium').checked;
     const btn = document.getElementById('save-btn');
 
     if (!name) { showToast('Template name is required', 'error'); return; }
     if (isNaN(price) || price < 0) { showToast('Enter a valid price', 'error'); return; }
+    if (original_price !== null && (isNaN(original_price) || original_price < 0)) { showToast('Enter a valid original price', 'error'); return; }
 
     btn.textContent = 'Saving…';
     btn.disabled = true;
@@ -2039,7 +2055,7 @@ CREATE POLICY "Admin write templates" ON template_configs
       const _cr = await fetch('/api/update-template', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_cs?.access_token || ''}` },
-        body: JSON.stringify({ action: 'create', data: { id, name, price, placeholder_url: placeholder_url || null, is_active, is_premium } })
+        body: JSON.stringify({ action: 'create', data: { id, name, price, original_price: original_price || null, placeholder_url: placeholder_url || null, is_active, is_premium } })
       });
       const _cj = await _cr.json();
       error = _cr.ok ? null : { message: _cj.error || 'Failed to create template' };
@@ -2049,7 +2065,7 @@ CREATE POLICY "Admin write templates" ON template_configs
       const _ur = await fetch('/api/update-template', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${_us?.access_token || ''}` },
-        body: JSON.stringify({ action: 'update', id, data: { name, price, placeholder_url, is_active, is_premium } })
+        body: JSON.stringify({ action: 'update', id, data: { name, price, original_price: original_price || null, placeholder_url, is_active, is_premium } })
       });
       const _uj = await _ur.json();
       error = _ur.ok ? null : { message: _uj.error || 'Failed to update template' };
