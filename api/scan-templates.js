@@ -105,7 +105,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({
       newly_registered: [],
       scanned: files.length,
-      used_path: usedPath
+      used_path: usedPath,
+      db_records: (existing || []).map(t => ({ id: t.id, name: t.name }))
     });
   }
 
