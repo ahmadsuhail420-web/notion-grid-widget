@@ -59,5 +59,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/scan-templates.js": {
+      "includeFiles": "public/wedding/**"
+    }
+  }
 }
