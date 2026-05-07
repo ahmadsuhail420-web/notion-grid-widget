@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Akhila & Jevins — August 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+:root{
+  --bg:#f5f0e8;
+  --bg2:#ede8df;
+  --bg3:#e8e0d4;
+  --maroon:#8b1a1a;
+  --maroon2:#a52020;
+  --gold:#9a7b3a;
+  --gold2:#c9a96e;
+  --cream:#1a0f0a;
+  --cream2:#1a0f0a;
+  --muted:#6b5a4a;
+  --rule:rgba(154,123,58,.2);
+  --card:#ffffff;
+  --cardborder:rgba(154,123,58,.2);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:19px;line-height:1.6;-webkit-font-smoothing:antialiased;font-weight:600}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+
+/* TRAVEL PATH ANIMATION */
+.travel-dots{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.travel-dot{position:absolute;width:3px;height:3px;background:#9a7b3a;border-radius:50%;opacity:0;animation:twinkle linear infinite}
+.travel-dot:nth-child(1){left:8%;top:20%;animation-duration:3s;animation-delay:0s}
+.travel-dot:nth-child(2){left:22%;top:65%;animation-duration:4s;animation-delay:-.8s}
+.travel-dot:nth-child(3){left:45%;top:15%;animation-duration:3.5s;animation-delay:-1.5s}
+.travel-dot:nth-child(4){left:68%;top:72%;animation-duration:4.5s;animation-delay:-.4s}
+.travel-dot:nth-child(5){left:82%;top:38%;animation-duration:3.2s;animation-delay:-2s}
+.travel-dot:nth-child(6){left:92%;top:55%;animation-duration:3.8s;animation-delay:-1s}
+.travel-dot:nth-child(7){left:35%;top:82%;animation-duration:4.2s;animation-delay:-.3s}
+.travel-dot:nth-child(8){left:55%;top:48%;animation-duration:3.6s;animation-delay:-2.5s}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:.6}}
+
+/* LANDING */
+#landing{position:fixed;inset:0;z-index:1000;background:radial-gradient(ellipse at 30% 40%,#ede8df 0%,#f5f0e8 55%,#faf6ef 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 28px;text-align:center;transition:opacity 1s ease,visibility 1s ease}
+#landing.gone{opacity:0;visibility:hidden;pointer-events:none}
+#landing::before{content:"";position:absolute;top:22px;left:22px;right:22px;bottom:22px;border:1px solid rgba(154,123,58,.35);pointer-events:none}
+#landing::after{content:"";position:absolute;top:30px;left:30px;right:30px;bottom:30px;border:1px solid rgba(154,123,58,.15);pointer-events:none}
+.ornament{position:absolute;width:56px;height:56px;pointer-events:none;opacity:0;animation:fadeIn 1.2s ease forwards 1.5s}
+.ornament.tl{top:30px;left:30px;border-top:2px solid #9a7b3a;border-left:2px solid #9a7b3a}
+.ornament.tr{top:30px;right:30px;border-top:2px solid #9a7b3a;border-right:2px solid #9a7b3a}
+.ornament.bl{bottom:30px;left:30px;border-bottom:2px solid #9a7b3a;border-left:2px solid #9a7b3a}
+.ornament.br{bottom:30px;right:30px;border-bottom:2px solid #9a7b3a;border-right:2px solid #9a7b3a}
+@keyframes fadeIn{to{opacity:1}}
+
+/* Airplane path SVG on landing */
+.plane-path{position:absolute;inset:0;pointer-events:none;opacity:.35}
+
+.landing-mono{width:clamp(90px,20vw,130px);height:auto;margin-bottom:22px;opacity:0;animation:fadeIn 1.3s ease forwards .2s,monoDrift 6s ease-in-out infinite 2s}
+@keyframes monoDrift{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.landing-stamp{opacity:0;animation:fadeIn .8s ease forwards .4s;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.5em;color:var(--gold);border:1px solid var(--gold);padding:4px 12px;margin-bottom:16px;opacity:0;animation:fadeIn .8s ease forwards .4s}
+.landing-greet{font-family:'Cinzel',serif;letter-spacing:.4em;font-size:9.5px;color:var(--gold);margin-bottom:10px;opacity:0;animation:fadeIn .8s ease forwards .55s}
+.landing-guest{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(18px,4.5vw,24px);color:#1a0f0a;margin-bottom:24px;opacity:0;animation:fadeIn .8s ease forwards .7s;font-style:italic}
+.landing-guest:empty{display:none}
+.landing-names{font-family:'Italiana',serif;font-size:clamp(58px,16vw,100px);line-height:.88;color:#1a0f0a;margin-bottom:18px;opacity:0;animation:fadeIn 1.2s ease forwards .85s}
+.landing-names .amp{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold);display:block;font-size:.46em;margin:8px 0}
+.landing-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:#6b5a4a;margin-bottom:20px;opacity:0;animation:fadeIn .8s ease forwards 1s;max-width:32ch}
+.landing-date{font-family:'Cinzel',serif;letter-spacing:.45em;font-size:15px;color:var(--gold);margin-bottom:32px;opacity:0;animation:fadeIn .8s ease forwards 1.12s}
+.landing-divider{display:flex;align-items:center;gap:10px;margin-bottom:32px;opacity:0;animation:fadeIn .8s ease forwards 1.25s}
+.landing-divider span{width:55px;height:1px;background:var(--gold);opacity:.4}
+.landing-divider .dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.enter-btn{opacity:0;animation:fadeIn 1s ease forwards 1.45s;display:inline-flex;align-items:center;gap:10px;padding:15px 40px;background:var(--maroon);color:#f5ede0;border:none;font-family:'Cinzel',serif;letter-spacing:.28em;font-size:10.5px;cursor:pointer;transition:all .3s;border-radius:2px;box-shadow:0 10px 28px rgba(139,26,26,.4)}
+.enter-btn:hover,.enter-btn:active{background:var(--maroon2)}
+.enter-btn svg{width:11px;height:11px}
+.landing-venue{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.38em;color:#6b5a4a;opacity:0;animation:fadeIn .8s ease forwards 1.65s;margin-top:18px;padding:0 20px}
+
+#main{display:none}
+#main.show{display:block}
+
+/* STICKY BADGE */
+#mono-badge{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:900;width:44px;height:44px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .4s;background:rgba(245,240,232,.95);border-radius:50%;border:1px solid rgba(154,123,58,.35);backdrop-filter:blur(8px);box-shadow:0 2px 12px rgba(0,0,0,.4)}
+#mono-badge.show{opacity:1}
+#mono-badge svg{width:34px;height:34px}
+
+/* SECTION COMMONS */
+.section-eyebrow{font-family:'Cinzel',serif;letter-spacing:.42em;font-size:9.5px;color:var(--gold);margin-bottom:14px}
+.section-title{font-family:'Italiana',serif;font-size:clamp(36px,9vw,54px);color:var(--cream2);margin-bottom:44px;line-height:1.1}
+.divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:44px 0 10px}
+.divider span{flex:1;height:1px;background:var(--rule);max-width:76px}
+.divider .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+
+/* TRAVEL ACCENTS */
+.travel-accent{display:flex;align-items:center;gap:8px;justify-content:center;opacity:.3;margin:10px 0}
+.travel-accent::before,.travel-accent::after{content:"";flex:1;height:1px;background:var(--gold);max-width:60px}
+.travel-accent-icon{font-size:14px}
+
+/* INVITE */
+.invite{background:var(--bg);padding:88px 28px 66px;position:relative;text-align:center;border-bottom:1px solid var(--rule)}
+.invite::before{content:"";position:absolute;top:40px;left:50%;transform:translateX(-50%);width:38px;height:38px;border-top:1px solid var(--gold);border-left:1px solid var(--gold);opacity:.3}
+.invite-personal{font-family:'Italiana',serif;font-style:italic;color:var(--gold);font-size:21px;margin-bottom:28px}
+.invite-personal:empty{display:none}
+.invite-names{font-family:'Italiana',serif;font-size:clamp(54px,14vw,96px);line-height:.88;color:var(--cream2);margin-bottom:30px}
+.invite-names .amp{color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;font-size:.52em;display:inline-block;vertical-align:middle;margin:0 .1em}
+.invite-body{max-width:44ch;margin:0 auto}
+.invite-body p{font-size:19px;font-weight:600;line-height:1.85;color:var(--muted);margin-bottom:14px;font-style:italic}
+.invite-body .accent{color:var(--gold2);font-weight:500}
+
+/* BIBLE VERSE */
+.verse-block{background:rgba(201,169,110,.06);border-left:2px solid var(--gold);padding:18px 20px;margin:24px auto;max-width:420px;text-align:left;border-radius:0 6px 6px 0}
+.verse-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--cream);line-height:1.8;margin-bottom:8px}
+.verse-ref{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.3em;color:var(--gold);opacity:.7}
+
+/* FAMILIES */
+.families{background:var(--bg);padding:76px 24px 66px;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.family-grid{display:grid;grid-template-columns:1fr;gap:28px;max-width:480px;margin:0 auto;position:relative}
+@media(min-width:640px){.family-grid{grid-template-columns:1fr 1fr;max-width:720px}}
+.family-card{background:#ffffff;border:1px solid var(--cardborder);border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.06);padding:28px 22px;text-align:left;backdrop-filter:blur(6px)}
+.family-card-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px dashed rgba(201,169,110,.2)}
+.family-photo-wrap{flex-shrink:0;padding:3px;background:linear-gradient(135deg,var(--maroon),var(--gold),var(--maroon2));border-radius:50%}
+.family-photo{width:72px;height:72px;border-radius:50%;object-fit:cover;background:linear-gradient(145deg,var(--bg3) 0%,var(--bg) 100%);display:flex;align-items:center;justify-content:center;font-family:'Italiana',serif;font-size:28px;color:var(--gold);border:3px solid var(--bg)}
+.family-card-name{font-family:'Italiana',serif;font-size:22px;color:var(--cream2);line-height:1.15;word-break:break-word}
+.family-card-role{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.32em;color:var(--gold);margin-top:4px;opacity:.8}
+.family-detail{font-size:16.5px;color:var(--muted);font-style:italic;line-height:1.85;font-weight:600}
+.family-detail strong{font-family:'Cinzel',serif;font-style:normal;font-size:8px;letter-spacing:.28em;color:var(--gold);display:block;margin:12px 0 4px;font-weight:500;opacity:.85}
+.family-sep{display:flex;align-items:center;gap:10px;margin:18px 0;opacity:.25}
+.family-sep span{flex:1;height:1px;background:var(--gold)}
+.family-sep i{font-size:12px;color:var(--gold);font-style:normal}
+.family-detail em{color:var(--muted);font-size:15px}
+
+/* WEDDING PARTY */
+.wedding-party{background:var(--bg);padding:76px 0 66px;text-align:center;border-bottom:1px solid var(--rule)}
+.wedding-party .section-eyebrow,.wedding-party .section-title,.wedding-party .divider{padding:0 24px}
+.wp-group{margin-bottom:44px}
+.wp-group-title{display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Cinzel',serif;letter-spacing:.3em;font-size:10px;color:var(--gold);margin-bottom:20px;padding:0 24px}
+.wp-group-icon{font-size:18px;letter-spacing:0}
+.wp-track-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab;user-select:none}
+.wp-track-wrap::-webkit-scrollbar{display:none}
+.wp-track-wrap.dragging{cursor:grabbing}
+.wp-track{display:flex;gap:14px;padding:8px 24px 16px;width:max-content}
+.wp-card{flex-shrink:0;width:130px;background:#ffffff;border:1px solid var(--cardborder);box-shadow:0 1px 8px rgba(0,0,0,.05);border-radius:16px;padding:22px 14px 18px;text-align:center;transition:transform .2s,border-color .2s}
+.wp-card:hover{transform:translateY(-4px);border-color:rgba(201,169,110,.35)}
+.wp-avatar{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Italiana',serif;font-size:30px;color:#fff;margin:0 auto 14px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.wp-name{font-family:'Italiana',serif;font-size:19px;color:var(--cream2);line-height:1.2;margin-bottom:5px}
+.wp-role{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.28em;color:var(--gold);opacity:.7}
+
+/* LOVE STORY */
+.love-story{background:var(--bg);padding:76px 24px 66px;text-align:center;border-bottom:1px solid var(--rule)}
+.story-lede{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;font-weight:600;color:var(--muted);max-width:38ch;margin:0 auto 36px;line-height:1.75}
+.story-timeline{max-width:460px;margin:0 auto;position:relative;padding-top:10px}
+.story-timeline::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(201,169,110,.3) 8%,rgba(201,169,110,.3) 92%,transparent);transform:translateX(-50%)}
+.story-item{display:grid;grid-template-columns:1fr 28px 1fr;align-items:start;margin-bottom:48px;position:relative}
+.story-left{padding-right:18px;text-align:right}
+.story-right{padding-left:18px;text-align:left}
+.story-empty{min-height:1px}
+.story-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:4px}
+.story-dot{width:13px;height:13px;border-radius:50%;background:var(--maroon);border:3px solid var(--bg);box-shadow:0 0 0 2px rgba(201,169,110,.3);flex-shrink:0;z-index:2}
+.story-year{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.3em;color:var(--gold);margin-bottom:7px;display:block}
+.story-loc{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.2em;color:var(--maroon2);margin-bottom:7px;display:block;opacity:.9}
+.story-img{width:100%;aspect-ratio:4/3;border-radius:10px;background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);display:flex;align-items:center;justify-content:center;margin-bottom:10px;overflow:hidden;border:1px solid var(--cardborder)}
+.story-img img{width:100%;height:100%;object-fit:cover}
+.story-img-placeholder{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.18em;color:var(--gold);opacity:.4;text-align:center}
+.story-text{font-size:16px;font-weight:600;color:var(--muted);font-style:italic;line-height:1.7}
+
+/* GALLERY */
+.gallery{background:var(--bg);padding:76px 24px 66px;text-align:center;border-bottom:1px solid var(--rule)}
+.photo-placeholder svg{width:28px;height:28px;opacity:.3;color:var(--gold)}
+.photo-placeholder span{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.25em;color:var(--gold);opacity:.4}
+
+/* EVENTS */
+.details{background:var(--bg2);padding:76px 24px 66px;border-bottom:1px solid var(--rule)}
+.details-lede{text-align:center;color:var(--muted);font-size:19px;font-weight:600;max-width:38ch;margin:0 auto 36px;line-height:1.7;font-style:italic}
+.event-card{background:#ffffff;border:1px solid var(--cardborder);border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:22px 18px 18px;margin-bottom:14px;transition:all .4s}
+.event-card:hover{border-color:rgba(201,169,110,.35)}
+.event-head{display:flex;align-items:center;gap:12px;padding-bottom:13px;margin-bottom:13px;border-bottom:1px dashed rgba(201,169,110,.2)}
+.event-num{width:30px;height:30px;border-radius:50%;background:var(--maroon);color:#f5ede0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:10px;font-weight:500;flex-shrink:0}
+.event-title{font-family:'Cinzel',serif;letter-spacing:.26em;font-size:10.5px;color:var(--cream2);font-weight:500}
+.event-row{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.event-row:last-child{border-bottom:none}
+.row-icon{width:34px;height:34px;border-radius:50%;background:rgba(201,169,110,.08);border:1px solid rgba(201,169,110,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+.row-icon svg{width:15px;height:15px}
+.row-body{flex:1;min-width:0}
+.row-label{font-family:'Cinzel',serif;letter-spacing:.25em;font-size:8.5px;color:var(--muted);margin-bottom:2px}
+.row-value{font-family:'Italiana',serif;font-size:18px;color:var(--cream2);line-height:1.25}
+.row-sub{font-size:16.5px;font-weight:600;color:var(--muted);font-style:italic;margin-top:1px}
+.event-actions{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+.btn{flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:3px;font-family:'Cinzel',serif;letter-spacing:.18em;font-size:9.5px;cursor:pointer;border:none;transition:all .2s;font-weight:500}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--maroon);color:#f5ede0}
+.btn-primary:hover{background:var(--maroon2)}
+.btn-ghost{background:transparent;color:var(--cream);border:1px solid rgba(201,169,110,.25)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn svg{width:11px;height:11px}
+
+/* RSVP */
+.rsvp{background:var(--bg);padding:66px 24px;text-align:center;border-bottom:1px solid var(--rule)}
+.rsvp-copy{color:var(--muted);font-size:19px;font-weight:600;max-width:36ch;margin:0 auto 14px;line-height:1.65;font-style:italic}
+.rsvp-greet{font-family:'Italiana',serif;font-style:italic;color:var(--gold);font-size:18px;margin-bottom:22px}
+.rsvp-greet:empty{display:none}
+.rsvp-form{background:#ffffff;border:1px solid var(--cardborder);border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:26px 20px;text-align:left;max-width:500px;margin:0 auto 18px}
+.rsvp-form h3{font-family:'Italiana',serif;font-size:25px;color:var(--cream2);margin-bottom:5px;text-align:center}
+.rsvp-form .note{text-align:center;font-size:16.5px;color:var(--muted);margin-bottom:22px;font-style:italic}
+.field{margin-bottom:18px}
+.field-label{font-family:'Cinzel',serif;letter-spacing:.2em;font-size:9.5px;color:var(--cream2);margin-bottom:9px;font-weight:500;display:block}
+.field-label .num{display:inline-block;width:17px;height:17px;border-radius:50%;background:var(--maroon);color:var(--cream2);text-align:center;line-height:17px;font-size:8.5px;margin-right:6px}
+.checkgroup{display:flex;flex-direction:column;gap:7px}
+.chk{display:flex;align-items:center;gap:10px;cursor:pointer;padding:11px 13px;border:1px solid var(--cardborder);border-radius:6px;background:rgba(255,255,255,.03);font-family:'Cormorant Garamond',serif;font-size:17.5px;color:var(--cream);transition:all .2s}
+.chk:has(input:checked){border-color:var(--maroon);background:rgba(139,26,26,.15)}
+.chk input{appearance:none;-webkit-appearance:none;width:17px;height:17px;border:1.5px solid var(--muted);border-radius:4px;flex-shrink:0;cursor:pointer;position:relative;background:transparent}
+.chk input:checked{background:var(--maroon);border-color:var(--maroon)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;color:var(--cream2);font-size:11px;text-align:center;line-height:15px}
+.chk-title{font-weight:500;flex:1}
+.chk-sub{font-size:14.5px;color:var(--muted);display:block;margin-top:1px;font-style:italic}
+.input,.textarea{width:100%;padding:11px 13px;border:1px solid var(--cardborder);border-radius:6px;background:#fff;font-family:'Cormorant Garamond',serif;font-size:17.5px;color:var(--cream);outline:none;transition:border-color .2s}
+.input::placeholder,.textarea::placeholder{color:var(--muted)}
+.input:focus,.textarea:focus{border-color:var(--gold)}
+.event-pick{border:1px solid var(--cardborder);border-radius:6px;background:rgba(255,255,255,.03);overflow:hidden;transition:all .2s;margin-bottom:7px}
+.event-pick.active{border-color:var(--maroon);background:rgba(139,26,26,.1)}
+.event-pick .chk{border:none;background:transparent;border-radius:0;margin-bottom:0}
+.event-pick .chk:has(input:checked){background:transparent;border:none}
+.ev-count{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 13px 11px;border-top:1px dashed rgba(201,169,110,.2);background:rgba(255,255,255,.03)}
+.ev-count-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.16em;color:var(--gold)}
+.mini-counter{display:flex;align-items:center;gap:9px}
+.mini-counter button{width:30px;height:30px;border-radius:50%;border:1px solid var(--maroon);background:transparent;color:var(--cream2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mini-counter button:active{background:var(--maroon)}
+.mini-count{font-family:'Italiana',serif;font-size:19px;color:var(--cream2);min-width:26px;text-align:center}
+.rsvp-attend-toggle{display:flex;gap:7px;margin-bottom:5px}
+.toggle-btn{flex:1;padding:13px;border:1px solid rgba(201,169,110,.2);background:transparent;border-radius:4px;font-family:'Cinzel',serif;letter-spacing:.18em;font-size:9.5px;color:var(--cream);cursor:pointer;transition:all .2s;font-weight:500}
+.toggle-btn.active{background:var(--maroon);color:#f5ede0;border-color:var(--maroon)}
+.submit-btn{width:100%;padding:15px;background:var(--maroon);color:#f5ede0;border:none;border-radius:4px;font-family:'Cinzel',serif;letter-spacing:.28em;font-size:10.5px;cursor:pointer;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;font-weight:500}
+.submit-btn:hover{background:var(--maroon2)}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed}
+.submit-btn svg{width:13px;height:13px}
+.success{display:none;text-align:center;padding:32px 20px;background:var(--card);border-radius:10px;max-width:500px;margin:0 auto;border:1px solid var(--cardborder)}
+.success.show{display:block}
+.success .check{width:58px;height:58px;border-radius:50%;background:var(--maroon);color:#f5ede0;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.success h3{font-family:'Italiana',serif;font-size:27px;color:var(--cream2);margin-bottom:7px}
+.success p{color:var(--muted);font-size:15px;font-style:italic}
+.rsvp-existing{display:none;background:var(--card);border-radius:10px;padding:26px 20px;text-align:left;max-width:500px;margin:0 auto;border:1px solid var(--cardborder)}
+.rsvp-existing.show{display:block}
+.rsvp-existing .ex-head{text-align:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px dashed rgba(201,169,110,.2)}
+.rsvp-existing .ex-icon{width:52px;height:52px;border-radius:50%;background:var(--maroon);color:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 12px}
+.rsvp-existing h3{font-family:'Italiana',serif;font-size:24px;color:var(--cream2);margin-bottom:4px}
+.rsvp-existing .ex-sub{font-size:14px;color:var(--muted);font-style:italic}
+.ex-row{padding:10px 0;border-bottom:1px dashed rgba(201,169,110,.12)}
+.ex-row:last-child{border-bottom:none}
+.ex-lbl{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.25em;color:var(--gold);margin-bottom:4px}
+.ex-val{font-size:17.5px;color:var(--cream);font-style:italic}
+.ex-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.ex-tag{background:rgba(139,26,26,.2);border:1px solid rgba(139,26,26,.4);border-radius:5px;padding:4px 10px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.12em;color:var(--cream)}
+.ex-edit-btn{width:100%;margin-top:16px;padding:13px;background:transparent;border:1px solid rgba(201,169,110,.25);border-radius:4px;font-family:'Cinzel',serif;letter-spacing:.22em;font-size:9.5px;color:var(--gold);cursor:pointer;transition:all .2s}
+
+/* WISHES WALL */
+.wishes{background:var(--bg);padding:76px 24px 66px;border-bottom:1px solid var(--rule)}
+.wish-form{background:var(--card);border:1px solid var(--cardborder);border-radius:10px;padding:22px 18px;max-width:500px;margin:0 auto 28px}
+.wish-form textarea{width:100%;padding:11px 13px;border:1px solid var(--cardborder);border-radius:6px;background:#fff;font-family:'Cormorant Garamond',serif;font-size:17.5px;color:var(--cream);outline:none;min-height:80px;resize:none;transition:border-color .2s}
+.wish-form textarea:focus{border-color:var(--gold)}
+.wish-form textarea::placeholder{color:var(--muted)}
+.wish-form input{width:100%;padding:11px 13px;border:1px solid var(--cardborder);border-radius:6px;background:#fff;font-family:'Cormorant Garamond',serif;font-size:17.5px;color:var(--cream);outline:none;margin-bottom:10px;transition:border-color .2s}
+.wish-form input:focus{border-color:var(--gold)}
+.wish-form input::placeholder{color:var(--muted)}
+.wfl-submit{width:100%;padding:13px;background:var(--maroon);color:#f5ede0;border:none;border-radius:4px;font-family:'Cinzel',serif;letter-spacing:.25em;font-size:10px;cursor:pointer;margin-top:10px;transition:background .2s}
+.wfl-submit:hover{background:var(--maroon2)}
+.wfl-submit:disabled{opacity:.5;cursor:not-allowed}
+#wgrid{display:grid;grid-template-columns:1fr;gap:12px;max-width:500px;margin:0 auto}
+.wish-card{background:#ffffff;border:1px solid var(--cardborder);border-radius:10px;box-shadow:0 1px 8px rgba(0,0,0,.05);padding:18px 16px}
+.wish-card-name{font-family:'Italiana',serif;font-size:20px;color:var(--gold);margin-bottom:4px}
+.wish-card-msg{font-size:17px;font-weight:600;color:var(--muted);font-style:italic;line-height:1.7}
+.wish-card-time{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.22em;color:var(--muted);opacity:.5;margin-top:8px}
+#loadmore-wrap{text-align:center;margin-top:22px;display:none}
+#loadMoreBtn{padding:12px 32px;background:transparent;border:1px solid rgba(201,169,110,.25);border-radius:4px;font-family:'Cinzel',serif;letter-spacing:.22em;font-size:9.5px;color:var(--gold);cursor:pointer;transition:all .2s}
+
+/* CONTACT */
+.contact{background:var(--bg);padding:56px 24px 38px;text-align:center}
+.contact .section-eyebrow{color:var(--gold);margin-bottom:12px}
+.contact h3{font-family:'Italiana',serif;font-size:27px;color:var(--cream2);margin-bottom:5px}
+.contact p{color:var(--muted);font-size:17px;font-weight:600;margin-bottom:28px;max-width:30ch;margin-left:auto;margin-right:auto;font-style:italic}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:420px;margin:0 auto}
+.cbtn{padding:13px;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:7px;font-family:'Cinzel',serif;letter-spacing:.16em;font-size:9px;cursor:pointer;border:none;text-decoration:none}
+.cbtn-wa{background:#25D366;color:#f5ede0}
+.cbtn-call{background:transparent;color:var(--gold);border:1px solid rgba(201,169,110,.3)}
+.cbtn svg{width:13px;height:13px}
+.contact-person{font-family:'Italiana',serif;font-size:15px;display:block;margin-bottom:2px}
+.contact-block{margin-bottom:8px}
+
+/* FOOTER */
+.footer{background:#1a0f0a;padding:30px 24px 26px;text-align:center;color:#f5ede0;border-top:1px solid rgba(201,169,110,.12)}
+.footer .couple-initials{font-family:'Cinzel',serif;letter-spacing:.55em;font-size:11.5px;color:#c9a96e;margin-bottom:16px}
+.footer .tagline{font-family:'Italiana',serif;font-style:italic;font-size:16px;color:#f5ede0;margin-bottom:14px}
+.footer .brand{font-family:'Cinzel',serif;letter-spacing:.38em;font-size:8.5px;color:rgba(201,169,110,.3)}
+
+/* UTILS */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s ease}
+.reveal.on{opacity:1;transform:none}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--maroon);color:var(--cream2);padding:11px 20px;border-radius:999px;font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:.2em;opacity:0;transition:all .3s;z-index:9999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#contactSheet{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:flex-end;justify-content:center}
+.sheet-inner{background:var(--bg3);width:100%;max-width:500px;border-radius:16px 16px 0 0;padding:26px 22px 34px;font-family:'Cormorant Garamond',serif;border-top:1px solid var(--cardborder)}
+.sheet-handle{width:38px;height:4px;background:rgba(201,169,110,.3);border-radius:2px;margin:0 auto 20px}
+.sheet-title{font-family:'Cinzel',serif;letter-spacing:.28em;font-size:9.5px;color:var(--gold);text-align:center;margin-bottom:16px}
+
+@media(min-width:640px){
+  .invite,.families,.love-story,.gallery,.details,.rsvp,.contact,.wishes{padding-left:44px;padding-right:44px}
+}
+
+
+
+/* IMAGE UPLOAD SYSTEM */
+.img-slot{position:relative;width:100%;height:100%}
+.img-slot img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.img-slot-add{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;z-index:10;background:rgba(0,0,0,.25)}
+.img-slot-add .plus{width:44px;height:44px;border-radius:50%;background:rgba(201,169,110,.9);display:flex;align-items:center;justify-content:center;font-size:24px;color:#1a0f0a;font-weight:300;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.img-slot-add span{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.22em;color:rgba(255,255,255,.9)}
+/* Avatar upload */
+.avatar-wrap{position:relative;cursor:pointer}
+.avatar-upload-btn{position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;color:#1a0f0a;font-weight:bold;box-shadow:0 1px 6px rgba(0,0,0,.4);z-index:5;line-height:1}
+.upload-spinner{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;align-items:center;justify-content:center}
+.upload-spinner.show{display:flex}
+
+
+/* ── GALLERY CAROUSEL ── */
+.gallery{background:var(--bg);padding:76px 0 66px;text-align:center;border-bottom:1px solid var(--rule)}
+.gallery .section-eyebrow,.gallery .section-title,.gallery .divider{padding:0 24px}
+.carousel-wrap{position:relative;width:100%;overflow:hidden;margin:0 0 24px}
+.carousel-track{display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+.carousel-slide{min-width:100%;padding:0 24px;box-sizing:border-box}
+.carousel-img{width:100%;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:var(--card);border:1px solid var(--cardborder);position:relative;display:flex;align-items:center;justify-content:center}
+.carousel-img img.slot-img{width:100%;height:100%;object-fit:cover;border-radius:18px}
+.photo-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:100%;width:100%}
+.photo-placeholder svg{width:32px;height:32px;opacity:.25;color:var(--gold)}
+.photo-placeholder span{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.25em;color:var(--gold);opacity:.4}
+.carousel-controls{display:flex;align-items:center;justify-content:center;gap:16px;padding:0 24px}
+.carousel-arrow{width:44px;height:44px;border-radius:50%;background:transparent;border:1.5px solid rgba(201,169,110,.3);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0}
+.carousel-arrow:hover{background:rgba(201,169,110,.1);border-color:var(--gold)}
+.carousel-arrow svg{width:16px;height:16px}
+.carousel-dots{display:flex;gap:7px;align-items:center}
+.cdot{width:6px;height:6px;border-radius:50%;background:rgba(201,169,110,.3);cursor:pointer;transition:all .3s}
+.cdot.active{width:22px;border-radius:3px;background:var(--gold)}
+.img-slot-add{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;z-index:10;background:rgba(0,0,0,.25);border-radius:18px}
+.img-slot-add .plus{width:50px;height:50px;border-radius:50%;background:rgba(201,169,110,.9);display:flex;align-items:center;justify-content:center;font-size:26px;color:#1a0f0a;font-weight:300;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.img-slot-add span{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.22em;color:rgba(255,255,255,.9)}
+
+</style>
+</head>
+<body>
+
+<!-- TRAVEL DOTS -->
+<div class="travel-dots">
+  <div class="travel-dot"></div><div class="travel-dot"></div><div class="travel-dot"></div>
+  <div class="travel-dot"></div><div class="travel-dot"></div><div class="travel-dot"></div>
+  <div class="travel-dot"></div><div class="travel-dot"></div>
+</div>
+
+<!-- STICKY MONOGRAM -->
+<div id="mono-badge">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <circle cx="50" cy="50" r="48" fill="#1a0f0a" stroke="rgba(201,169,110,.4)" stroke-width="1"/>
+    <text x="30" y="62" text-anchor="middle" font-family="Italiana, serif" font-size="34" fill="#9a7b3a">A</text>
+    <text x="50" y="62" text-anchor="middle" font-family="Playfair Display, serif" font-size="18" fill="rgba(201,169,110,.6)" font-style="italic">&amp;</text>
+    <text x="70" y="62" text-anchor="middle" font-family="Cinzel, serif" font-size="28" fill="#1a0f0a">J</text>
+  </svg>
+</div>
+
+<!-- LANDING -->
+<div id="landing">
+  <div class="ornament tl"></div>
+  <div class="ornament tr"></div>
+  <div class="ornament bl"></div>
+  <div class="ornament br"></div>
+  <!-- Airplane path subtle overlay -->
+  <svg class="plane-path" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20,350 Q80,200 200,180 Q320,160 380,50" stroke="#9a7b3a" stroke-width="1.5" fill="none" stroke-dasharray="4,8"/>
+    <text x="30" y="345" font-family="serif" font-size="14" fill="#9a7b3a">✈</text>
+  </svg>
+  <div class="landing-stamp">BOARDING PASS · AUG 2026</div>
+  <svg class="landing-mono" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(201,169,110,.3)" stroke-width="1"/>
+    <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(201,169,110,.12)" stroke-width=".5"/>
+    <text x="58" y="125" text-anchor="middle" font-family="Italiana, serif" font-size="80" fill="#9a7b3a">A</text>
+    <text x="100" y="115" text-anchor="middle" font-family="Playfair Display, serif" font-size="28" fill="rgba(201,169,110,.5)" font-style="italic">&amp;</text>
+    <text x="144" y="125" text-anchor="middle" font-family="Cinzel, serif" font-size="64" fill="#1a0f0a">J</text>
+    <text x="100" y="152" text-anchor="middle" font-family="Cinzel, serif" font-size="9" fill="#c9a96e" letter-spacing="4">AUG 2026</text>
+  </svg>
+  <div class="landing-greet">— WITH JOYFUL HEARTS —</div>
+  <div class="landing-guest" id="landingGuest"></div>
+  <h1 class="landing-names">Akhila<span class="amp">&amp;</span>Jevins</h1>
+  <p class="landing-tagline">Two hearts, two countries — one beautiful forever.</p>
+  <div class="landing-date" style="font-size:clamp(17px,4.5vw,22px);letter-spacing:.3em;color:var(--gold2);font-weight:600">22 AUGUST 2026</div>
+  <div class="landing-divider"><span></span><div class="dot"></div><span></span></div>
+  <button class="enter-btn" onclick="openInvite()">
+    OPEN INVITATION
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+  <div class="landing-venue">NEW YORK · TORONTO</div>
+</div>
+
+<div id="main">
+
+<!-- INVITE -->
+<section class="invite">
+  <div class="reveal">
+    <span style="font-family:'Cinzel',serif;letter-spacing:.42em;font-size:9.5px;color:var(--gold);display:block;margin-bottom:20px">— WEDDING INVITATION —</span>
+    <div class="invite-personal" id="invitePersonal"></div>
+    <h2 class="invite-names">Akhila<span class="amp">&amp;</span>Jevins</h2>
+    <div class="invite-body">
+      <p><span class="accent">Together with our families,</span> Akhila &amp; Jevins invite you to join them in celebrating their wedding.</p>
+      <p>The festivities will take place across multiple occasions, including the Madhuramveppu, the Wedding Ceremony and Reception.</p>
+      <p>You are warmly invited to all of our celebrations. We would be delighted to have you join us for the events as your schedule permits.</p>
+    </div>
+    <div class="divider"><span></span><div class="dot"></div><span></span></div>
+  </div>
+</section>
+
+
+<!-- DATE -->
+<section style="background:var(--bg2);border-bottom:1px solid var(--rule)">
+  <div class="reveal">
+    <!-- Date bar -->
+    <div style="background:var(--maroon);padding:18px 24px;text-align:center">
+      <div style="font-family:'Cinzel',serif;letter-spacing:.42em;font-size:11px;color:#f5ede0">22 AUGUST 2026 &nbsp;·&nbsp; THRISSUR &nbsp;·&nbsp; WITH GOD'S GRACE</div>
+    </div>
+    <!-- Numbers -->
+    <div style="display:flex;align-items:stretch;padding:36px 16px 32px;max-width:480px;margin:0 auto">
+      <div style="flex:1;text-align:center;padding:0 8px">
+        <div style="font-family:'Italiana',serif;font-size:clamp(52px,14vw,80px);color:var(--cream2);line-height:1">22</div>
+        <div style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.32em;color:var(--muted);margin-top:10px">DAY</div>
+      </div>
+      <div style="width:1px;background:var(--rule);margin:8px 0"></div>
+      <div style="flex:1;text-align:center;padding:0 8px">
+        <div style="font-family:'Italiana',serif;font-size:clamp(52px,14vw,80px);color:var(--cream2);line-height:1">08</div>
+        <div style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.32em;color:var(--muted);margin-top:10px">MONTH</div>
+      </div>
+      <div style="width:1px;background:var(--rule);margin:8px 0"></div>
+      <div style="flex:1;text-align:center;padding:0 8px">
+        <div style="font-family:'Italiana',serif;font-size:clamp(52px,14vw,80px);color:var(--cream2);line-height:1">26</div>
+        <div style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.32em;color:var(--muted);margin-top:10px">YEAR</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE COUPLE -->
+<section style="background:var(--bg);padding:72px 24px 64px;text-align:center;border-bottom:1px solid var(--rule)">
+  <div class="reveal">
+    <div class="section-eyebrow">— THE COUPLE —</div>
+    <h2 style="font-family:'Italiana',serif;font-size:clamp(58px,15vw,96px);color:var(--cream2);line-height:.95;margin-bottom:52px">
+      Akhila <span style="font-size:.52em;color:var(--gold)">&amp;</span> Jevins
+    </h2>
+
+    <!-- BRIDE -->
+    <div style="margin-bottom:52px">
+      <div style="font-family:'Cinzel',serif;letter-spacing:.42em;font-size:9.5px;color:var(--gold);margin-bottom:22px">B R I D E</div>
+      <div style="font-family:'Italiana',serif;font-size:clamp(32px,8vw,46px);color:var(--cream2);margin-bottom:14px;font-weight:700">Akhila Jaimon</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--muted);line-height:2">
+        D/o Jai K Paul &amp; Mini Jai<br>
+        Kumbalamthadathil House, Palachuvadu, Ernakulam
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:0 auto 52px;max-width:180px">
+      <span style="flex:1;height:1px;background:var(--rule)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0"></span>
+      <span style="flex:1;height:1px;background:var(--rule)"></span>
+    </div>
+
+    <!-- GROOM -->
+    <div>
+      <div style="font-family:'Cinzel',serif;letter-spacing:.42em;font-size:9.5px;color:var(--gold);margin-bottom:22px">G R O O M</div>
+      <div style="font-family:'Italiana',serif;font-size:clamp(32px,8vw,46px);color:var(--cream2);margin-bottom:14px;font-weight:700">Jevins Kummanamchery Joy</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--muted);line-height:2">
+        S/o Joy K L &amp; Swapna Joy<br>
+        Kummanamchery House, Punkunnam, Thrissur
+      </div>
+    </div>
+
+    <div class="divider"><span></span><div class="dot"></div><span></span></div>
+  </div>
+</section>
+
+<!-- FAMILIES — BRIDE FIRST -->
+<section class="families">
+  <div class="reveal">
+    <div class="section-eyebrow">— MEET OUR FAMILIES —</div>
+    <h2 class="section-title">With Blessings From</h2>
+    <div class="family-grid">
+
+      <!-- BRIDE SIDE -->
+      <div class="family-card">
+        <div class="family-card-head">
+          <div class="family-photo-wrap avatar-wrap" data-slot="avatar_bride" onclick="pickAvatar('avatar_bride',this)">
+            <div class="family-photo">A</div>
+            <div class="avatar-upload-btn" style="display:none">+</div>
+          </div>
+          <div>
+            <div class="family-card-name" style="font-family:'Italiana',serif;font-size:22px;font-weight:700">Akhila Jaimon</div>
+            <div class="family-card-role">The Bride · New York</div>
+          </div>
+        </div>
+        <div class="family-detail">
+          <strong>PARENTS</strong>
+          Jai Kumbalamthadathil Paul &amp; Mini Jai
+
+          <strong>SIBLINGS</strong>
+          Amisha Jaimon (Younger Sister)<br>
+          Goria Jaimon (Younger Sister)
+
+          <div class="family-sep"><span></span><i>✦</i><span></span></div>
+
+          <strong>PATERNAL GRANDPARENTS</strong>
+          Kuruvilla Paulose &amp; Ammini Paulose
+
+          <strong>MATERNAL GRANDPARENTS</strong>
+          E.V Kuriakose &amp; Valsamma Chacko
+        </div>
+      </div>
+
+      <!-- GROOM SIDE -->
+      <div class="family-card">
+        <div class="family-card-head">
+          <div class="family-photo-wrap avatar-wrap" style="background:linear-gradient(135deg,#6b1a1a,#c9a96e,#8b1a1a)" data-slot="avatar_groom" onclick="pickAvatar('avatar_groom',this)">
+            <div class="family-photo" style="background:linear-gradient(145deg,var(--bg3),var(--bg2));font-family:'Cinzel',serif;font-size:24px;letter-spacing:0">J</div>
+            <div class="avatar-upload-btn" style="display:none">+</div>
+          </div>
+          <div>
+            <div class="family-card-name" style="font-family:'Italiana',serif;font-size:22px;font-weight:700">Jevins Kummanamcherry Joy</div>
+            <div class="family-card-role">The Groom · Toronto</div>
+          </div>
+        </div>
+        <div class="family-detail">
+          <strong>PARENTS</strong>
+          Joy Kummanamchery Lonappan &amp; Swapna Joy
+
+          <strong>SIBLINGS</strong>
+          Minnu Maria K Joy (Younger Sister)
+
+          <div class="family-sep"><span></span><i>✦</i><span></span></div>
+
+          <strong>PATERNAL GRANDPARENTS</strong>
+          Late K.P Lonappan &amp; Late Mariam Lonappan
+
+          <strong>MATERNAL GRANDPARENTS</strong>
+          T.V Jose &amp; Celine Jose
+        </div>
+      </div>
+
+    </div>
+    <div class="divider"><span></span><div class="dot"></div><span></span></div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="details">
+  <div class="reveal">
+    <div class="section-eyebrow" style="text-align:center">— THE OCCASIONS —</div>
+    <h2 class="section-title" style="text-align:center">Join Us</h2>
+    <p class="details-lede">Three celebrations, one beautiful beginning. Please join us for the events you are able to attend.</p>
+
+    <!-- EVENT 01 — MADHURAMVEPPU -->
+    <div class="event-card">
+      <div class="event-head"><div class="event-num">01</div><div class="event-title">MADHURAMVEPPU</div></div>
+      <div class="event-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="row-body"><div class="row-label">DATE &amp; TIME</div><div class="row-value">Wednesday, 19 Aug 2026</div><div class="row-sub">6:00 PM onwards</div></div>
+      </div>
+      <div class="event-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+        <div class="row-body"><div class="row-label">VENUE</div><div class="row-value">Bride's Residence</div><div class="row-sub">Kumbalamthadathil House, Mulakulam North PO, Piravom 686664</div></div>
+      </div>
+      <div class="event-actions">
+        <a class="btn btn-primary" href="https://maps.app.goo.gl/8HcQC1Aoh8WDVyvm6" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>DIRECTIONS</a>
+        <button class="btn btn-ghost" onclick="addToCal('Madhuramveppu — Akhila &amp; Jevins','2026-08-19T18:00','2026-08-19T21:00','Kumbalamthadathil House, Mulakulam North PO, Piravom 686664')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>CALENDAR</button>
+      </div>
+    </div>
+    <!-- Madhuramveppu Photo IMAGE -->
+
+    <!-- EVENT 02 — WEDDING -->
+    <div class="event-card">
+      <div class="event-head"><div class="event-num">02</div><div class="event-title">WEDDING CEREMONY</div></div>
+      <div class="event-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="row-body"><div class="row-label">DATE &amp; TIME</div><div class="row-value">Saturday, 22 Aug 2026</div><div class="row-sub">9:30 AM – 10:30 AM</div></div>
+      </div>
+      <div class="event-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="row-body"><div class="row-label">VENUE</div><div class="row-value">Our Lady of Lourdes Metropolitan Cathedral</div><div class="row-sub">East Fort, Kizhakkumpattukara, Thrissur, Kerala 680005</div></div>
+      </div>
+      <div class="event-actions">
+        <a class="btn btn-primary" href="https://maps.app.goo.gl/MsCnoL1d4eghAofZA" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>DIRECTIONS</a>
+        <button class="btn btn-ghost" onclick="addToCal('Wedding Ceremony — Akhila &amp; Jevins','2026-08-22T09:30','2026-08-22T10:30','Our Lady of Lourdes Metropolitan Cathedral, Thrissur')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>CALENDAR</button>
+      </div>
+    </div>
+
+    <!-- EVENT 03 — RECEPTION -->
+    <div class="event-card">
+      <div class="event-head"><div class="event-num">03</div><div class="event-title">WEDDING RECEPTION</div></div>
+      <div class="event-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+        <div class="row-body"><div class="row-label">DATE &amp; TIME</div><div class="row-value">Saturday, 22 Aug 2026</div><div class="row-sub">12:00 PM – 3:00 PM</div></div>
+      </div>
+      <div class="event-row">
+        <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div class="row-body"><div class="row-label">VENUE</div><div class="row-value">Chakolas Pavilion Convention Centre</div><div class="row-sub">Anchery Chira, Kuttanellur, Thrissur, Kerala 680014</div></div>
+      </div>
+      <div class="event-actions">
+        <a class="btn btn-primary" href="https://maps.app.goo.gl/QfefH2r4p6LDc8Du5" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>DIRECTIONS</a>
+        <button class="btn btn-ghost" onclick="addToCal('Wedding Reception — Akhila &amp; Jevins','2026-08-22T12:00','2026-08-22T15:00','Chakolas Pavilion Convention Centre, Kuttanellur, Thrissur')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>CALENDAR</button>
+      </div>
+    </div>
+    <!-- Wedding & Reception Photo IMAGE -->
+
+  </div>
+</section>
+
+<!-- BIBLE VERSE -->
+<section style="background:var(--bg);padding:60px 24px;text-align:center;border-bottom:1px solid var(--rule)">
+  <div class="reveal">
+    <div class="section-eyebrow">— HIS WORD —</div>
+    <div class="verse-block" style="max-width:480px;margin:0 auto">
+      <div class="verse-text">"Love is patient, love is kind. It does not envy, it does not boast, it is not proud. It always protects, always trusts, always hopes, always perseveres."</div>
+      <div class="verse-ref">1 CORINTHIANS 13 : 4–7</div>
+    </div>
+  </div>
+</section>
+
+<!-- LOVE STORY -->
+<section class="love-story">
+  <div class="reveal">
+    <div class="section-eyebrow">— OUR JOURNEY —</div>
+    <h2 class="section-title">A Love Story</h2>
+    <p class="story-lede">Eight years across two countries — New York &amp; Toronto — bound together by love, distance, and an unbreakable promise.</p>
+    <div class="story-timeline">
+
+      <div class="story-item">
+        <div class="story-left">
+          <span class="story-year">2018</span>
+          <span class="story-loc">✈ THE BEGINNING</span>
+          <div class="story-img" data-slot="story_2018" onclick="if(editMode)pickImage('story_2018')" style="position:relative"><div class="story-img-placeholder">PHOTO<br>PLACEHOLDER</div><div class="img-slot-add" onclick="pickImage('story_2018')" style="display:none"><div class="plus">+</div><span>ADD</span></div></div>
+          <div class="story-text">Our journey began — two souls across two countries, falling for each other.</div>
+        </div>
+        <div class="story-dot-col"><div class="story-dot"></div></div>
+        <div class="story-right story-empty"></div>
+      </div>
+
+      <div class="story-item">
+        <div class="story-left story-empty"></div>
+        <div class="story-dot-col"><div class="story-dot"></div></div>
+        <div class="story-right">
+          <span class="story-year">2019–2023</span>
+          <span class="story-loc">🌍 LONG DISTANCE</span>
+          <div class="story-img" data-slot="story_2019" onclick="if(editMode)pickImage('story_2019')" style="position:relative"><div class="story-img-placeholder">PHOTO<br>PLACEHOLDER</div><div class="img-slot-add" onclick="pickImage('story_2019')" style="display:none"><div class="plus">+</div><span>ADD</span></div></div>
+          <div class="story-text">Countless memories, travels &amp; moments — love that crossed every ocean.</div>
+        </div>
+      </div>
+
+      <div class="story-item">
+        <div class="story-left">
+          <span class="story-year">APRIL 2025</span>
+          <span class="story-loc">💍 THE PROPOSAL</span>
+          <div class="story-img" data-slot="story_proposal" onclick="if(editMode)pickImage('story_proposal')" style="position:relative"><div class="story-img-placeholder">PHOTO<br>PLACEHOLDER</div><div class="img-slot-add" onclick="pickImage('story_proposal')" style="display:none"><div class="plus">+</div><span>ADD</span></div></div>
+          <div class="story-text">One perfect question, one joyful yes — the rest is our forever story.</div>
+        </div>
+        <div class="story-dot-col"><div class="story-dot"></div></div>
+        <div class="story-right story-empty"></div>
+      </div>
+
+      <div class="story-item">
+        <div class="story-left story-empty"></div>
+        <div class="story-dot-col"><div class="story-dot"></div></div>
+        <div class="story-right">
+          <span class="story-year">AUGUST 2025</span>
+          <span class="story-loc">💛 ENGAGEMENT</span>
+          <div class="story-img" data-slot="story_engagement" onclick="if(editMode)pickImage('story_engagement')" style="position:relative"><div class="story-img-placeholder">PHOTO<br>PLACEHOLDER</div><div class="img-slot-add" onclick="pickImage('story_engagement')" style="display:none"><div class="plus">+</div><span>ADD</span></div></div>
+          <div class="story-text">We said yes — officially — surrounded by the love of our families.</div>
+        </div>
+      </div>
+
+      <div class="story-item">
+        <div class="story-left">
+          <span class="story-year">AUGUST 2026</span>
+          <span class="story-loc">⛪ NOW &amp; ALWAYS</span>
+          <div class="story-img" data-slot="story_wedding" onclick="if(editMode)pickImage('story_wedding')" style="position:relative"><div class="story-img-placeholder">PHOTO<br>PLACEHOLDER</div><div class="img-slot-add" onclick="pickImage('story_wedding')" style="display:none"><div class="plus">+</div><span>ADD</span></div></div>
+          <div class="story-text">We begin forever. We are so glad you're here to celebrate with us.</div>
+        </div>
+        <div class="story-dot-col"><div class="story-dot"></div></div>
+        <div class="story-right story-empty"></div>
+      </div>
+
+    </div>
+    <div class="divider"><span></span><div class="dot"></div><span></span></div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery">
+  <div class="reveal">
+    <div class="section-eyebrow">— OUR MOMENTS —</div>
+    <h2 class="section-title">The Gallery</h2>
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="galleryTrack">
+        <div class="carousel-slide">
+          <div class="carousel-img" data-slot="gallery_1" onclick="if(editMode)pickImage('gallery_1')">
+            <div class="photo-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>PHOTO 1</span>
+            </div>
+            <div class="img-slot-add" onclick="pickImage('gallery_1')" style="display:none"><div class="plus">+</div><span>ADD PHOTO</span></div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-img" data-slot="gallery_2" onclick="if(editMode)pickImage('gallery_2')">
+            <div class="photo-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>PHOTO 2</span>
+            </div>
+            <div class="img-slot-add" onclick="pickImage('gallery_2')" style="display:none"><div class="plus">+</div><span>ADD PHOTO</span></div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-img" data-slot="gallery_3" onclick="if(editMode)pickImage('gallery_3')">
+            <div class="photo-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>PHOTO 3</span>
+            </div>
+            <div class="img-slot-add" onclick="pickImage('gallery_3')" style="display:none"><div class="plus">+</div><span>ADD PHOTO</span></div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-img" data-slot="gallery_4" onclick="if(editMode)pickImage('gallery_4')">
+            <div class="photo-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>PHOTO 4</span>
+            </div>
+            <div class="img-slot-add" onclick="pickImage('gallery_4')" style="display:none"><div class="plus">+</div><span>ADD PHOTO</span></div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-img" data-slot="gallery_5" onclick="if(editMode)pickImage('gallery_5')">
+            <div class="photo-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>PHOTO 5</span>
+            </div>
+            <div class="img-slot-add" onclick="pickImage('gallery_5')" style="display:none"><div class="plus">+</div><span>ADD PHOTO</span></div>
+          </div>
+        </div>
+        <div class="carousel-slide">
+          <div class="carousel-img" data-slot="gallery_6" onclick="if(editMode)pickImage('gallery_6')">
+            <div class="photo-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>PHOTO 6</span>
+            </div>
+            <div class="img-slot-add" onclick="pickImage('gallery_6')" style="display:none"><div class="plus">+</div><span>ADD PHOTO</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-arrow" onclick="galPrev()" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="carousel-dots" id="galDots">
+        <div class="cdot active" onclick="galGoTo(0)"></div>
+        <div class="cdot" onclick="galGoTo(1)"></div>
+        <div class="cdot" onclick="galGoTo(2)"></div>
+        <div class="cdot" onclick="galGoTo(3)"></div>
+        <div class="cdot" onclick="galGoTo(4)"></div>
+        <div class="cdot" onclick="galGoTo(5)"></div>
+      </div>
+      <button class="carousel-arrow" onclick="galNext()" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="divider"><span></span><div class="dot"></div><span></span></div>
+  </div>
+</section>
+
+<!-- WEDDING PARTY -->
+<section class="wedding-party">
+  <div class="reveal">
+    <div class="section-eyebrow" style="text-align:center">— THE WEDDING PARTY —</div>
+    <h2 class="section-title" style="text-align:center">Our Beloved Circle</h2>
+    <div class="wp-group">
+      <div class="wp-group-title"><span class="wp-group-icon">💐</span><span>Bridesmaids</span></div>
+      <div class="wp-track-wrap"><div class="wp-track" id="bm-track"><div class="wp-card" onclick="if(editMode)pickAvatar('wp_minnu_maria_k_joy',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#8b1a1a,#c9a96e)" data-slot="wp_minnu_maria_k_joy">M<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_minnu_maria_k_joy',this.parentElement)">+</div></div><div class="wp-name">Minnu Maria K Joy</div><div class="wp-role">Sister of Groom</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_amisha_jaimon',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#7a2020,#b8966a)" data-slot="wp_amisha_jaimon">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_amisha_jaimon',this.parentElement)">+</div></div><div class="wp-name">Amisha Jaimon</div><div class="wp-role">Sister of Bride</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_goria_jaimon',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#6b1a1a,#c9a96e)" data-slot="wp_goria_jaimon">G<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_goria_jaimon',this.parentElement)">+</div></div><div class="wp-name">Goria Jaimon</div><div class="wp-role">Sister of Bride</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_angel_santhosh',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#8b2020,#d4a96e)" data-slot="wp_angel_santhosh">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_angel_santhosh',this.parentElement)">+</div></div><div class="wp-name">Angel Santhosh</div><div class="wp-role">Bridesmaid</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_ansu_sara_philip',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#7a1a1a,#b89060)" data-slot="wp_ansu_sara_philip">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_ansu_sara_philip',this.parentElement)">+</div></div><div class="wp-name">Ansu Sara Philip</div><div class="wp-role">Bridesmaid</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_ann_maria_george',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#8b1a2a,#c99070)" data-slot="wp_ann_maria_george">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_ann_maria_george',this.parentElement)">+</div></div><div class="wp-name">Ann Maria George</div><div class="wp-role">Bridesmaid</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_carol_merlit_ebin',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#6b1a2a,#b88060)" data-slot="wp_carol_merlit_ebin">C<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_carol_merlit_ebin',this.parentElement)">+</div></div><div class="wp-name">Carol Merlit Ebin</div><div class="wp-role">Bridesmaid</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_devika_gopan',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#7a2010,#c09060)" data-slot="wp_devika_gopan">D<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_devika_gopan',this.parentElement)">+</div></div><div class="wp-name">Devika Gopan</div><div class="wp-role">Bridesmaid</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_johanna_jenu',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#8b1a10,#d4a060)" data-slot="wp_johanna_jenu">J<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_johanna_jenu',this.parentElement)">+</div></div><div class="wp-name">Johanna Jenu</div><div class="wp-role">Bridesmaid</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_jiya_jenu',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#7a1a10,#c08050)" data-slot="wp_jiya_jenu">J<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_jiya_jenu',this.parentElement)">+</div></div><div class="wp-name">Jiya Jenu</div><div class="wp-role">Bridesmaid</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_laxmi_vijayan',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#6b1a10,#b07040)" data-slot="wp_laxmi_vijayan">L<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_laxmi_vijayan',this.parentElement)">+</div></div><div class="wp-name">Laxmi Vijayan</div><div class="wp-role">Bridesmaid</div></div></div></div>
+    </div>
+    <div class="wp-group">
+      <div class="wp-group-title"><span class="wp-group-icon">🤵</span><span>Groomsmen</span></div>
+      <div class="wp-track-wrap"><div class="wp-track" id="gm-track"><div class="wp-card" onclick="if(editMode)pickAvatar('wp_dhananjai_rajaram',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#1a3a6b,#6e9ac9)" data-slot="wp_dhananjai_rajaram">D<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_dhananjai_rajaram',this.parentElement)">+</div></div><div class="wp-name">Dhananjai Rajaram</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_aditya_anantharaman',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#1a2e5a,#5e8ab8)" data-slot="wp_aditya_anantharaman">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_aditya_anantharaman',this.parentElement)">+</div></div><div class="wp-name">Aditya Anantharaman</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_dhanush_dileep',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#1a3560,#6e90c0)" data-slot="wp_dhanush_dileep">D<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_dhanush_dileep',this.parentElement)">+</div></div><div class="wp-name">Dhanush Dileep</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_lihan_abdul',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#162e58,#5a88b5)" data-slot="wp_lihan_abdul">L<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_lihan_abdul',this.parentElement)">+</div></div><div class="wp-name">Lihan Abdul</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_anthony',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#1a3265,#6890bb)" data-slot="wp_anthony">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_anthony',this.parentElement)">+</div></div><div class="wp-name">Anthony</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_anosh_antony_shijo',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#1a2858,#5880b0)" data-slot="wp_anosh_antony_shijo">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_anosh_antony_shijo',this.parentElement)">+</div></div><div class="wp-name">Anosh Antony Shijo</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_aiden_joseph_shijo',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#162a55,#5478a8)" data-slot="wp_aiden_joseph_shijo">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_aiden_joseph_shijo',this.parentElement)">+</div></div><div class="wp-name">Aiden Joseph Shijo</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_amal_joseph',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#1a3060,#6288b8)" data-slot="wp_amal_joseph">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_amal_joseph',this.parentElement)">+</div></div><div class="wp-name">Amal Joseph</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_cyril_johny',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#162c58,#5680b2)" data-slot="wp_cyril_johny">C<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_cyril_johny',this.parentElement)">+</div></div><div class="wp-name">Cyril Johny</div><div class="wp-role">Groomsman</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_renise_raj',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#1a2a5a,#5680b0)" data-slot="wp_renise_raj">R<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_renise_raj',this.parentElement)">+</div></div><div class="wp-name">Renise Raj</div><div class="wp-role">Groomsman</div></div></div></div>
+    </div>
+    <div class="wp-group">
+      <div class="wp-group-title"><span class="wp-group-icon">🌸</span><span>Flower Girl &amp; Bloom Team</span></div>
+      <div class="wp-track-wrap"><div class="wp-track" id="fg-track"><div class="wp-card" onclick="if(editMode)pickAvatar('wp_saya_rebecca_kurian',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#6b3a6b,#c96ec9)" data-slot="wp_saya_rebecca_kurian">S<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_saya_rebecca_kurian',this.parentElement)">+</div></div><div class="wp-name">Saya Rebecca Kurian</div><div class="wp-role">Flower Girl</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_ayin_rebecca_anish',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#7a2e7a,#d46ed4)" data-slot="wp_ayin_rebecca_anish">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_ayin_rebecca_anish',this.parentElement)">+</div></div><div class="wp-name">Ayin Rebecca Anish</div><div class="wp-role">Bloom Team</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_abijah_santhosh',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#5a2e5a,#b86eb8)" data-slot="wp_abijah_santhosh">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_abijah_santhosh',this.parentElement)">+</div></div><div class="wp-name">Abijah Santhosh</div><div class="wp-role">Bloom Team</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_anna_rose_anish',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#6b1a5a,#c96eb0)" data-slot="wp_anna_rose_anish">A<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_anna_rose_anish',this.parentElement)">+</div></div><div class="wp-name">Anna Rose Anish</div><div class="wp-role">Bloom Team</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_diya_anna_kurian',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#7a1a6b,#d46ec9)" data-slot="wp_diya_anna_kurian">D<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_diya_anna_kurian',this.parentElement)">+</div></div><div class="wp-name">Diya Anna Kurian</div><div class="wp-role">Bloom Team</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_diyaah_mariam_jithu',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#5a1a5a,#b860b8)" data-slot="wp_diyaah_mariam_jithu">D<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_diyaah_mariam_jithu',this.parentElement)">+</div></div><div class="wp-name">Diyaah Mariam Jithu</div><div class="wp-role">Bloom Team</div></div><div class="wp-card" onclick="if(editMode)pickAvatar('wp_rachel_thomas',this.querySelector('.wp-avatar'))"><div class="wp-avatar" style="position:relative;background:linear-gradient(135deg,#6b2e6b,#c860c9)" data-slot="wp_rachel_thomas">R<div class="avatar-upload-btn" style="display:none;position:absolute;bottom:-2px;right:-2px" onclick="event.stopPropagation();pickAvatar('wp_rachel_thomas',this.parentElement)">+</div></div><div class="wp-name">Rachel Thomas</div><div class="wp-role">Bloom Team</div></div></div></div>
+    </div>
+    <div class="divider"><span></span><div class="dot"></div><span></span></div>
+  </div>
+</section>
+
+<!-- WISHES WALL -->
+<section class="wishes">
+  <div class="reveal">
+    <div class="section-eyebrow" style="text-align:center">— SEND YOUR LOVE —</div>
+    <h2 class="section-title" style="text-align:center">Wishes Wall</h2>
+    <div class="wish-form">
+      <input class="input" id="wisherName" placeholder="Your name" style="margin-bottom:10px"/>
+      <textarea id="wisherMsg" placeholder="Write a blessing or warm wish for Akhila &amp; Jevins…"></textarea>
+      <button class="wfl-submit" onclick="submitWish()">SEND WISH ✦</button>
+    </div>
+    <div id="wwall">
+      <div id="wgrid"></div>
+      <div id="loadmore-wrap"><button id="loadMoreBtn" onclick="loadMore()">LOAD MORE</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- RSVP -->
+<section class="rsvp">
+  <div class="reveal">
+    <div class="section-eyebrow">— YOUR PRESENCE —</div>
+    <h2 class="section-title">Will You Be Joining Us?</h2>
+    <p class="rsvp-copy">Kindly let us know by <strong style="color:var(--gold2)">22 Aug 2026</strong>. We'd love to have you with us.</p>
+    <div class="rsvp-greet" id="rsvpGreet"></div>
+    <div class="rsvp-form" id="rsvpForm">
+      <h3>RSVP</h3>
+      <div class="note">Just a few quick details 🌸</div>
+      <div class="field">
+        <label class="field-label"><span class="num">1</span>WILL YOU BE ATTENDING?</label>
+        <div class="rsvp-attend-toggle">
+          <button type="button" class="toggle-btn active" id="attendYes" onclick="setAttending(true)">YES, I'LL JOIN</button>
+          <button type="button" class="toggle-btn" id="attendNo" onclick="setAttending(false)">CAN'T MAKE IT</button>
+        </div>
+      </div>
+      <div id="fullForm">
+        <div class="field" id="nameField">
+          <label class="field-label"><span class="num">2</span>YOUR NAME</label>
+          <input type="text" class="input" id="guestNameInput" placeholder="e.g., Thomas Mathew">
+        </div>
+        <div class="field">
+          <label class="field-label"><span class="num">3</span>WHICH EVENTS WILL YOU ATTEND?</label>
+          <p style="font-size:13.5px;color:var(--muted);margin-bottom:10px;font-style:italic">Tap an event, then set how many people will be joining.</p>
+          <div class="event-pick" data-ev="Madhuramveppu">
+            <label class="chk"><input type="checkbox" class="ev-check" value="Madhuramveppu"><div><div class="chk-title">Madhuramveppu</div><span class="chk-sub">Wed, 19 Aug · 6:00 PM · Piravom</span></div></label>
+            <div class="ev-count" style="display:none"><span class="ev-count-lbl">How many joining?</span><div class="mini-counter"><button type="button" onclick="evCount(this,-1)">−</button><span class="mini-count">1</span><button type="button" onclick="evCount(this,1)">+</button></div></div>
+          </div>
+          <div class="event-pick" data-ev="Wedding Ceremony">
+            <label class="chk"><input type="checkbox" class="ev-check" value="Wedding Ceremony"><div><div class="chk-title">Wedding Ceremony</div><span class="chk-sub">Sat, 22 Aug · 9:30 AM · Thrissur Cathedral</span></div></label>
+            <div class="ev-count" style="display:none"><span class="ev-count-lbl">How many joining?</span><div class="mini-counter"><button type="button" onclick="evCount(this,-1)">−</button><span class="mini-count">1</span><button type="button" onclick="evCount(this,1)">+</button></div></div>
+          </div>
+          <div class="event-pick" data-ev="Wedding Reception">
+            <label class="chk"><input type="checkbox" class="ev-check" value="Wedding Reception"><div><div class="chk-title">Wedding Reception</div><span class="chk-sub">Sat, 22 Aug · 12:00 PM · Chakolas Pavilion</span></div></label>
+            <div class="ev-count" style="display:none"><span class="ev-count-lbl">How many joining?</span><div class="mini-counter"><button type="button" onclick="evCount(this,-1)">−</button><span class="mini-count">1</span><button type="button" onclick="evCount(this,1)">+</button></div></div>
+          </div>
+        </div>
+      <button class="submit-btn" id="submitBtn" onclick="submitRsvp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        <span>CONFIRM RSVP</span>
+      </button>
+    </div>
+    <div class="success" id="success">
+      <div class="check">✓</div>
+      <h3>Thank you!</h3>
+      <p id="successMsg">Your RSVP has been received with love.</p>
+    </div>
+    <div class="rsvp-existing" id="rsvpExisting">
+      <div class="ex-head">
+        <div class="ex-icon">✓</div>
+        <h3>Your RSVP</h3>
+        <div class="ex-sub" id="exSubMsg">You've already responded — here's what we have.</div>
+      </div>
+      <div class="ex-row"><div class="ex-lbl">ATTENDING</div><div class="ex-val" id="exAttending">—</div></div>
+      <div class="ex-row" id="exEventsRow"><div class="ex-lbl">EVENTS</div><div class="ex-tags" id="exEvents"></div></div>
+      <div class="ex-row" id="exMsgRow" style="display:none"><div class="ex-lbl">YOUR MESSAGE</div><div class="ex-val" id="exMsg"></div></div>
+      <div class="ex-row"><div class="ex-lbl">REPLIED ON</div><div class="ex-val" id="exTime">—</div></div>
+      <button class="ex-edit-btn" onclick="editRsvp()">CHANGE MY RESPONSE</button>
+    </div>
+  </div>
+</section>
+
+<!-- DRESS CODE -->
+<section style="background:var(--bg2);padding:72px 24px 64px;text-align:center;border-bottom:1px solid var(--rule)">
+  <div class="reveal">
+    <div class="section-eyebrow">— DRESS CODE —</div>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--muted);font-weight:600;max-width:38ch;margin:0 auto 36px;line-height:1.7">We kindly encourage our guests to wear these colours for our special day.</p>
+    <div style="position:relative;width:100%;overflow:hidden" id="dcWrap">
+      <div style="display:flex;transition:transform .45s cubic-bezier(.4,0,.2,1)" id="dcTrack">
+
+        <!-- SLIDE 1 — MADHURAMVEPPU -->
+        <div style="min-width:100%;padding:0 4px;box-sizing:border-box">
+          <div style="background:#fff;border:1px solid var(--cardborder);border-radius:16px;padding:32px 24px;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+            <div style="font-family:'Cinzel',serif;letter-spacing:.32em;font-size:9px;color:var(--gold);margin-bottom:6px">EVENT 01</div>
+            <div style="font-family:'Italiana',serif;font-size:26px;color:var(--cream2);margin-bottom:6px">Madhuramveppu</div>
+            <div style="font-family:'Cinzel',serif;letter-spacing:.28em;font-size:8.5px;color:var(--maroon);margin-bottom:28px">HALDI ATTIRE</div>
+            <div style="display:flex;justify-content:center;gap:20px;margin-bottom:24px">
+              <div style="text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F5C842;margin:0 auto 10px;box-shadow:0 4px 14px rgba(245,200,66,.35)"></div><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;color:var(--muted)">YELLOW</div></div>
+              <div style="text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F0158A;margin:0 auto 10px;box-shadow:0 4px 14px rgba(240,21,138,.35)"></div><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;color:var(--muted)">PINK</div></div>
+              <div style="text-align:center"><div style="width:72px;height:72px;border-radius:50%;background:#F07B1A;margin:0 auto 10px;box-shadow:0 4px 14px rgba(240,123,26,.35)"></div><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;color:var(--muted)">ORANGE</div></div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--muted);font-weight:600">Wednesday, 19 August 2026</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2 — WEDDING -->
+        <div style="min-width:100%;padding:0 4px;box-sizing:border-box">
+          <div style="background:#fff;border:1px solid var(--cardborder);border-radius:16px;padding:32px 24px;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+            <div style="font-family:'Cinzel',serif;letter-spacing:.32em;font-size:9px;color:var(--gold);margin-bottom:6px">EVENTS 02 & 03</div>
+            <div style="font-family:'Italiana',serif;font-size:26px;color:var(--cream2);margin-bottom:6px">Wedding & Reception</div>
+            <div style="font-family:'Cinzel',serif;letter-spacing:.28em;font-size:8.5px;color:var(--maroon);margin-bottom:28px">TRADITIONAL ATTIRE</div>
+            <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:24px">
+              <div style="text-align:center"><div style="width:54px;height:54px;border-radius:50%;background:#FFFFF0;border:1px solid #e0d8cc;margin:0 auto 8px;box-shadow:0 4px 12px rgba(200,190,170,.3)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.12em;color:var(--muted)">IVORY</div></div>
+              <div style="text-align:center"><div style="width:54px;height:54px;border-radius:50%;background:#F5F0E8;border:1px solid #e0d8cc;margin:0 auto 8px;box-shadow:0 4px 12px rgba(200,190,170,.3)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.12em;color:var(--muted)">CREAM</div></div>
+              <div style="text-align:center"><div style="width:54px;height:54px;border-radius:50%;background:#D4AF6A;margin:0 auto 8px;box-shadow:0 4px 12px rgba(212,175,106,.3)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.12em;color:var(--muted)">CHAMPAGNE</div></div>
+              <div style="text-align:center"><div style="width:54px;height:54px;border-radius:50%;background:#C0C0C8;margin:0 auto 8px;box-shadow:0 4px 12px rgba(192,192,200,.3)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.12em;color:var(--muted)">SILVER</div></div>
+              <div style="text-align:center"><div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#f8c8d4,#c8e0f0,#d4f0c8,#f0e8c8);margin:0 auto 8px;box-shadow:0 4px 12px rgba(200,200,200,.3)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.12em;color:var(--muted)">PASTELS</div></div>
+              <div style="text-align:center"><div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#D4AF6A,#fff,#D4AF6A);margin:0 auto 8px;box-shadow:0 4px 12px rgba(212,175,106,.3)"></div><div style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:.12em;color:var(--muted)">GOLD/WHITE</div></div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--muted);font-weight:600">Saturday, 22 August 2026</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3 — ATTIRE REFERENCE -->
+        <div style="min-width:100%;padding:0 4px;box-sizing:border-box">
+          <div style="background:#fff;border:1px solid var(--cardborder);border-radius:16px;padding:32px 24px;box-shadow:0 2px 16px rgba(0,0,0,.06)">
+            <div style="font-family:'Cinzel',serif;letter-spacing:.32em;font-size:9px;color:var(--gold);margin-bottom:6px">ATTIRE REFERENCE</div>
+            <div style="font-family:'Italiana',serif;font-size:26px;color:var(--cream2);margin-bottom:24px">Dress Inspiration</div>
+            <div data-slot="attire_photo" onclick="if(editMode)pickImage('attire_photo')" style="position:relative;width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:var(--bg2);border:1px solid var(--cardborder);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+              <div class="photo-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;opacity:.25;color:var(--gold)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span style="font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.25em;color:var(--gold);opacity:.5">ADD REFERENCE PHOTO</span>
+              </div>
+              <div class="img-slot-add" onclick="pickImage('attire_photo')" style="display:none;border-radius:12px"><div class="plus">+</div><span>ADD PHOTO</span></div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--muted);font-weight:600">A visual guide for our guests ✦</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-top:22px">
+      <button onclick="dcPrev()" style="width:44px;height:44px;border-radius:50%;background:transparent;border:1.5px solid rgba(154,123,58,.3);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div style="display:flex;gap:8px;align-items:center" id="dcDots"><div class="cdot active" onclick="dcGoTo(0)"></div><div class="cdot" onclick="dcGoTo(1)"></div><div class="cdot" onclick="dcGoTo(2)"></div></div>
+      <button onclick="dcNext()" style="width:44px;height:44px;border-radius:50%;background:transparent;border:1.5px solid rgba(154,123,58,.3);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact">
+  <div class="section-eyebrow">— GET IN TOUCH —</div>
+  <h3>Any questions?</h3>
+  <p>We'd love to hear from you — reach out to us anytime.</p>
+  <div class="contact-grid">
+    <a class="cbtn cbtn-wa" href="https://wa.me/13476353087" target="_blank" style="grid-column:span 2">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A12 12 0 003.48 20.52L2 22l1.55-1.45A12 12 0 1020.52 3.48z"/></svg>
+      <span><span class="contact-person">Bride's Father (Jai)</span>+1 347 635 3087</span>
+    </a>
+    <a class="cbtn cbtn-wa" href="https://wa.me/15167276316" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A12 12 0 003.48 20.52L2 22l1.55-1.45A12 12 0 1020.52 3.48z"/></svg>
+      <span><span class="contact-person">Akhila</span>+1 516 727 6316</span>
+    </a>
+    <a class="cbtn cbtn-wa" href="https://wa.me/16472364744" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A12 12 0 003.48 20.52L2 22l1.55-1.45A12 12 0 1020.52 3.48z"/></svg>
+      <span><span class="contact-person">Jevins</span>+1 646 236 4744</span>
+    </a>
+    <a class="cbtn cbtn-call" href="tel:+919847498562" style="grid-column:span 2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <span><span class="contact-person">Groom's Father (Joy)</span>+91 98474 98562</span>
+    </a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="couple-initials">A &nbsp;·&nbsp; J</div>
+  <div class="tagline">With love &amp; gratitude —<br>Akhila &amp; Jevins</div>
+  <div class="brand" id="brandLink" oncontextmenu="return false">INVITATION BY <span style="color:var(--gold)" id="digiwedLink">DIGIWED</span></div>
+  <button onclick="enableEditMode()" style="margin-top:14px;padding:10px 28px;background:transparent;border:1px solid rgba(201,169,110,.25);border-radius:4px;font-family:'Cinzel',serif;letter-spacing:.25em;font-size:9px;color:rgba(201,169,110,.4);cursor:pointer;-webkit-tap-highlight-color:transparent">ADMIN</button>
+</footer>
+
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CLOUDINARY + FIREBASE IMAGE SYSTEM ──────────────────────────────────
+  const CLOUD_NAME   = 'dormnrhdf';
+  const UPLOAD_PRESET = 'ml_default';
+  const COUPLE_FOLDER = 'digiwed-invitations/akhila-jevins';
+  const IMG_PATH = 'akhila-jevins/media';
+  let editMode = false;
+
+  // Enable edit mode — global so long-press can reach it
+  window.enableEditMode = function(){
+    const pin = prompt('Enter admin PIN:');
+    if(pin !== '2026AJ'){ showToast('INCORRECT PIN'); return; }
+    editMode = true;
+    if(!document.getElementById('main').classList.contains('show')) openInvite();
+    setTimeout(()=>{
+      // Show + on all empty slots
+      document.querySelectorAll('.img-slot-add').forEach(el => el.style.display='flex');
+      // Show + button on avatar slots
+      document.querySelectorAll('.avatar-upload-btn').forEach(el => el.style.display='flex');
+      // For slots with existing images — show a small edit badge
+      document.querySelectorAll('[data-slot] img.slot-img').forEach(img => {
+        const slot = img.closest('[data-slot]');
+        if(!slot) return;
+        const add = slot.querySelector('.img-slot-add');
+        if(add) { add.style.display='flex'; add.querySelector('span').textContent='CHANGE'; }
+      });
+      showToast('IMAGE EDIT MODE ON ✦');
+    }, 400);
+  }
+  function enableEditMode(){ window.enableEditMode(); }
+
+  // Override brand long-press to also enable edit mode
+  const origBrandLP = window._brandLPcb;
+
+  // Upload to Cloudinary using XHR (more reliable on mobile)
+  function uploadToCloudinary(file, slotKey){
+    return new Promise(function(resolve, reject){
+      const url = 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload';
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', UPLOAD_PRESET);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url);
+      xhr.onload = function(){
+        if(xhr.status === 200){
+          try{
+            const data = JSON.parse(xhr.responseText);
+            if(data.secure_url) resolve(data.secure_url);
+            else{ showToast('ERROR: ' + (data.error && data.error.message || 'Failed')); reject(new Error('No URL')); }
+          } catch(e){ reject(e); }
+        } else {
+          showToast('UPLOAD ERROR: ' + xhr.status);
+          reject(new Error('Status: ' + xhr.status));
+        }
+      };
+      xhr.onerror = function(){ showToast('NETWORK ERROR'); reject(new Error('Network error')); };
+      xhr.send(fd);
+    });
+  }
+
+  // Save image data to Firebase
+  function saveImgData(slotKey, data){
+    if(!db) return;
+    db.ref(IMG_PATH + '/' + slotKey).set(data);
+  }
+
+
+
+
+
+  // ── IMAGE SLOT SYSTEM ─────────────────────────────────────────────────────
+  // applyImage: show an image in any slot (gallery, story, avatar, wp)
+  window.applyImage = function(slotKey, val){
+    const el = document.querySelector('[data-slot="'+slotKey+'"]');
+    if(!el) return;
+
+    const isAvatar = slotKey.startsWith('avatar_') || slotKey.startsWith('wp_');
+
+    if(isAvatar){
+      // el IS the circle div for wp_, or wrap for avatar_
+      const circle = slotKey.startsWith('wp_') ? el : el.querySelector('.family-photo');
+      if(!circle) return;
+      circle.innerHTML = ''; // clear letter
+      circle.style.cssText += ';overflow:hidden;padding:0;position:relative;';
+      const img = document.createElement('img');
+      img.className = 'slot-img';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;';
+      img.onerror = function(){ this.remove(); }; // hide if broken
+      img.src = val.url;
+      circle.appendChild(img);
+      // tap to re-upload in edit mode
+      el.onclick = function(){ if(editMode) pickFile(slotKey, true); };
+      return;
+    }
+
+    // Gallery / story slot
+    const old = el.querySelector('img.slot-img');
+    if(old) old.remove();
+    const img = document.createElement('img');
+    img.className = 'slot-img';
+    img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2;display:block;';
+    img.onerror = function(){ this.remove(); }; // hide if broken, show placeholder
+    img.src = val.url;
+    img.onclick = function(e){ e.stopPropagation(); if(editMode) pickFile(slotKey, false); };
+    el.insertBefore(img, el.firstChild);
+    // hide placeholder, hide + button (image is there)
+    const ph = el.querySelector('.photo-placeholder,.story-img-placeholder');
+    if(ph) ph.style.display = 'none';
+    const add = el.querySelector('.img-slot-add');
+    if(add) add.style.display = 'none';
+  };
+
+  // pickFile: open file picker and upload to Cloudinary → Firebase
+  function pickFile(slotKey, isAvatar){
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.onchange = function(e){
+      const file = e.target.files[0];
+      if(!file) return;
+      showToast('UPLOADING…');
+      uploadToCloudinary(file, slotKey).then(function(url){
+        const data = {url:url, x:50, y:50, zoom:1};
+        saveImgData(slotKey, data);
+        applyImage(slotKey, data);
+        showToast('DONE ✦');
+      }).catch(function(err){
+        console.error(err);
+        showToast('UPLOAD FAILED');
+      });
+    };
+    inp.click();
+  }
+
+  // pickImage: called from gallery/story slot onclick
+  window.pickImage = function(slotKey){
+    if(!editMode){ showToast('ENTER ADMIN MODE FIRST'); return; }
+    pickFile(slotKey, false);
+  };
+  function pickImage(s){ window.pickImage(s); }
+
+  // pickAvatar: called from avatar/wp onclick
+  window.pickAvatar = function(slotKey, wrapEl){
+    if(!editMode) return;
+    pickFile(slotKey, true);
+  };
+  function pickAvatar(s,w){ window.pickAvatar(s,w); }
+
+  // Load images for all guests when invite opens
+  function loadAllImages(){
+    if(!db) return;
+    db.ref(IMG_PATH).once('value', snap => {
+      if(!snap.exists()) return;
+      snap.forEach(child => {
+        const val = child.val();
+        if(val && val.url) applyImage(child.key, val);
+      });
+    });
+  }
+
+  // Also attach a real-time listener so images appear as soon as uploaded
+  function startImageListener(){
+    if(!db) return;
+    db.ref(IMG_PATH).on('value', snap => {
+      if(!snap.exists()) return;
+      snap.forEach(child => {
+        const val = child.val();
+        if(val && val.url) applyImage(child.key, val);
+      });
+    });
+  }
+
+
+
+
+  // ev1 carousel
+  let ev1Idx=0;
+  function ev1Update(){
+    const t=document.getElementById('ev1Track');
+    if(!t)return;
+    t.style.transform=`translateX(-${ev1Idx*100}%)`;
+    document.querySelectorAll('#ev1Dots .cdot').forEach((d,i)=>d.classList.toggle('active',i===ev1Idx));
+  }
+  function ev1Next(){ ev1Idx=(ev1Idx+1)%6; ev1Update(); }
+  function ev1Prev(){ ev1Idx=(ev1Idx-1+6)%6; ev1Update(); }
+  function ev1GoTo(i){ ev1Idx=i; ev1Update(); }
+  setTimeout(()=>{
+    const w=document.getElementById('ev1Wrap');
+    if(!w)return;
+    let sx=0,sy=0;
+    w.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+    w.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>35){dx<0?ev1Next():ev1Prev();}
+    },{passive:true});
+  },800);
+
+  // ev23 carousel
+  let ev23Idx=0;
+  function ev23Update(){
+    const t=document.getElementById('ev23Track');
+    if(!t)return;
+    t.style.transform=`translateX(-${ev23Idx*100}%)`;
+    document.querySelectorAll('#ev23Dots .cdot').forEach((d,i)=>d.classList.toggle('active',i===ev23Idx));
+  }
+  function ev23Next(){ ev23Idx=(ev23Idx+1)%6; ev23Update(); }
+  function ev23Prev(){ ev23Idx=(ev23Idx-1+6)%6; ev23Update(); }
+  function ev23GoTo(i){ ev23Idx=i; ev23Update(); }
+  setTimeout(()=>{
+    const w=document.getElementById('ev23Wrap');
+    if(!w)return;
+    let sx=0,sy=0;
+    w.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+    w.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>35){dx<0?ev23Next():ev23Prev();}
+    },{passive:true});
+  },800);
+  // Swipe
+  setTimeout(()=>{
+    const wrap = document.getElementById('dcWrap');
+    if(!wrap) return;
+    let sx = 0, sy = 0;
+    wrap.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+    wrap.addEventListener('touchend', e=>{
+      const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>35){ dx<0?dcNext():dcPrev(); }
+    },{passive:true});
+  }, 800);
+
+
+  // ── DRESS CODE CAROUSEL ──────────────────────────────────────────────────
+  let dcIdx=0;
+  function dcUpdate(){
+    const t=document.getElementById('dcTrack'); if(!t)return;
+    t.style.transform=`translateX(-${dcIdx*100}%)`;
+    document.querySelectorAll('#dcDots .cdot').forEach((d,i)=>d.classList.toggle('active',i===dcIdx));
+  }
+  function dcNext(){ dcIdx=(dcIdx+1)%3; dcUpdate(); }
+  function dcPrev(){ dcIdx=(dcIdx-1+3)%3; dcUpdate(); }
+  function dcGoTo(i){ dcIdx=i; dcUpdate(); }
+  setTimeout(()=>{
+    const w=document.getElementById('dcWrap'); if(!w)return;
+    let sx=0,sy=0;
+    w.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+    w.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>35){dx<0?dcNext():dcPrev();}
+    },{passive:true});
+  },800);
+
+  // ── GALLERY CAROUSEL ──────────────────────────────────────────────────────
+  let galIdx = 0;
+  const GAL_TOTAL = 6;
+  function galUpdate(){
+    const track = document.getElementById('galleryTrack');
+    if(!track) return;
+    track.style.transform = `translateX(-${galIdx * 100}%)`;
+    document.querySelectorAll('.cdot').forEach((d,i) => d.classList.toggle('active', i===galIdx));
+  }
+  function galNext(){ galIdx = (galIdx + 1) % GAL_TOTAL; galUpdate(); }
+  function galPrev(){ galIdx = (galIdx - 1 + GAL_TOTAL) % GAL_TOTAL; galUpdate(); }
+  function galGoTo(i){ galIdx = i; galUpdate(); }
+
+  // ── GALLERY SWIPE ─────────────────────────────────────────────────────────
+  function initGallerySwipe(){
+    const wrap = document.querySelector('.carousel-wrap');
+    if(!wrap || wrap._swipeInit) return;
+    wrap._swipeInit = true;
+    let sx = 0, sy = 0, moving = false;
+    wrap.addEventListener('touchstart', e => {
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+      moving = false;
+    }, {passive:true});
+    wrap.addEventListener('touchmove', e => {
+      moving = true;
+    }, {passive:true});
+    wrap.addEventListener('touchend', e => {
+      if(!moving) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 35){
+        dx < 0 ? galNext() : galPrev();
+      }
+    }, {passive:true});
+  }
+
+
+  document.querySelectorAll('.wp-track-wrap').forEach(wrap => {
+    let isDown=false,startX,scrollLeft;
+    wrap.addEventListener('mousedown',e=>{isDown=true;wrap.classList.add('dragging');startX=e.pageX-wrap.offsetLeft;scrollLeft=wrap.scrollLeft});
+    wrap.addEventListener('mouseleave',()=>{isDown=false;wrap.classList.remove('dragging')});
+    wrap.addEventListener('mouseup',()=>{isDown=false;wrap.classList.remove('dragging')});
+    wrap.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-wrap.offsetLeft;wrap.scrollLeft=scrollLeft-(x-startX)*1.2});
+  });
+
+  // Dashboard button handled by floating FAB
+  (function(){
+    const dg = document.getElementById('digiwedLink');
+    if(!dg) return;
+    let t;
+    dg.addEventListener('touchstart',()=>{t=setTimeout(()=>{window.location.href='dashboard.html';},1000)},{passive:true});
+    dg.addEventListener('touchend',()=>clearTimeout(t),{passive:true});
+    dg.addEventListener('mousedown',()=>{t=setTimeout(()=>{window.location.href='dashboard.html';},1000)});
+    dg.addEventListener('mouseup',()=>clearTimeout(t));
+  })();
+
+  // Firebase
+  let db = null;
+  const RSVP_PATH = 'akhila-jevins/rsvp';
+  const WISH_PATH = 'akhila-jevins-v1/wishes';
+  try {
+    if(typeof firebase !== 'undefined'){
+      const cfg = {
+        apiKey:"AIzaSy841fvxVl1KeHOro6WKJ72o22izuCpJ-b4",
+        authDomain:"yaseen-jumana-wedding.firebaseapp.com",
+        databaseURL:"https://yaseen-jumana-wedding-default-rtdb.firebaseio.com",
+        projectId:"yaseen-jumana-wedding",
+        storageBucket:"yaseen-jumana-wedding.firebasestorage.app",
+        messagingSenderId:"355557621111",
+        appId:"1:355557621111:web:d0b78c34bfe5a53b69f572"
+      };
+      if(!firebase.apps.length) firebase.initializeApp(cfg);
+      db = firebase.database();
+    }
+  } catch(e){ console.warn('Firebase:', e); }
+
+  // Guest param
+  const urlParams = new URLSearchParams(window.location.search);
+  const GUEST_NAME = (urlParams.get('guest')||'').trim();
+  if(GUEST_NAME){
+    document.getElementById('landingGuest').textContent = 'Dear ' + GUEST_NAME + ',';
+    document.getElementById('invitePersonal').textContent = 'Dearest ' + GUEST_NAME + ',';
+    document.getElementById('rsvpGreet').textContent = GUEST_NAME + ", we'd love to have you with us 🌸";
+    document.getElementById('nameField').style.display = 'none';
+  }
+
+  // Open invite
+  function openInvite(){
+    document.getElementById('landing').classList.add('gone');
+    document.getElementById('main').classList.add('show');
+    document.body.style.overflow = 'auto';
+    setTimeout(()=>{
+      const io = new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')}),{threshold:.1});
+      document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    },100);
+    window.addEventListener('scroll',()=>{
+      const b = document.getElementById('mono-badge');
+      if(window.scrollY > 180) b.classList.add('show'); else b.classList.remove('show');
+    },{passive:true});
+    checkExistingRsvp();
+    loadWishes();
+    // Load all images for guests
+    setTimeout(startImageListener, 500);
+    // Init gallery swipe after DOM visible
+    setTimeout(initGallerySwipe, 600);
+  }
+  document.body.style.overflow = 'hidden';
+
+  // Per-event checkboxes
+  document.querySelectorAll('.ev-check').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const pick = cb.closest('.event-pick');
+      const cnt  = pick.querySelector('.ev-count');
+      if(cb.checked){pick.classList.add('active');cnt.style.display='flex';}
+      else{pick.classList.remove('active');cnt.style.display='none';pick.querySelector('.mini-count').textContent='1';}
+    });
+  });
+
+  function evCount(btn,delta){
+    const s = btn.parentElement.querySelector('.mini-count');
+    let n = parseInt(s.textContent,10)||1;
+    s.textContent = Math.max(1,Math.min(20,n+delta));
+  }
+
+  let attending = true;
+  function setAttending(val){
+    attending = val;
+    document.getElementById('attendYes').classList.toggle('active', val);
+    document.getElementById('attendNo').classList.toggle('active',!val);
+    document.getElementById('fullForm').style.display = val ? 'block' : 'none';
+  }
+
+  function addToCal(title,start,end,loc){
+    const fmt = s=>s.replace(/[-:]/g,'');
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${fmt(start+'00')}/${fmt(end+'00')}&location=${encodeURIComponent(loc)}`;
+    window.open(url,'_blank');
+  }
+
+  function showToast(m){
+    const t=document.getElementById('toast');
+    t.textContent=m; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }
+
+  // RSVP
+  let existingRsvpKey = null;
+  function checkExistingRsvp(){
+    if(!GUEST_NAME || !db) return;
+    db.ref(RSVP_PATH).orderByChild('name').equalTo(GUEST_NAME).limitToFirst(1).once('value', snap => {
+      if(!snap.exists()) return;
+      const data = snap.val();
+      const key  = Object.keys(data)[0];
+      const r    = data[key];
+      existingRsvpKey = key;
+      showExistingRsvp(r);
+    });
+  }
+
+  function showExistingRsvp(r){
+    document.getElementById('rsvpForm').style.display = 'none';
+    document.getElementById('rsvpExisting').classList.add('show');
+    document.getElementById('exAttending').textContent = r.attending ? '✓ Yes, I will be attending' : '✗ Unable to attend';
+    document.getElementById('exTime').textContent = r.time || '—';
+    if(r.attending && r.events && r.events.length){
+      document.getElementById('exEventsRow').style.display = 'block';
+      document.getElementById('exEvents').innerHTML = r.events.map(e => {
+        const n = (r.eventsDetail && r.eventsDetail[e]) || r.members || 1;
+        return `<span class="ex-tag">${e} × ${n}</span>`;
+      }).join('');
+    } else {
+      document.getElementById('exEventsRow').style.display = 'none';
+    }
+    if(r.message){
+      document.getElementById('exMsgRow').style.display = 'block';
+      document.getElementById('exMsg').textContent = r.message;
+    }
+    document.getElementById('exSubMsg').textContent = `You've already responded${GUEST_NAME?' '+GUEST_NAME:''}. Here's what we have.`;
+  }
+
+  function editRsvp(){
+    if(existingRsvpKey && db) db.ref(RSVP_PATH + '/' + existingRsvpKey).remove();
+    document.getElementById('rsvpExisting').classList.remove('show');
+    document.getElementById('rsvpForm').style.display = 'block';
+    existingRsvpKey = null;
+  }
+
+  function submitRsvp(){
+    const name = GUEST_NAME || document.getElementById('guestNameInput').value.trim();
+    if(!name){showToast('Please enter your name');return;}
+    let eventsList=[],eventsDetail={},totalMembers=0,maxMembers=0;
+    if(attending){
+      document.querySelectorAll('.ev-check:checked').forEach(cb=>{
+        const ev=cb.value, pick=cb.closest('.event-pick');
+        const n=parseInt(pick.querySelector('.mini-count').textContent,10)||1;
+        eventsList.push(ev); eventsDetail[ev]=n; totalMembers+=n;
+        if(n>maxMembers) maxMembers=n;
+      });
+      if(eventsList.length===0){showToast('Please select at least one event');return;}
+    }
+    const msg = '';
+    const entry = {
+      name, attending,
+      events:eventsList, eventsDetail,
+      members:maxMembers, totalMembers,
+      message:msg,
+      time:new Date().toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+      ts:Date.now()
+    };
+    const btn = document.getElementById('submitBtn');
+    btn.disabled=true; btn.querySelector('span').textContent='SENDING…';
+    const done=()=>{
+      document.getElementById('rsvpForm').style.display='none';
+      document.getElementById('success').classList.add('show');
+      document.getElementById('successMsg').textContent = attending
+        ? `Thank you, ${name}! We can't wait to celebrate with you.`
+        : `Thank you, ${name}. You'll be missed, but your blessings mean the world.`;
+    };
+    if(!db){setTimeout(done,500);return;}
+    const key=(name.replace(/[^a-zA-Z0-9]/g,'_').toLowerCase()||'guest')+'_'+Date.now();
+    db.ref(RSVP_PATH+'/'+key).set(entry).then(done).catch(err=>{
+      btn.disabled=false; btn.querySelector('span').textContent='CONFIRM RSVP';
+      showToast('Failed. Please try again.'); console.error(err);
+    });
+  }
+
+  // WISHES WALL
+  const PAGE_SIZE = 6;
+  let lastKey = null;
+  let recentlySubmittedTs = null;
+
+  function loadWishes(append=false){
+    if(!db) return;
+    let q = db.ref(WISH_PATH).orderByKey().limitToLast(PAGE_SIZE + 1);
+    if(lastKey) q = q.endBefore(lastKey);
+    q.once('value', snap => {
+      if(!snap.exists()){ if(!append) document.getElementById('wgrid').innerHTML=''; return; }
+      const all = [];
+      snap.forEach(c => all.push({key:c.key,...c.val()}));
+      all.reverse();
+      const hasMore = all.length > PAGE_SIZE;
+      const items = hasMore ? all.slice(0,PAGE_SIZE) : all;
+      if(items.length) lastKey = items[items.length-1].key;
+      const grid = document.getElementById('wgrid');
+      if(!append) grid.innerHTML = '';
+      items.forEach(w => grid.insertAdjacentHTML('beforeend', wishCard(w)));
+      document.getElementById('loadmore-wrap').style.display = hasMore ? 'block' : 'none';
+    });
+  }
+
+  function loadMore(){ loadWishes(true); }
+
+  function wishCard(w){
+    return `<div class="wish-card">
+      <div class="wish-card-name">${esc(w.name)}</div>
+      <div class="wish-card-msg">${esc(w.msg)}</div>
+      <div class="wish-card-time">${w.time||''}</div>
+    </div>`;
+  }
+
+  function esc(s){ const d=document.createElement('div');d.textContent=s||'';return d.innerHTML; }
+
+  function submitWish(){
+    const name = document.getElementById('wisherName').value.trim();
+    const msg  = document.getElementById('wisherMsg').value.trim();
+    if(!name || !msg){ showToast('Please enter your name and wish'); return; }
+    const btn = document.querySelector('.wfl-submit');
+    btn.disabled=true; btn.textContent='SENDING…';
+    const ts = Date.now();
+    if(recentlySubmittedTs && ts - recentlySubmittedTs < 10000){ showToast('Please wait before sending again'); btn.disabled=false; btn.textContent='SEND WISH ✦'; return; }
+    const entry = { name, msg, time: new Date().toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}), ts };
+    if(!db){ showToast('Wish sent! ✦'); btn.disabled=false; btn.textContent='SEND WISH ✦'; return; }
+    db.ref(WISH_PATH).push(entry).then(()=>{
+      recentlySubmittedTs = ts;
+      document.getElementById('wisherName').value='';
+      document.getElementById('wisherMsg').value='';
+      btn.textContent='SEND WISH ✦'; btn.disabled=false;
+      showToast('Wish sent! ✦');
+      lastKey=null;
+      loadWishes();
+    }).catch(e=>{ console.error(e); showToast('Failed. Try again.'); btn.disabled=false; btn.textContent='SEND WISH ✦'; });
+  }
+</script>
+
+</body>
+</html>
