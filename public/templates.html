@@ -571,14 +571,12 @@
   }
 
   async function loadTemplateCardData() {
-    if (!sb) return;
     try {
-      let { data, error } = await sb
-        .from('template_configs')
-        .select('id, name, price, is_premium, placeholder_url, is_active')
-        .eq('is_active', true)
-        .order('created_at', { ascending: true });
-      if (error || !data || !data.length) return;
+      // Fetch via server-side endpoint (SERVICE_ROLE_KEY) — bypasses RLS
+      const _resp = await fetch('/api/get-templates');
+      if (!_resp.ok) return;
+      let data = await _resp.json();
+      if (!data || !data.length) return;
       data = mergeTemplateRows(data);
       // Patch static fallback cards first (template01 / template02 by id)
       data.forEach(t => {
