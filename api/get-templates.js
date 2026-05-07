@@ -31,8 +31,14 @@ module.exports = async function handler(req, res) {
 
     if (error) throw error;
 
+    // Normalize IDs: template01→tp1, template02→tp2, etc.
+    const ALIASES = { 'template01':'tp1','template02':'tp2','islamic-invitation':'tp1','islamic-invitation-premium':'tp2' };
+    const normalized = (data || []).map(row => ({ ...row, id: ALIASES[row.id] || row.id }));
+    // Deduplicate (in case DB has both old and new IDs)
+    const seen = new Set();
+    const deduped = normalized.filter(row => { if (seen.has(row.id)) return false; seen.add(row.id); return true; });
     res.setHeader('Cache-Control', 'no-store');
-    return res.status(200).json(data || []);
+    return res.status(200).json(deduped);
 
   } catch (err) {
     console.error('get-templates error:', err);
