@@ -589,20 +589,20 @@
 <script>
 
   const TEMPLATE_ID_ALIASES = {
-    'tp1': 'template01',
-    'tp2': 'template02',
-    'islamic-invitation': 'template01',
-    'islamic-invitation-premium': 'template02'
+    'template01': 'tp1',
+    'template02': 'tp2',
+    'islamic-invitation': 'tp1',
+    'islamic-invitation-premium': 'tp2'
   };
   const TEMPLATE_FRONTEND = {
-    template01: {
+    tp1: {
       previewUrl: '/wedding/islamic-invitation.html',
       demoUrl: '/wedding/islamic-invitation',
       originalPrice: 1499,
       fallbackName: 'Heritage',
       fallbackDesc: 'Timeless patterns meet royal deep-plum elegance.'
     },
-    template02: {
+    tp2: {
       previewUrl: '/wedding/islamic-invitation-premium.html',
       demoUrl: '/wedding/islamic-invitation-premium',
       originalPrice: 1499,
@@ -610,7 +610,7 @@
       fallbackDesc: 'Sophisticated minimalism with gold accents.'
     }
   };
-  function normalizeTemplateId(id) { return TEMPLATE_ID_ALIASES[id] || id || 'template01'; }
+  function normalizeTemplateId(id) { if (!id) return 'tp1'; return TEMPLATE_ID_ALIASES[id] || id; }
   function templateMeta(id) { return TEMPLATE_FRONTEND[normalizeTemplateId(id)] || {}; }
   function rupee(amount) { return '₹' + Number(amount || 0).toLocaleString('en-IN'); }
   function calcDiscount(price, originalPrice) {
@@ -620,16 +620,16 @@
 
 // ── URL param ──────────────────────────────────────────────
 const urlParams = new URLSearchParams(window.location.search);
-const rawTemplateParam = urlParams.get('template') || 'template01';
+const rawTemplateParam = urlParams.get('template') || 'tp1';
 const templateParam = normalizeTemplateId(rawTemplateParam);
 
 const templateDetails = {
-    'template01': { name: 'Heritage', desc: "Timeless patterns meet royal deep-plum elegance." },
-    'template02': { name: 'Minimalist', desc: "Sophisticated minimalism with gold accents." },
+    'tp1': { name: 'Heritage', desc: "Timeless patterns meet royal deep-plum elegance." },
+    'tp2': { name: 'Minimalist', desc: "Sophisticated minimalism with gold accents." },
     'template03': { name: 'Floral Garden', desc: "A delicate blend of garden aesthetics and soft floral romance." },
     'template04': { name: 'Majestic Gold', desc: "Bold, full-screen gold brilliance for a truly majestic announcement." }
 };
-const currentTemplate = templateDetails[templateParam] || templateDetails['template01'];
+const currentTemplate = templateDetails[templateParam] || templateDetails['tp1'];
 
 // Update left panel text
 document.getElementById('templateName').innerHTML =
