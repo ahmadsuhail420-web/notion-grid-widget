@@ -596,7 +596,13 @@
           const badgeEl = document.getElementById('badge-' + t.id);
           const card = badgeEl ? badgeEl.closest('.template-card') : document.querySelector('[data-template-id="' + t.id + '"]');
           if (badgeEl) {
-            badgeEl.innerHTML = t.is_premium ? '<div class="card-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>' : '';
+            if (t.is_premium) {
+              badgeEl.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium';
+              badgeEl.className = 'card-badge';
+            } else {
+              badgeEl.innerHTML = '';
+              badgeEl.className = '';
+            }
           }
           if (card) card.dataset.tier = t.is_premium ? 'premium' : 'classic';
           // Preview rule kept as before: built-in cards keep iframe demo previews.
