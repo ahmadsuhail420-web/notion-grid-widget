@@ -25,13 +25,13 @@ module.exports = async function handler(req, res) {
   try {
     const { data, error } = await sb
       .from('template_configs')
-      .select('id, name, price, is_premium, placeholder_url, is_active')
+      .select('id, name, price, original_price, is_premium, placeholder_url, is_active')
       .eq('is_active', true)
       .order('created_at', { ascending: true });
 
     if (error) throw error;
 
-    res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+    res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json(data || []);
 
   } catch (err) {
