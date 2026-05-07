@@ -976,7 +976,7 @@
   function buildTemplateCard(t, index) {
     t.id = normalizeTemplateId(t.id);
     const meta = templateMeta(t.id);
-    const originalPrice = meta.originalPrice || 1499;
+    const originalPrice = Number(t.original_price) || meta.originalPrice || 1499;
     const discount = calcDiscount(t.price, originalPrice);
     const card = document.createElement('div');
     card.className = 'template-card reveal-pop';
