@@ -62,7 +62,7 @@
   ],
   "functions": {
     "api/scan-templates.js": {
-      "includeFiles": "public/wedding/**"
+      "includeFiles": "public/wedding/*.html"
     }
   }
 }
