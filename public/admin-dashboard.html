@@ -1502,6 +1502,23 @@ CREATE POLICY "Admin write templates" ON template_configs
     const topTbody = document.getElementById('top-templates-tbody');
     if (!sb) return;
 
+    // ── Auto-scan for newly deployed wedding templates ──────────────
+    try {
+      const { data: { session: _scanSess } } = await sb.auth.getSession();
+      if (_scanSess?.access_token) {
+        const _scanRes = await fetch('/api/scan-templates', {
+          headers: { 'Authorization': `Bearer ${_scanSess.access_token}` }
+        });
+        if (_scanRes.ok) {
+          const _scanData = await _scanRes.json();
+          if (_scanData.newly_registered && _scanData.newly_registered.length > 0) {
+            const _n = _scanData.newly_registered.length;
+            showToast(`${_n} new template${_n > 1 ? 's' : ''} auto-registered — set price & activate to publish`, 'success');
+          }
+        }
+      }
+    } catch (_) { /* scan is non-blocking */ }
+
     const { data, error } = await sb.from('template_configs').select('*').order('id');
     if (error) { tbody.innerHTML = errRow(6, 'Failed to load templates'); return; }
 
@@ -1961,11 +1978,11 @@ CREATE POLICY "Admin write templates" ON template_configs
     document.getElementById('edit-id').value = '';
     document.getElementById('edit-new-id').value = '';
     document.getElementById('edit-name').value = '';
-    document.getElementById('edit-price').value = '499';
-    document.getElementById('edit-original-price').value = '1499';
+    document.getElementById('edit-price').value = '0';
+    document.getElementById('edit-original-price').value = '';
     document.getElementById('edit-image').value = '';
     document.getElementById('edit-image-file').value = '';
-    document.getElementById('edit-active').checked = true;
+    document.getElementById('edit-active').checked = false;
     document.getElementById('edit-premium').checked = false;
     document.getElementById('id-field-group').style.display = 'block';
     document.getElementById('save-btn').textContent = 'Create Template';
