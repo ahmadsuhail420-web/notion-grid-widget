@@ -8,7 +8,7 @@ const instance = new Razorpay({
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', 'https://syncandstyle.com');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(200).end();
@@ -27,7 +27,6 @@ module.exports = async function handler(req, res) {
   const rawTemplateId = req.body.templateId;
   const templateId = TEMPLATE_ALIASES[rawTemplateId] || rawTemplateId;
 
-  // ── FIX: Resolve price server-side — never trust client-sent amount ──
   let amount;
   try {
     const sb = createClient(
@@ -49,9 +48,8 @@ module.exports = async function handler(req, res) {
       if (!tpl.is_active) {
         return res.status(400).json({ error: 'This template is not currently available' });
       }
-      amount = Math.round(Number(tpl.price) * 100); // convert ₹ → paisa
+      amount = Math.round(Number(tpl.price) * 100);
     } else {
-      // Fallback: validate client-sent amount is a reasonable positive integer
       const clientAmount = Number(req.body.amount);
       if (!Number.isInteger(clientAmount) || clientAmount < 100 || clientAmount > 1000000) {
         return res.status(400).json({ error: 'Invalid payment amount' });
@@ -79,9 +77,6 @@ module.exports = async function handler(req, res) {
       key: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
