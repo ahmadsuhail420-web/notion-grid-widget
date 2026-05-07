@@ -43,7 +43,7 @@ module.exports = async function handler(req, res) {
   const sb = createClient(supabaseUrl, supabaseServiceKey);
 
   // ── Step 1: Scan public/wedding/ for HTML files ──────────────────────
-  const weddingDir = path.join(process.cwd(), 'public', 'wedding');
+  const weddingDir = path.join(__dirname, '..', 'public', 'wedding');
   let files = [];
   try {
     files = fs.readdirSync(weddingDir).filter(f => f.endsWith('.html'));
