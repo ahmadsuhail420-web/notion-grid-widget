@@ -1462,7 +1462,7 @@ CREATE POLICY "Admin write templates" ON template_configs
     renderDemoStats();
   }
 
-  async async function refreshAll() {
+  async function refreshAll() {
     // loadSales must run first — loadTemplates uses salesData for the top-templates widget
     await loadSales();
     await Promise.all([
