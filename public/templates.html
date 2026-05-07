@@ -548,7 +548,7 @@
   function buildDynamicCard(t, index) {
     t.id = normalizeTemplateId(t.id);
     const meta = templateMeta(t.id);
-    const originalPrice = meta.originalPrice || 1499;
+    const originalPrice = Number(t.original_price) || meta.originalPrice || 1499;
     const discount = calcDiscount(t.price, originalPrice);
     const tier = t.is_premium ? 'premium' : 'classic';
     const badgeHTML = t.is_premium ? '<div class="card-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>' : '';
@@ -587,11 +587,11 @@
           if (priceEl) priceEl.textContent = rupee(t.price);
           const origEl = document.getElementById('original-price-' + t.id);
           const offerEl = document.getElementById('offer-' + t.id);
-          const meta = templateMeta(t.id);
-          const origPrice = meta.originalPrice || 1499;
-          if (origEl) origEl.textContent = rupee(origPrice);
+          const origPrice = Number(t.original_price) || 1499;
+          if (origEl) { origEl.textContent = rupee(origPrice); origEl.style.display = ''; }
           if (offerEl && t.price < origPrice) {
             offerEl.textContent = calcDiscount(t.price, origPrice) + '% OFF';
+            offerEl.style.display = '';
           } else if (offerEl) { offerEl.style.display='none'; if(origEl) origEl.style.display='none'; }
           const badgeEl = document.getElementById('badge-' + t.id);
           const card = badgeEl ? badgeEl.closest('.template-card') : document.querySelector('[data-template-id="' + t.id + '"]');
