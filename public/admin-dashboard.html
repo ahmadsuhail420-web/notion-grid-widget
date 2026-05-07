@@ -1462,7 +1462,7 @@ CREATE POLICY "Admin write templates" ON template_configs
     renderDemoStats();
   }
 
-  async function refreshAll() {
+  async async function refreshAll() {
     // loadSales must run first — loadTemplates uses salesData for the top-templates widget
     await loadSales();
     await Promise.all([
@@ -1514,10 +1514,16 @@ CREATE POLICY "Admin write templates" ON template_configs
           if (_scanData.newly_registered && _scanData.newly_registered.length > 0) {
             const _n = _scanData.newly_registered.length;
             showToast(`${_n} new template${_n > 1 ? 's' : ''} auto-registered — set price & activate to publish`, 'success');
+          } else if (_scanData.scanned > 0) {
+            showToast(`Scan complete — ${_scanData.scanned} template${_scanData.scanned > 1 ? 's' : ''} checked, none new`, 'success');
           }
+        } else {
+          showToast('Template scan failed — check API logs', 'error');
         }
       }
-    } catch (_) { /* scan is non-blocking */ }
+    } catch (_scanErr) {
+      console.warn('Template scan error:', _scanErr);
+    }
 
     const { data, error } = await sb.from('template_configs').select('*').order('id');
     if (error) { tbody.innerHTML = errRow(6, 'Failed to load templates'); return; }
