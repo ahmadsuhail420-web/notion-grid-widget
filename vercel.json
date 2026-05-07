@@ -1,25 +1,62 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/login", "destination": "/login.html" },
-    { "source": "/templates", "destination": "/templates.html" },
-    { "source": "/templates/:path*", "destination": "/templates/:path*" },
-    { "source": "/wedding/islamic-invitation", "destination": "/wedding/islamic-invitation.html" },
-    { "source": "/edit/islamic-invitation", "destination": "/edit/islamic-invitation.html" },
-    { "source": "/wedding/islamic-invitation-premium", "destination": "/wedding/islamic-invitation-premium.html" },
-    { "source": "/edit/islamic-invitation-premium", "destination": "/edit/islamic-invitation-premium.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/payment", "destination": "/payment.html" },
-    { "source": "/admin", "destination": "/admin-dashboard.html" },
-    { "source": "/((?!api/).*)", "destination": "/$1.html" }
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/templates",
+      "destination": "/templates.html"
+    },
+    {
+      "source": "/templates/:path*",
+      "destination": "/templates/:path*"
+    },
+    {
+      "source": "/wedding/islamic-invitation",
+      "destination": "/wedding/islamic-invitation.html"
+    },
+    {
+      "source": "/wedding/islamic-invitation-premium",
+      "destination": "/wedding/islamic-invitation-premium.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard.html"
+    },
+    {
+      "source": "/payment",
+      "destination": "/payment.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/admin-dashboard.html"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/$1.html"
+    }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin",  "value": "https://syncandstyle.com" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://syncandstyle.com"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
       ]
     }
   ]
