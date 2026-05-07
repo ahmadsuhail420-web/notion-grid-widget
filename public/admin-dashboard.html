@@ -1386,12 +1386,12 @@ CREATE POLICY "Admin write templates" ON template_configs
 
   // ── TEMPLATE HELPERS (synced from index/templates pages) ─────────
   const TEMPLATE_ID_ALIASES = {
-    'tp1': 'template01',
-    'tp2': 'template02',
-    'islamic-invitation': 'template01',
-    'islamic-invitation-premium': 'template02'
+    'template01': 'tp1',
+    'template02': 'tp2',
+    'islamic-invitation': 'tp1',
+    'islamic-invitation-premium': 'tp2'
   };
-  function normalizeTemplateId(id) { return TEMPLATE_ID_ALIASES[id] || id || 'template01'; }
+  function normalizeTemplateId(id) { if (!id) return 'tp1'; return TEMPLATE_ID_ALIASES[id] || id; }
   function mergeTemplateRows(rows) {
     const map = new Map();
     (rows || []).forEach(row => {
