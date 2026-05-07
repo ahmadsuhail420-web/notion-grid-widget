@@ -479,6 +479,14 @@
     .footer-socials a { width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.3); transition: all 0.2s; }
     .footer-socials a:hover { border-color: var(--gold-light); color: var(--gold-light); }
     @media (max-width: 640px) { footer { padding: 48px 20px 32px; } .footer-top { flex-direction: column; gap: 32px; } }
+  
+    /* Skeleton loaders */
+    .tpl-skeleton { background:var(--ivory-card,#fffcf8); border:1px solid rgba(180,120,100,0.12); border-radius:16px; overflow:hidden; }
+    .sk-media { height:260px; background:linear-gradient(90deg,#f0e8e0 25%,#f8f0e8 50%,#f0e8e0 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
+    .sk-info { padding:16px 20px; }
+    .sk-name { height:16px; background:linear-gradient(90deg,#f0e8e0 25%,#f8f0e8 50%,#f0e8e0 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:4px; margin-bottom:10px; width:60%; }
+    .sk-price { height:14px; background:linear-gradient(90deg,#f0e8e0 25%,#f8f0e8 50%,#f0e8e0 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:4px; width:40%; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   </style>
 </head>
 <body>
@@ -604,33 +612,8 @@
       <p class="section-body" style="margin:0 auto;text-align:center">Each template crafted with cultural care and modern elegance.</p>
     </div>
     <div class="templates-grid" id="templates-grid">
-      <div class="template-card reveal-pop" style="transition-delay:0ms">
-        <div class="card-media">
-          <div class="iframe-preview-container"><iframe src="/wedding/islamic-invitation?preview=true" class="preview-iframe" scrolling="no"></iframe></div>
-          <div class="card-overlay">
-            <a href="/wedding/islamic-invitation" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>
-            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('islamic-invitation')">Buy Now</button>
-          </div>
-        </div>
-        <div class="card-info">
-          <div class="card-name">Islamic Invitation</div>
-          <div class="card-price"><span class="price-current">&#8377;499</span></div>
-        </div>
-      </div>
-      <div class="template-card reveal-pop" style="transition-delay:80ms">
-        <div class="card-media">
-          <div class="iframe-preview-container"><iframe src="/wedding/islamic-invitation-premium?preview=true" class="preview-iframe" scrolling="no"></iframe></div>
-          <div class="card-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M2 19l2-7 5 4 3-9 3 9 5-4 2 7H2z"/></svg>Premium</div>
-          <div class="card-overlay">
-            <a href="/wedding/islamic-invitation-premium" target="_blank" class="card-btn card-btn-preview-style" onclick="event.stopPropagation()">Preview Demo</a>
-            <button class="card-btn card-btn-buy-style" onclick="event.stopPropagation();handleSelectTemplate('template02')">Buy Now</button>
-          </div>
-        </div>
-        <div class="card-info">
-          <div class="card-name">Islamic Premium</div>
-          <div class="card-price"><span class="price-original">&#8377;1499</span><span class="price-current">&#8377;999</span><span class="price-badge">33% OFF</span></div>
-        </div>
-      </div>
+      <div class="tpl-skeleton" style="transition-delay:0ms"><div class="sk-media"></div><div class="sk-info"><div class="sk-name"></div><div class="sk-price"></div></div></div>
+      <div class="tpl-skeleton" style="transition-delay:80ms"><div class="sk-media"></div><div class="sk-info"><div class="sk-name"></div><div class="sk-price"></div></div></div>
     </div>
     <div style="text-align:center;margin-top:48px">
       <a href="/templates" id="view-all-link" class="btn-outline" style="display:inline-flex;align-items:center;gap:10px">
@@ -955,14 +938,14 @@
   function normalizeTemplateId(id) { return TEMPLATE_ID_ALIASES[id] || id || 'template01'; }
   function templateMeta(id) { return TEMPLATE_FRONTEND[normalizeTemplateId(id)] || {}; }
   function mergeTemplateRows(rows) {
+    // Normalize all IDs; if two rows map to same canonical ID, canonical wins, else last wins.
     const map = new Map();
     (rows || []).forEach(row => {
-      const normalized = { ...row, id: normalizeTemplateId(row.id) };
-      // Canonical IDs win over old aliases; otherwise the later row wins.
-      const existing = map.get(normalized.id);
-      const isCanonical = row.id === normalized.id;
-      if (!existing || isCanonical || existing._source_id !== existing.id) {
-        map.set(normalized.id, { ...normalized, _source_id: row.id });
+      const canonId = normalizeTemplateId(row.id);
+      const normalized = { ...row, id: canonId };
+      const existing = map.get(canonId);
+      if (!existing || row.id === canonId) {
+        map.set(canonId, normalized);
       }
     });
     return Array.from(map.values());
@@ -1000,28 +983,30 @@
   }
 
   async function loadTemplateCardData() {
+    const grid = document.getElementById('templates-grid');
     try {
-      // Fetch via server-side endpoint (SERVICE_ROLE_KEY) — bypasses RLS
-      const _resp = await fetch('/api/get-templates');
-      if (!_resp.ok) return;
+      const _resp = await fetch('/api/get-templates', { cache: 'no-store' });
+      if (!_resp.ok) throw new Error('API ' + _resp.status);
       let data = await _resp.json();
-      if (!data || !data.length) return;
+      if (!data || !data.length) throw new Error('empty');
       data = mergeTemplateRows(data);
-      const grid = document.getElementById('templates-grid');
-      const viewMore = document.getElementById('view-more-templates');
       const MAX_VISIBLE = 4;
-      if (grid) grid.innerHTML = '';
+      if (grid) grid.innerHTML = ''; // clear skeletons & old cards
       data.forEach((t, i) => {
         const card = buildTemplateCard(t, i);
         if (i >= MAX_VISIBLE) card.style.display = 'none';
         if (grid) grid.appendChild(card);
       });
       if (data.length > MAX_VISIBLE) {
-          const link = document.getElementById('view-all-link');
-          if (link) { link.style.display = 'inline-flex'; }
-        }
+        const link = document.getElementById('view-all-link');
+        if (link) link.style.display = 'inline-flex';
+      }
       document.querySelectorAll('.reveal-pop').forEach(el => observer.observe(el));
-    } catch(e) { console.error('loadTemplateCardData error', e); }
+    } catch(e) {
+      console.error('loadTemplateCardData error', e);
+      // On failure keep the skeletons hidden and show nothing — avoid stale hardcoded prices
+      if (grid) grid.innerHTML = '<p style="text-align:center;color:var(--muted);padding:40px">Unable to load templates. Please refresh.</p>';
+    }
   }
 
   // showMoreTemplates replaced by /templates link
