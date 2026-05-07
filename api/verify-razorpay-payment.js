@@ -3,7 +3,7 @@ const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', 'https://syncandstyle.com');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     return res.status(200).end();
@@ -22,7 +22,6 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Razorpay keys not configured' });
   }
 
-  // ── Step 1: Verify signature ──
   let digest;
   try {
     const shasum = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
@@ -38,8 +37,6 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Payment verification failed' });
   }
 
-  // ── Step 2: Mark payment as verified in DB ──
-  // Only runs if signature is valid — protects against replay/fake payments
   try {
     const sb = createClient(
       process.env.SUPABASE_URL,
@@ -52,18 +49,15 @@ module.exports = async function handler(req, res) {
         payment_verified: true,
         payment_id: razorpay_payment_id,
         order_id: razorpay_order_id,
-        status: 'draft' // ready to edit after payment
+        status: 'draft'
       })
       .eq('order_id', razorpay_order_id);
 
     if (updateError) {
-      // Non-fatal: payment is verified, DB update failed
-      // Log it and still return success so the user isn't stuck
       console.error('DB update after payment verification failed:', updateError.message);
     }
   } catch (dbError) {
     console.error('DB connection error after payment verification:', dbError.message);
-    // Still return success — payment IS verified, DB can be fixed manually
   }
 
   return res.status(200).json({ success: true, message: 'Payment verified successfully' });
