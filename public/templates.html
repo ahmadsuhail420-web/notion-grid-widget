@@ -467,39 +467,42 @@
   }
   initSupabase();
 
+
+  // ── Template registry — tp1, tp2, tp3… are the ONLY IDs used everywhere ──
+  // All old aliases (template01, template02, islamic-invitation, …) are
+  // normalised to tpN on the way in from the DB or URL params.
   const TEMPLATE_ID_ALIASES = {
-    'tp1': 'template01',
-    'tp2': 'template02',
-    'islamic-invitation': 'template01',
-    'islamic-invitation-premium': 'template02'
+    'template01': 'tp1',
+    'template02': 'tp2',
+    'islamic-invitation': 'tp1',
+    'islamic-invitation-premium': 'tp2'
   };
   const TEMPLATE_FRONTEND = {
-    template01: {
+    tp1: {
       previewUrl: '/wedding/islamic-invitation.html',
       demoUrl: '/wedding/islamic-invitation',
-      originalPrice: 1499,
       fallbackName: 'Heritage',
-      fallbackDesc: 'Timeless patterns meet royal deep-plum elegance.'
     },
-    template02: {
+    tp2: {
       previewUrl: '/wedding/islamic-invitation-premium.html',
       demoUrl: '/wedding/islamic-invitation-premium',
-      originalPrice: 1499,
       fallbackName: 'Minimalist',
-      fallbackDesc: 'Sophisticated minimalism with gold accents.'
     }
+    // tp3, tp4 … will use placeholder_url from DB — no entry needed here
   };
-  function normalizeTemplateId(id) { return TEMPLATE_ID_ALIASES[id] || id || 'template01'; }
-  function templateMeta(id) { return TEMPLATE_FRONTEND[normalizeTemplateId(id)] || {}; }
+  function normalizeTemplateId(id) {
+    if (!id) return 'tp1';
+    return TEMPLATE_ID_ALIASES[id] || id;
+  }
+  function templateMeta(id) { return TEMPLATE_FRONTEND[id] || {}; }
   function mergeTemplateRows(rows) {
+    // Normalize every row ID to tpN. If two rows collide, canonical tpN wins.
     const map = new Map();
     (rows || []).forEach(row => {
-      const canonId = normalizeTemplateId(row.id);
-      const normalized = { ...row, id: canonId };
-      const existing = map.get(canonId);
-      if (!existing || row.id === canonId) {
-        map.set(canonId, normalized);
-      }
+      const normId = normalizeTemplateId(row.id);
+      const normalized = { ...row, id: normId };
+      const existing = map.get(normId);
+      if (!existing || row.id === normId) map.set(normId, normalized);
     });
     return Array.from(map.values());
   }
@@ -510,7 +513,7 @@
   }
 
   function buildDynamicCard(t, index) {
-    t.id = normalizeTemplateId(t.id);
+    t.id = normalizeTemplateId(t.id); // ensure tp1/tp2/… 
     const meta = templateMeta(t.id);
     const originalPrice = Number(t.original_price) || meta.originalPrice || 1499;
     const discount = calcDiscount(t.price, originalPrice);
