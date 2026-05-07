@@ -1538,6 +1538,7 @@ CREATE POLICY "Admin write templates" ON template_configs
         });
         if (_scanRes.ok) {
           const _scanData = await _scanRes.json();
+          if (_scanData.db_records) console.log('[DEBUG] scan db_records:', _scanData.db_records);
           if (_scanData.newly_registered && _scanData.newly_registered.length > 0) {
             const _n = _scanData.newly_registered.length;
             showToast(`${_n} new template${_n > 1 ? 's' : ''} auto-registered — set price & activate to publish`, 'success');
@@ -1556,6 +1557,7 @@ CREATE POLICY "Admin write templates" ON template_configs
     if (error) { tbody.innerHTML = errRow(6, 'Failed to load templates'); _stopSpin(); return; }
 
     templatesData = mergeTemplateRows(data || []);
+    console.log('[DEBUG] raw DB rows:', (data||[]).map(r=>r.id), 'merged:', templatesData.map(t=>t.id));
     document.getElementById('stat-templates').textContent = templatesData.filter(t => t.is_active).length;
 
     tbody.innerHTML = templatesData.length === 0
