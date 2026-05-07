@@ -20,21 +20,19 @@ module.exports = async function handler(req, res) {
   }
   const accessToken = authHeader.replace('Bearer ', '').trim();
 
-  const supabaseUrl     = process.env.SUPABASE_URL;
-  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+  const supabaseUrl      = process.env.SUPABASE_URL;
+  const supabaseAnonKey  = process.env.SUPABASE_ANON_KEY;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
     return res.status(500).json({ error: 'Supabase configuration missing' });
   }
 
-  // Verify the JWT is a valid admin session
   const anonSb = createClient(supabaseUrl, supabaseAnonKey);
   const { data: { user }, error: authErr } = await anonSb.auth.getUser(accessToken);
   if (authErr || !user) {
     return res.status(401).json({ error: 'Invalid or expired session token' });
   }
-
   const adminEmail = 'ahmadsuhail420@gmail.com';
   if (user.user_metadata?.role !== 'admin' && user.email !== adminEmail) {
     return res.status(403).json({ error: 'Admin access required' });
@@ -42,17 +40,44 @@ module.exports = async function handler(req, res) {
 
   const sb = createClient(supabaseUrl, supabaseServiceKey);
 
-  // ── Step 1: Scan public/wedding/ for HTML files ──────────────────────
-  const weddingDir = path.join(__dirname, '..', 'public', 'wedding');
+  // ── Scan public/wedding/ — try every possible Vercel path ────────────
+  // Vercel bundles includeFiles relative to project root at /var/task
+  // The function lives at /var/task/api/scan-templates.js
+  const candidatePaths = [
+    path.join(__dirname, '..', 'public', 'wedding'),   // /var/task/public/wedding
+    path.join(process.cwd(), 'public', 'wedding'),     // process.cwd()/public/wedding
+    path.join(__dirname, 'public', 'wedding'),         // /var/task/api/public/wedding (includeFiles copies here in some versions)
+    '/var/task/public/wedding',                        // absolute fallback
+  ];
+
   let files = [];
-  try {
-    files = fs.readdirSync(weddingDir).filter(f => f.endsWith('.html'));
-  } catch (e) {
-    console.error('Could not read wedding directory:', e.message);
-    return res.status(200).json({ newly_registered: [], scanned: 0, error: 'scan_failed' });
+  let usedPath = null;
+  const pathAttempts = [];
+
+  for (const dir of candidatePaths) {
+    try {
+      const found = fs.readdirSync(dir).filter(f => f.endsWith('.html'));
+      pathAttempts.push({ path: dir, status: 'ok', count: found.length });
+      if (found.length > 0 && !usedPath) {
+        files = found;
+        usedPath = dir;
+      }
+    } catch (e) {
+      pathAttempts.push({ path: dir, status: 'error', error: e.code });
+    }
   }
 
-  // ── Step 2: Get all existing templates from DB ───────────────────────
+  if (files.length === 0) {
+    console.error('scan-templates: could not find wedding dir. Attempts:', JSON.stringify(pathAttempts));
+    return res.status(200).json({
+      newly_registered: [],
+      scanned: 0,
+      error: 'scan_failed',
+      debug_paths: pathAttempts
+    });
+  }
+
+  // ── Get existing templates from DB ──────────────────────────────────
   const { data: existing, error: dbErr } = await sb
     .from('template_configs')
     .select('id, name')
@@ -62,8 +87,6 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Failed to query template_configs: ' + dbErr.message });
   }
 
-  // Build a set of "covered slugs" — slugs that existing templates already represent
-  // A template covers a slug if: its ID equals the slug, OR its name-derived slug equals the file slug
   function nameToSlug(name) {
     return (name || '').toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   }
@@ -74,17 +97,18 @@ module.exports = async function handler(req, res) {
     coveredSlugs.add(nameToSlug(t.name));
   });
 
-  // ── Step 3: Find unregistered files ─────────────────────────────────
   const unregistered = files
     .map(f => f.replace('.html', ''))
     .filter(slug => !coveredSlugs.has(slug));
 
   if (unregistered.length === 0) {
-    return res.status(200).json({ newly_registered: [], scanned: files.length });
+    return res.status(200).json({
+      newly_registered: [],
+      scanned: files.length,
+      used_path: usedPath
+    });
   }
 
-  // ── Step 4: Auto-register unregistered templates ─────────────────────
-  // Name = Title Case from slug; ID = slug itself (e.g. "floral-invitation")
   function slugToName(slug) {
     return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   }
@@ -103,12 +127,13 @@ module.exports = async function handler(req, res) {
   const { error: insertErr } = await sb.from('template_configs').insert(rows);
 
   if (insertErr) {
-    console.error('Failed to auto-register templates:', insertErr.message);
+    console.error('scan-templates: insert failed:', insertErr.message);
     return res.status(500).json({ error: 'Failed to register templates: ' + insertErr.message });
   }
 
   return res.status(200).json({
     newly_registered: rows.map(r => ({ id: r.id, name: r.name })),
-    scanned: files.length
+    scanned: files.length,
+    used_path: usedPath
   });
 };
